@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,9 +17,9 @@
  *=========================================================================*/
 #ifndef itkSTAPLEImageFilter_hxx
 #define itkSTAPLEImageFilter_hxx
-#include "itkSTAPLEImageFilter.h"
 
 #include "itkImageScanlineIterator.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 namespace itk
 {
@@ -59,13 +59,13 @@ STAPLEImageFilter<TInputImage, TOutputImage>::GenerateData()
   // Record the number of input files.
   number_of_input_files = this->GetNumberOfIndexedInputs();
 
-  auto * D_it = new IteratorType[number_of_input_files];
+  const auto D_it = make_unique_for_overwrite<IteratorType[]>(number_of_input_files);
 
-  auto * p = new double[number_of_input_files]; // sensitivity
-  auto * q = new double[number_of_input_files]; // specificity
+  const auto p = make_unique_for_overwrite<double[]>(number_of_input_files); // sensitivity
+  const auto q = make_unique_for_overwrite<double[]>(number_of_input_files); // specificity
 
-  auto * last_q = new double[number_of_input_files];
-  auto * last_p = new double[number_of_input_files];
+  const auto last_q = make_unique_for_overwrite<double[]>(number_of_input_files);
+  const auto last_p = make_unique_for_overwrite<double[]>(number_of_input_files);
 
   for (i = 0; i < number_of_input_files; ++i)
   {
@@ -245,18 +245,12 @@ STAPLEImageFilter<TInputImage, TOutputImage>::GenerateData()
 
   m_Sensitivity.clear();
   m_Specificity.clear();
-  for (i = 0; i < number_of_input_files; i++)
+  for (i = 0; i < number_of_input_files; ++i)
   {
     m_Sensitivity.push_back(p[i]);
     m_Specificity.push_back(q[i]);
   }
   m_ElapsedIterations = iter;
-
-  delete[] q;
-  delete[] p;
-  delete[] last_q;
-  delete[] last_p;
-  delete[] D_it;
 }
 } // end namespace itk
 

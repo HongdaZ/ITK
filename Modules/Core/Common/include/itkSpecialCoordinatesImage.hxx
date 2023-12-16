@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,6 @@
  *=========================================================================*/
 #ifndef itkSpecialCoordinatesImage_hxx
 #define itkSpecialCoordinatesImage_hxx
-#include "itkSpecialCoordinatesImage.h"
 #include "itkProcessObject.h"
 
 namespace itk
@@ -75,7 +74,7 @@ SpecialCoordinatesImage<TPixel, VImageDimension>::FillBuffer(const TPixel & valu
 {
   const SizeValueType numberOfPixels = this->GetBufferedRegion().GetNumberOfPixels();
 
-  for (unsigned int i = 0; i < numberOfPixels; i++)
+  for (unsigned int i = 0; i < numberOfPixels; ++i)
   {
     (*m_Buffer)[i] = value;
   }

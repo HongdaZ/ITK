@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 #include "itkGDCMImageIO.h"
 #include "itkImageSeriesReader.h"
 #include "itkImageSeriesWriter.h"
+#include "itkTestingMacros.h"
 
 #include <sstream>
 
@@ -30,7 +31,9 @@ itkGDCMImageIOTest2(int argc, char * argv[])
 {
   if (argc < 3)
   {
-    std::cerr << "Usage: " << argv[0] << " InputFile OutputDicomRoot\n";
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " InputFile OutputDicomRoot" << std::endl;
     return EXIT_FAILURE;
   }
   const char * input = argv[1];
@@ -39,7 +42,7 @@ itkGDCMImageIOTest2(int argc, char * argv[])
   using ReaderType = itk::ImageFileReader<ImageType>;
   using WriterType = itk::ImageFileWriter<ImageType>;
 
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(input);
   try
   {
@@ -110,13 +113,13 @@ itkGDCMImageIOTest2(int argc, char * argv[])
   std::string output_raw = output;
   output_raw += "-raw.dcm";
 
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetImageIO(dicomIO);
   writer->SetInput(reader->GetOutput());
   writer->UseInputMetaDataDictionaryOff();
 
   // Save as JPEG 2000 Lossless
-  // Explicitely specify which compression type to use
+  // Explicitly specify which compression type to use
   dicomIO->SetCompressionType(itk::GDCMImageIO::CompressionEnum::JPEG2000);
   // Request compression of the ImageIO
   writer->UseCompressionOn();
@@ -149,16 +152,9 @@ itkGDCMImageIOTest2(int argc, char * argv[])
   // Save as raw
   writer->UseCompressionOff();
   writer->SetFileName(output_raw.c_str());
-  try
-  {
-    writer->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cerr << "exception in file writer " << std::endl;
-    std::cerr << e << std::endl;
-    return EXIT_FAILURE;
-  }
+
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+
 
   return EXIT_SUCCESS;
 }

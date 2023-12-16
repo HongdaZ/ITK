@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,9 +57,9 @@ public:
   itkTypeMacro(Element3DStrain, TBaseClass);
 
   // Repeat the required type alias and enums from parent class
-  using Float = typename Superclass::Float;
-  using MatrixType = typename Superclass::MatrixType;
-  using VectorType = typename Superclass::VectorType;
+  using typename Superclass::Float;
+  using typename Superclass::MatrixType;
+  using typename Superclass::VectorType;
 
   /**
    * Default constructor only clears the internal storage

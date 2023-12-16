@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@
 #ifndef itkRescaleIntensityImageFilter_hxx
 #define itkRescaleIntensityImageFilter_hxx
 
-#include "itkRescaleIntensityImageFilter.h"
 #include "itkMinimumMaximumImageCalculator.h"
 #include "itkMath.h"
 
@@ -52,12 +51,11 @@ RescaleIntensityImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateDa
   if (this->m_OutputMinimum > this->m_OutputMaximum)
   {
     itkExceptionMacro(<< "Minimum output value cannot be greater than Maximum output value.");
-    return;
   }
 
   using CalculatorType = MinimumMaximumImageCalculator<TInputImage>;
 
-  typename CalculatorType::Pointer calculator = CalculatorType::New();
+  auto calculator = CalculatorType::New();
 
   calculator->SetImage(this->GetInput());
 

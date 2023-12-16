@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class ChainCodePath2D
+ * \class ChainCodePath2D
  * \brief  Represent a 2D path as a sequence of connected image index offsets
  *
  * This class is intended to represent sequences of connected indices in a 2D
@@ -51,7 +51,7 @@ namespace itk
 class ITK_TEMPLATE_EXPORT ChainCodePath2D : public ChainCodePath<2>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ChainCodePath2D);
+  ITK_DISALLOW_COPY_AND_MOVE(ChainCodePath2D);
 
   /** Dimension underlying input image. */
   static constexpr unsigned int Dimension = 2;

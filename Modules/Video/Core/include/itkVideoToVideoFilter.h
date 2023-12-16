@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ namespace itk
 {
 
 /**
- *\class VideoToVideoFilter
+ * \class VideoToVideoFilter
  * \brief Base class for filters that use a VideoStream as input and output
  *
  * VideoToVideoFilter is the base class for all process objects that output
@@ -45,7 +45,7 @@ template <typename TInputVideoStream, typename TOutputVideoStream>
 class ITK_TEMPLATE_EXPORT VideoToVideoFilter : public VideoSource<TOutputVideoStream>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VideoToVideoFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(VideoToVideoFilter);
 
   /** Standard class type aliases */
   using InputVideoStreamType = TInputVideoStream;
@@ -57,8 +57,8 @@ public:
   using ConstWeakPointer = WeakPointer<const Self>;
 
   /** Superclass type alias */
-  using OutputFrameType = typename Superclass::OutputFrameType;
-  using OutputFrameSpatialRegionType = typename Superclass::OutputFrameSpatialRegionType;
+  using typename Superclass::OutputFrameType;
+  using typename Superclass::OutputFrameSpatialRegionType;
 
   /** Input type alias */
   using InputFrameType = typename InputVideoStreamType::FrameType;

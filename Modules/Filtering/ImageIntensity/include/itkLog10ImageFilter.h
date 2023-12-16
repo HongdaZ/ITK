@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,16 +37,12 @@ public:
   Log10() = default;
   ~Log10() = default;
   bool
-  operator!=(const Log10 &) const
+  operator==(const Log10 &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const Log10 & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Log10);
 
   inline TOutput
   operator()(const TInput & A) const
@@ -57,7 +53,7 @@ public:
 } // namespace Functor
 
 /**
- *\class Log10ImageFilter
+ * \class Log10ImageFilter
  * \brief Computes the log10 of each pixel.
  *
  * The computation is performed using std::log10(x).
@@ -67,10 +63,10 @@ public:
  * \ingroup ITKImageIntensity
  */
 template <typename TInputImage, typename TOutputImage>
-class Log10ImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT Log10ImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Log10ImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(Log10ImageFilter);
 
   /** Standard class type aliases. */
   using Self = Log10ImageFilter;

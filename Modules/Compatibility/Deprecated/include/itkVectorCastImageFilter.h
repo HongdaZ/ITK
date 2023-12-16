@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class VectorCastImageFilter
+ * \class VectorCastImageFilter
  *
  * \brief Casts input vector pixels to output vector pixel type.
  *
@@ -66,7 +66,7 @@ public:
     using OutputValueType = typename TOutput::ValueType;
 
     TOutput value;
-    for (unsigned int k = 0; k < TOutput::Dimension; k++)
+    for (unsigned int k = 0; k < TOutput::Dimension; ++k)
     {
       value[k] = static_cast<OutputValueType>(A[k]);
     }
@@ -83,7 +83,7 @@ class VectorCastImageFilter
       Functor::VectorCast<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorCastImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(VectorCastImageFilter);
 
   /** Standard class type aliases. */
   using Self = VectorCastImageFilter;

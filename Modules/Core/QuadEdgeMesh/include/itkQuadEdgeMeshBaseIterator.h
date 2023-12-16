@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,30 +21,32 @@
 #include "itkMacro.h"
 
 // -------------------------------------------------------------------------
-#define itkQEDefineIteratorMethodsMacro(Op)                                                                            \
-  virtual Iterator Begin##Op() { return Iterator(this, Self::Iterator::Operator##Op, true); }                          \
-                                                                                                                       \
-  virtual ConstIterator Begin##Op() const { return ConstIterator(this, Self::ConstIterator::Operator##Op, true); }     \
-                                                                                                                       \
-  virtual Iterator End##Op() { return Iterator(this, Self::Iterator::Operator##Op, false); }                           \
-                                                                                                                       \
-  virtual ConstIterator End##Op() const { return ConstIterator(this, Self::ConstIterator::Operator##Op, false); }
+#define itkQEDefineIteratorMethodsMacro(Op)                                                                        \
+  virtual Iterator Begin##Op() { return Iterator(this, Self::Iterator::Operator##Op, true); }                      \
+                                                                                                                   \
+  virtual ConstIterator Begin##Op() const { return ConstIterator(this, Self::ConstIterator::Operator##Op, true); } \
+                                                                                                                   \
+  virtual Iterator End##Op() { return Iterator(this, Self::Iterator::Operator##Op, false); }                       \
+                                                                                                                   \
+  virtual ConstIterator End##Op() const { return ConstIterator(this, Self::ConstIterator::Operator##Op, false); }  \
+  ITK_MACROEND_NOOP_STATEMENT
 
 // -------------------------------------------------------------------------
-#define itkQEDefineIteratorGeomMethodsMacro(Op)                                                                        \
-  virtual IteratorGeom BeginGeom##Op() { return IteratorGeom(this, Self::IteratorGeom::Operator##Op, true); }          \
-                                                                                                                       \
-  virtual ConstIteratorGeom BeginGeom##Op() const                                                                      \
-  {                                                                                                                    \
-    return ConstIteratorGeom(this, Self::ConstIteratorGeom::Operator##Op, true);                                       \
-  }                                                                                                                    \
-                                                                                                                       \
-  virtual IteratorGeom EndGeom##Op() { return IteratorGeom(this, Self::IteratorGeom::Operator##Op, false); }           \
-                                                                                                                       \
-  virtual ConstIteratorGeom EndGeom##Op() const                                                                        \
-  {                                                                                                                    \
-    return ConstIteratorGeom(this, Self::ConstIteratorGeom::Operator##Op, false);                                      \
-  }
+#define itkQEDefineIteratorGeomMethodsMacro(Op)                                                               \
+  virtual IteratorGeom BeginGeom##Op() { return IteratorGeom(this, Self::IteratorGeom::Operator##Op, true); } \
+                                                                                                              \
+  virtual ConstIteratorGeom BeginGeom##Op() const                                                             \
+  {                                                                                                           \
+    return ConstIteratorGeom(this, Self::ConstIteratorGeom::Operator##Op, true);                              \
+  }                                                                                                           \
+                                                                                                              \
+  virtual IteratorGeom EndGeom##Op() { return IteratorGeom(this, Self::IteratorGeom::Operator##Op, false); }  \
+                                                                                                              \
+  virtual ConstIteratorGeom EndGeom##Op() const                                                               \
+  {                                                                                                           \
+    return ConstIteratorGeom(this, Self::ConstIteratorGeom::Operator##Op, false);                             \
+  }                                                                                                           \
+  ITK_MACROEND_NOOP_STATEMENT
 
 namespace itk
 {
@@ -89,6 +91,8 @@ public:
     , m_Start(start)
   {}
 
+  QuadEdgeMeshBaseIterator(const QuadEdgeMeshBaseIterator &) = default;
+
   virtual ~QuadEdgeMeshBaseIterator() = default;
 
   Self &
@@ -127,30 +131,13 @@ public:
 
   /** Iteration methods. */
   bool
-  operator==(Self & r)
-  {
-    return ((m_StartEdge == r.m_StartEdge) && (m_Iterator == r.m_Iterator) && (m_OpType == r.m_OpType) &&
-            (m_Start == r.m_Start));
-  }
-
-  bool
   operator==(const Self & r) const
   {
     return ((m_StartEdge == r.m_StartEdge) && (m_Iterator == r.m_Iterator) && (m_OpType == r.m_OpType) &&
             (m_Start == r.m_Start));
   }
 
-  bool
-  operator!=(Self & r)
-  {
-    return (!(this->operator==(r)));
-  }
-
-  bool
-  operator!=(const Self & r) const
-  {
-    return (!(this->operator==(r)));
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
 
   Self &
   operator++()
@@ -240,7 +227,7 @@ protected:
  * \ingroup ITKQuadEdgeMesh
  */
 template <typename TQuadEdge>
-class QuadEdgeMeshIterator : public QuadEdgeMeshBaseIterator<TQuadEdge>
+class ITK_TEMPLATE_EXPORT QuadEdgeMeshIterator : public QuadEdgeMeshBaseIterator<TQuadEdge>
 {
 public:
   /** Hierarchy type alias and values. */
@@ -253,6 +240,8 @@ public:
   QuadEdgeMeshIterator(QuadEdgeType * e = (QuadEdgeType *)0, int op = Superclass::OperatorOnext, bool start = true)
     : Superclass(e, op, start)
   {}
+
+  QuadEdgeMeshIterator(const QuadEdgeMeshIterator &) = default;
 
   ~QuadEdgeMeshIterator() override = default;
 
@@ -275,7 +264,7 @@ public:
  * \ingroup ITKQuadEdgeMesh
  */
 template <typename TGeometricalQuadEdge>
-class QuadEdgeMeshIteratorGeom : public QuadEdgeMeshIterator<TGeometricalQuadEdge>
+class ITK_TEMPLATE_EXPORT QuadEdgeMeshIteratorGeom : public QuadEdgeMeshIterator<TGeometricalQuadEdge>
 {
 public:
   /** Hierarchy type alias and values. */
@@ -291,6 +280,9 @@ public:
                            bool           start = true)
     : Superclass(e, op, start)
   {}
+
+  QuadEdgeMeshIteratorGeom(const QuadEdgeMeshIteratorGeom &) = default;
+
   OriginRefType operator*() { return (this->m_Iterator->GetOrigin()); }
 };
 
@@ -301,7 +293,7 @@ public:
  * \ingroup ITKQuadEdgeMesh
  */
 template <typename TQuadEdge>
-class QuadEdgeMeshConstIterator : public QuadEdgeMeshBaseIterator<TQuadEdge>
+class ITK_TEMPLATE_EXPORT QuadEdgeMeshConstIterator : public QuadEdgeMeshBaseIterator<TQuadEdge>
 {
 public:
   /** Hierarchy type alias & values. */
@@ -317,6 +309,8 @@ public:
                             bool                 start = true)
     : Superclass(const_cast<QuadEdgeType *>(e), op, start)
   {}
+
+  QuadEdgeMeshConstIterator(const QuadEdgeMeshConstIterator &) = default;
 
   ~QuadEdgeMeshConstIterator() override = default;
 
@@ -344,7 +338,7 @@ public:
  * \ingroup ITKQuadEdgeMesh
  */
 template <typename TGeometricalQuadEdge>
-class QuadEdgeMeshConstIteratorGeom : public QuadEdgeMeshConstIterator<TGeometricalQuadEdge>
+class ITK_TEMPLATE_EXPORT QuadEdgeMeshConstIteratorGeom : public QuadEdgeMeshConstIterator<TGeometricalQuadEdge>
 {
 public:
   /** Hierarchy type alias and values. */
@@ -362,6 +356,8 @@ public:
                                 bool                 start = true)
     : Superclass(e, op, start)
   {}
+
+  QuadEdgeMeshConstIteratorGeom(const QuadEdgeMeshConstIteratorGeom &) = default;
 
   ~QuadEdgeMeshConstIteratorGeom() override = default;
 

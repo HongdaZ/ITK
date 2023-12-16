@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,14 +35,14 @@
 namespace itk
 {
 /**
- *\class BioRadImageIOFactory
+ * \class BioRadImageIOFactory
  * \brief Create instances of BioRadImageIO objects using an object factory.
  * \ingroup ITKIOBioRad
  */
 class ITKIOBioRad_EXPORT BioRadImageIOFactory : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BioRadImageIOFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(BioRadImageIOFactory);
 
   /** Standard class type aliases. */
   using Self = BioRadImageIOFactory;
@@ -67,7 +67,7 @@ public:
   static void
   RegisterOneFactory()
   {
-    BioRadImageIOFactory::Pointer bioradFactory = BioRadImageIOFactory::New();
+    auto bioradFactory = BioRadImageIOFactory::New();
 
     ObjectFactoryBase::RegisterFactoryInternal(bioradFactory);
   }

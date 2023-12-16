@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageRegionConstIterator_hxx
 #define itkImageRegionConstIterator_hxx
 
-#include "itkImageRegionConstIterator.h"
 
 namespace itk
 {
@@ -49,7 +48,7 @@ ImageRegionConstIterator<TImage>::Increment()
   // Note that ++ind[0] moves to the next pixel along the row.
   ++ind[0];
   bool done = (ind[0] == startIndex[0] + static_cast<IndexValueType>(size[0]));
-  for (unsigned int i = 1; done && i < ImageIteratorDimension; i++)
+  for (unsigned int i = 1; done && i < ImageIteratorDimension; ++i)
   {
     done = (ind[i] == startIndex[i] + static_cast<IndexValueType>(size[i]) - 1);
   }
@@ -90,12 +89,12 @@ ImageRegionConstIterator<TImage>::Decrement()
   const typename ImageIterator<TImage>::IndexType & startIndex = this->m_Region.GetIndex();
   const typename ImageIterator<TImage>::SizeType &  size = this->m_Region.GetSize();
 
-  // Deccrement along a row, then wrap at the beginning of the region row.
+  // Decrement along a row, then wrap at the beginning of the region row.
 
   // Check to see if we are past the first pixel in the region
   // Note that --ind[0] moves to the previous pixel along the row.
   bool done = (--ind[0] == startIndex[0] - 1);
-  for (unsigned int i = 1; done && i < ImageIteratorDimension; i++)
+  for (unsigned int i = 1; done && i < ImageIteratorDimension; ++i)
   {
     done = (ind[i] == startIndex[i]);
   }

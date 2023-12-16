@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ itkMersenneTwisterRandomVariateGeneratorTest(int, char *[])
   Twister::GetInstance()->SetSeed(seed);
   ITK_TEST_SET_GET_VALUE(seed, Twister::GetInstance()->GetSeed());
 
-  Twister::Pointer twister = Twister::New();
+  auto twister = Twister::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(twister, MersenneTwisterRandomVariateGenerator, RandomVariateGeneratorBase);
 
@@ -49,7 +49,7 @@ itkMersenneTwisterRandomVariateGeneratorTest(int, char *[])
   twister->SetSeed(Twister::GetInstance()->GetSeed());
 
   // Check that we get the same series of numbers from the two.  Use integers.
-  for (int i = 0; i < 200; i++)
+  for (int i = 0; i < 200; ++i)
   {
     if (Twister::GetInstance()->GetIntegerVariate() != twister->GetIntegerVariate())
     {
@@ -85,20 +85,20 @@ itkMersenneTwisterRandomVariateGeneratorTest(int, char *[])
   double sum = 0.0;
   double sum2 = 0.0;
   int    count = 500000;
-  for (int i = 0; i < count; i++)
+  for (int i = 0; i < count; ++i)
   {
     double v = twister->GetNormalVariate();
     sum += v;
     sum2 += v * v;
   }
-  double mean = sum / (double)count;
-  double variance = sum2 / (double)count - mean * mean;
-  if (fabs(mean) > 0.01)
+  double mean = sum / static_cast<double>(count);
+  double variance = sum2 / static_cast<double>(count) - mean * mean;
+  if (itk::Math::abs(mean) > 0.01)
   {
     std::cerr << "Mean was " << mean << " expected 0.0 " << std::endl;
     return EXIT_FAILURE;
   }
-  if (fabs(variance - 1.0) > 0.01)
+  if (itk::Math::abs(variance - 1.0) > 0.01)
   {
     std::cerr << "Variance was " << variance << " expected 1.0 " << std::endl;
     return EXIT_FAILURE;

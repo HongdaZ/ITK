@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,21 +48,21 @@ itkOtsuMaskedThresholdImageFilterTest(int argc, char * argv[])
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   using ReaderType = itk::ImageFileReader<InputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
   ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
 
 
   using MaskReaderType = itk::ImageFileReader<OutputImageType>;
-  MaskReaderType::Pointer maskReader = MaskReaderType::New();
+  auto maskReader = MaskReaderType::New();
   maskReader->SetFileName(argv[2]);
 
   ITK_TRY_EXPECT_NO_EXCEPTION(maskReader->Update());
 
 
   using FilterType = itk::OtsuThresholdImageFilter<InputImageType, OutputImageType, OutputImageType>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   itk::SimpleFilterWatcher watcher(filter);
 
@@ -107,7 +107,7 @@ itkOtsuMaskedThresholdImageFilterTest(int argc, char * argv[])
 
   // Write output image
   using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(filter->GetOutput());
   writer->SetFileName(argv[3]);
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ itkMeanImageFunctionTest(int, char *[])
   using FunctionType = itk::MeanImageFunction<ImageType>;
 
   // Create and allocate the image
-  ImageType::Pointer image = ImageType::New();
+  auto image = ImageType::New();
 
   ImageType::SizeType   size;
   ImageType::IndexType  start;
@@ -55,7 +55,7 @@ itkMeanImageFunctionTest(int, char *[])
 
   image->FillBuffer(initialValue);
 
-  FunctionType::Pointer function = FunctionType::New();
+  auto function = FunctionType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(function, MeanImageFunction, ImageFunction);
 
@@ -77,7 +77,7 @@ itkMeanImageFunctionTest(int, char *[])
   double epsilon = 1e-7;
   if (!itk::Math::FloatAlmostEqual(static_cast<FunctionType::RealType>(initialValue), mean, 10, epsilon))
   {
-    std::cout.precision(unsigned(itk::Math::abs(std::log10(epsilon))));
+    std::cout.precision(static_cast<unsigned int>(itk::Math::abs(std::log10(epsilon))));
     std::cout << "Mean value (" << mean << ") does not equal initialValue (" << initialValue << ")" << std::endl;
     testStatus = EXIT_FAILURE;
   }
@@ -92,7 +92,7 @@ itkMeanImageFunctionTest(int, char *[])
 
   if (!itk::Math::FloatAlmostEqual(static_cast<FunctionType::RealType>(initialValue), mean2, 10, epsilon))
   {
-    std::cout.precision(unsigned(itk::Math::abs(std::log10(epsilon))));
+    std::cout.precision(static_cast<unsigned int>(itk::Math::abs(std::log10(epsilon))));
     std::cout << "Mean value (" << mean2 << ") does not equal initialValue (" << initialValue << ")" << std::endl;
     testStatus = EXIT_FAILURE;
   }
@@ -107,7 +107,7 @@ itkMeanImageFunctionTest(int, char *[])
 
   if (!itk::Math::FloatAlmostEqual(static_cast<FunctionType::RealType>(initialValue), mean3, 10, epsilon))
   {
-    std::cout.precision(unsigned(itk::Math::abs(std::log10(epsilon))));
+    std::cout.precision(static_cast<unsigned int>(itk::Math::abs(std::log10(epsilon))));
     std::cout << "Mean value (" << mean3 << ") does not equal initialValue (" << initialValue << ")" << std::endl;
     testStatus = EXIT_FAILURE;
   }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,7 @@
  *=========================================================================*/
 /**
  *         The specification for this file format is taken from the
- *         web site http://www.bic.mni.mcgill.ca/ServicesSoftware/MINC
+ *         web site https://www.bic.mni.mcgill.ca/ServicesSoftware/MINC
  * \author Vladimir S. FONOV
  *         Brain Imaging Center, Montreal Neurological Institute, McGill University, Montreal Canada 2012
  * \author Leila Baghdadi
@@ -41,7 +41,7 @@ namespace itk
 struct ITKIOMINC_HIDDEN MINCImageIOPImpl;
 
 /**
- *\class MINCImageIO
+ * \class MINCImageIO
  *
  * \author Leila Baghdadi
  * \brief Class that defines how to read MINC file format.
@@ -62,8 +62,7 @@ struct ITKIOMINC_HIDDEN MINCImageIOPImpl;
  * This code was contributed in the Insight Journal paper:
  * "MINC2.0 IO Support for ITK"
  * by Baghdadi L.
- * https://hdl.handle.net/1926/191
- * http://www.insight-journal.org/browse/publication/88
+ * https://www.insight-journal.org/browse/publication/88
  *
  * \ingroup IOFilters
  *
@@ -71,7 +70,7 @@ struct ITKIOMINC_HIDDEN MINCImageIOPImpl;
 class ITKIOMINC_EXPORT MINCImageIO : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MINCImageIO);
+  ITK_DISALLOW_COPY_AND_MOVE(MINCImageIO);
 
   /** Standard class type aliases. */
   using Self = MINCImageIO;
@@ -133,16 +132,16 @@ protected:
   void
   WriteSlice(std::string & fileName, const void * buffer);
 
-  // will assign m_NDims and allocate all internal buffers to hold the
-  // information
+  /** Assign m_NDims and allocate all internal buffers to hold the
+   * information. */
   void
   AllocateDimensions(int nDims);
 
-  // cleanup internal buffers
+  /** Cleanup internal buffers. */
   void
   CleanupDimensions();
 
-  // close existing volume, cleanup internal structures
+  /** Close existing volume, cleanup internal structures. */
   void
   CloseVolume();
 

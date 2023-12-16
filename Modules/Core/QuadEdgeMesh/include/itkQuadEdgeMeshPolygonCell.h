@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class QuadEdgeMeshPolygonCell
+ * \class QuadEdgeMeshPolygonCell
  * Class that connects the QE with itk
  *
  * \param TCellInterface Basic type for the itk*Cell. This usually comes
@@ -31,7 +31,7 @@ namespace itk
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
  *
  * This implementation was contributed as a paper to the Insight Journal
- * https://hdl.handle.net/1926/306
+ * https://www.insight-journal.org/browse/publication/122
  *
  * \ingroup ITKQuadEdgeMesh
  */
@@ -39,7 +39,7 @@ template <typename TCellInterface>
 class ITK_TEMPLATE_EXPORT QuadEdgeMeshPolygonCell : public TCellInterface
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshPolygonCell);
+  ITK_DISALLOW_COPY_AND_MOVE(QuadEdgeMeshPolygonCell);
 
   /** Standard class type aliases. */
   // itkCellCommonTypedefs
@@ -51,24 +51,24 @@ public:
 
   // itkCellInheritedTypedefs
   using Superclass = TCellInterface;
-  using PixelType = typename Superclass::PixelType;
+  using typename Superclass::PixelType;
   using CellType = typename Superclass::CellType;
-  using CellAutoPointer = typename Superclass::CellAutoPointer;
-  using CellConstAutoPointer = typename Superclass::CellConstAutoPointer;
-  using CellRawPointer = typename Superclass::CellRawPointer;
-  using CellConstRawPointer = typename Superclass::CellConstRawPointer;
+  using typename Superclass::CellAutoPointer;
+  using typename Superclass::CellConstAutoPointer;
+  using typename Superclass::CellRawPointer;
+  using typename Superclass::CellConstRawPointer;
   using CellTraits = typename Superclass::CellTraits;
-  using CoordRepType = typename Superclass::CoordRepType;
-  using InterpolationWeightType = typename Superclass::InterpolationWeightType;
-  using PointIdentifier = typename Superclass::PointIdentifier;
-  using CellIdentifier = typename Superclass::CellIdentifier;
-  using CellFeatureIdentifier = typename Superclass::CellFeatureIdentifier;
+  using typename Superclass::CoordRepType;
+  using typename Superclass::InterpolationWeightType;
+  using typename Superclass::PointIdentifier;
+  using typename Superclass::CellIdentifier;
+  using typename Superclass::CellFeatureIdentifier;
   using CellFeatureCount = typename Superclass::CellFeatureIdentifier;
-  using PointType = typename Superclass::PointType;
-  using PointsContainer = typename Superclass::PointsContainer;
-  using UsingCellsContainer = typename Superclass::UsingCellsContainer;
-  using ParametricCoordArrayType = typename Superclass::ParametricCoordArrayType;
-  using ShapeFunctionsArrayType = typename Superclass::ShapeFunctionsArrayType;
+  using typename Superclass::PointType;
+  using typename Superclass::PointsContainer;
+  using typename Superclass::UsingCellsContainer;
+  using typename Superclass::ParametricCoordArrayType;
+  using typename Superclass::ShapeFunctionsArrayType;
   static constexpr unsigned int PointDimension = Superclass::PointDimension;
   static constexpr unsigned int CellDimension = 2;
 
@@ -223,7 +223,7 @@ public:
     }
     else
     {
-      return &m_PointIds[m_PointIds.size() - 1] + 1;
+      return &m_PointIds.back() + 1;
     }
   }
 
@@ -252,7 +252,7 @@ public:
     }
     else
     {
-      return &m_PointIds[m_PointIds.size() - 1] + 1;
+      return &m_PointIds.back() + 1;
     }
   }
 

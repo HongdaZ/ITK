@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkNormalizedCorrelationImageFilter_hxx
 #define itkNormalizedCorrelationImageFilter_hxx
 
-#include "itkNormalizedCorrelationImageFilter.h"
 #include "itkNeighborhoodAlgorithm.h"
 #include "itkImageRegionIterator.h"
 #include "itkConstNeighborhoodIterator.h"
@@ -180,7 +179,7 @@ NormalizedCorrelationImageFilter<TInputImage, TMaskImage, TOutputImage, TOperato
         // Compute the normalized correlation at this pixel.  The
         // template has already been normalized to mean zero and norm 1.
         // This simplifies the calculation to being just the correlation
-        // of the image neighborhod with the template, normalized by a
+        // of the image neighborhood with the template, normalized by a
         // function of the image neighborhood.
         sum = 0.0;
         sumOfSquares = 0.0;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkVersorTransformOptimizer_hxx
-#define _itkVersorTransformOptimizer_hxx
 
 #include "itkVersorTransformOptimizer.h"
 
@@ -27,16 +25,17 @@ namespace itk
  * This method will be overridden in non-vector spaces
  */
 void
-VersorTransformOptimizer ::StepAlongGradient(double factor, const DerivativeType & transformedGradient)
+VersorTransformOptimizer::StepAlongGradient(double factor, const DerivativeType & transformedGradient)
 {
   const ParametersType & currentPosition = this->GetCurrentPosition();
-  unsigned int           NumberOfParameters = m_CostFunction->GetNumberOfParameters();
+  const unsigned int     NumberOfParameters = m_CostFunction->GetNumberOfParameters();
 
-  // The parameters are assumed to be the right part of the versor
+  // The parameters are assumed to be the right part of the versor and the
+  // components of the translation vector.
   //
   VectorType rightPart;
 
-  for (unsigned int i = 0; i < 3; i++)
+  for (unsigned int i = 0; i < 3; ++i)
   {
     rightPart[i] = currentPosition[i];
   }
@@ -76,7 +75,7 @@ VersorTransformOptimizer ::StepAlongGradient(double factor, const DerivativeType
 
   // Optimize the non-versor parameters as the
   // RegularStepGradientDescentOptimizer
-  for (unsigned int j = 3; j < NumberOfParameters; j++)
+  for (unsigned int j = 3; j < NumberOfParameters; ++j)
   {
     newParameters[j] = currentPosition[j] + transformedGradient[j] * factor;
   }
@@ -84,5 +83,3 @@ VersorTransformOptimizer ::StepAlongGradient(double factor, const DerivativeType
   this->SetCurrentPosition(newParameters);
 }
 } // end namespace itk
-
-#endif

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ namespace itk
 {
 /**
  * \class BasicDilateImageFilter
- * \brief gray scale dilation of an image
+ * \brief Grayscale dilation of an image.
  *
  * Dilate an image using grayscale morphology. Dilation takes the
  * maximum of all the pixels identified by the structuring element.
@@ -48,7 +48,7 @@ template <typename TInputImage, typename TOutputImage, typename TKernel>
 class ITK_TEMPLATE_EXPORT BasicDilateImageFilter : public MorphologyImageFilter<TInputImage, TOutputImage, TKernel>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BasicDilateImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BasicDilateImageFilter);
 
   /** Standard class type aliases. */
   using Self = BasicDilateImageFilter;
@@ -63,19 +63,19 @@ public:
   itkTypeMacro(BasicDilateImageFilter, MorphologyImageFilter);
 
   /** Declaration of pixel type. */
-  using PixelType = typename Superclass::PixelType;
+  using typename Superclass::PixelType;
 
   /** Kernel (structuring element) iterator. */
-  using KernelIteratorType = typename Superclass::KernelIteratorType;
+  using typename Superclass::KernelIteratorType;
 
   /** Neighborhood iterator type. */
-  using NeighborhoodIteratorType = typename Superclass::NeighborhoodIteratorType;
+  using typename Superclass::NeighborhoodIteratorType;
 
   /** Kernel type alias. */
-  using KernelType = typename Superclass::KernelType;
+  using typename Superclass::KernelType;
 
   /** Default boundary condition type */
-  using DefaultBoundaryConditionType = typename Superclass::DefaultBoundaryConditionType;
+  using typename Superclass::DefaultBoundaryConditionType;
 
   /** ImageDimension constants */
   static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;

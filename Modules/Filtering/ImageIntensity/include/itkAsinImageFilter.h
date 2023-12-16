@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,16 +37,12 @@ public:
   Asin() = default;
   ~Asin() = default;
   bool
-  operator!=(const Asin &) const
+  operator==(const Asin &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const Asin & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Asin);
 
   inline TOutput
   operator()(const TInput & A) const
@@ -57,7 +53,7 @@ public:
 } // namespace Functor
 
 /**
- *\class AsinImageFilter
+ * \class AsinImageFilter
  * \brief Computes the sine of each pixel.
  *
  * This filter is templated over the pixel type of the input image
@@ -80,10 +76,10 @@ public:
  * \ingroup ITKImageIntensity
  */
 template <typename TInputImage, typename TOutputImage>
-class AsinImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT AsinImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AsinImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(AsinImageFilter);
 
   /** Standard class type aliases. */
   using Self = AsinImageFilter;

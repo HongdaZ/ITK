@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,13 +60,11 @@ ImageType::Pointer
 SetUpInputImage()
 {
   // initialize the test input image
-  ImageType::Pointer    inputImage = ImageType::New();
+  auto                  inputImage = ImageType::New();
   ImageType::SizeType   size = { { width, height } };
   ImageType::RegionType region;
   region.SetSize(size);
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetRegions(region);
   inputImage->Allocate();
 
   // add background random field
@@ -74,41 +72,41 @@ SetUpInputImage()
   while (!iter.IsAtEnd())
   {
     PixelType px;
-    px[0] = (unsigned char)(vnl_sample_uniform(bgMean - bgStd, bgMean + bgStd));
-    px[1] = (unsigned char)(vnl_sample_uniform(bgMean - bgStd, bgMean + bgStd));
-    px[2] = (unsigned char)(vnl_sample_uniform(bgMean - bgStd, bgMean + bgStd));
+    px[0] = static_cast<unsigned char>(vnl_sample_uniform(bgMean - bgStd, bgMean + bgStd));
+    px[1] = static_cast<unsigned char>(vnl_sample_uniform(bgMean - bgStd, bgMean + bgStd));
+    px[2] = static_cast<unsigned char>(vnl_sample_uniform(bgMean - bgStd, bgMean + bgStd));
     iter.Set(px);
     ++iter;
   }
 
   // add objects to image
-  for (unsigned int x = objAStartX; x < objAEndX; x++)
+  for (unsigned int x = objAStartX; x < objAEndX; ++x)
   {
-    for (unsigned int y = objAStartY; y < objAEndY; y++)
+    for (unsigned int y = objAStartY; y < objAEndY; ++y)
     {
       ImageType::IndexType idx;
       idx[0] = x;
       idx[1] = y;
 
       PixelType px;
-      px[0] = (unsigned char)(vnl_sample_uniform(fgMean - fgStd, fgMean + fgStd));
-      px[1] = (unsigned char)(vnl_sample_uniform(fgMean - fgStd, fgMean + fgStd));
-      px[2] = (unsigned char)(vnl_sample_uniform(fgMean - fgStd, fgMean + fgStd));
+      px[0] = static_cast<unsigned char>(vnl_sample_uniform(fgMean - fgStd, fgMean + fgStd));
+      px[1] = static_cast<unsigned char>(vnl_sample_uniform(fgMean - fgStd, fgMean + fgStd));
+      px[2] = static_cast<unsigned char>(vnl_sample_uniform(fgMean - fgStd, fgMean + fgStd));
       inputImage->SetPixel(idx, px);
     }
   }
-  for (unsigned int x = objBStartX; x < objBEndX; x++)
+  for (unsigned int x = objBStartX; x < objBEndX; ++x)
   {
-    for (unsigned int y = objBStartY; y < objBEndY; y++)
+    for (unsigned int y = objBStartY; y < objBEndY; ++y)
     {
       ImageType::IndexType idx;
       idx[0] = x;
       idx[1] = y;
 
       PixelType px;
-      px[0] = (unsigned char)(vnl_sample_uniform(fgMean - fgStd, fgMean + fgStd));
-      px[1] = (unsigned char)(vnl_sample_uniform(fgMean - fgStd, fgMean + fgStd));
-      px[2] = (unsigned char)(vnl_sample_uniform(fgMean - fgStd, fgMean + fgStd));
+      px[0] = static_cast<unsigned char>(vnl_sample_uniform(fgMean - fgStd, fgMean + fgStd));
+      px[1] = static_cast<unsigned char>(vnl_sample_uniform(fgMean - fgStd, fgMean + fgStd));
+      px[2] = static_cast<unsigned char>(vnl_sample_uniform(fgMean - fgStd, fgMean + fgStd));
       inputImage->SetPixel(idx, px);
     }
   }
@@ -128,9 +126,9 @@ CheckResults(SegmentationType::Pointer outputImage)
   unsigned int correctExterior = 0;
   unsigned int falseInterior = 0;
   unsigned int falseExterior = 0;
-  for (unsigned int x = 0; x < width; x++)
+  for (unsigned int x = 0; x < width; ++x)
   {
-    for (unsigned int y = 0; y < height; y++)
+    for (unsigned int y = 0; y < height; ++y)
     {
       SegmentationType::IndexType idx;
       idx[0] = x;
@@ -180,7 +178,7 @@ CheckResults(SegmentationType::Pointer outputImage)
   std::cout << "Correct Exterior: " << correctExterior << std::endl;
   std::cout << "False Interior: " << falseInterior << std::endl;
   std::cout << "False Exterior: " << falseExterior << std::endl;
-  double percentCorrect = (double)(correctInterior + correctExterior) / (double)(width * height);
+  double percentCorrect = static_cast<double>(correctInterior + correctExterior) / static_cast<double>(width * height);
   std::cout << "Percent Correct = " << percentCorrect * 100 << "%" << std::endl;
 
   return percentCorrect;
@@ -197,7 +195,7 @@ TestNoPrior(ImageType::Pointer inputImage)
   std::cout << "Beginning no-prior test" << std::endl;
 
   // set up the filter
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
   std::cout << "Setting filter input" << std::endl;
   filter->SetInput(inputImage);
 
@@ -257,24 +255,22 @@ TestWithPrior(ImageType::Pointer inputImage)
 {
   // set up the filter
   std::cout << "Setting up the filter and image" << std::endl;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
   filter->SetInput(inputImage);
 
   // set up the prior
   std::cout << "Setting up the prior image" << std::endl;
-  BinaryObjectImage::Pointer    prior = BinaryObjectImage::New();
+  auto                          prior = BinaryObjectImage::New();
   BinaryObjectImage::SizeType   size = { { width, height } };
   BinaryObjectImage::RegionType region;
   region.SetSize(size);
-  prior->SetLargestPossibleRegion(region);
-  prior->SetBufferedRegion(region);
-  prior->SetRequestedRegion(region);
+  prior->SetRegions(region);
   prior->Allocate();
 
   // create prior as 100% segmentation
-  for (unsigned int x = 0; x < width; x++)
+  for (unsigned int x = 0; x < width; ++x)
   {
-    for (unsigned int y = 0; y < height; y++)
+    for (unsigned int y = 0; y < height; ++y)
     {
       SegmentationType::IndexType idx;
       idx[0] = x;
@@ -357,7 +353,7 @@ itkVoronoiSegmentationRGBImageFilterTest(int, char *[])
   }
 
   // test set/get TestMean
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
   filter->SetTestMean(VoronoiSegRGBTest::fgMean, VoronoiSegRGBTest::fgMean, VoronoiSegRGBTest::fgMean);
   unsigned int testMean[3];
   filter->GetTestMean(testMean);

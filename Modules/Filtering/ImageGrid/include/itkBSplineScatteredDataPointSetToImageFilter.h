@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -109,8 +109,7 @@ namespace itk
  * This code was contributed in the Insight Journal paper:
  * "N-D C^k B-Spline Scattered Data Approximation"
  * by Nicholas J. Tustison, James C. Gee
- * https://hdl.handle.net/1926/140
- * http://www.insight-journal.org/browse/publication/57
+ * https://www.insight-journal.org/browse/publication/57
  *
  *
  * \par REFERENCE
@@ -125,7 +124,7 @@ namespace itk
  * \ingroup ITKImageGrid
  *
  * \sphinx
- * \sphinxexample{Filtering/ImageGrid/FitSplineIntoPointSet,}
+ * \sphinxexample{Filtering/ImageGrid/FitSplineIntoPointSet,Fit Spline Into Point Set}
  * \endsphinx
  */
 
@@ -134,7 +133,7 @@ class ITK_TEMPLATE_EXPORT BSplineScatteredDataPointSetToImageFilter
   : public PointSetToImageFilter<TInputPointSet, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineScatteredDataPointSetToImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BSplineScatteredDataPointSetToImageFilter);
 
   /** Standard class type aliases. */
   using Self = BSplineScatteredDataPointSetToImageFilter;
@@ -166,17 +165,18 @@ public:
   using PointSetPointer = typename PointSetType::Pointer;
   using PointDataType = typename PointSetType::PixelType;
   using PointDataContainerType = typename PointSetType::PointDataContainer;
+  using PointDataContainerPointer = typename PointDataContainerType::Pointer;
 
   /** Other type alias. */
   using RealType = float;
-  using WeightsContainerType = VectorContainer<unsigned, RealType>;
+  using WeightsContainerType = VectorContainer<unsigned int, RealType>;
 
   /** Image types. */
   using PointDataImageType = Image<PointDataType, Self::ImageDimension>;
   using RealImageType = Image<RealType, Self::ImageDimension>;
   using RealImagePointer = typename RealImageType::Pointer;
   using PointDataImagePointer = typename PointDataImageType::Pointer;
-  using ArrayType = FixedArray<unsigned, Self::ImageDimension>;
+  using ArrayType = FixedArray<unsigned int, Self::ImageDimension>;
   using RealArrayType = FixedArray<RealType, Self::ImageDimension>;
 
   /** Interpolation kernel type (default spline order = 3). */
@@ -319,10 +319,6 @@ private:
   void
   RefineControlPointLattice();
 
-  /** Determine the residuals after fitting to one level. */
-  void
-  UpdatePointSet();
-
   /** This function is not used as it requires an evaluation of all
    * (SplineOrder+1)^ImageDimensions B-spline weights for each evaluation. */
   void
@@ -335,6 +331,10 @@ private:
   /** Function used to generate the sampled B-spline object quickly. */
   void
   ThreadedGenerateDataForReconstruction(const RegionType &, ThreadIdType);
+
+  /** Update the residuals for multi-level fitting. */
+  void
+  ThreadedGenerateDataForUpdatingResidualValues(const RegionType &, ThreadIdType);
 
   /** Sub-function used by GenerateOutputImageFast() to generate the sampled
    * B-spline object quickly. */
@@ -369,8 +369,7 @@ private:
 
   vnl_matrix<RealType> m_RefinedLatticeCoefficients[ImageDimension];
 
-  typename PointDataContainerType::Pointer m_InputPointData;
-  typename PointDataContainerType::Pointer m_OutputPointData;
+  PointDataContainerPointer m_ResidualPointSetValues;
 
   typename KernelType::Pointer m_Kernel[ImageDimension];
 
@@ -384,6 +383,7 @@ private:
 
   RealType m_BSplineEpsilon{ static_cast<RealType>(1e-3) };
   bool     m_IsFittingComplete{ false };
+  bool     m_DoUpdateResidualValues{ false };
 };
 } // end namespace itk
 

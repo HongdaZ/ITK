@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,9 +37,9 @@ itkGaussianSmoothingOnUpdateDisplacementFieldTransformTest(int, char *[])
   using DisplacementTransformType = itk::GaussianSmoothingOnUpdateDisplacementFieldTransform<double, dimensions>;
 
   /* Create a displacement field transform */
-  DisplacementTransformType::Pointer displacementTransform = DisplacementTransformType::New();
+  auto displacementTransform = DisplacementTransformType::New();
   using FieldType = DisplacementTransformType::DisplacementFieldType;
-  FieldType::Pointer field = FieldType::New(); // This is based on itk::Image
+  auto field = FieldType::New(); // This is based on itk::Image
 
   FieldType::SizeType   size;
   FieldType::IndexType  start;
@@ -77,11 +77,11 @@ itkGaussianSmoothingOnUpdateDisplacementFieldTransformTest(int, char *[])
   // std::cout << "params *before* SmoothDisplacementFieldGauss: " << std::endl
   //          << params << std::endl;
   params = displacementTransform->GetParameters();
-  // std::cout << "field->GetPixelContainter *after* Smooth: "
+  // std::cout << "field->GetPixelContainer *after* Smooth: "
   //          << field->GetPixelContainer() << std::endl;
   /* We should see 0's on all boundaries from the smoothing routine */
   unsigned int linelength = dimLength * dimensions;
-  for (unsigned int i = 0; i < displacementTransform->GetNumberOfParameters(); i++)
+  for (unsigned int i = 0; i < displacementTransform->GetNumberOfParameters(); ++i)
   {
     bool ok = true;
     if (i < linelength && itk::Math::NotAlmostEquals(params[i], paramsZero))
@@ -101,11 +101,11 @@ itkGaussianSmoothingOnUpdateDisplacementFieldTransformTest(int, char *[])
   /* Check that we have some smoothing around the outlier we set above. */
   std::cout << "Parameters *after* SmoothDisplacementFieldGauss, around "
             << "outlier: " << std::endl;
-  for (int i = -2; i < 3; i++)
+  for (int i = -2; i < 3; ++i)
   {
-    for (int j = -2; j < 3; j++)
+    for (int j = -2; j < 3; ++j)
     {
-      unsigned int index = outlier + (unsigned int)(i * (signed int)(dimLength * dimensions) + j);
+      unsigned int index = outlier + static_cast<unsigned int>(i * (int)(dimLength * dimensions) + j);
       std::cout << params(index) << " ";
     }
     std::cout << std::endl;
@@ -124,7 +124,7 @@ itkGaussianSmoothingOnUpdateDisplacementFieldTransformTest(int, char *[])
   /* We should see 0's on all boundaries from the smoothing routine */
   {
     linelength = dimLength * dimensions;
-    for (unsigned int i = 0; i < displacementTransform->GetNumberOfParameters(); i++)
+    for (unsigned int i = 0; i < displacementTransform->GetNumberOfParameters(); ++i)
     {
       bool ok = true;
       if (i < linelength && itk::Math::NotAlmostEquals(params[i], paramsZero))
@@ -156,11 +156,11 @@ itkGaussianSmoothingOnUpdateDisplacementFieldTransformTest(int, char *[])
   /* Check that we have some smoothing around the outlier we set above. */
   std::cout << "Parameters *after* UpdateTransformParameters with "
             << "uneven field, around outlier: " << std::endl;
-  for (int i = -2; i < 3; i++)
+  for (int i = -2; i < 3; ++i)
   {
-    for (int j = -2; j < 3; j++)
+    for (int j = -2; j < 3; ++j)
     {
-      unsigned int index = outlier + (unsigned int)(i * (signed int)(dimLength * dimensions) + j);
+      unsigned int index = outlier + static_cast<unsigned int>(i * (int)(dimLength * dimensions) + j);
       std::cout << params(index) << " ";
       if (itk::Math::AlmostEquals(params(index), paramsFillValue))
       {

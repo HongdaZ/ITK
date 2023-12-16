@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,7 +60,7 @@ template <typename TSparseImageType>
 class ITK_TEMPLATE_EXPORT NormalVectorDiffusionFunction : public NormalVectorFunctionBase<TSparseImageType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NormalVectorDiffusionFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(NormalVectorDiffusionFunction);
 
   /** Standard class type alias. */
   using Self = NormalVectorDiffusionFunction;
@@ -78,16 +78,16 @@ public:
   itkNewMacro(Self);
 
   /** Typedefs from the superclass. */
-  using TimeStepType = typename Superclass::TimeStepType;
-  using RadiusType = typename Superclass::RadiusType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
-  using NeighborhoodScalesType = typename Superclass::NeighborhoodScalesType;
-  using FloatOffsetType = typename Superclass::FloatOffsetType;
-  using IndexType = typename Superclass::IndexType;
-  using SparseImageType = typename Superclass::SparseImageType;
-  using NodeType = typename Superclass::NodeType;
-  using NodeValueType = typename Superclass::NodeValueType;
-  using NormalVectorType = typename Superclass::NormalVectorType;
+  using typename Superclass::TimeStepType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::NeighborhoodType;
+  using typename Superclass::NeighborhoodScalesType;
+  using typename Superclass::FloatOffsetType;
+  using typename Superclass::IndexType;
+  using typename Superclass::SparseImageType;
+  using typename Superclass::NodeType;
+  using typename Superclass::NodeValueType;
+  using typename Superclass::NormalVectorType;
 
   /** This method is used to choose between isotropic/anisotropic filtering. A
       parameter value of 0 indicates isotropic diffusion and is the
@@ -143,9 +143,7 @@ public:
 
   /** The actual update rule for the normal vectors. */
   NormalVectorType
-  ComputeSparseUpdate(NeighborhoodType &      neighborhood,
-                      void *                  globalData,
-                      const FloatOffsetType & offset) const override;
+  ComputeSparseUpdate(NeighborhoodType & it, void * globalData, const FloatOffsetType & offset) const override;
 
 protected:
   NormalVectorDiffusionFunction();

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ namespace itk
  * The Initialize() method must be called after setting the parameters and before
  * evaluating the function.
  *
- * \author Ivan Macia, VICOMTech, Spain, http://www.vicomtech.es
+ * \author Ivan Macia, Vicomtech, Spain, https://www.vicomtech.org/en
  *
  * This implementation was taken from the Insight Journal paper:
  * https://hdl.handle.net/1926/1290
@@ -65,19 +65,19 @@ public:
   itkTypeMacro(DiscreteHessianGaussianImageFunction, ImageFunction);
 
   /** Image dependent types */
-  using InputImageType = typename Superclass::InputImageType;
-  using InputPixelType = typename Superclass::InputPixelType;
-  using IndexType = typename Superclass::IndexType;
-  using IndexValueType = typename Superclass::IndexValueType;
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::InputPixelType;
+  using typename Superclass::IndexType;
+  using typename Superclass::IndexValueType;
+  using typename Superclass::ContinuousIndexType;
+  using typename Superclass::PointType;
 
   /** Dimension of the underlying image */
   static constexpr unsigned int ImageDimension2 = InputImageType::ImageDimension;
 
   /** Output type */
   using TensorType = SymmetricSecondRankTensor<TOutput, TInputImage::ImageDimension>;
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   using VarianceArrayType = FixedArray<double, Self::ImageDimension2>;
 

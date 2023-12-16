@@ -57,9 +57,9 @@ itk_add_test(NAME itkBinaryThresholdImageFilterTest
 itk_add_test(NAME itkThresholdImageFilterTest
       COMMAND ITKThresholdingTestDriver itkThresholdImageFilterTest)
 itk_add_test(NAME itkOtsuMultipleThresholdsCalculatorTest1
-      COMMAND ITKThresholdingTestDriver itkOtsuMultipleThresholdsCalculatorTest 0)
+      COMMAND ITKThresholdingTestDriver itkOtsuMultipleThresholdsCalculatorTest 0 0)
 itk_add_test(NAME itkOtsuMultipleThresholdsCalculatorTest2
-      COMMAND ITKThresholdingTestDriver itkOtsuMultipleThresholdsCalculatorTest 1)
+      COMMAND ITKThresholdingTestDriver itkOtsuMultipleThresholdsCalculatorTest 1 0)
 itk_add_test(NAME itkBinaryThresholdImageFilterTest2
       COMMAND ITKThresholdingTestDriver
     --compare DATA{${ITK_DATA_ROOT}/Baseline/BasicFilters/BinaryThresholdImageFilterTest2.png}
@@ -121,7 +121,7 @@ itk_add_test(NAME itkIsoDataThresholdImageFilterTestNoAutoMinMax
       COMMAND ITKThresholdingTestDriver
     --compare-MD5 DATA{Baseline/itkIsoDataThresholdImageFilterTestNoAutoMinMax.png}
               9f844fd120ff49a7812e329a1b0216d8
-    itkIsoDataThresholdImageFilterTest DATA{${ITK_DATA_ROOT}/Input/cthead1.png} ${ITK_TEST_OUTPUT_DIR}/itkIsoDataThresholdImageFilterTestNoAutoMinMax.png 32 0 1)
+    itkIsoDataThresholdImageFilterTest DATA{${ITK_DATA_ROOT}/Input/cthead1.png} ${ITK_TEST_OUTPUT_DIR}/itkIsoDataThresholdImageFilterTestNoAutoMinMax.png 32 0 1023)
 
 itk_add_test(NAME itkIsoDataMaskedThresholdImageFilterTest
       COMMAND ITKThresholdingTestDriver

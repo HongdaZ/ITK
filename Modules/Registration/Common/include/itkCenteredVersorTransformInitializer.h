@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ class ITK_TEMPLATE_EXPORT CenteredVersorTransformInitializer
   : public CenteredTransformInitializer<VersorRigid3DTransform<double>, TFixedImage, TMovingImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CenteredVersorTransformInitializer);
+  ITK_DISALLOW_COPY_AND_MOVE(CenteredVersorTransformInitializer);
 
   /** Standard class type aliases. */
   using Self = CenteredVersorTransformInitializer;
@@ -54,31 +54,31 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(CenteredVersorTransformInitializer, Object);
+  itkTypeMacro(CenteredVersorTransformInitializer, CenteredTransformInitializer);
 
   /** Type of the transform to initialize */
-  using TransformType = typename Superclass::TransformType;
-  using TransformPointer = typename Superclass::TransformPointer;
+  using typename Superclass::TransformType;
+  using typename Superclass::TransformPointer;
 
   /** Dimension of parameters. */
   static constexpr unsigned int InputSpaceDimension = Superclass::InputSpaceDimension;
   static constexpr unsigned int OutputSpaceDimension = Superclass::OutputSpaceDimension;
 
   /** Image Types to use in the initialization of the transform */
-  using FixedImageType = typename Superclass::FixedImageType;
-  using MovingImageType = typename Superclass::MovingImageType;
+  using typename Superclass::FixedImageType;
+  using typename Superclass::MovingImageType;
 
-  using FixedImagePointer = typename Superclass::FixedImagePointer;
-  using MovingImagePointer = typename Superclass::MovingImagePointer;
+  using typename Superclass::FixedImagePointer;
+  using typename Superclass::MovingImagePointer;
 
   /** Offset type. */
-  using OffsetType = typename Superclass::OffsetType;
+  using typename Superclass::OffsetType;
 
   /** Point type. */
-  using InputPointType = typename Superclass::InputPointType;
+  using typename Superclass::InputPointType;
 
   /** Vector type. */
-  using OutputVectorType = typename Superclass::OutputVectorType;
+  using typename Superclass::OutputVectorType;
 
   /** Initialize the transform using data from the images */
   void
@@ -98,7 +98,7 @@ protected:
   PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
-  bool m_ComputeRotation;
+  bool m_ComputeRotation{ false };
 }; // class CenteredVersorTransformInitializer
 } // namespace itk
 

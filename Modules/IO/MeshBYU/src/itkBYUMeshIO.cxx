@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,11 +18,11 @@
 
 #include "itkBYUMeshIO.h"
 
-#include <itksys/SystemTools.hxx>
+#include "itksys/SystemTools.hxx"
 
 namespace itk
 {
-BYUMeshIO ::BYUMeshIO()
+BYUMeshIO::BYUMeshIO()
   : m_PartId(NumericTraits<SizeValueType>::max())
   , m_FirstCellId(NumericTraits<SizeValueType>::OneValue())
   , m_LastCellId(NumericTraits<SizeValueType>::max())
@@ -30,10 +30,10 @@ BYUMeshIO ::BYUMeshIO()
   this->AddSupportedWriteExtension(".byu");
 }
 
-BYUMeshIO ::~BYUMeshIO() = default;
+BYUMeshIO::~BYUMeshIO() = default;
 
 bool
-BYUMeshIO ::CanReadFile(const char * fileName)
+BYUMeshIO::CanReadFile(const char * fileName)
 {
   if (!itksys::SystemTools::FileExists(fileName, true))
   {
@@ -49,7 +49,7 @@ BYUMeshIO ::CanReadFile(const char * fileName)
 }
 
 bool
-BYUMeshIO ::CanWriteFile(const char * fileName)
+BYUMeshIO::CanWriteFile(const char * fileName)
 {
   if (itksys::SystemTools::GetFilenameLastExtension(fileName) != ".byu")
   {
@@ -60,7 +60,7 @@ BYUMeshIO ::CanWriteFile(const char * fileName)
 }
 
 void
-BYUMeshIO ::ReadMeshInformation()
+BYUMeshIO::ReadMeshInformation()
 {
   // Define input file stream and attach it to input file
   std::ifstream inputFile;
@@ -84,10 +84,10 @@ BYUMeshIO ::ReadMeshInformation()
   inputFile >> this->m_NumberOfCells;
   inputFile >> numberOfConnectivityEntries;
 
-  // Determine which part to read, default is to readl all parts
+  // Determine which part to read, default is to read all parts
   if (m_PartId > numberOfParts)
   {
-    for (unsigned int ii = 0; ii < numberOfParts; ii++)
+    for (unsigned int ii = 0; ii < numberOfParts; ++ii)
     {
       inputFile >> m_FirstCellId >> m_LastCellId;
     }
@@ -99,7 +99,7 @@ BYUMeshIO ::ReadMeshInformation()
   {
     unsigned int firstId;
     unsigned int lastId;
-    for (unsigned int ii = 0; ii < m_PartId; ii++)
+    for (unsigned int ii = 0; ii < m_PartId; ++ii)
     {
       inputFile >> firstId >> lastId;
     }
@@ -107,7 +107,7 @@ BYUMeshIO ::ReadMeshInformation()
     inputFile >> m_FirstCellId;
     inputFile >> m_LastCellId;
 
-    for (unsigned int ii = m_PartId + 1; ii < numberOfParts; ii++)
+    for (unsigned int ii = m_PartId + 1; ii < numberOfParts; ++ii)
     {
       inputFile >> firstId >> lastId;
     }
@@ -137,9 +137,9 @@ BYUMeshIO ::ReadMeshInformation()
 
   // Read and omit points
   double x;
-  for (SizeValueType ii = 0; ii < this->m_NumberOfPoints; ii++)
+  for (SizeValueType ii = 0; ii < this->m_NumberOfPoints; ++ii)
   {
-    for (unsigned int jj = 0; jj < this->m_PointDimension; jj++)
+    for (unsigned int jj = 0; jj < this->m_PointDimension; ++jj)
     {
       inputFile >> x;
     }
@@ -156,7 +156,7 @@ BYUMeshIO ::ReadMeshInformation()
     this->m_CellBufferSize++;
     if (ptId < 0)
     {
-      numLines++;
+      ++numLines;
     }
   }
 
@@ -178,7 +178,7 @@ BYUMeshIO ::ReadMeshInformation()
 }
 
 void
-BYUMeshIO ::ReadPoints(void * buffer)
+BYUMeshIO::ReadPoints(void * buffer)
 {
   // Define input file stream and attach it to input file
   std::ifstream inputFile;
@@ -202,9 +202,9 @@ BYUMeshIO ::ReadPoints(void * buffer)
   inputFile.precision(12);
 
   SizeValueType index = 0;
-  for (SizeValueType id = 0; id < this->m_NumberOfPoints; id++)
+  for (SizeValueType id = 0; id < this->m_NumberOfPoints; ++id)
   {
-    for (unsigned int ii = 0; ii < this->m_PointDimension; ii++)
+    for (unsigned int ii = 0; ii < this->m_PointDimension; ++ii)
     {
       inputFile >> data[index++];
     }
@@ -216,7 +216,7 @@ BYUMeshIO ::ReadPoints(void * buffer)
 }
 
 void
-BYUMeshIO ::ReadCells(void * buffer)
+BYUMeshIO::ReadCells(void * buffer)
 {
   // Define input file stream and attach it to input file
   std::ifstream inputFile;
@@ -248,7 +248,7 @@ BYUMeshIO ::ReadCells(void * buffer)
       if (id >= m_FirstCellId && id <= m_LastCellId)
       {
         data[index++] = ptId - 1;
-        numPoints++;
+        ++numPoints;
       }
     }
     else
@@ -256,13 +256,13 @@ BYUMeshIO ::ReadCells(void * buffer)
       if (id >= m_FirstCellId && id <= m_LastCellId)
       {
         data[index++] = -(ptId + 1);
-        numPoints++;
+        ++numPoints;
         data[index - numPoints - 2] = static_cast<unsigned int>(CellGeometryEnum::POLYGON_CELL);
         data[index - numPoints - 1] = numPoints;
         numPoints = 0;
         index += 2;
       }
-      id++;
+      ++id;
     }
   }
 
@@ -270,15 +270,15 @@ BYUMeshIO ::ReadCells(void * buffer)
 }
 
 void
-BYUMeshIO ::ReadPointData(void * itkNotUsed(buffer))
+BYUMeshIO::ReadPointData(void * itkNotUsed(buffer))
 {}
 
 void
-BYUMeshIO ::ReadCellData(void * itkNotUsed(buffer))
+BYUMeshIO::ReadCellData(void * itkNotUsed(buffer))
 {}
 
 void
-BYUMeshIO ::WriteMeshInformation()
+BYUMeshIO::WriteMeshInformation()
 {
   // Check file name
   if (this->m_FileName.empty())
@@ -309,7 +309,7 @@ BYUMeshIO ::WriteMeshInformation()
 }
 
 void
-BYUMeshIO ::WritePoints(void * buffer)
+BYUMeshIO::WritePoints(void * buffer)
 {
   // check file name
   if (this->m_FileName.empty())
@@ -417,7 +417,7 @@ BYUMeshIO ::WritePoints(void * buffer)
 }
 
 void
-BYUMeshIO ::WriteCells(void * buffer)
+BYUMeshIO::WriteCells(void * buffer)
 {
   // Check file name
   if (this->m_FileName.empty())
@@ -513,21 +513,24 @@ BYUMeshIO ::WriteCells(void * buffer)
 }
 
 void
-BYUMeshIO ::WritePointData(void * itkNotUsed(buffer))
+BYUMeshIO::WritePointData(void * itkNotUsed(buffer))
 {}
 
 void
-BYUMeshIO ::WriteCellData(void * itkNotUsed(buffer))
+BYUMeshIO::WriteCellData(void * itkNotUsed(buffer))
 {}
 
 void
-BYUMeshIO ::Write()
+BYUMeshIO::Write()
 {}
 
 void
-BYUMeshIO ::PrintSelf(std::ostream & os, Indent indent) const
+BYUMeshIO::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
+
+  os << indent << "FilePosition: " << static_cast<typename NumericTraits<StreamOffsetType>::PrintType>(m_FilePosition)
+     << std::endl;
   os << indent << "PartId: " << m_PartId << std::endl;
   os << indent << "First Cell Id: " << m_FirstCellId << std::endl;
   os << indent << "Last Cell Id: " << m_LastCellId << std::endl;

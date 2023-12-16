@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkVoronoiDiagram2D_hxx
 #define itkVoronoiDiagram2D_hxx
-#include "itkVoronoiDiagram2D.h"
 
 #include <algorithm>
 
@@ -90,8 +89,8 @@ VoronoiDiagram2D<TCoordRepType>::GetCellId(CellIdentifier cellId, CellAutoPointe
 
 
 template <typename TCoordRepType>
-typename VoronoiDiagram2D<TCoordRepType>::EdgeInfo
-VoronoiDiagram2D<TCoordRepType>::GetSeedsIDAroundEdge(VoronoiEdge * task)
+auto
+VoronoiDiagram2D<TCoordRepType>::GetSeedsIDAroundEdge(VoronoiEdge * task) -> EdgeInfo
 {
   EdgeInfo answer;
 
@@ -102,56 +101,56 @@ VoronoiDiagram2D<TCoordRepType>::GetSeedsIDAroundEdge(VoronoiEdge * task)
 
 
 template <typename TCoordRepType>
-typename VoronoiDiagram2D<TCoordRepType>::VoronoiEdgeIterator
-VoronoiDiagram2D<TCoordRepType>::EdgeBegin()
+auto
+VoronoiDiagram2D<TCoordRepType>::EdgeBegin() -> VoronoiEdgeIterator
 {
   return m_EdgeList.begin();
 }
 
 
 template <typename TCoordRepType>
-typename VoronoiDiagram2D<TCoordRepType>::VoronoiEdgeIterator
-VoronoiDiagram2D<TCoordRepType>::EdgeEnd()
+auto
+VoronoiDiagram2D<TCoordRepType>::EdgeEnd() -> VoronoiEdgeIterator
 {
   return m_EdgeList.end();
 }
 
 
 template <typename TCoordRepType>
-typename VoronoiDiagram2D<TCoordRepType>::NeighborIdIterator
-VoronoiDiagram2D<TCoordRepType>::NeighborIdsBegin(int seeds)
+auto
+VoronoiDiagram2D<TCoordRepType>::NeighborIdsBegin(int seeds) -> NeighborIdIterator
 {
   return m_CellNeighborsID[seeds].begin();
 }
 
 
 template <typename TCoordRepType>
-typename VoronoiDiagram2D<TCoordRepType>::NeighborIdIterator
-VoronoiDiagram2D<TCoordRepType>::NeighborIdsEnd(int seeds)
+auto
+VoronoiDiagram2D<TCoordRepType>::NeighborIdsEnd(int seeds) -> NeighborIdIterator
 {
   return m_CellNeighborsID[seeds].end();
 }
 
 
 template <typename TCoordRepType>
-typename VoronoiDiagram2D<TCoordRepType>::VertexIterator
-VoronoiDiagram2D<TCoordRepType>::VertexBegin()
+auto
+VoronoiDiagram2D<TCoordRepType>::VertexBegin() -> VertexIterator
 {
   return this->m_PointsContainer->Begin();
 }
 
 
 template <typename TCoordRepType>
-typename VoronoiDiagram2D<TCoordRepType>::VertexIterator
-VoronoiDiagram2D<TCoordRepType>::VertexEnd()
+auto
+VoronoiDiagram2D<TCoordRepType>::VertexEnd() -> VertexIterator
 {
   return this->m_PointsContainer->End();
 }
 
 
 template <typename TCoordRepType>
-typename VoronoiDiagram2D<TCoordRepType>::PointType
-VoronoiDiagram2D<TCoordRepType>::GetSeed(int SeedID)
+auto
+VoronoiDiagram2D<TCoordRepType>::GetSeed(int SeedID) -> PointType
 {
   PointType answer;
 
@@ -169,7 +168,7 @@ VoronoiDiagram2D<TCoordRepType>::Reset()
   m_VoronoiRegions.resize(m_NumberOfSeeds);
   m_CellNeighborsID.resize(m_NumberOfSeeds);
 
-  for (unsigned int i = 0; i < m_NumberOfSeeds; i++)
+  for (unsigned int i = 0; i < m_NumberOfSeeds; ++i)
   {
     m_VoronoiRegions[i] = new PolygonCellType;
     m_CellNeighborsID[i].clear();
@@ -183,7 +182,7 @@ VoronoiDiagram2D<TCoordRepType>::InsertCells()
 {
   genericCellPointer cellPtr;
 
-  for (unsigned int i = 0; i < m_NumberOfSeeds; i++)
+  for (unsigned int i = 0; i < m_NumberOfSeeds; ++i)
   {
     cellPtr.TakeOwnership(m_VoronoiRegions[i]);
     this->SetCell(i, cellPtr);

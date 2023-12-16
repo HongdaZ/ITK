@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ namespace itk
 class ITKCommon_EXPORT Logger : public LoggerBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Logger);
+  ITK_DISALLOW_COPY_AND_MOVE(Logger);
 
   using Self = Logger;
   using Superclass = LoggerBase;
@@ -44,7 +44,7 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(Logger, Object);
+  itkTypeMacro(Logger, LoggerBase);
 
   /** New macro for creation of through a Smart Pointer */
   itkNewMacro(Self);

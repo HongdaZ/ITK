@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,13 +21,14 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkSimpleFilterWatcher.h"
+#include "itkTestingMacros.h"
 
 int
-itkBilateralImageFilterTest2(int ac, char * av[])
+itkBilateralImageFilterTest2(int argc, char * argv[])
 {
-  if (ac < 3)
+  if (argc < 3)
   {
-    std::cerr << "Usage: " << av[0] << " InputImage OutputImage\n";
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " InputImage OutputImage\n";
     return -1;
   }
 
@@ -35,12 +36,12 @@ itkBilateralImageFilterTest2(int ac, char * av[])
   constexpr unsigned int dimension = 2;
   using myImage = itk::Image<PixelType, dimension>;
   itk::ImageFileReader<myImage>::Pointer input = itk::ImageFileReader<myImage>::New();
-  input->SetFileName(av[1]);
+  input->SetFileName(argv[1]);
 
   // Create a filter
   using FilterType = itk::BilateralImageFilter<myImage, myImage>;
 
-  FilterType::Pointer      filter = FilterType::New();
+  auto                     filter = FilterType::New();
   itk::SimpleFilterWatcher watcher(filter, "filter");
 
   filter->SetInput(input->GetOutput());
@@ -98,7 +99,7 @@ itkBilateralImageFilterTest2(int ac, char * av[])
   itk::ImageFileWriter<myImage>::Pointer writer;
   writer = itk::ImageFileWriter<myImage>::New();
   writer->SetInput(filter->GetOutput());
-  writer->SetFileName(av[2]);
+  writer->SetFileName(argv[2]);
   writer->Update();
 
   return EXIT_SUCCESS;

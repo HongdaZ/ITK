@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ namespace Statistics
 {
 
 /**
- *\class Histogram
+ * \class Histogram
  *  \brief This class stores measurement vectors in the context of n-dimensional histogram.
  *
  * Histogram represents an ND histogram.  Histogram bins can be
@@ -77,7 +77,7 @@ template <typename TMeasurement = float, typename TFrequencyContainer = DenseFre
 class ITK_TEMPLATE_EXPORT Histogram : public Sample<Array<TMeasurement>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Histogram);
+  ITK_DISALLOW_COPY_AND_MOVE(Histogram);
 
   // This type serves as the indirect definition of MeasurementVectorType
   using ArrayType = Array<TMeasurement>;
@@ -98,9 +98,9 @@ public:
   using MeasurementType = TMeasurement;
 
   /** Common sample class type alias */
-  using MeasurementVectorType = typename Superclass::MeasurementVectorType;
-  using InstanceIdentifier = typename Superclass::InstanceIdentifier;
-  using MeasurementVectorSizeType = typename Superclass::MeasurementVectorSizeType;
+  using typename Superclass::MeasurementVectorType;
+  using typename Superclass::InstanceIdentifier;
+  using typename Superclass::MeasurementVectorSizeType;
 
   using ValueType = MeasurementVectorType;
 
@@ -115,11 +115,11 @@ public:
   using TotalRelativeFrequencyType = typename FrequencyContainerType::TotalRelativeFrequencyType;
 
   /** Index type alias support An index is used to access pixel values. */
-  using IndexType = Array<::itk::IndexValueType>;
+  using IndexType = Array<itk::IndexValueType>;
   using IndexValueType = typename IndexType::ValueType;
 
   /** size array type */
-  using SizeType = Array<::itk::SizeValueType>;
+  using SizeType = Array<itk::SizeValueType>;
   using SizeValueType = typename SizeType::ValueType;
 
   /** bin min max value storage types */
@@ -341,7 +341,7 @@ protected:
 
 public:
   /**
-   *\class ConstIterator
+   * \class ConstIterator
    * \brief class that walks through the elements of the histogram.
    * \ingroup ITKStatistics
    */
@@ -402,16 +402,12 @@ public:
     }
 
     bool
-    operator!=(const ConstIterator & it)
-    {
-      return (m_Id != it.m_Id);
-    }
-
-    bool
-    operator==(const ConstIterator & it)
+    operator==(const ConstIterator & it) const
     {
       return (m_Id == it.m_Id);
     }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
 
   protected:
     ConstIterator(InstanceIdentifier id, const Self * histogram)
@@ -430,7 +426,7 @@ public:
   }; // end of iterator class
 
   /**
-   *\class Iterator
+   * \class Iterator
    * \brief class that walks through the elements of the histogram.
    * \ingroup ITKStatistics
    */

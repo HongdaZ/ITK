@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,7 +49,7 @@ namespace FrameAverageVideoFilterTest
 InputFrameType::Pointer
 CreateInputFrame(InputPixelType val)
 {
-  InputFrameType::Pointer out = InputFrameType::New();
+  auto out = InputFrameType::New();
 
   InputFrameType::RegionType largestRegion;
   InputFrameType::SizeType   sizeLR;
@@ -97,11 +97,14 @@ itkFrameAverageVideoFilterTest(int argc, char * argv[])
 
   // Instantiate the filter
   using FilterType = itk::FrameAverageVideoFilter<InputVideoType, OutputVideoType>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, FrameAverageVideoFilter, VideoToVideoFilter);
+
 
   // Set up an input VideoStream
-  InputVideoType::Pointer inputVideo = InputVideoType::New();
-  SizeValueType           numInputFrames = 50;
+  auto          inputVideo = InputVideoType::New();
+  SizeValueType numInputFrames = 50;
   inputVideo->SetNumberOfBuffers(numInputFrames);
   itk::TemporalRegion inputTempRegion;
   inputTempRegion.SetFrameStart(0);
@@ -219,15 +222,15 @@ itkFrameAverageVideoFilterTest(int argc, char * argv[])
   // Set up reader and writer
   using VideoReaderType = itk::VideoFileReader<InputVideoType>;
   using VideoWriterType = itk::VideoFileWriter<InputVideoType>;
-  VideoReaderType::Pointer reader = VideoReaderType::New();
-  VideoWriterType::Pointer writer = VideoWriterType::New();
+  auto reader = VideoReaderType::New();
+  auto writer = VideoWriterType::New();
   reader->SetFileName(argv[1]);
   writer->SetFileName(argv[2]);
 
   // Set up pipeline with 2 average filters each over 2 frames
   using FilterType2 = itk::FrameAverageVideoFilter<InputVideoType, InputVideoType>;
-  FilterType2::Pointer avg1 = FilterType2::New();
-  FilterType2::Pointer avg2 = FilterType2::New();
+  auto avg1 = FilterType2::New();
+  auto avg2 = FilterType2::New();
   avg1->SetNumberOfFrames(2);
   avg2->SetNumberOfFrames(2);
 

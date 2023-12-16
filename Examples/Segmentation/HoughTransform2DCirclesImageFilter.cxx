@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -74,7 +74,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   using PixelType = unsigned char;
-  using AccumulatorPixelType = unsigned;
+  using AccumulatorPixelType = unsigned int;
   using RadiusPixelType = float;
   constexpr unsigned int Dimension = 2;
   using ImageType = itk::Image<PixelType, Dimension>;
@@ -89,7 +89,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
   // Software Guide : BeginCodeSnippet
   using ReaderType = itk::ImageFileReader<ImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
   try
   {
@@ -120,8 +120,7 @@ main(int argc, char * argv[])
     itk::HoughTransform2DCirclesImageFilter<PixelType,
                                             AccumulatorPixelType,
                                             RadiusPixelType>;
-  HoughTransformFilterType::Pointer houghFilter =
-    HoughTransformFilterType::New();
+  auto houghFilter = HoughTransformFilterType::New();
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -198,7 +197,7 @@ main(int argc, char * argv[])
   using OutputPixelType = unsigned char;
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
-  OutputImageType::Pointer localOutputImage = OutputImageType::New();
+  auto localOutputImage = OutputImageType::New();
 
   OutputImageType::RegionType region;
   region.SetSize(localImage->GetLargestPossibleRegion().GetSize());
@@ -266,7 +265,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   using WriterType = itk::ImageFileWriter<ImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   writer->SetFileName(argv[2]);
   writer->SetInput(localOutputImage);

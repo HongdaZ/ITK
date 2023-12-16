@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ itkVarianceImageFunctionTest(int, char *[])
   using FunctionType = itk::VarianceImageFunction<ImageType>;
 
   // Create and allocate the image
-  ImageType::Pointer    image = ImageType::New();
+  auto                  image = ImageType::New();
   ImageType::SizeType   size;
   ImageType::IndexType  start;
   ImageType::RegionType region;
@@ -51,7 +51,7 @@ itkVarianceImageFunctionTest(int, char *[])
 
   image->FillBuffer(27);
 
-  FunctionType::Pointer function = FunctionType::New();
+  auto function = FunctionType::New();
 
   function->SetInputImage(image);
 

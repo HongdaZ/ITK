@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 {
 
 /**
- *\class MirrorPadImageFilter
+ * \class MirrorPadImageFilter
  * \brief Increase the image size by padding with replicants of the
  * input image value.
  *
@@ -59,7 +59,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT MirrorPadImageFilter : public PadImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MirrorPadImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MirrorPadImageFilter);
 
   /** Standard class type aliases. */
   using Self = MirrorPadImageFilter;
@@ -77,18 +77,18 @@ public:
   using OutputImageType = TOutputImage;
 
   /** Typedef to describe the output image region type. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-  using InputImageRegionType = typename Superclass::InputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
+  using typename Superclass::InputImageRegionType;
 
   /** Typedef to describe the type of pixel. */
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
-  using InputImagePixelType = typename Superclass::InputImagePixelType;
+  using typename Superclass::OutputImagePixelType;
+  using typename Superclass::InputImagePixelType;
 
   /** Typedef to describe the output and input image index and size types. */
-  using OutputImageIndexType = typename Superclass::OutputImageIndexType;
-  using InputImageIndexType = typename Superclass::InputImageIndexType;
-  using OutputImageSizeType = typename Superclass::OutputImageSizeType;
-  using InputImageSizeType = typename Superclass::InputImageSizeType;
+  using typename Superclass::OutputImageIndexType;
+  using typename Superclass::InputImageIndexType;
+  using typename Superclass::OutputImageSizeType;
+  using typename Superclass::InputImageSizeType;
 
   /** ImageDimension enumeration. */
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
@@ -123,7 +123,7 @@ protected:
                                  InputImageIndexType &   inputIndex,
                                  OutputImageRegionType & outputRegion,
                                  InputImageRegionType &  inputRegion,
-                                 int *                   oddRegionArray,
+                                 const int *             oddRegionArray,
                                  double &                outDecayFactor);
 
   /** Decide whether test falls within an odd or even number
@@ -150,17 +150,17 @@ protected:
    * is encoded in regIndices and regLimit), choose the next input region. */
   int
   GenerateNextInputRegion(long *                 regIndices,
-                          long *                 regLimit,
+                          const long *           regLimit,
                           std::vector<long> *    indices,
                           std::vector<long> *    sizes,
-                          InputImageRegionType & outputRegion);
+                          InputImageRegionType & inputRegion);
 
   /** Given an n dimensional list of output region breakpoints in indices
    * and size (where the current region and maximum region for each dimension
    * is encoded in regIndices and regLimit), choose the next output region. */
   int
   GenerateNextOutputRegion(long *                  regIndices,
-                           long *                  regLimit,
+                           const long *            regLimit,
                            std::vector<long> *     indices,
                            std::vector<long> *     sizes,
                            OutputImageRegionType & outputRegion);

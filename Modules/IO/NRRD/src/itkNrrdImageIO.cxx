@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -63,6 +63,8 @@ void
 NrrdImageIO::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
+
+  os << indent << "NrrdCompressionEncoding: " << m_NrrdCompressionEncoding << std::endl;
 }
 
 void
@@ -222,7 +224,7 @@ NrrdImageIO::CanReadFile(const char * filename)
   {
     this->OpenFileForReading(inputStream, fname);
   }
-  catch (ExceptionObject &)
+  catch (const ExceptionObject &)
   {
     return false;
   }
@@ -455,7 +457,7 @@ NrrdImageIO::ReadImageInformation()
       iFlipFactor = 1;
     }
 
-    for (unsigned int axii = 0; axii < domainAxisNum; axii++)
+    for (unsigned int axii = 0; axii < domainAxisNum; ++axii)
     {
       unsigned int naxi = domainAxisIdx[axii];
       this->SetDimensions(axii, static_cast<unsigned int>(nrrd->axis[naxi].size));
@@ -497,7 +499,7 @@ NrrdImageIO::ReadImageInformation()
             }
             this->SetSpacing(axii, spacing);
 
-            for (unsigned int saxi = 0; saxi < nrrd->spaceDim; saxi++)
+            for (unsigned int saxi = 0; saxi < nrrd->spaceDim; ++saxi)
             {
               spaceDirStd[saxi] = spaceDir[saxi];
             }
@@ -521,7 +523,7 @@ NrrdImageIO::ReadImageInformation()
       {
         // only set info if we have something to set
         double spaceOrigin[NRRD_SPACE_DIM_MAX];
-        for (unsigned int saxi = 0; saxi < nrrd->spaceDim; saxi++)
+        for (unsigned int saxi = 0; saxi < nrrd->spaceDim; ++saxi)
         {
           spaceOrigin[saxi] = nrrd->spaceOrigin[saxi];
         }
@@ -543,7 +545,7 @@ NrrdImageIO::ReadImageInformation()
             // to LPS is well-defined
             break;
         }
-        for (unsigned int saxi = 0; saxi < nrrd->spaceDim; saxi++)
+        for (unsigned int saxi = 0; saxi < nrrd->spaceDim; ++saxi)
         {
           this->SetOrigin(saxi, spaceOrigin[saxi]);
         }
@@ -553,7 +555,7 @@ NrrdImageIO::ReadImageInformation()
     {
       double spaceOrigin[NRRD_DIM_MAX];
       int    originStatus = nrrdOriginCalculate(nrrd, domainAxisIdx, domainAxisNum, nrrdCenterCell, spaceOrigin);
-      for (unsigned int saxi = 0; saxi < domainAxisNum; saxi++)
+      for (unsigned int saxi = 0; saxi < domainAxisNum; ++saxi)
       {
         switch (originStatus)
         {
@@ -584,7 +586,7 @@ NrrdImageIO::ReadImageInformation()
     thisDic.Clear();
     std::string classname(this->GetNameOfClass());
     EncapsulateMetaData<std::string>(thisDic, ITK_InputFilterName, classname);
-    for (unsigned int kvpi = 0; kvpi < nrrdKeyValueSize(nrrd); kvpi++)
+    for (unsigned int kvpi = 0; kvpi < nrrdKeyValueSize(nrrd); ++kvpi)
     {
       nrrdKeyValueIndex(nrrd, &keyPtr, &valPtr, kvpi);
       EncapsulateMetaData<std::string>(thisDic, std::string(keyPtr), std::string(valPtr));
@@ -600,51 +602,51 @@ NrrdImageIO::ReadImageInformation()
     // on the on the Write() side, its always written to the fastest axis,
     // so we might was well go with consistent and idiomatic indexing.
     NrrdAxisInfo * naxis;
-    for (unsigned int axii = 0; axii < domainAxisNum; axii++)
+    for (unsigned int axii = 0; axii < domainAxisNum; ++axii)
     {
       unsigned int axi = domainAxisIdx[axii];
       naxis = nrrd->axis + axi;
       if (AIR_EXISTS(naxis->thickness))
       {
-        sprintf(key, "%s%s[%u]", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_thicknesses), axii);
+        snprintf(key, sizeof(key), "%s%s[%u]", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_thicknesses), axii);
         EncapsulateMetaData<double>(thisDic, std::string(key), naxis->thickness);
       }
       if (naxis->center)
       {
-        sprintf(key, "%s%s[%u]", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_centers), axii);
+        snprintf(key, sizeof(key), "%s%s[%u]", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_centers), axii);
         val = airEnumStr(nrrdCenter, naxis->center);
         EncapsulateMetaData<std::string>(thisDic, std::string(key), std::string(val));
       }
       if (naxis->kind)
       {
-        sprintf(key, "%s%s[%u]", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_kinds), axii);
+        snprintf(key, sizeof(key), "%s%s[%u]", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_kinds), axii);
         val = airEnumStr(nrrdKind, naxis->kind);
         EncapsulateMetaData<std::string>(thisDic, std::string(key), std::string(val));
       }
       if (airStrlen(naxis->label))
       {
-        sprintf(key, "%s%s[%u]", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_labels), axii);
+        snprintf(key, sizeof(key), "%s%s[%u]", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_labels), axii);
         EncapsulateMetaData<std::string>(thisDic, std::string(key), std::string(naxis->label));
       }
     }
     if (airStrlen(nrrd->content))
     {
-      sprintf(key, "%s%s", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_content));
+      snprintf(key, sizeof(key), "%s%s", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_content));
       EncapsulateMetaData<std::string>(thisDic, std::string(key), std::string(nrrd->content));
     }
     if (AIR_EXISTS(nrrd->oldMin))
     {
-      sprintf(key, "%s%s", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_old_min));
+      snprintf(key, sizeof(key), "%s%s", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_old_min));
       EncapsulateMetaData<double>(thisDic, std::string(key), nrrd->oldMin);
     }
     if (AIR_EXISTS(nrrd->oldMax))
     {
-      sprintf(key, "%s%s", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_old_max));
+      snprintf(key, sizeof(key), "%s%s", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_old_max));
       EncapsulateMetaData<double>(thisDic, std::string(key), nrrd->oldMax);
     }
     if (nrrd->space)
     {
-      sprintf(key, "%s%s", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_space));
+      snprintf(key, sizeof(key), "%s%s", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_space));
       val = airEnumStr(nrrdSpace, nrrd->space);
 
       // keep everything consistent: so enter it as LPS in the meta data
@@ -670,17 +672,17 @@ NrrdImageIO::ReadImageInformation()
 
     if (AIR_EXISTS(nrrd->measurementFrame[0][0]))
     {
-      sprintf(key, "%s%s", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_measurement_frame));
+      snprintf(key, sizeof(key), "%s%s", KEY_PREFIX, airEnumStr(nrrdField, nrrdField_measurement_frame));
       std::vector<std::vector<double>> msrFrame(domainAxisNum);
 
       // flip the measurement frame here if we have to
       // so that everything is consistent with the ITK LPS space directions
       // but only do this if we have a three dimensional space or smaller
 
-      for (unsigned int saxi = 0; saxi < domainAxisNum; saxi++)
+      for (unsigned int saxi = 0; saxi < domainAxisNum; ++saxi)
       {
         msrFrame[saxi].resize(domainAxisNum);
-        for (unsigned int saxj = 0; saxj < domainAxisNum; saxj++)
+        for (unsigned int saxj = 0; saxj < domainAxisNum; ++saxj)
         {
           if (domainAxisNum <= 3)
           {
@@ -746,7 +748,7 @@ NrrdImageIO::Read(void * buffer)
       nrrd->axis[0].size = this->GetNumberOfComponents();
     }
     nrrd->dim = baseDim + this->GetNumberOfDimensions();
-    for (unsigned int axi = 0; axi < this->GetNumberOfDimensions(); axi++)
+    for (unsigned int axi = 0; axi < this->GetNumberOfDimensions(); ++axi)
     {
       nrrd->axis[axi + baseDim].size = this->GetDimensions(axi);
     }
@@ -788,7 +790,7 @@ NrrdImageIO::Read(void * buffer)
     Nrrd *       ntmp = nrrdNew();
     unsigned int axmap[NRRD_DIM_MAX];
     axmap[0] = rangeAxisIdx[0];
-    for (unsigned int axi = 1; axi < nrrd->dim; axi++)
+    for (unsigned int axi = 1; axi < nrrd->dim; ++axi)
     {
       axmap[axi] = axi - (axi <= rangeAxisIdx[0]);
     }
@@ -812,7 +814,7 @@ NrrdImageIO::Read(void * buffer)
     {
       // we crop out the mask and put the output in ITK-allocated "buffer"
       size_t size[NRRD_DIM_MAX], minIdx[NRRD_DIM_MAX], maxIdx[NRRD_DIM_MAX];
-      for (unsigned int axi = 0; axi < nrrd->dim; axi++)
+      for (unsigned int axi = 0; axi < nrrd->dim; ++axi)
       {
         minIdx[axi] = (0 == axi) ? 1 : 0;
         maxIdx[axi] = nrrd->axis[axi].size - 1;
@@ -910,7 +912,7 @@ NrrdImageIO::Write(const void * buffer)
         break;
     }
     // the range axis has no space direction
-    for (unsigned int saxi = 0; saxi < spaceDim; saxi++)
+    for (unsigned int saxi = 0; saxi < spaceDim; ++saxi)
     {
       spaceDir[0][saxi] = AIR_NAN;
     }
@@ -923,14 +925,14 @@ NrrdImageIO::Write(const void * buffer)
   nrrdDim = baseDim + spaceDim;
   std::vector<double> spaceDirStd(spaceDim);
   unsigned int        axi;
-  for (axi = 0; axi < spaceDim; axi++)
+  for (axi = 0; axi < spaceDim; ++axi)
   {
     size[axi + baseDim] = this->GetDimensions(axi);
     kind[axi + baseDim] = nrrdKindDomain;
     origin[axi] = this->GetOrigin(axi);
     double spacing = this->GetSpacing(axi);
     spaceDirStd = this->GetDirection(axi);
-    for (unsigned int saxi = 0; saxi < spaceDim; saxi++)
+    for (unsigned int saxi = 0; saxi < spaceDim; ++saxi)
     {
       spaceDir[axi + baseDim][saxi] = spacing * spaceDirStd[saxi];
     }
@@ -956,9 +958,9 @@ NrrdImageIO::Write(const void * buffer)
   const char *                             keyField, *field;
   for (keyIt = keys.begin(); keyIt != keys.end(); ++keyIt)
   {
-    if (!strncmp(KEY_PREFIX, (*keyIt).c_str(), strlen(KEY_PREFIX)))
+    if (!strncmp(KEY_PREFIX, keyIt->c_str(), strlen(KEY_PREFIX)))
     {
-      keyField = (*keyIt).c_str() + strlen(KEY_PREFIX);
+      keyField = keyIt->c_str() + strlen(KEY_PREFIX);
       // only of one of these can succeed
       field = airEnumStr(nrrdField, nrrdField_thicknesses);
       if (!strncmp(keyField, field, strlen(field)))
@@ -1037,9 +1039,9 @@ NrrdImageIO::Write(const void * buffer)
       {
         std::vector<std::vector<double>> msrFrame;
         ExposeMetaData<std::vector<std::vector<double>>>(thisDic, *keyIt, msrFrame);
-        for (unsigned int saxi = 0; saxi < nrrd->spaceDim; saxi++)
+        for (unsigned int saxi = 0; saxi < nrrd->spaceDim; ++saxi)
         {
-          for (unsigned int saxj = 0; saxj < nrrd->spaceDim; saxj++)
+          for (unsigned int saxj = 0; saxj < nrrd->spaceDim; ++saxj)
           {
             if (saxi < msrFrame.size() && saxj < msrFrame[saxi].size())
             {
@@ -1065,7 +1067,7 @@ NrrdImageIO::Write(const void * buffer)
       // not a NRRD field packed into meta data; just a regular key/value
       std::string value;
       ExposeMetaData<std::string>(thisDic, *keyIt, value);
-      nrrdKeyValueAdd(nrrd, (*keyIt).c_str(), value.c_str());
+      nrrdKeyValueAdd(nrrd, keyIt->c_str(), value.c_str());
     }
   }
 

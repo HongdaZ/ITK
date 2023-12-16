@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ itkShrinkImageTest(int, char *[])
 
   // type alias to simplify the syntax
   using SimpleImage = itk::Image<short, 2>;
-  SimpleImage::Pointer simpleImage = SimpleImage::New();
+  auto simpleImage = SimpleImage::New();
   std::cout << "Simple image spacing: " << simpleImage->GetSpacing()[0] << ", " << simpleImage->GetSpacing()[1]
             << std::endl;
   std::cout << std::flush;
@@ -41,7 +41,7 @@ itkShrinkImageTest(int, char *[])
   using ShortImage = itk::Image<short, 2>;
 
   // Test the creation of an image with native type
-  ShortImage::Pointer if2 = ShortImage::New();
+  auto if2 = ShortImage::New();
 
   // fill in an image
   ShortImage::IndexType  index = { { 0, 0 } };
@@ -151,7 +151,7 @@ itkShrinkImageTest(int, char *[])
     // this should fail due to a bad requested region
     shrink->Update();
   }
-  catch (itk::InvalidRequestedRegionError & e)
+  catch (const itk::InvalidRequestedRegionError & e)
   {
     std::cout << e << std::endl;
     std::cout << std::endl << std::endl << "Exception caught, updating largest possible region instead." << std::endl;

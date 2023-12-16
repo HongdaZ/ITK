@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -134,9 +134,9 @@ itkFEMElement2DTest(int argc, char * argv[])
     itk::fem::LinearSystemWrapperDenseVNL lsw_dvnl;
     itk::fem::LinearSystemWrapperItpack   lsw_itpack;
     itk::fem::LinearSystemWrapperVNL      lsw_vnl;
-    for (int s = 0; s < numsolvers; s++)
+    for (int s = 0; s < numsolvers; ++s)
     {
-      Solver2DType::Pointer solver = Solver2DType::New();
+      auto solver = Solver2DType::New();
       solver->SetInput(femSO->GetFEMObject());
 
       if (s == 2)
@@ -259,7 +259,7 @@ itkFEMElement2DTest(int argc, char * argv[])
       }
     }
   }
-  catch (::itk::ExceptionObject & err)
+  catch (const itk::ExceptionObject & err)
   {
     std::cerr << "ITK exception detected: " << err;
     std::cout << "Test FAILED" << std::endl;
@@ -284,10 +284,10 @@ PrintK1(Solver2DType * S, int s)
   itk::fem::LinearSystemWrapper::Pointer lsw = S->GetLinearSystemWrapper();
 
   std::cout << std::endl << "k" << s << "=[";
-  for (unsigned int j = 0; j < lsw->GetSystemOrder(); j++)
+  for (unsigned int j = 0; j < lsw->GetSystemOrder(); ++j)
   {
     std::cout << " [";
-    for (unsigned int k = 0; k < lsw->GetSystemOrder(); k++)
+    for (unsigned int k = 0; k < lsw->GetSystemOrder(); ++k)
     {
       std::cout << lsw->GetMatrixValue(j, k);
       if ((k + 1) < lsw->GetSystemOrder())
@@ -314,7 +314,7 @@ PrintF1(Solver2DType * S, int s)
   itk::fem::LinearSystemWrapper::Pointer lsw = S->GetLinearSystemWrapper();
 
   std::cout << std::endl << "f" << s << "=[";
-  for (unsigned int j = 0; j < lsw->GetSystemOrder(); j++)
+  for (unsigned int j = 0; j < lsw->GetSystemOrder(); ++j)
   {
     if (j > 0)
     {
@@ -334,7 +334,7 @@ PrintNodalCoordinates1(Solver2DType * S, int w)
   std::cout << "xyz" << w << "=[";
 
   int numberOfNodes = S->GetInput()->GetNumberOfNodes();
-  for (int i = 0; i < numberOfNodes; i++)
+  for (int i = 0; i < numberOfNodes; ++i)
   {
     std::cout << " [";
     std::cout << S->GetInput()->GetNode(i)->GetCoordinates();
@@ -353,11 +353,11 @@ CheckDisplacements1(Solver2DType * S, int s, double * expectedResults, double to
   // std::cout << "Degrees of Freedom : " << numDOF << std::endl;
 
   bool foundError = false;
-  for (int i = 0; i < numDOF; i++)
+  for (int i = 0; i < numDOF; ++i)
   {
     double result = S->GetSolution(i);
     // std::cout  << result << " " << expectedResults[i] << " " << tolerance << std::endl;
-    if (std::fabs(expectedResults[i] - result) > tolerance)
+    if (itk::Math::abs(expectedResults[i] - result) > tolerance)
     {
       std::cout << "ERROR: Solver " << s << " Index " << i << ". Expected " << expectedResults[i] << " Solution "
                 << result << std::endl;

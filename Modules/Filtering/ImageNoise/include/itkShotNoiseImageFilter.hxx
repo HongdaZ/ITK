@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@
 #ifndef itkShotNoiseImageFilter_hxx
 #define itkShotNoiseImageFilter_hxx
 
-#include "itkShotNoiseImageFilter.h"
+#include "itkBitCast.h"
 #include "itkMersenneTwisterRandomVariateGenerator.h"
 #include "itkImageScanlineIterator.h"
 #include "itkTotalProgressReporter.h"
@@ -46,7 +46,7 @@ ShotNoiseImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(
 
   // Create a random generator per thread
   IndexValueType indSeed = 0;
-  for (unsigned d = 0; d < TOutputImage::ImageDimension; d++)
+  for (unsigned int d = 0; d < TOutputImage::ImageDimension; ++d)
   {
     indSeed += outputRegionForThread.GetIndex(d);
   }
@@ -55,7 +55,7 @@ ShotNoiseImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(
   const uint32_t seed = Self::Hash(this->GetSeed(), uint32_t(indSeed));
   rand->Initialize(seed);
   typename Statistics::NormalVariateGenerator::Pointer randn = Statistics::NormalVariateGenerator::New();
-  randn->Initialize(*reinterpret_cast<const int32_t *>(&seed));
+  randn->Initialize(bit_cast<int32_t>(seed));
 
   // Define the portion of the input to walk for this thread, using
   // the CallCopyOutputRegionToInputRegion method allows for the input

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,7 @@ ImageIOBase::Reset(const bool)
   m_Initialized = false;
   m_FileName = "";
   m_NumberOfComponents = 1;
-  for (unsigned int i = 0; i < m_NumberOfDimensions; i++)
+  for (unsigned int i = 0; i < m_NumberOfDimensions; ++i)
   {
     m_Dimensions[i] = 0;
     m_Strides[i] = 0;
@@ -95,7 +95,7 @@ ImageIOBase::Resize(const unsigned int numDimensions, const unsigned int * dimen
   m_NumberOfDimensions = numDimensions;
   if (dimensions != nullptr)
   {
-    for (unsigned int i = 0; i < m_NumberOfDimensions; i++)
+    for (unsigned int i = 0; i < m_NumberOfDimensions; ++i)
     {
       m_Dimensions[i] = dimensions[i];
     }
@@ -108,7 +108,6 @@ ImageIOBase::SetDimensions(unsigned int i, SizeValueType dim)
 {
   if (i >= m_Dimensions.size())
   {
-    itkWarningMacro("Index: " << i << " is out of bounds, expected maximum is " << m_Dimensions.size());
     itkExceptionMacro("Index: " << i << " is out of bounds, expected maximum is " << m_Dimensions.size());
   }
   this->Modified();
@@ -120,7 +119,6 @@ ImageIOBase::SetOrigin(unsigned int i, double origin)
 {
   if (i >= m_Origin.size())
   {
-    itkWarningMacro("Index: " << i << " is out of bounds, expected maximum is " << m_Origin.size());
     itkExceptionMacro("Index: " << i << " is out of bounds, expected maximum is " << m_Origin.size());
   }
   this->Modified();
@@ -132,7 +130,6 @@ ImageIOBase::SetSpacing(unsigned int i, double spacing)
 {
   if (i >= m_Spacing.size())
   {
-    itkWarningMacro("Index: " << i << " is out of bounds, expected maximum is " << m_Spacing.size());
     itkExceptionMacro("Index: " << i << " is out of bounds, expected maximum is " << m_Spacing.size());
   }
   this->Modified();
@@ -144,7 +141,6 @@ ImageIOBase::SetDirection(unsigned int i, const std::vector<double> & direction)
 {
   if (i >= m_Direction.size())
   {
-    itkWarningMacro("Index: " << i << " is out of bounds, expected maximum is " << m_Direction.size());
     itkExceptionMacro("Index: " << i << " is out of bounds, expected maximum is " << m_Direction.size());
   }
   this->Modified();
@@ -156,14 +152,13 @@ ImageIOBase::SetDirection(unsigned int i, const vnl_vector<double> & direction)
 {
   if (i >= m_Direction.size())
   {
-    itkWarningMacro("Index: " << i << " is out of bounds, expected maximum is " << m_Direction.size());
     itkExceptionMacro("Index: " << i << " is out of bounds, expected maximum is " << m_Direction.size());
   }
   this->Modified();
   std::vector<double> v;
   v.resize(m_Direction.size());
   // Note: direction.size() <= v.size().
-  for (unsigned int j = 0; j < direction.size(); j++)
+  for (unsigned int j = 0; j < direction.size(); ++j)
   {
     v[j] = direction[j];
   }
@@ -210,7 +205,7 @@ ImageIOBase::ComputeStrides()
 {
   m_Strides[0] = this->GetComponentSize();
   m_Strides[1] = m_NumberOfComponents * m_Strides[0];
-  for (unsigned int i = 2; i <= (m_NumberOfDimensions + 1); i++)
+  for (unsigned int i = 2; i <= (m_NumberOfDimensions + 1); ++i)
   {
     m_Strides[i] = static_cast<SizeType>(m_Dimensions[i - 2]) * m_Strides[i - 1];
   }
@@ -218,12 +213,12 @@ ImageIOBase::ComputeStrides()
 
 // Calculates the image size in PIXELS
 ImageIOBase::SizeType
-ImageIOBase ::GetImageSizeInPixels() const
+ImageIOBase::GetImageSizeInPixels() const
 {
   unsigned int i;
   SizeType     numPixels = 1;
 
-  for (i = 0; i < m_NumberOfDimensions; i++)
+  for (i = 0; i < m_NumberOfDimensions; ++i)
   {
     numPixels *= m_Dimensions[i];
   }
@@ -232,37 +227,37 @@ ImageIOBase ::GetImageSizeInPixels() const
 }
 
 ImageIOBase::SizeType
-ImageIOBase ::GetImageSizeInComponents() const
+ImageIOBase::GetImageSizeInComponents() const
 {
   return (this->GetImageSizeInPixels() * m_NumberOfComponents);
 }
 
 ImageIOBase::SizeType
-ImageIOBase ::GetImageSizeInBytes() const
+ImageIOBase::GetImageSizeInBytes() const
 {
   return (this->GetImageSizeInComponents() * this->GetComponentSize());
 }
 
 ImageIOBase::SizeType
-ImageIOBase ::GetComponentStride() const
+ImageIOBase::GetComponentStride() const
 {
   return m_Strides[0];
 }
 
 ImageIOBase::SizeType
-ImageIOBase ::GetPixelStride() const
+ImageIOBase::GetPixelStride() const
 {
   return m_Strides[1];
 }
 
 ImageIOBase::SizeType
-ImageIOBase ::GetRowStride() const
+ImageIOBase::GetRowStride() const
 {
   return m_Strides[2];
 }
 
 ImageIOBase::SizeType
-ImageIOBase ::GetSliceStride() const
+ImageIOBase::GetSliceStride() const
 {
   return m_Strides[3];
 }
@@ -280,9 +275,9 @@ ImageIOBase::SetNumberOfDimensions(unsigned int dim)
     m_Dimensions.resize(dim);
     m_Direction.resize(dim);
     std::vector<double> axis(dim);
-    for (unsigned int i = 0; i < dim; i++)
+    for (unsigned int i = 0; i < dim; ++i)
     {
-      for (unsigned int j = 0; j < dim; j++)
+      for (unsigned int j = 0; j < dim; ++j)
       {
         if (i == j)
         {
@@ -302,7 +297,7 @@ ImageIOBase::SetNumberOfDimensions(unsigned int dim)
 }
 
 bool
-ImageIOBase ::ReadBufferAsBinary(std::istream & is, void * buffer, ImageIOBase::SizeType num)
+ImageIOBase::ReadBufferAsBinary(std::istream & is, void * buffer, ImageIOBase::SizeType num)
 {
   const auto numberOfBytesToBeRead = Math::CastWithRangeCheck<std::streamsize>(num);
 
@@ -641,7 +636,12 @@ ImageIOBase::OpenFileForReading(std::ifstream & inputStream, const std::string &
     mode |= std::ios::binary;
   }
 
+#ifdef _MSC_VER
+  const std::wstring uncpath = itksys::SystemTools::ConvertToWindowsExtendedPath(filename.c_str());
+  inputStream.open(uncpath.c_str(), std::ios::binary);
+#else
   inputStream.open(filename.c_str(), mode);
+#endif
 
   if (!inputStream.is_open() || inputStream.fail())
   {
@@ -708,7 +708,7 @@ WriteBuffer(std::ostream & os, const TComponent * buffer, ImageIOBase::SizeType 
   const TComponent * ptr = buffer;
 
   using PrintType = typename itk::NumericTraits<TComponent>::PrintType;
-  for (ImageIOBase::SizeType i = 0; i < num; i++)
+  for (ImageIOBase::SizeType i = 0; i < num; ++i)
   {
     if (!(i % 6) && i)
     {
@@ -1079,7 +1079,7 @@ ImageIOBase::GetSplitRegionForWriting(unsigned int          ithPiece,
  * smaller than the LargestPossibleRegion and greater or equal to the
  * RequestedRegion */
 ImageIORegion
-ImageIOBase ::GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegion & requested) const
+ImageIOBase::GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegion & requested) const
 {
   //
   // The default implementations determines that the streamable region is
@@ -1115,14 +1115,14 @@ ImageIOBase ::GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegio
   ImageIORegion streamableRegion(maxDimension);
 
   // Second: copy only the number of dimension that the file has.
-  for (unsigned int i = 0; i < minIODimension; i++)
+  for (unsigned int i = 0; i < minIODimension; ++i)
   {
     streamableRegion.SetSize(i, this->m_Dimensions[i]);
     streamableRegion.SetIndex(i, 0);
   }
 
   // Third: set the rest to the default : start = 0, size = 1
-  for (unsigned int j = minIODimension; j < streamableRegion.GetImageDimension(); j++)
+  for (unsigned int j = minIODimension; j < streamableRegion.GetImageDimension(); ++j)
   {
     streamableRegion.SetSize(j, 1);
     streamableRegion.SetIndex(j, 0);
@@ -1136,7 +1136,7 @@ ImageIOBase ::GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegio
  *  in the case the recipient image dimension is smaller than the dimension
  *  of the image in file. */
 std::vector<double>
-ImageIOBase ::GetDefaultDirection(unsigned int k) const
+ImageIOBase::GetDefaultDirection(unsigned int k) const
 {
   std::vector<double> axis;
   axis.resize(this->GetNumberOfDimensions());

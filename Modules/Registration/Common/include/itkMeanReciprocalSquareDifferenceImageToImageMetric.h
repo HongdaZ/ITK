@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ class ITK_TEMPLATE_EXPORT MeanReciprocalSquareDifferenceImageToImageMetric
   : public ImageToImageMetric<TFixedImage, TMovingImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MeanReciprocalSquareDifferenceImageToImageMetric);
+  ITK_DISALLOW_COPY_AND_MOVE(MeanReciprocalSquareDifferenceImageToImageMetric);
 
   /** Standard class type aliases. */
   using Self = MeanReciprocalSquareDifferenceImageToImageMetric;
@@ -62,19 +62,19 @@ public:
   itkTypeMacro(MeanReciprocalSquareDifferenceImageToImageMetric, ImageToImageMetric);
 
   /** Types transferred from the base class */
-  using TransformType = typename Superclass::TransformType;
-  using TransformPointer = typename Superclass::TransformPointer;
-  using TransformParametersType = typename Superclass::TransformParametersType;
-  using TransformJacobianType = typename Superclass::TransformJacobianType;
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
+  using typename Superclass::TransformType;
+  using typename Superclass::TransformPointer;
+  using typename Superclass::TransformParametersType;
+  using typename Superclass::TransformJacobianType;
+  using typename Superclass::InputPointType;
+  using typename Superclass::OutputPointType;
 
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using FixedImageType = typename Superclass::FixedImageType;
-  using MovingImageType = typename Superclass::MovingImageType;
-  using FixedImageConstPointer = typename Superclass::FixedImageConstPointer;
-  using MovingImageConstPointer = typename Superclass::MovingImageConstPointer;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::FixedImageType;
+  using typename Superclass::MovingImageType;
+  using typename Superclass::FixedImageConstPointer;
+  using typename Superclass::MovingImageConstPointer;
 
   /** Get the derivatives of the match measure. */
   void
@@ -88,7 +88,7 @@ public:
   void
   GetValueAndDerivative(const TransformParametersType & parameters,
                         MeasureType &                   Value,
-                        DerivativeType &                derivative) const override;
+                        DerivativeType &                Derivative) const override;
 
   /** Set/Get Lambda value. This factor regulates the capture radius of
       this metric */

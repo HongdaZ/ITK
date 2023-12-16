@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -94,7 +94,7 @@ template <typename TFixedImage, typename TMovingImage>
 class ITK_TEMPLATE_EXPORT MutualInformationImageToImageMetric : public ImageToImageMetric<TFixedImage, TMovingImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MutualInformationImageToImageMetric);
+  ITK_DISALLOW_COPY_AND_MOVE(MutualInformationImageToImageMetric);
 
   /** Standard class type aliases. */
   using Self = MutualInformationImageToImageMetric;
@@ -109,16 +109,16 @@ public:
   itkTypeMacro(MutualInformationImageToImageMetric, ImageToImageMetric);
 
   /** Types inherited from Superclass. */
-  using TransformType = typename Superclass::TransformType;
-  using TransformPointer = typename Superclass::TransformPointer;
-  using TransformJacobianType = typename Superclass::TransformJacobianType;
-  using InterpolatorType = typename Superclass::InterpolatorType;
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using ParametersType = typename Superclass::ParametersType;
-  using FixedImageType = typename Superclass::FixedImageType;
-  using MovingImageType = typename Superclass::MovingImageType;
-  using FixedImageConstPointer = typename Superclass::FixedImageConstPointer;
+  using typename Superclass::TransformType;
+  using typename Superclass::TransformPointer;
+  using typename Superclass::TransformJacobianType;
+  using typename Superclass::InterpolatorType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::FixedImageType;
+  using typename Superclass::MovingImageType;
+  using typename Superclass::FixedImageConstPointer;
   using MovingImageCosntPointer = typename Superclass::MovingImageConstPointer;
 
   /** Index and Point type alias support */
@@ -135,7 +135,7 @@ public:
 
   /** Get the derivatives of the match measure. */
   void
-  GetDerivative(const ParametersType & parameters, DerivativeType & Derivative) const override;
+  GetDerivative(const ParametersType & parameters, DerivativeType & derivative) const override;
 
   /**  Get the value. */
   MeasureType
@@ -144,8 +144,8 @@ public:
   /**  Get the value and derivatives for single valued optimizers. */
   void
   GetValueAndDerivative(const ParametersType & parameters,
-                        MeasureType &          Value,
-                        DerivativeType &       Derivative) const override;
+                        MeasureType &          value,
+                        DerivativeType &       derivative) const override;
 
   /** Set the number of spatial samples. This is the number of image
    * samples used to calculate the joint probability distribution.
@@ -240,7 +240,7 @@ private:
   void
   CalculateDerivatives(const FixedImagePointType &, DerivativeType &, TransformJacobianType &) const;
 
-  using CoordinateRepresentationType = typename Superclass::CoordinateRepresentationType;
+  using typename Superclass::CoordinateRepresentationType;
   using DerivativeFunctionType = CentralDifferenceImageFunction<MovingImageType, CoordinateRepresentationType>;
 
   typename DerivativeFunctionType::Pointer m_DerivativeCalculator;

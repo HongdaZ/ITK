@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ itkSymmetricEllipsoidInteriorExteriorSpatialFunctionTest(int, char *[])
   using TSymEllipsoidFunctionVectorType = TSymEllipsoidFunctionType::InputType;
 
   // Create an ellipsoid spatial function for the source image
-  TSymEllipsoidFunctionType::Pointer spatialFunc = TSymEllipsoidFunctionType::New();
+  auto spatialFunc = TSymEllipsoidFunctionType::New();
 
   // Define function doitkSymmetricEllipsoidInteriorExteriorSpatialFunctionTest, which encapsulates ellipsoid.
   int xExtent = 50;
@@ -49,7 +49,7 @@ itkSymmetricEllipsoidInteriorExteriorSpatialFunctionTest(int, char *[])
   spatialFunc->SetCenter(center);
 
   // Define and set the orientation and axes lengths of the ellipsoid
-  // NOTE: Orienation vector must be normalized!!!!
+  // NOTE: Orientation vector must be normalized!!!!
   itk::Vector<double, 3> orientation;
   orientation[0] = 1 / std::sqrt(2.0);
   orientation[1] = 1 / std::sqrt(2.0);
@@ -68,11 +68,11 @@ itkSymmetricEllipsoidInteriorExteriorSpatialFunctionTest(int, char *[])
   bool functionValue;            // Value of pixel at a given position
   int  interiorPixelCounter = 0; // Count pixels inside ellipsoid
 
-  for (int x = 0; x < xExtent; x++)
+  for (int x = 0; x < xExtent; ++x)
   {
-    for (int y = 0; y < yExtent; y++)
+    for (int y = 0; y < yExtent; ++y)
     {
-      for (int z = 0; z < zExtent; z++)
+      for (int z = 0; z < zExtent; ++z)
       {
         testPosition[0] = x;
         testPosition[1] = y;
@@ -95,7 +95,7 @@ itkSymmetricEllipsoidInteriorExteriorSpatialFunctionTest(int, char *[])
   double volume = 4.18879013333 * (uniqueAxisLength / 2) * (symmetricAxesLength / 2) * (symmetricAxesLength / 2);
 
   // Percent difference in volume measurement and calculation
-  double volumeError = (std::fabs(volume - interiorPixelCounter) / volume) * 100;
+  double volumeError = (itk::Math::abs(volume - interiorPixelCounter) / volume) * 100;
 
   // 5% error was randomly chosen as a successful ellipsoid fill.
   // This should actually be some function of the image/ellipsoid size.

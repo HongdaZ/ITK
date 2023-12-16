@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,7 +55,7 @@ public:
   using TotalAbsoluteFrequencyType = NumericTraits<AbsoluteFrequencyType>::AccumulateType;
   using TotalRelativeFrequencyType = NumericTraits<RelativeFrequencyType>::AccumulateType;
 
-  using MeasurementVectorLength = std::size_t;
+  using MeasurementVectorLength = size_t;
 
   template <typename TVectorType>
   static bool
@@ -66,8 +66,7 @@ public:
     // If the default constructor creates a vector of
     // length zero, we assume that it is resizable,
     // otherwise that is a pretty useless measurement vector.
-    TVectorType             m;
-    MeasurementVectorLength len = NumericTraits<TVectorType>::GetLength(m);
+    MeasurementVectorLength len = NumericTraits<TVectorType>::GetLength({});
 
     return (len == 0);
   }
@@ -475,10 +474,10 @@ public:
 };
 
 template <>
-class MeasurementVectorPixelTraits<signed short>
+class MeasurementVectorPixelTraits<short>
 {
 public:
-  using MeasurementVectorType = FixedArray<signed short, 1>;
+  using MeasurementVectorType = FixedArray<short, 1>;
 };
 
 template <>
@@ -489,10 +488,10 @@ public:
 };
 
 template <>
-class MeasurementVectorPixelTraits<signed int>
+class MeasurementVectorPixelTraits<int>
 {
 public:
-  using MeasurementVectorType = FixedArray<signed int, 1>;
+  using MeasurementVectorType = FixedArray<int, 1>;
 };
 
 template <>
@@ -503,10 +502,10 @@ public:
 };
 
 template <>
-class MeasurementVectorPixelTraits<signed long>
+class MeasurementVectorPixelTraits<long>
 {
 public:
-  using MeasurementVectorType = FixedArray<signed long, 1>;
+  using MeasurementVectorType = FixedArray<long, 1>;
 };
 
 template <>
@@ -517,10 +516,10 @@ public:
 };
 
 template <>
-class MeasurementVectorPixelTraits<signed long long>
+class MeasurementVectorPixelTraits<long long>
 {
 public:
-  using MeasurementVectorType = FixedArray<signed long long, 1>;
+  using MeasurementVectorType = FixedArray<long long, 1>;
 };
 
 template <>

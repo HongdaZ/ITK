@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkDistanceToCentroidMembershipFunction_hxx
 #define itkDistanceToCentroidMembershipFunction_hxx
 
-#include "itkDistanceToCentroidMembershipFunction.h"
 #include "itkEuclideanDistanceMetric.h"
 
 namespace itk
@@ -53,8 +52,8 @@ DistanceToCentroidMembershipFunction<TVector>::SetMeasurementVectorSize(Measurem
 }
 
 template <typename TVector>
-const typename DistanceToCentroidMembershipFunction<TVector>::CentroidType &
-DistanceToCentroidMembershipFunction<TVector>::GetCentroid() const
+auto
+DistanceToCentroidMembershipFunction<TVector>::GetCentroid() const -> const CentroidType &
 {
   return m_DistanceMetric->GetOrigin();
 }

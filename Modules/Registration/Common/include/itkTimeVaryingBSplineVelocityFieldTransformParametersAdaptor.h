@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -67,7 +67,7 @@ class ITK_TEMPLATE_EXPORT TimeVaryingBSplineVelocityFieldTransformParametersAdap
   : public TransformParametersAdaptor<TTransform>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TimeVaryingBSplineVelocityFieldTransformParametersAdaptor);
+  ITK_DISALLOW_COPY_AND_MOVE(TimeVaryingBSplineVelocityFieldTransformParametersAdaptor);
 
   /** Standard class type aliases. */
   using Self = TimeVaryingBSplineVelocityFieldTransformParametersAdaptor;
@@ -152,7 +152,7 @@ public:
   GetRequiredControlPointLatticeOrigin() const
   {
     OriginType requiredLatticeOrigin;
-    for (SizeValueType i = 0; i < TotalDimension; i++)
+    for (SizeValueType i = 0; i < TotalDimension; ++i)
     {
       requiredLatticeOrigin[i] = this->m_RequiredFixedParameters[TotalDimension + i];
     }
@@ -164,7 +164,7 @@ public:
   GetRequiredControlPointLatticeSpacing() const
   {
     SpacingType requiredLatticeSpacing;
-    for (SizeValueType i = 0; i < TotalDimension; i++)
+    for (SizeValueType i = 0; i < TotalDimension; ++i)
     {
       FixedParametersValueType domainPhysicalDimensions =
         static_cast<FixedParametersValueType>(this->m_RequiredTransformDomainSize[i] - 1.0) *
@@ -180,7 +180,7 @@ public:
   GetRequiredControlPointLatticeSize() const
   {
     SizeType requiredLatticeSize;
-    for (SizeValueType i = 0; i < TotalDimension; i++)
+    for (SizeValueType i = 0; i < TotalDimension; ++i)
     {
       requiredLatticeSize[i] = static_cast<SizeValueType>(this->m_RequiredFixedParameters[i]);
     }

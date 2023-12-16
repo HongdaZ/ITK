@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkDiscreteHessianGaussianImageFunction_hxx
 #define itkDiscreteHessianGaussianImageFunction_hxx
 
-#include "itkDiscreteHessianGaussianImageFunction.h"
 #include "itkNeighborhoodOperatorImageFilter.h"
 
 namespace itk
@@ -69,7 +68,7 @@ DiscreteHessianGaussianImageFunction<TInputImage, TOutput>::RecomputeGaussianKer
   unsigned int idx;
   unsigned int maxRadius = 0;
 
-  for (unsigned int direction = 0; direction < Self::ImageDimension2; direction++)
+  for (unsigned int direction = 0; direction < Self::ImageDimension2; ++direction)
   {
     for (unsigned int order = 0; order <= 2; ++order)
     {
@@ -101,12 +100,12 @@ DiscreteHessianGaussianImageFunction<TInputImage, TOutput>::RecomputeGaussianKer
     }
   }
 
-  // Now precompute the N-dimensional kernel. This fastest as we don't
+  // Now precompute the n-dimensional kernel. This fastest as we don't
   // have to perform N convolutions for each point we calculate but
   // only one.
 
   using KernelImageType = itk::Image<TOutput, Self::ImageDimension2>;
-  typename KernelImageType::Pointer kernelImage = KernelImageType::New();
+  auto kernelImage = KernelImageType::New();
 
   using RegionType = typename KernelImageType::RegionType;
   RegionType region;
@@ -133,7 +132,7 @@ DiscreteHessianGaussianImageFunction<TInputImage, TOutput>::RecomputeGaussianKer
 
   // Now create an image filter to perform successive convolutions
   using NeighborhoodFilterType = itk::NeighborhoodOperatorImageFilter<KernelImageType, KernelImageType>;
-  typename NeighborhoodFilterType::Pointer convolutionFilter = NeighborhoodFilterType::New();
+  auto convolutionFilter = NeighborhoodFilterType::New();
 
   // Array that stores the current order for each direction
   using OrderArrayType = FixedArray<unsigned int, Self::ImageDimension2>;
@@ -182,15 +181,15 @@ DiscreteHessianGaussianImageFunction<TInputImage, TOutput>::RecomputeGaussianKer
         ++idx;
         ++it;
       }
-      kernelidx++;
+      ++kernelidx;
     }
   }
 }
 
 /** Evaluate the function at the specified index */
 template <typename TInputImage, typename TOutput>
-typename DiscreteHessianGaussianImageFunction<TInputImage, TOutput>::OutputType
-DiscreteHessianGaussianImageFunction<TInputImage, TOutput>::EvaluateAtIndex(const IndexType & index) const
+auto
+DiscreteHessianGaussianImageFunction<TInputImage, TOutput>::EvaluateAtIndex(const IndexType & index) const -> OutputType
 {
   OutputType hessian;
 
@@ -204,8 +203,8 @@ DiscreteHessianGaussianImageFunction<TInputImage, TOutput>::EvaluateAtIndex(cons
 
 /** Evaluate the function at the specified point */
 template <typename TInputImage, typename TOutput>
-typename DiscreteHessianGaussianImageFunction<TInputImage, TOutput>::OutputType
-DiscreteHessianGaussianImageFunction<TInputImage, TOutput>::Evaluate(const PointType & point) const
+auto
+DiscreteHessianGaussianImageFunction<TInputImage, TOutput>::Evaluate(const PointType & point) const -> OutputType
 {
   if (m_InterpolationMode == InterpolationModeEnum::NearestNeighbourInterpolation)
   {
@@ -245,7 +244,7 @@ DiscreteHessianGaussianImageFunction<TInputImage, TOutput>::EvaluateAtContinuous
     IndexType baseIndex;
     double    distance[ImageDimension2];
 
-    for (dim = 0; dim < ImageDimension2; dim++)
+    for (dim = 0; dim < ImageDimension2; ++dim)
     {
       baseIndex[dim] = Math::Floor<IndexValueType>(cindex[dim]);
       distance[dim] = cindex[dim] - static_cast<double>(baseIndex[dim]);
@@ -257,14 +256,14 @@ DiscreteHessianGaussianImageFunction<TInputImage, TOutput>::EvaluateAtContinuous
     OutputType hessian, currentHessian;
     TOutput    totalOverlap = NumericTraits<TOutput>::ZeroValue();
 
-    for (NumberOfNeighborsType counter = 0; counter < neighbors; counter++)
+    for (NumberOfNeighborsType counter = 0; counter < neighbors; ++counter)
     {
       double                overlap = 1.0;   // fraction overlap
       NumberOfNeighborsType upper = counter; // each bit indicates upper/lower neighbour
       IndexType             neighIndex;
 
       // get neighbor index and overlap fraction
-      for (dim = 0; dim < ImageDimension2; dim++)
+      for (dim = 0; dim < ImageDimension2; ++dim)
       {
         if (upper & 1)
         {

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class ThresholdLabelerImageFilter
+ * \class ThresholdLabelerImageFilter
  *
  * \brief Label an input image according to a set of thresholds.
  *
@@ -66,44 +66,40 @@ public:
     m_LabelOffset = labelOffset;
   }
 
-  bool
-  operator!=(const ThresholdLabeler & other) const
-  {
-    if (m_Thresholds != other.m_Thresholds || m_LabelOffset != other.m_LabelOffset)
-    {
-      return true;
-    }
-    return false;
-  }
 
   bool
   operator==(const ThresholdLabeler & other) const
   {
-    return !(*this != other);
+    return m_Thresholds == other.m_Thresholds && m_LabelOffset == other.m_LabelOffset;
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ThresholdLabeler);
 
   inline TOutput
   operator()(const TInput & A) const
   {
-    size_t size = m_Thresholds.size();
-
-    if (size == 0)
+    // When there are N thresholds, they divide values into N+1 buckets, which we number
+    // 0, ..., N.  Each bucket represents a half-open interval of values (A, B].  The
+    // variables low, mid, and high refer to buckets.  The inclusive range [low, high]
+    // are the buckets that are not yet ruled out.  We repeatedly bisect this range
+    // using the variable `mid`.  In the case of ties, this method returns the lowest
+    // bucket index for which `A` is less than or equal to the bucket's upper limit.
+    size_t low = 0;
+    size_t high = m_Thresholds.size();
+    while (low < high)
     {
-      return m_LabelOffset;
-    }
-    if (A <= m_Thresholds[0])
-    {
-      return m_LabelOffset;
-    }
-    for (size_t i = 0; i < size - 1; i++)
-    {
-      /* Value is in this class if it equals the upper bound. */
-      if (m_Thresholds[i] < A && A <= m_Thresholds[i + 1])
+      const size_t mid = (low + high) / 2;
+      if (A <= m_Thresholds[mid])
       {
-        return static_cast<TOutput>(i + 1) + m_LabelOffset;
+        high = mid;
+      }
+      else
+      {
+        low = mid + 1;
       }
     }
-    return static_cast<TOutput>(size) + m_LabelOffset;
+    // The computed bucket index is relative to m_LabelOffset.
+    return static_cast<TOutput>(low) + m_LabelOffset;
   }
 
 private:
@@ -120,7 +116,7 @@ class ITK_TEMPLATE_EXPORT ThresholdLabelerImageFilter
       Functor::ThresholdLabeler<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ThresholdLabelerImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ThresholdLabelerImageFilter);
 
   /** Standard class type aliases. */
   using Self = ThresholdLabelerImageFilter;

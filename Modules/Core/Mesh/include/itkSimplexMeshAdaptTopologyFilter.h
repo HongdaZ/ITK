@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,7 +45,7 @@ template <typename TInputMesh, typename TOutputMesh>
 class ITK_TEMPLATE_EXPORT SimplexMeshAdaptTopologyFilter : public MeshToMeshFilter<TInputMesh, TOutputMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SimplexMeshAdaptTopologyFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SimplexMeshAdaptTopologyFilter);
 
   /** Standard "Self" type alias. */
   using Self = SimplexMeshAdaptTopologyFilter;
@@ -132,11 +132,11 @@ public:
       double          meanCurvature = 0;
       PointIdentifier refPoint = *it;
       double          val = mesh->GetMeanCurvature(*it++);
-      meanCurvature += std::abs(val);
+      meanCurvature += itk::Math::abs(val);
 
       PointIdentifier id1 = *it;
       val = mesh->GetMeanCurvature(*it++);
-      meanCurvature += std::abs(val);
+      meanCurvature += itk::Math::abs(val);
 
       PointIdentifier id2;
 
@@ -150,12 +150,12 @@ public:
         area += ComputeArea(refPoint, id1, id2);
         id1 = id2;
         val = mesh->GetMeanCurvature(*it);
-        meanCurvature += std::abs(val);
-        cnt++;
-        it++;
+        meanCurvature += itk::Math::abs(val);
+        ++cnt;
+        ++it;
       }
 
-      meanCurvature /= (double)cnt;
+      meanCurvature /= static_cast<double>(cnt);
       totalArea += area;
       totalCurvature += meanCurvature;
 
@@ -192,7 +192,7 @@ public:
       mesh->GetPoint(p1, &v1);
       mesh->GetPoint(p2, &v2);
       mesh->GetPoint(p3, &v3);
-      return std::abs(vnl_cross_3d((v2 - v1).GetVnlVector(), (v3 - v1).GetVnlVector()).two_norm() / 2.0);
+      return itk::Math::abs(vnl_cross_3d((v2 - v1).GetVnlVector(), (v3 - v1).GetVnlVector()).two_norm() / 2.0);
     }
 
     typename DoubleValueMapType::Pointer

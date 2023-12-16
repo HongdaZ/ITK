@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkLBFGSOptimizer_hxx
-#define _itkLBFGSOptimizer_hxx
 
 #include "itkLBFGSOptimizer.h"
 #include "itkMath.h"
@@ -26,7 +24,7 @@ namespace itk
 /**
  * Constructor
  */
-LBFGSOptimizer ::LBFGSOptimizer()
+LBFGSOptimizer::LBFGSOptimizer()
 {
   m_OptimizerInitialized = false;
   m_VnlOptimizer = nullptr;
@@ -40,16 +38,13 @@ LBFGSOptimizer ::LBFGSOptimizer()
 /**
  * Destructor
  */
-LBFGSOptimizer ::~LBFGSOptimizer()
-{
-  delete m_VnlOptimizer;
-}
+LBFGSOptimizer::~LBFGSOptimizer() = default;
 
 /**
  * PrintSelf
  */
 void
-LBFGSOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
+LBFGSOptimizer::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Trace: ";
@@ -72,7 +67,7 @@ LBFGSOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
  * Set the optimizer trace flag
  */
 void
-LBFGSOptimizer ::SetTrace(bool flag)
+LBFGSOptimizer::SetTrace(bool flag)
 {
   if (flag == m_Trace)
   {
@@ -92,7 +87,7 @@ LBFGSOptimizer ::SetTrace(bool flag)
  * Set the maximum number of function evaluations
  */
 void
-LBFGSOptimizer ::SetMaximumNumberOfFunctionEvaluations(unsigned int n)
+LBFGSOptimizer::SetMaximumNumberOfFunctionEvaluations(unsigned int n)
 {
   if (n == m_MaximumNumberOfFunctionEvaluations)
   {
@@ -112,7 +107,7 @@ LBFGSOptimizer ::SetMaximumNumberOfFunctionEvaluations(unsigned int n)
  * Set the gradient convergence tolerance
  */
 void
-LBFGSOptimizer ::SetGradientConvergenceTolerance(double f)
+LBFGSOptimizer::SetGradientConvergenceTolerance(double f)
 {
   if (Math::ExactlyEquals(f, m_GradientConvergenceTolerance))
   {
@@ -132,7 +127,7 @@ LBFGSOptimizer ::SetGradientConvergenceTolerance(double f)
  * Set the line search accuracy
  */
 void
-LBFGSOptimizer ::SetLineSearchAccuracy(double f)
+LBFGSOptimizer::SetLineSearchAccuracy(double f)
 {
   if (Math::ExactlyEquals(f, m_LineSearchAccuracy))
   {
@@ -152,7 +147,7 @@ LBFGSOptimizer ::SetLineSearchAccuracy(double f)
  * Set the default step length
  */
 void
-LBFGSOptimizer ::SetDefaultStepLength(double f)
+LBFGSOptimizer::SetDefaultStepLength(double f)
 {
   if (Math::ExactlyEquals(f, m_DefaultStepLength))
   {
@@ -170,7 +165,7 @@ LBFGSOptimizer ::SetDefaultStepLength(double f)
 
 /** Return Current Value */
 LBFGSOptimizer::MeasureType
-LBFGSOptimizer ::GetValue() const
+LBFGSOptimizer::GetValue() const
 {
   return this->GetCachedValue();
 }
@@ -179,7 +174,7 @@ LBFGSOptimizer ::GetValue() const
  * Connect a Cost Function
  */
 void
-LBFGSOptimizer ::SetCostFunction(SingleValuedCostFunction * costFunction)
+LBFGSOptimizer::SetCostFunction(SingleValuedCostFunction * costFunction)
 {
   const unsigned int numberOfParameters = costFunction->GetNumberOfParameters();
 
@@ -187,14 +182,9 @@ LBFGSOptimizer ::SetCostFunction(SingleValuedCostFunction * costFunction)
 
   adaptor->SetCostFunction(costFunction);
 
-  if (m_OptimizerInitialized)
-  {
-    delete m_VnlOptimizer;
-  }
-
   this->SetCostFunctionAdaptor(adaptor);
 
-  m_VnlOptimizer = new vnl_lbfgs(*adaptor);
+  m_VnlOptimizer = std::make_unique<vnl_lbfgs>(*adaptor);
 
   // set the optimizer parameters
   m_VnlOptimizer->set_trace(m_Trace);
@@ -212,7 +202,7 @@ LBFGSOptimizer ::SetCostFunction(SingleValuedCostFunction * costFunction)
  * Start the optimization
  */
 void
-LBFGSOptimizer ::StartOptimization()
+LBFGSOptimizer::StartOptimization()
 {
   this->InvokeEvent(StartEvent());
 
@@ -265,9 +255,9 @@ LBFGSOptimizer ::StartOptimization()
  * Get the Optimizer
  */
 vnl_lbfgs *
-LBFGSOptimizer ::GetOptimizer()
+LBFGSOptimizer::GetOptimizer()
 {
-  return m_VnlOptimizer;
+  return m_VnlOptimizer.get();
 }
 
 const std::string
@@ -322,5 +312,3 @@ LBFGSOptimizer::GetStopConditionDescription() const
   }
 }
 } // end namespace itk
-
-#endif

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageSeriesWriter_hxx
 #define itkImageSeriesWriter_hxx
 
-#include "itkImageSeriesWriter.h"
 #include "itkDataObject.h"
 #include "itkImageIOFactory.h"
 #include "itkIOCommon.h"
@@ -51,16 +50,16 @@ ImageSeriesWriter<TInputImage, TOutputImage>::SetInput(const InputImageType * in
 
 //---------------------------------------------------------
 template <typename TInputImage, typename TOutputImage>
-const typename ImageSeriesWriter<TInputImage, TOutputImage>::InputImageType *
-ImageSeriesWriter<TInputImage, TOutputImage>::GetInput()
+auto
+ImageSeriesWriter<TInputImage, TOutputImage>::GetInput() -> const InputImageType *
 {
   return itkDynamicCastInDebugMode<TInputImage *>(this->GetPrimaryInput());
 }
 
 //---------------------------------------------------------
 template <typename TInputImage, typename TOutputImage>
-const typename ImageSeriesWriter<TInputImage, TOutputImage>::InputImageType *
-ImageSeriesWriter<TInputImage, TOutputImage>::GetInput(unsigned int idx)
+auto
+ImageSeriesWriter<TInputImage, TOutputImage>::GetInput(unsigned int idx) -> const InputImageType *
 {
   return itkDynamicCastInDebugMode<TInputImage *>(this->ProcessObject::GetInput(idx));
 }
@@ -134,12 +133,12 @@ ImageSeriesWriter<TInputImage, TOutputImage>::GenerateNumericFileNames()
 
   // Compute the number of files to be generated
   unsigned int numberOfFiles = 1;
-  for (unsigned int n = TOutputImage::ImageDimension; n < TInputImage::ImageDimension; n++)
+  for (unsigned int n = TOutputImage::ImageDimension; n < TInputImage::ImageDimension; ++n)
   {
     numberOfFiles *= inRegion.GetSize(n);
   }
 
-  for (unsigned int slice = 0; slice < numberOfFiles; slice++)
+  for (unsigned int slice = 0; slice < numberOfFiles; ++slice)
   {
     snprintf(fileName, IOCommon::ITK_MAXPATHLEN + 1, m_SeriesFormat.c_str(), fileNumber);
     m_FileNames.push_back(fileName);
@@ -181,13 +180,13 @@ ImageSeriesWriter<TInputImage, TOutputImage>::WriteFiles()
 
   // The size of the output will match the input sizes, up to the
   // dimension of the input.
-  for (unsigned int i = 0; i < TOutputImage::ImageDimension; i++)
+  for (unsigned int i = 0; i < TOutputImage::ImageDimension; ++i)
   {
     outRegion.SetSize(i, inputImage->GetRequestedRegion().GetSize()[i]);
   }
 
   // Allocate an image for output and create an iterator for it
-  typename OutputImageType::Pointer outputImage = OutputImageType::New();
+  auto outputImage = OutputImageType::New();
   outputImage->SetRegions(outRegion);
   outputImage->SetNumberOfComponentsPerPixel(inputImage->GetNumberOfComponentsPerPixel());
   outputImage->Allocate();
@@ -196,12 +195,12 @@ ImageSeriesWriter<TInputImage, TOutputImage>::WriteFiles()
   double                               spacing[TOutputImage::ImageDimension];
   double                               origin[TOutputImage::ImageDimension];
   typename TOutputImage::DirectionType direction;
-  for (unsigned int i = 0; i < TOutputImage::ImageDimension; i++)
+  for (unsigned int i = 0; i < TOutputImage::ImageDimension; ++i)
   {
     origin[i] = inputImage->GetOrigin()[i];
     spacing[i] = inputImage->GetSpacing()[i];
     outRegion.SetSize(i, inputImage->GetRequestedRegion().GetSize()[i]);
-    for (unsigned int j = 0; j < TOutputImage::ImageDimension; j++)
+    for (unsigned int j = 0; j < TOutputImage::ImageDimension; ++j)
     {
       direction[j][i] = inputImage->GetDirection()[j][i];
     }
@@ -229,13 +228,13 @@ ImageSeriesWriter<TInputImage, TOutputImage>::WriteFiles()
   SizeValueType pixelsPerFile = outputImage->GetRequestedRegion().GetNumberOfPixels();
 
   inSize.Fill(1);
-  for (unsigned int ns = 0; ns < TOutputImage::ImageDimension; ns++)
+  for (unsigned int ns = 0; ns < TOutputImage::ImageDimension; ++ns)
   {
     inSize[ns] = outRegion.GetSize()[ns];
   }
 
   unsigned int expectedNumberOfFiles = 1;
-  for (unsigned int n = TOutputImage::ImageDimension; n < TInputImage::ImageDimension; n++)
+  for (unsigned int n = TOutputImage::ImageDimension; n < TInputImage::ImageDimension; ++n)
   {
     expectedNumberOfFiles *= inRegion.GetSize(n);
   }
@@ -244,7 +243,6 @@ ImageSeriesWriter<TInputImage, TOutputImage>::WriteFiles()
   {
     itkExceptionMacro(<< "The number of filenames passed is " << m_FileNames.size() << " but " << expectedNumberOfFiles
                       << " were expected ");
-    return;
   }
 
   itkDebugMacro(<< "Number of files to write = " << m_FileNames.size());
@@ -255,7 +253,7 @@ ImageSeriesWriter<TInputImage, TOutputImage>::WriteFiles()
   // build a filename and write the file.
 
   typename InputImageType::OffsetValueType offset = 0;
-  for (unsigned int slice = 0; slice < m_FileNames.size(); slice++)
+  for (unsigned int slice = 0; slice < m_FileNames.size(); ++slice)
   {
     // Select a "slice" of the image.
     inIndex = inputImage->ComputeIndex(offset);
@@ -265,7 +263,7 @@ ImageSeriesWriter<TInputImage, TOutputImage>::WriteFiles()
     // Copy the selected "slice" into the output image.
     ImageAlgorithm::Copy(inputImage, outputImage.GetPointer(), inRegion, outRegion);
 
-    typename WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
 
     writer->UseInputMetaDataDictionaryOff(); // use the dictionary from the
                                              // ImageIO class
@@ -302,7 +300,7 @@ ImageSeriesWriter<TInputImage, TOutputImage>::WriteFiles()
         typename InputImageType::SpacingType spacing2 = inputImage->GetSpacing();
 
         // origin of the output slice in the
-        // N-Dimensional space of the input image.
+        // n-dimensional space of the input image.
         typename InputImageType::PointType origin2;
 
         inputImage->TransformIndexToPhysicalPoint(inIndex, origin2);
@@ -314,7 +312,7 @@ ImageSeriesWriter<TInputImage, TOutputImage>::WriteFiles()
         DoubleArrayType originArray(inputImageDimension);
         DoubleArrayType spacingArray(inputImageDimension);
 
-        for (unsigned int d = 0; d < inputImageDimension; d++)
+        for (unsigned int d = 0; d < inputImageDimension; ++d)
         {
           originArray[d] = origin2[d];
           spacingArray[d] = spacing2[d];
@@ -327,9 +325,9 @@ ImageSeriesWriter<TInputImage, TOutputImage>::WriteFiles()
         typename InputImageType::DirectionType direction2 = inputImage->GetDirection();
         using DoubleMatrixType = Matrix<double, inputImageDimension, inputImageDimension>;
         DoubleMatrixType directionMatrix;
-        for (unsigned int i = 0; i < inputImageDimension; i++)
+        for (unsigned int i = 0; i < inputImageDimension; ++i)
         {
-          for (unsigned int j = 0; j < inputImageDimension; j++)
+          for (unsigned int j = 0; j < inputImageDimension; ++j)
           {
             directionMatrix[j][i] = direction2[i][j];
           }
@@ -354,15 +352,7 @@ ImageSeriesWriter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Inden
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "Image IO: ";
-  if (m_ImageIO.IsNull())
-  {
-    os << "(none)\n";
-  }
-  else
-  {
-    os << m_ImageIO << "\n";
-  }
+  itkPrintSelfObjectMacro(ImageIO);
 
   os << indent << "StartIndex: " << m_StartIndex << std::endl;
   os << indent << "IncrementIndex: " << m_IncrementIndex << std::endl;

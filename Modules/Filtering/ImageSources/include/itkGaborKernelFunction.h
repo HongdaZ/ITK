@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class GaborKernelFunction
+ * \class GaborKernelFunction
  * \brief Gabor kernel used for various computer vision tasks.
  *
  * This class encapsulates a complex Gabor kernel used for
@@ -40,7 +40,7 @@ namespace itk
  * for a basic discussion including additional references.
  *
  * This implementation was contributed as a paper to the Insight Journal
- * https://hdl.handle.net/1926/500
+ * https://www.insight-journal.org/browse/publication/150
  *
  * \sa KernelFunctionBase
  *
@@ -48,10 +48,10 @@ namespace itk
  * \ingroup ITKImageSources
  */
 template <typename TRealValueType>
-class GaborKernelFunction : public KernelFunctionBase<TRealValueType>
+class ITK_TEMPLATE_EXPORT GaborKernelFunction : public KernelFunctionBase<TRealValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaborKernelFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(GaborKernelFunction);
 
   /** Standard class type aliases. */
   using Self = GaborKernelFunction;
@@ -69,9 +69,8 @@ public:
   Evaluate(const TRealValueType & u) const override
   {
     TRealValueType parameter = itk::Math::sqr(u / this->m_Sigma);
-    TRealValueType envelope = std::exp(static_cast<TRealValueType>(-0.5) * parameter);
-    TRealValueType phase =
-      static_cast<TRealValueType>(2.0 * itk::Math::pi) * this->m_Frequency * u + this->m_PhaseOffset;
+    TRealValueType envelope = std::exp(TRealValueType{ -0.5 } * parameter);
+    TRealValueType phase = TRealValueType{ 2.0 * itk::Math::pi } * this->m_Frequency * u + this->m_PhaseOffset;
 
     if (this->m_CalculateImaginaryPart)
     {
@@ -105,9 +104,9 @@ protected:
   GaborKernelFunction()
   {
     this->m_CalculateImaginaryPart = false;
-    this->m_Sigma = NumericTraits<TRealValueType>::OneValue();
-    this->m_Frequency = static_cast<TRealValueType>(0.4);
-    this->m_PhaseOffset = NumericTraits<TRealValueType>::ZeroValue();
+    this->m_Sigma = TRealValueType{ 1.0 };
+    this->m_Frequency = TRealValueType{ 0.4 };
+    this->m_PhaseOffset = TRealValueType{ 0.0 };
   }
   ~GaborKernelFunction() override = default;
   void

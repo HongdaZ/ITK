@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,40 +24,34 @@
 namespace itk
 {
 void
-OBJMeshIOFactory ::PrintSelf(std::ostream &, Indent) const
+OBJMeshIOFactory::PrintSelf(std::ostream &, Indent) const
 {}
 
-OBJMeshIOFactory ::OBJMeshIOFactory()
+OBJMeshIOFactory::OBJMeshIOFactory()
 {
   this->RegisterOverride("itkMeshIOBase", "itkOBJMeshIO", "OBJ Mesh IO", true, CreateObjectFunction<OBJMeshIO>::New());
 }
 
-OBJMeshIOFactory ::~OBJMeshIOFactory() = default;
+OBJMeshIOFactory::~OBJMeshIOFactory() = default;
 
 const char *
-OBJMeshIOFactory ::GetITKSourceVersion() const
+OBJMeshIOFactory::GetITKSourceVersion() const
 {
   return ITK_SOURCE_VERSION;
 }
 
 const char *
-OBJMeshIOFactory ::GetDescription() const
+OBJMeshIOFactory::GetDescription() const
 {
   return "OBJ Mesh IO Factory, allows the loading of OBJ mesh into insight";
 }
 
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
-static bool OBJMeshIOFactoryHasBeenRegistered;
-
 void ITKIOMeshOBJ_EXPORT
      OBJMeshIOFactoryRegister__Private()
 {
-  if (!OBJMeshIOFactoryHasBeenRegistered)
-  {
-    OBJMeshIOFactoryHasBeenRegistered = true;
-    OBJMeshIOFactory::RegisterOneFactory();
-  }
+  ObjectFactoryBase::RegisterInternalFactoryOnce<OBJMeshIOFactory>();
 }
 
 } // end namespace itk

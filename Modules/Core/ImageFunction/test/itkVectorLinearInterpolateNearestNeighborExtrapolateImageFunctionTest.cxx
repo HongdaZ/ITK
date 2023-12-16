@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include <iostream>
 #include "itkVectorLinearInterpolateNearestNeighborExtrapolateImageFunction.h"
 #include "itkImageRegionIteratorWithIndex.h"
+#include "itkTestingMacros.h"
 
 enum
 {
@@ -69,13 +70,13 @@ TestGeometricPoint(const InterpolatorType * interp,
     int        k;
     OutputType value = interp->Evaluate(point);
     std::cout << " Value: ";
-    for (k = 0; k < VectorDimension - 1; k++)
+    for (k = 0; k < VectorDimension - 1; ++k)
     {
       std::cout << value[k] << ", ";
     }
     std::cout << value[k] << std::endl;
 
-    for (k = 0; k < VectorDimension; k++)
+    for (k = 0; k < VectorDimension; ++k)
     {
       if (itk::Math::abs(value[k] - trueValue[k]) > 1e-9)
       {
@@ -86,7 +87,7 @@ TestGeometricPoint(const InterpolatorType * interp,
     if (k != VectorDimension)
     {
       std::cout << " *** Error: Value should be: ";
-      for (k = 0; k < VectorDimension - 1; k++)
+      for (k = 0; k < VectorDimension - 1; ++k)
       {
         std::cout << trueValue[k] << ", ";
       }
@@ -129,13 +130,13 @@ TestContinuousIndex(const InterpolatorType *    interp,
     int        k;
     OutputType value = interp->EvaluateAtContinuousIndex(index);
     std::cout << " Value: ";
-    for (k = 0; k < VectorDimension - 1; k++)
+    for (k = 0; k < VectorDimension - 1; ++k)
     {
       std::cout << value[k] << ", ";
     }
     std::cout << value[k] << std::endl;
 
-    for (k = 0; k < VectorDimension; k++)
+    for (k = 0; k < VectorDimension; ++k)
     {
       if (itk::Math::abs(value[k] - trueValue[k]) > 1e-9)
       {
@@ -146,7 +147,7 @@ TestContinuousIndex(const InterpolatorType *    interp,
     if (k != VectorDimension)
     {
       std::cout << " *** Error: Value should be: ";
-      for (k = 0; k < VectorDimension - 1; k++)
+      for (k = 0; k < VectorDimension - 1; ++k)
       {
         std::cout << trueValue[k] << ", ";
       }
@@ -171,7 +172,7 @@ itkVectorLinearInterpolateNearestNeighborExtrapolateImageFunctionTest(int, char 
   double              spacing[3] = { 0.1, 0.05, 0.025 };
 
   // Create a test image
-  ImageType::Pointer    image = ImageType::New();
+  auto                  image = ImageType::New();
   ImageType::RegionType region;
   region.SetSize(size);
 
@@ -195,12 +196,12 @@ itkVectorLinearInterpolateNearestNeighborExtrapolateImageFunctionTest(int, char 
     index = iter.GetIndex();
     value = 0;
 
-    for (int j = 0; j < ImageDimension; j++)
+    for (int j = 0; j < ImageDimension; ++j)
     {
       value += index[j];
     }
 
-    for (int k = 0; k < ImageDimension; k++)
+    for (int k = 0; k < ImageDimension; ++k)
     {
       pixel[k] = (k + 1) * value;
     }
@@ -209,9 +210,13 @@ itkVectorLinearInterpolateNearestNeighborExtrapolateImageFunctionTest(int, char 
   }
 
   // Create the interpolator
-  InterpolatorType::Pointer interp = InterpolatorType::New();
+  auto interp = InterpolatorType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    interp, VectorLinearInterpolateNearestNeighborExtrapolateImageFunction, VectorInterpolateImageFunction);
+
+
   interp->SetInputImage(image);
-  interp->Print(std::cout);
 
   using GenericInterpolatorType = InterpolatorType::Superclass;
   std::cout << interp->GenericInterpolatorType::GetNameOfClass() << std::endl;

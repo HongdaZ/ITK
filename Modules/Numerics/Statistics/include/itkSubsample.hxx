@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSubsample_hxx
 #define itkSubsample_hxx
 
-#include "itkSubsample.h"
 
 #include "itkObject.h"
 
@@ -104,8 +103,8 @@ Subsample<TSample>::AddInstance(InstanceIdentifier id)
 }
 
 template <typename TSample>
-typename Subsample<TSample>::InstanceIdentifier
-Subsample<TSample>::Size() const
+auto
+Subsample<TSample>::Size() const -> InstanceIdentifier
 {
   return static_cast<unsigned int>(m_IdHolder.size());
 }
@@ -120,8 +119,8 @@ Subsample<TSample>::Clear()
 }
 
 template <typename TSample>
-const typename Subsample<TSample>::MeasurementVectorType &
-Subsample<TSample>::GetMeasurementVector(InstanceIdentifier id) const
+auto
+Subsample<TSample>::GetMeasurementVector(InstanceIdentifier id) const -> const MeasurementVectorType &
 {
   if (id >= m_IdHolder.size())
   {
@@ -193,8 +192,8 @@ Subsample<TSample>::GetFrequencyByIndex(unsigned int index) const
 }
 
 template <typename TSample>
-typename Subsample<TSample>::InstanceIdentifier
-Subsample<TSample>::GetInstanceIdentifier(unsigned int index)
+auto
+Subsample<TSample>::GetInstanceIdentifier(unsigned int index) -> InstanceIdentifier
 {
   if (index >= m_IdHolder.size())
   {

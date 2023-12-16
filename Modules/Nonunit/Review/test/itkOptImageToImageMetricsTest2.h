@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -138,7 +138,7 @@ BasicTest(FixedImageReaderType *  fixedImageReader,
 
   // Mean squares
   using MetricType = itk::MeanSquaresImageToImageMetric<FixedImageType, MovingImageType>;
-  typename MetricType::Pointer                                  msMetric = MetricType::New();
+  auto                                                          msMetric = MetricType::New();
   MeanSquaresMetricInitializer<FixedImageType, MovingImageType> msMetricInitializer(msMetric);
 
   TestAMetric(fixedImageReader, movingImageReader, interpolator, transform, msMetric.GetPointer(), msMetricInitializer);
@@ -202,11 +202,11 @@ BSplineLinearTest(FixedImageReaderType * fixedImageReader, MovingImageReaderType
 
   using TransformType = itk::BSplineTransform<CoordinateRepType, SpaceDimension, VSplineOrder>;
 
-  typename TransformType::Pointer bsplineTransform = TransformType::New();
+  auto bsplineTransform = TransformType::New();
 
   typename TransformType::MeshSizeType           meshSize;
   typename TransformType::PhysicalDimensionsType physicalDimensions;
-  for (unsigned int d = 0; d < SpaceDimension; d++)
+  for (unsigned int d = 0; d < SpaceDimension; ++d)
   {
     physicalDimensions[d] = fixedSpacing[d] * static_cast<CoordinateRepType>(fixedSize[d] - 1);
     meshSize[d] = 4;
@@ -222,7 +222,7 @@ BSplineLinearTest(FixedImageReaderType * fixedImageReader, MovingImageReaderType
 
   ParametersType parameters(numberOfParameters);
 
-  typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
 
   BasicTest(fixedImageReader, movingImageReader, interpolator.GetPointer(), bsplineTransform.GetPointer());
 }

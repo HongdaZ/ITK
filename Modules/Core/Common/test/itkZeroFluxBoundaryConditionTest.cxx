@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +38,7 @@ TestPrintNeighborhood(IteratorType & p, VectorIteratorType & v)
 
   std::cout << "Output from operator()(const OffsetType &, const OffsetType &, const NeighborhoodType *) const"
             << std::endl;
-  unsigned x, y, i = 0;
+  unsigned int x, y, i = 0;
   for (y = 0; y < p.GetSize()[1]; ++y)
   {
     for (x = 0; x < p.GetSize()[0]; ++x, ++i)
@@ -61,7 +61,7 @@ TestPrintNeighborhood(IteratorType & p, VectorIteratorType & v)
     std::cout << std::endl;
   }
 
-  std::cout << "Ouptut from GetPixel( const IndexType & index, const TImage * image ) const" << std::endl;
+  std::cout << "Output from GetPixel( const IndexType & index, const TImage * image ) const" << std::endl;
 
   i = 0;
   for (y = 0; y < p.GetSize()[1]; ++y)
@@ -122,17 +122,17 @@ int
 itkZeroFluxBoundaryConditionTest(int, char *[])
 {
   // Test an image to cover one operator() method.
-  ImageType::Pointer image = ImageType::New();
-  RegionType         imageRegion;
-  SizeType           imageSize = { { 5, 5 } };
-  IndexType          imageIndex = { { 0, 0 } };
+  auto       image = ImageType::New();
+  RegionType imageRegion;
+  SizeType   imageSize = { { 5, 5 } };
+  IndexType  imageIndex = { { 0, 0 } };
   imageRegion.SetSize(imageSize);
   imageRegion.SetIndex(imageIndex);
   image->SetRegions(imageRegion);
   image->Allocate();
 
   // Test a vector image to cover the other operator() method.
-  VectorImageType::Pointer vectorImage = VectorImageType::New();
+  auto vectorImage = VectorImageType::New();
   vectorImage->SetRegions(imageRegion);
   vectorImage->SetNumberOfComponentsPerPixel(1);
   vectorImage->Allocate();

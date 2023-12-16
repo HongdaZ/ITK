@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -75,18 +75,21 @@ public:
   using ComponentType = TComponent;
   using LuminanceType = typename NumericTraits<ComponentType>::RealType;
 
-  /** Default constructors */
+  /** Default-constructor.
+   * \note The other five "special member functions" are defaulted implicitly, following the C++ "Rule of Zero". */
   RGBPixel() { this->Fill(0); }
-  RGBPixel(const RGBPixel &) = default;
-  RGBPixel(RGBPixel &&) = default;
-  RGBPixel &
-  operator=(const RGBPixel &) = default;
-  RGBPixel &
-  operator=(RGBPixel &&) = default;
-  ~RGBPixel() = default;
 
-  /** Constructor to fill Red=Blug=Green= r. */
+#if defined(ITK_LEGACY_REMOVE)
+  /** Explicit constructor to fill Red=Blug=Green= r. */
+  explicit RGBPixel(const ComponentType & r) { this->Fill(r); }
+
+  /** Prevents copy-initialization from `nullptr`, as well as from `0` (NULL). */
+  RGBPixel(std::nullptr_t) = delete;
+#else
+  /** Constructor to fill Red=Blug=Green= r.
+   * \note ITK_LEGACY_REMOVE=ON will disallow implicit conversion from a component value. */
   RGBPixel(const ComponentType & r) { this->Fill(r); }
+#endif
 
   /** Pass-through constructor for the Array base class. */
   template <typename TRGBPixelValueType>
@@ -109,31 +112,31 @@ public:
   Self &
   operator=(const ComponentType r[3]);
 
-  /** Aritmetic operations between pixels. Return a new RGBPixel. */
+  /** Arithmetic operations between pixels. Return a new RGBPixel. */
   Self
-  operator+(const Self & vec) const;
+  operator+(const Self & r) const;
   Self
-       operator-(const Self & vec) const;
-  Self operator*(const ComponentType & f) const;
+       operator-(const Self & r) const;
+  Self operator*(const ComponentType & r) const;
   Self
-  operator/(const ComponentType & f) const;
+  operator/(const ComponentType & r) const;
 
   /** Arithmetic-assignment operators. */
   const Self &
-  operator+=(const Self & vec);
+  operator+=(const Self & r);
   const Self &
-  operator-=(const Self & vec);
+  operator-=(const Self & r);
   const Self &
-  operator*=(const ComponentType & f);
+  operator*=(const ComponentType & r);
   const Self &
-  operator/=(const ComponentType & f);
+  operator/=(const ComponentType & r);
 
   /** Implements strict weak ordering. For use in STL, e.g. std::map. */
   bool
-  operator<(const Self & vec) const;
+  operator<(const Self & r) const;
 
   bool
-  operator==(const Self & vec) const;
+  operator==(const Self & r) const;
 
   /** Return the number of components. */
   static unsigned int

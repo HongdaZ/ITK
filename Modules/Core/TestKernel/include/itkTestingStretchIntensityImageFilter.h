@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace Testing
 {
 
 /**
- *\class StretchIntensityImageFilter
+ * \class StretchIntensityImageFilter
  *
  * \brief Applies a linear transformation to the intensity levels of the
  * input Image.
@@ -42,7 +42,7 @@ template <typename TInputImage, typename TOutputImage = TInputImage>
 class ITK_TEMPLATE_EXPORT StretchIntensityImageFilter : public ImageSource<TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(StretchIntensityImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(StretchIntensityImageFilter);
 
   /** Standard class type aliases. */
   using Self = StretchIntensityImageFilter;
@@ -79,7 +79,7 @@ public:
   /** Set/Get the image input of this process object.  */
   using Superclass::SetInput;
   virtual void
-  SetInput(const TInputImage * image);
+  SetInput(const TInputImage * input);
   const TInputImage *
   GetInput() const;
 
@@ -104,7 +104,7 @@ protected:
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
   using InputImageRegionType = typename TInputImage::RegionType;
 
   /** UnaryFunctorImageFilter can be implemented as a multithreaded filter.

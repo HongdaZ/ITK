@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@
 #include "itkImageAlgorithm.h"
 #include "itkTransform.h"
 
-template <unsigned InputDimension>
+template <unsigned int InputDimension>
 class TestTransform
 {
 public:
@@ -35,7 +35,7 @@ public:
     outputPoint.Fill(0.0);
     // if InputPoint Dimension < 2 then embed point in 2D space
     // else project the point to 2D space.
-    for (unsigned d = 0; d < std::min(inputPoint.GetPointDimension(), outputPoint.GetPointDimension()); ++d)
+    for (unsigned int d = 0; d < std::min(inputPoint.GetPointDimension(), outputPoint.GetPointDimension()); ++d)
     {
       outputPoint[d] = inputPoint[d];
     }
@@ -49,7 +49,7 @@ itkImageTest(int, char *[])
 {
 
   using Image = itk::Image<float, 2>;
-  Image::Pointer      image = Image::New();
+  auto                image = Image::New();
   Image::ConstPointer myconstptr = image;
   image->DebugOn();
   const char * const knownStringName = "My First Image For Testing.";
@@ -91,8 +91,8 @@ itkImageTest(int, char *[])
   Image::DirectionType product;
   product = direction * image->GetInverseDirection();
   double eps = 1e-06;
-  if (std::fabs(product[0][0] - 1.0) > eps || std::fabs(product[1][1] - 1.0) > eps || std::fabs(product[0][1]) > eps ||
-      std::fabs(product[1][0]) > eps)
+  if (itk::Math::abs(product[0][0] - 1.0) > eps || itk::Math::abs(product[1][1] - 1.0) > eps ||
+      itk::Math::abs(product[0][1]) > eps || itk::Math::abs(product[1][0]) > eps)
   {
     std::cerr << "Inverse direction test failed: "
               << "direction * inverse: " << product << std::endl;
@@ -106,7 +106,8 @@ itkImageTest(int, char *[])
   truthGradient[1] = 1.0;
   image->TransformLocalVectorToPhysicalVector(truthGradient, outputGradient);
   image->TransformPhysicalVectorToLocalVector(outputGradient, testGradient);
-  if (std::fabs(truthGradient[0] - testGradient[0]) > eps || std::fabs(truthGradient[1] - testGradient[1]) > eps)
+  if (itk::Math::abs(truthGradient[0] - testGradient[0]) > eps ||
+      itk::Math::abs(truthGradient[1] - testGradient[1]) > eps)
   {
     std::cerr << "Transform to/from PhysicalVector test failed: "
               << "truthGradient: " << truthGradient << std::endl
@@ -129,7 +130,7 @@ itkImageTest(int, char *[])
   region.SetSize(size);
   image->SetRegions(region);
 
-  Image::Pointer     imageRef = Image::New();
+  auto               imageRef = Image::New();
   Image::SpacingType spacingRef;
   spacingRef.Fill(2);
   Image::PointType originRef;
@@ -166,7 +167,7 @@ itkImageTest(int, char *[])
   }
 
   using Image3D = itk::Image<float, 3>;
-  Image3D::Pointer     volume = Image3D::New();
+  auto                 volume = Image3D::New();
   Image3D::SpacingType spacingVol;
   spacingVol.Fill(1);
   Image3D::PointType originVol;

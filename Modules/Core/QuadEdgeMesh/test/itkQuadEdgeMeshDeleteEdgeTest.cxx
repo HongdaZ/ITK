@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ itkQuadEdgeMeshDeleteEdgeTest(int, char *[])
   using MeshType = itk::QuadEdgeMesh<PixelType, 3>;
   std::string indent = "    ";
 
-  MeshType::Pointer mesh = MeshType::New();
+  auto mesh = MeshType::New();
 
   // Points
   MeshType::PointType p0, p1, p2, p3, p4, p5;
@@ -73,18 +73,23 @@ itkQuadEdgeMeshDeleteEdgeTest(int, char *[])
   mesh->AddEdge(pid2, pid0);
   mesh->AddEdge(pid2, pid3);
 
-  int EdgesBefore = mesh->ComputeNumberOfEdges();
+  itk::IdentifierType edgesBefore = mesh->ComputeNumberOfEdges();
 
   // Deleting two arbitrary edges:
   mesh->DeleteEdge(pid3, pid4);
   mesh->DeleteEdge(pid0, pid5);
 
   std::cout << indent << "Trying to remove only two edges...";
-  if (EdgesBefore - mesh->ComputeNumberOfEdges() == 2)
+  itk::IdentifierType expectedEdgeCount = 2;
+  itk::IdentifierType obtainedEdgeCount = edgesBefore - mesh->ComputeNumberOfEdges();
+  if (obtainedEdgeCount != expectedEdgeCount)
   {
-    std::cout << "OK." << std::endl;
-    return (EXIT_SUCCESS);
+    std::cerr << "Test failed!" << std::endl;
+    std::cerr << "Error in itk::QuadEdgeMesh::ComputeNumberOfEdges" << std::endl;
+    std::cerr << "Expected: " << expectedEdgeCount << ", but got: " << obtainedEdgeCount << std::endl;
+    return EXIT_FAILURE;
   }
-  std::cout << "FAILED." << std::endl;
-  return (EXIT_FAILURE);
+
+  std::cout << "Test finished." << std::endl;
+  return EXIT_SUCCESS;
 }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class ExtractOrthogonalSwath2DImageFilter
+ * \class ExtractOrthogonalSwath2DImageFilter
  * \brief Extracts into rectangular form a "swath" image from the input image along the parametric path.
  *
  * Extracts a rectangular "swath" image from the 2D input image by interpolating
@@ -44,7 +44,7 @@ class ITK_TEMPLATE_EXPORT ExtractOrthogonalSwath2DImageFilter
   : public ImageAndPathToImageFilter<TImage, ParametricPath<2>, TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExtractOrthogonalSwath2DImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ExtractOrthogonalSwath2DImageFilter);
 
   /** Standard class type aliases. */
   using Self = ExtractOrthogonalSwath2DImageFilter;
@@ -109,17 +109,18 @@ public:
 
   /** Set the size of the swath image.
    * The number of rows (size[1]) MUST be odd */
-  itkSetMacro(Size, SizeType)
+  itkSetMacro(Size, SizeType);
 
-    /** Set the default pixel value of the swath image, to be used if the swath
-     * extends past the edge of the input image data. */
-    itkSetMacro(DefaultPixelValue, ImagePixelType)
+  /** Set the default pixel value of the swath image, to be used if the swath
+   * extends past the edge of the input image data. */
+  itkSetMacro(DefaultPixelValue, ImagePixelType);
 
-    //--------------------------------------------------------------------------
-    //
+  //--------------------------------------------------------------------------
+  //
 
-    /** Request the largest possible region on all outputs. */
-    void EnlargeOutputRequestedRegion(DataObject * output) override
+  /** Request the largest possible region on all outputs. */
+  void
+  EnlargeOutputRequestedRegion(DataObject * output) override
   {
     output->SetRequestedRegionToLargestPossibleRegion();
   }

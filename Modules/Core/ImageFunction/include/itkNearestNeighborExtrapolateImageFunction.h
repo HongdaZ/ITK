@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class NearestNeighborExtrapolateImageFunction
+ * \class NearestNeighborExtrapolateImageFunction
  * \brief Nearest neighbor extrapolation of a scalar image.
  *
  * NearestNeighborExtrapolateImageFunction extrapolate image intensity at
@@ -38,10 +38,11 @@ namespace itk
  * \ingroup ITKImageFunction
  */
 template <typename TInputImage, typename TCoordRep = float>
-class NearestNeighborExtrapolateImageFunction : public ExtrapolateImageFunction<TInputImage, TCoordRep>
+class ITK_TEMPLATE_EXPORT NearestNeighborExtrapolateImageFunction
+  : public ExtrapolateImageFunction<TInputImage, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NearestNeighborExtrapolateImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(NearestNeighborExtrapolateImageFunction);
 
   /** Standard class type aliases. */
   using Self = NearestNeighborExtrapolateImageFunction;
@@ -50,26 +51,26 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(NearestNeighborExtrapolateImageFunction, InterpolateImageFunction);
+  itkTypeMacro(NearestNeighborExtrapolateImageFunction, ExtrapolateImageFunction);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
 
   /** Dimension underlying input image. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
   using IndexValueType = typename IndexType::IndexValueType;
 
   /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
 
   /** Evaluate the function at a ContinuousIndex position
    *
@@ -83,7 +84,7 @@ public:
   {
     IndexType nindex;
 
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       nindex[j] = Math::RoundHalfIntegerUp<IndexValueType>(index[j]);
       if (nindex[j] < this->GetStartIndex()[j])
@@ -110,7 +111,7 @@ public:
   {
     IndexType nindex;
 
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       if (index[j] < this->GetStartIndex()[j])
       {

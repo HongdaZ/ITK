@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ public:
  * \ingroup ITKQuadEdgeMeshFiltering
  */
 template <typename TInputMesh>
-class OnesMatrixCoefficients : public MatrixCoefficients<TInputMesh>
+class ITK_TEMPLATE_EXPORT OnesMatrixCoefficients : public MatrixCoefficients<TInputMesh>
 {
 public:
   using Superclass = MatrixCoefficients<TInputMesh>;
@@ -74,14 +74,14 @@ public:
 };
 
 /** \class InverseEuclideanDistanceMatrixCoefficients
- * \brief Compute a matrix filed with the inverse of the euclidian distance
+ * \brief Compute a matrix filed with the inverse of the euclidean distance
  *        wherever two vertices are connected by an edge.
  * \note  Belongs to the parameterisation package.
  * \note  See paper: ...
  * \ingroup ITKQuadEdgeMeshFiltering
  */
 template <typename TInputMesh>
-class InverseEuclideanDistanceMatrixCoefficients : public MatrixCoefficients<TInputMesh>
+class ITK_TEMPLATE_EXPORT InverseEuclideanDistanceMatrixCoefficients : public MatrixCoefficients<TInputMesh>
 {
 public:
   using Superclass = MatrixCoefficients<TInputMesh>;
@@ -123,7 +123,7 @@ public:
  * \ingroup ITKQuadEdgeMeshFiltering
  */
 template <typename TInputMesh>
-class ConformalMatrixCoefficients : public MatrixCoefficients<TInputMesh>
+class ITK_TEMPLATE_EXPORT ConformalMatrixCoefficients : public MatrixCoefficients<TInputMesh>
 {
 public:
   using Superclass = MatrixCoefficients<TInputMesh>;
@@ -168,7 +168,7 @@ public:
   }
 };
 
-/**\class AuthalicMatrixCoefficients
+/** \class AuthalicMatrixCoefficients
  *
  * \brief Compute a matrix filled with Authalic Coefiicients of the edge,
  *        wherever two vertices are connected with an edge.
@@ -177,7 +177,7 @@ public:
  * \ingroup ITKQuadEdgeMeshFiltering
  */
 template <typename TInputMesh>
-class AuthalicMatrixCoefficients : public MatrixCoefficients<TInputMesh>
+class ITK_TEMPLATE_EXPORT AuthalicMatrixCoefficients : public MatrixCoefficients<TInputMesh>
 {
 public:
   using Superclass = MatrixCoefficients<TInputMesh>;
@@ -233,7 +233,7 @@ public:
  * \ingroup ITKQuadEdgeMeshFiltering
  */
 template <typename TInputMesh>
-class IntrinsicMatrixCoefficients : public MatrixCoefficients<TInputMesh>
+class ITK_TEMPLATE_EXPORT IntrinsicMatrixCoefficients : public MatrixCoefficients<TInputMesh>
 {
 public:
   using Superclass = MatrixCoefficients<TInputMesh>;
@@ -268,7 +268,7 @@ public:
  * \ingroup ITKQuadEdgeMeshFiltering
  */
 template <typename TInputMesh>
-class HarmonicMatrixCoefficients : public MatrixCoefficients<TInputMesh>
+class ITK_TEMPLATE_EXPORT HarmonicMatrixCoefficients : public MatrixCoefficients<TInputMesh>
 {
 public:
   using Superclass = MatrixCoefficients<TInputMesh>;

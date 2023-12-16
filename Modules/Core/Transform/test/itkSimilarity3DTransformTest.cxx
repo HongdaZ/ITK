@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,8 +59,8 @@ itkSimilarity3DTransformTest(int, char *[])
   {
     std::cout << "Test default constructor... ";
 
-    TransformType::Pointer transform = TransformType::New();
-    if (std::fabs(transform->GetScale() - 1.0) > itk::NumericTraits<TransformType::ScaleType>::min())
+    auto transform = TransformType::New();
+    if (itk::Math::abs(transform->GetScale() - 1.0) > itk::NumericTraits<TransformType::ScaleType>::min())
     {
       std::cout << "Error: Scale: Expected 1.0, got " << transform->GetScale() << " ! " << std::endl;
       return EXIT_FAILURE;
@@ -68,13 +68,13 @@ itkSimilarity3DTransformTest(int, char *[])
     // SetIdentity supposed to reset scale as well.
     transform->SetScale(2.0);
     transform->SetIdentity();
-    if (std::fabs(transform->GetScale() - 1.0) > itk::NumericTraits<TransformType::ScaleType>::min())
+    if (itk::Math::abs(transform->GetScale() - 1.0) > itk::NumericTraits<TransformType::ScaleType>::min())
     {
       std::cout << "Error: Scale: Expected 1.0 after SetIdentity, got " << transform->GetScale() << " ! " << std::endl;
       return EXIT_FAILURE;
     }
 
-    VectorType axis(1.5);
+    auto axis = itk::MakeFilled<VectorType>(1.5);
 
     ValueType angle = 120.0 * std::atan(1.0) / 45.0;
 
@@ -102,8 +102,8 @@ itkSimilarity3DTransformTest(int, char *[])
   }
   {
     std::cout << "Test initial rotation matrix " << std::endl;
-    TransformType::Pointer transform = TransformType::New();
-    MatrixType             matrix = transform->GetMatrix();
+    auto       transform = TransformType::New();
+    MatrixType matrix = transform->GetMatrix();
     std::cout << "Matrix = " << std::endl;
     std::cout << matrix << std::endl;
   }
@@ -112,9 +112,9 @@ itkSimilarity3DTransformTest(int, char *[])
   {
     bool Ok = true;
 
-    TransformType::Pointer rotation = TransformType::New();
+    auto rotation = TransformType::New();
 
-    itk::Vector<double, 3> axis(1);
+    auto axis = itk::MakeFilled<itk::Vector<double, 3>>(1);
 
     const double angle = (std::atan(1.0) / 45.0) * 120.0; // turn 120 degrees
 
@@ -124,9 +124,9 @@ itkSimilarity3DTransformTest(int, char *[])
     TransformType::OffsetType offset = rotation->GetOffset();
     std::cout << "pure Rotation test:  ";
     std::cout << offset << std::endl;
-    for (unsigned int i = 0; i < 3; i++)
+    for (unsigned int i = 0; i < 3; ++i)
     {
-      if (std::fabs(offset[i] - 0.0) > epsilon)
+      if (itk::Math::abs(offset[i] - 0.0) > epsilon)
       {
         Ok = false;
         break;
@@ -151,9 +151,9 @@ itkSimilarity3DTransformTest(int, char *[])
 
       TransformType::OutputPointType r;
       r = rotation->TransformPoint(p);
-      for (unsigned int i = 0; i < 3; i++)
+      for (unsigned int i = 0; i < 3; ++i)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if (itk::Math::abs(q[i] - r[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -181,9 +181,9 @@ itkSimilarity3DTransformTest(int, char *[])
 
       TransformType::OutputVectorType r;
       r = rotation->TransformVector(p);
-      for (unsigned int i = 0; i < 3; i++)
+      for (unsigned int i = 0; i < 3; ++i)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if (itk::Math::abs(q[i] - r[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -210,9 +210,9 @@ itkSimilarity3DTransformTest(int, char *[])
 
       TransformType::OutputCovariantVectorType r;
       r = rotation->TransformCovariantVector(p);
-      for (unsigned int i = 0; i < 3; i++)
+      for (unsigned int i = 0; i < 3; ++i)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if (itk::Math::abs(q[i] - r[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -243,9 +243,9 @@ itkSimilarity3DTransformTest(int, char *[])
 
       TransformType::OutputVnlVectorType r;
       r = rotation->TransformVector(p);
-      for (unsigned int i = 0; i < 3; i++)
+      for (unsigned int i = 0; i < 3; ++i)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if (itk::Math::abs(q[i] - r[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -268,9 +268,9 @@ itkSimilarity3DTransformTest(int, char *[])
   {
     bool Ok = true;
 
-    TransformType::Pointer transform = TransformType::New();
+    auto transform = TransformType::New();
 
-    itk::Vector<double, 3> axis(1);
+    auto axis = itk::MakeFilled<itk::Vector<double, 3>>(1);
 
     const double angle = (std::atan(1.0) / 45.0) * 30.0; // turn 30 degrees
 
@@ -285,9 +285,9 @@ itkSimilarity3DTransformTest(int, char *[])
 
     TransformType::OutputPointType transformedPoint;
     transformedPoint = transform->TransformPoint(center);
-    for (unsigned int i = 0; i < 3; i++)
+    for (unsigned int i = 0; i < 3; ++i)
     {
-      if (std::fabs(center[i] - transformedPoint[i]) > epsilon)
+      if (itk::Math::abs(center[i] - transformedPoint[i]) > epsilon)
       {
         Ok = false;
         break;
@@ -323,9 +323,9 @@ itkSimilarity3DTransformTest(int, char *[])
     ParametersType parameters2 = transform->GetParameters();
 
     const double tolerance = 1e-8;
-    for (unsigned int p = 0; p < np; p++)
+    for (unsigned int p = 0; p < np; ++p)
     {
-      if (std::fabs(parameters[p] - parameters2[p]) > tolerance)
+      if (itk::Math::abs(parameters[p] - parameters2[p]) > tolerance)
       {
         std::cout << "Output parameter does not match input " << std::endl;
         return EXIT_FAILURE;
@@ -373,9 +373,9 @@ itkSimilarity3DTransformTest(int, char *[])
     TheoreticalJacobian[0][6] = -21.0;
     TheoreticalJacobian[1][6] = -42.0;
     TheoreticalJacobian[2][6] = -103.0;
-    for (unsigned int ii = 0; ii < 3; ii++)
+    for (unsigned int ii = 0; ii < 3; ++ii)
     {
-      for (unsigned int jj = 0; jj < 7; jj++)
+      for (unsigned int jj = 0; jj < 7; ++jj)
       {
         if (itk::Math::abs(TheoreticalJacobian[ii][jj] - jacobian[ii][jj]) > 1e-5)
         {
@@ -394,9 +394,9 @@ itkSimilarity3DTransformTest(int, char *[])
 
   {
     std::cout << " Exercise the SetIdentity() method " << std::endl;
-    TransformType::Pointer transform = TransformType::New();
+    auto transform = TransformType::New();
 
-    itk::Vector<double, 3> axis(1);
+    auto axis = itk::MakeFilled<itk::Vector<double, 3>>(1);
 
     const double angle = (std::atan(1.0) / 45.0) * 30.0; // turn 30 degrees
 
@@ -428,9 +428,9 @@ itkSimilarity3DTransformTest(int, char *[])
     ParametersType parameters2 = transform->GetParameters();
 
     const double tolerance = 1e-8;
-    for (unsigned int p = 0; p < np; p++)
+    for (unsigned int p = 0; p < np; ++p)
     {
-      if (std::fabs(parameters[p] - parameters2[p]) > tolerance)
+      if (itk::Math::abs(parameters[p] - parameters2[p]) > tolerance)
       {
         std::cout << "Output parameter does not match input " << std::endl;
         return EXIT_FAILURE;
@@ -441,9 +441,9 @@ itkSimilarity3DTransformTest(int, char *[])
 
   {
     std::cout << " Exercise the Scaling methods " << std::endl;
-    TransformType::Pointer transform = TransformType::New();
+    auto transform = TransformType::New();
 
-    itk::Vector<double, 3> axis(1);
+    auto axis = itk::MakeFilled<itk::Vector<double, 3>>(1);
 
     const double angle = (std::atan(1.0) / 45.0) * 30.0; // turn 30 degrees
 
@@ -471,7 +471,7 @@ itkSimilarity3DTransformTest(int, char *[])
 
     const double tolerance = 1e-8;
 
-    if (std::fabs(rscale - scale) > tolerance)
+    if (itk::Math::abs(rscale - scale) > tolerance)
     {
       std::cout << "Error in Set/Get Scale() " << std::endl;
       return EXIT_FAILURE;
@@ -493,9 +493,9 @@ itkSimilarity3DTransformTest(int, char *[])
     parameters[6] = scale;
 
     ParametersType parameters2 = transform->GetParameters();
-    for (unsigned int p = 0; p < np; p++)
+    for (unsigned int p = 0; p < np; ++p)
     {
-      if (std::fabs(parameters[p] - parameters2[p]) > tolerance)
+      if (itk::Math::abs(parameters[p] - parameters2[p]) > tolerance)
       {
         std::cout << "Output parameter does not match input " << std::endl;
         return EXIT_FAILURE;
@@ -511,13 +511,13 @@ itkSimilarity3DTransformTest(int, char *[])
 
     MatrixType matrix;
 
-    TransformType::Pointer t = TransformType::New();
+    auto t = TransformType::New();
 
     // attempt to set an non-orthogonal matrix
     par = 0;
-    for (unsigned int row = 0; row < 3; row++)
+    for (unsigned int row = 0; row < 3; ++row)
     {
-      for (unsigned int col = 0; col < 3; col++)
+      for (unsigned int col = 0; col < 3; ++col)
       {
         matrix[row][col] = static_cast<double>(par + 1);
         ++par;
@@ -600,14 +600,14 @@ itkSimilarity3DTransformTest(int, char *[])
     t->SetCenter(center);
     t->SetParameters(e);
 
-    TransformType::Pointer t2 = TransformType::New();
+    auto t2 = TransformType::New();
     t2->SetCenter(center);
     t2->SetMatrix(t->GetMatrix());
 
     ParametersType p = t2->GetParameters();
-    for (unsigned int k = 0; k < e.GetSize(); k++)
+    for (unsigned int k = 0; k < e.GetSize(); ++k)
     {
-      if (std::fabs(e[k] - p[k]) > epsilon)
+      if (itk::Math::abs(e[k] - p[k]) > epsilon)
       {
         std::cout << " [ FAILED ] " << std::endl;
         std::cout << "Expected parameters: " << e << std::endl;

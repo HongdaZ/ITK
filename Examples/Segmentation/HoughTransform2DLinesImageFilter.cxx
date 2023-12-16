@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -83,7 +83,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   using ReaderType = itk::ImageFileReader<ImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
 
   reader->SetFileName(argv[1]);
   try
@@ -111,14 +111,14 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   using CastingFilterType =
     itk::CastImageFilter<ImageType, AccumulatorImageType>;
-  CastingFilterType::Pointer caster = CastingFilterType::New();
+  auto caster = CastingFilterType::New();
 
   std::cout << "Applying gradient magnitude filter" << std::endl;
 
   using GradientFilterType =
     itk::GradientMagnitudeImageFilter<AccumulatorImageType,
                                       AccumulatorImageType>;
-  GradientFilterType::Pointer gradFilter = GradientFilterType::New();
+  auto gradFilter = GradientFilterType::New();
 
   caster->SetInput(localImage);
   gradFilter->SetInput(caster->GetOutput());
@@ -137,7 +137,7 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   std::cout << "Thresholding" << std::endl;
   using ThresholdFilterType = itk::ThresholdImageFilter<AccumulatorImageType>;
-  ThresholdFilterType::Pointer threshFilter = ThresholdFilterType::New();
+  auto threshFilter = ThresholdFilterType::New();
 
   threshFilter->SetInput(gradFilter->GetOutput());
   threshFilter->SetOutsideValue(0);
@@ -159,8 +159,7 @@ main(int argc, char * argv[])
     itk::HoughTransform2DLinesImageFilter<AccumulatorPixelType,
                                           AccumulatorPixelType>;
 
-  HoughTransformFilterType::Pointer houghFilter =
-    HoughTransformFilterType::New();
+  auto houghFilter = HoughTransformFilterType::New();
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -217,7 +216,7 @@ main(int argc, char * argv[])
   using OutputPixelType = unsigned char;
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
-  OutputImageType::Pointer localOutputImage = OutputImageType::New();
+  auto localOutputImage = OutputImageType::New();
 
   OutputImageType::RegionType region(localImage->GetLargestPossibleRegion());
   localOutputImage->SetRegions(region);
@@ -278,12 +277,13 @@ main(int argc, char * argv[])
     ImageType::IndexType localIndex;
     itk::Size<2>         size =
       localOutputImage->GetLargestPossibleRegion().GetSize();
-    float diag = std::sqrt((float)(size[0] * size[0] + size[1] * size[1]));
+    float diag =
+      std::sqrt(static_cast<float>(size[0] * size[0] + size[1] * size[1]));
 
-    for (auto i = static_cast<int>(-diag); i < static_cast<int>(diag); i++)
+    for (auto i = static_cast<int>(-diag); i < static_cast<int>(diag); ++i)
     {
-      localIndex[0] = (long int)(u[0] + i * v[0]);
-      localIndex[1] = (long int)(u[1] + i * v[1]);
+      localIndex[0] = static_cast<long>(u[0] + i * v[0]);
+      localIndex[1] = static_cast<long>(u[1] + i * v[1]);
 
       OutputImageType::RegionType outputRegion =
         localOutputImage->GetLargestPossibleRegion();
@@ -305,7 +305,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(argv[2]);
   writer->SetInput(localOutputImage);
 

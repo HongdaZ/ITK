@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ class ITK_TEMPLATE_EXPORT LaplacianSegmentationLevelSetFunction
   : public SegmentationLevelSetFunction<TImageType, TFeatureImageType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LaplacianSegmentationLevelSetFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(LaplacianSegmentationLevelSetFunction);
 
   /** Standard class type aliases. */
   using Self = LaplacianSegmentationLevelSetFunction;
@@ -51,10 +51,10 @@ public:
   itkTypeMacro(LaplacianSegmentationLevelSetFunction, SegmentationLevelSetFunction);
 
   /** Extract some parameters from the superclass. */
-  using ImageType = typename Superclass::ImageType;
-  using ScalarValueType = typename Superclass::ScalarValueType;
-  using FeatureScalarType = typename Superclass::FeatureScalarType;
-  using RadiusType = typename Superclass::RadiusType;
+  using typename Superclass::ImageType;
+  using typename Superclass::ScalarValueType;
+  using typename Superclass::FeatureScalarType;
+  using typename Superclass::RadiusType;
 
   /** Extract some parameters from the superclass. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;

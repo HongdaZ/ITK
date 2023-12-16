@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ itkGPUKernelClassMacro(GPUCastImageFilterKernel);
  * Scientific Research (NWO NRG-2010.02 and NWO 639.021.124).
  *
  * \note Imported from elastix. More information can be found in the Insight Journal
- * article: http://hdl.handle.net/10380/3393
+ * article: https://www.insight-journal.org/browse/publication/884
  *
  * \ingroup ITKGPUImageFilterBase
  */
@@ -77,7 +77,7 @@ class ITK_TEMPLATE_EXPORT GPUCastImageFilter
       CastImageFilter<TInputImage, TOutputImage>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUCastImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(GPUCastImageFilter);
 
   /** Standard class typedefs. */
   using Self = GPUCastImageFilter;

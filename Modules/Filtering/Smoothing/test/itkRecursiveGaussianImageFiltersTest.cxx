@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,7 +49,7 @@ itkRecursiveGaussianImageFiltersTest(int, char *[])
     using myRegionType = itk::ImageRegion<myDimension>;
 
     // Create the image
-    myImageType::Pointer inputImage = myImageType::New();
+    auto inputImage = myImageType::New();
 
 
     // Define their size, and start index
@@ -66,9 +66,7 @@ itkRecursiveGaussianImageFiltersTest(int, char *[])
     region.SetSize(size);
 
     // Initialize Image A
-    inputImage->SetLargestPossibleRegion(region);
-    inputImage->SetBufferedRegion(region);
-    inputImage->SetRequestedRegion(region);
+    inputImage->SetRegions(region);
     inputImage->Allocate();
 
     // Declare Iterator types apropriated for each image
@@ -110,7 +108,7 @@ itkRecursiveGaussianImageFiltersTest(int, char *[])
     using myGaussianFilterType = itk::RecursiveGaussianImageFilter<myImageType, myImageType>;
 
     // Create a  Filter
-    myGaussianFilterType::Pointer filter = myGaussianFilterType::New();
+    auto filter = myGaussianFilterType::New();
 
 
     // Connect the input images
@@ -126,7 +124,7 @@ itkRecursiveGaussianImageFiltersTest(int, char *[])
 
 
     // Create a  Filter
-    myGaussianFilterType::Pointer filter1 = myGaussianFilterType::New();
+    auto filter1 = myGaussianFilterType::New();
 
 
     // Connect the input images
@@ -141,7 +139,7 @@ itkRecursiveGaussianImageFiltersTest(int, char *[])
     std::cout << " Done !" << std::endl;
 
     // Create a  Filter
-    myGaussianFilterType::Pointer filter2 = myGaussianFilterType::New();
+    auto filter2 = myGaussianFilterType::New();
 
     // Connect the input images
     filter2->SetInput(inputImage);
@@ -180,7 +178,7 @@ itkRecursiveGaussianImageFiltersTest(int, char *[])
     SpacingType spacing;
     spacing[0] = 1.0;
 
-    ImageType::Pointer inputImage = ImageType::New();
+    auto inputImage = ImageType::New();
     inputImage->SetRegions(region);
     inputImage->Allocate();
     inputImage->SetSpacing(spacing);
@@ -193,7 +191,7 @@ itkRecursiveGaussianImageFiltersTest(int, char *[])
 
     using FilterType = itk::RecursiveGaussianImageFilter<ImageType, ImageType>;
 
-    FilterType::Pointer filter = FilterType::New();
+    auto filter = FilterType::New();
 
     filter->SetInput(inputImage);
 
@@ -220,7 +218,7 @@ itkRecursiveGaussianImageFiltersTest(int, char *[])
       // note: for scale space normalization, no scaling should occur
       // The additional scale-space testing is performed in a separate
       // test.
-      if (std::fabs(valueB - valueA) > 1e-4)
+      if (itk::Math::abs(valueB - valueA) > 1e-4)
       {
         std::cout << "FAILED !" << std::endl;
         std::cerr << "Error, Normalization across scales is failing" << std::endl;
@@ -267,7 +265,7 @@ itkRecursiveGaussianImageFiltersTest(int, char *[])
 
       // 1000.0 is the value of the impulse
       // compute absolute normalized error
-      double error = std::fabs(total - 1000.0) / 1000.0;
+      double error = itk::Math::abs(total - 1000.0) / 1000.0;
       if (error > 1e-3)
       {
         std::cout << "FAILED !" << std::endl;
@@ -431,7 +429,7 @@ itkRecursiveGaussianImageFiltersTest(int, char *[])
     }
 
     filter->SetSigma(0.0);
-    ITK_TRY_EXPECT_EXCEPTION(filter->Update())
+    ITK_TRY_EXPECT_EXCEPTION(filter->Update());
   }
 
   {
@@ -458,7 +456,7 @@ itkRecursiveGaussianImageFiltersTest(int, char *[])
     SpacingType spacing;
     spacing[0] = 1.0;
 
-    ImageType::Pointer inputImage = ImageType::New();
+    auto inputImage = ImageType::New();
     inputImage->SetRegions(region);
     inputImage->Allocate();
     inputImage->SetSpacing(spacing);
@@ -470,7 +468,7 @@ itkRecursiveGaussianImageFiltersTest(int, char *[])
     inputImage->SetPixel(index, static_cast<PixelType>(1.0));
 
     using FilterType = itk::RecursiveGaussianImageFilter<ImageType, ImageType>;
-    FilterType::Pointer filter = FilterType::New();
+    auto filter = FilterType::New();
     filter->SetInput(inputImage);
     filter->SetSigma(1);
 
@@ -508,7 +506,7 @@ itkRecursiveGaussianImageFiltersTest(int, char *[])
     }
 
     filter->SetSigma(0.0);
-    ITK_TRY_EXPECT_EXCEPTION(filter->Update())
+    ITK_TRY_EXPECT_EXCEPTION(filter->Update());
   }
 
   // Test streaming enumeration for RecursiveGaussianImageFilterEnums::GaussianOrder elements

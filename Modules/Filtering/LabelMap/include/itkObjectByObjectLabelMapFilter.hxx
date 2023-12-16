@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkObjectByObjectLabelMapFilter_hxx
 #define itkObjectByObjectLabelMapFilter_hxx
 
-#include "itkObjectByObjectLabelMapFilter.h"
 #include "itkNumericTraits.h"
 
 #include "itkLabelObject.h"
@@ -339,10 +338,8 @@ ObjectByObjectLabelMapFilter<TInputImage,
   os << indent << "KeepLabels: " << m_KeepLabels << std::endl;
   os << indent << "InternalForegroundValue: "
      << static_cast<typename NumericTraits<InternalOutputPixelType>::PrintType>(m_InternalForegroundValue) << std::endl;
-  os << indent << "InputFilter: " << this->m_InputFilter->GetNameOfClass() << " " << this->m_InputFilter.GetPointer()
-     << std::endl;
-  os << indent << "OutputFilter: " << this->m_OutputFilter->GetNameOfClass() << " " << this->m_OutputFilter.GetPointer()
-     << std::endl;
+  os << indent << "InputFilter: " << m_InputFilter << std::endl;
+  os << indent << "OutputFilter: " << m_OutputFilter << std::endl;
   os << indent << "Label: " << static_cast<typename NumericTraits<InputImagePixelType>::PrintType>(m_Label)
      << std::endl;
 }

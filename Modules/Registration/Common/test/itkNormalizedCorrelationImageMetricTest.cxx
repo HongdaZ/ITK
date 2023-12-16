@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include "itkStdStreamStateSave.h"
+#include "itkTestingMacros.h"
 
 /**
  *  This test uses two 2D-Gaussians (standard deviation RegionSize/2)
@@ -69,8 +70,8 @@ itkNormalizedCorrelationImageMetricTest(int, char *[])
   FixedImageType::PointValueType  fixedImageOrigin[] = { 0.0f, 0.0f };
   MovingImageType::PointValueType movingImageOrigin[] = { 0.0f, 0.0f };
 
-  MovingImageSourceType::Pointer movingImageSource = MovingImageSourceType::New();
-  FixedImageSourceType::Pointer  fixedImageSource = FixedImageSourceType::New();
+  auto movingImageSource = MovingImageSourceType::New();
+  auto fixedImageSource = FixedImageSourceType::New();
 
   fixedImageSource->SetSize(fixedImageSize);
   fixedImageSource->SetOrigin(fixedImageOrigin);
@@ -99,7 +100,9 @@ itkNormalizedCorrelationImageMetricTest(int, char *[])
   using TransformBaseType = MetricType::TransformType;
   using ParametersType = TransformBaseType::ParametersType;
 
-  MetricType::Pointer metric = MetricType::New();
+  auto metric = MetricType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(metric, NormalizedCorrelationImageToImageMetric, ImageToImageMetric);
 
 
   //-----------------------------------------------------------
@@ -114,7 +117,7 @@ itkNormalizedCorrelationImageMetricTest(int, char *[])
 
   using TransformType = itk::TranslationTransform<CoordinateRepresentationType, ImageDimension>;
 
-  TransformType::Pointer transform = TransformType::New();
+  auto transform = TransformType::New();
 
   metric->SetTransform(transform);
 
@@ -124,7 +127,7 @@ itkNormalizedCorrelationImageMetricTest(int, char *[])
   //------------------------------------------------------------
   using InterpolatorType = itk::LinearInterpolateImageFunction<MovingImageType, double>;
 
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
 
   interpolator->SetInputImage(movingImage);
 
@@ -163,7 +166,7 @@ itkNormalizedCorrelationImageMetricTest(int, char *[])
   ParametersType parameters(transform->GetNumberOfParameters());
 
   // initialize the offset/vector part
-  for (unsigned int k = 0; k < ImageDimension; k++)
+  for (unsigned int k = 0; k < ImageDimension; ++k)
   {
     parameters[k] = 0.0f;
   }
@@ -179,7 +182,8 @@ itkNormalizedCorrelationImageMetricTest(int, char *[])
 
   std::cout << "param[1]   Metric    d(Metric)/d(param[1] " << std::endl;
 
-  metric->SubtractMeanOn();
+  bool subtractMean = true;
+  ITK_TEST_SET_GET_BOOLEAN(metric, SubtractMean, subtractMean);
 
   for (double trans = -10; trans <= 5; trans += 0.2)
   {

@@ -4,8 +4,15 @@
 if(NOT ITK_FOUND)
   message(FATAL_ERROR "ITK must be found before module macros can be used.")
 endif()
-if(NOT ITK_VERSION VERSION_GREATER "4.8")
-  message(FATAL_ERROR "Requires ITK 4.9 or later to work.")
+if(NOT ITK_VERSION VERSION_GREATER "5.1")
+  message(FATAL_ERROR "Requires ITK 5.1 or later to work.")
+endif()
+if(MSVC AND ${CMAKE_MINIMUM_REQUIRED_VERSION} LESS 3.16.3)
+  message(STATUS "cmake_minimum_required of ${CMAKE_MINIMUM_REQUIRED_VERSION} is not enough.")
+  message(WARNING "cmake_minimum_required must be at least 3.16.3")
+  message(STATUS "This is needed to allow proper setting of CMAKE_MSVC_RUNTIME_LIBRARY.")
+  message(STATUS "Do not be surprised if you run into link errors of the style:
+  LNK2038: mismatch detected for 'RuntimeLibrary': value 'MTd_Static' doesn't match value 'MDd_Dynamic' in module.obj")
 endif()
 if(NOT EXISTS ${ITK_CMAKE_DIR}/ITKModuleMacros.cmake)
   message(FATAL_ERROR "Modules can only be built against an ITK build tree; they cannot be built against an ITK install tree.")
@@ -35,19 +42,39 @@ if(NOT DEFINED CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY)
   set(CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY 1)
 endif()
 
-# Setup build locations.
-if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ITK_DIR}/bin)
+
+# Setup build locations for shared libraries ----START
+#     ITK/CMakeLists.txt -- use ITK_BINARY_DIR as root
+#     ITK/CMake/ITKModuleExternal.cmake -- use ITK_DIR as root
+if(NOT ITK_BINARY_DIR)
+  set(ITK_BINARY_DIR ${ITK_DIR})
 endif()
+
+# Set default value for project that are not using the
+# "GNUInstallDirs" CMake module.
+if(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR "lib")
+endif()
+
+# The default path when not wrapping.  Restore standard build location
+# if python wrapping is turned on, and then turned off.
 if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-  if(ITK_WRAP_PYTHON)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${ITK_DIR}/Wrapping/Generators/Python/itk)
-  else()
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${ITK_DIR}/lib)
-  endif()
+  set(NO_WRAP_CMAKE_LIBRARY_OUTPUT_DIRECTORY ${ITK_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR} CACHE PATH "Shared library directory")
+else()
+  set(NO_WRAP_CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} CACHE PATH "Shared library directory")
 endif()
+if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+  set(NO_WRAP_CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ITK_BINARY_DIR}/bin CACHE PATH "Shared library directory")
+else()
+  set(NO_WRAP_CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} CACHE PATH "Shared library directory")
+endif()
+
+include(WrappingConfigCommon)
+# Setup build locations for shared libraries ----STOP
+
 if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${ITK_DIR}/lib)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${ITK_DIR}/${CMAKE_INSTALL_LIBDIR} CACHE PATH "Static library install directory")
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${NO_WRAP_CMAKE_RUNTIME_OUTPUT_DIRECTORY}   CACHE PATH "Runtime library directory")
 endif()
 
 # ITK installation structure
@@ -55,10 +82,10 @@ if(NOT ITK_INSTALL_RUNTIME_DIR)
   set(ITK_INSTALL_RUNTIME_DIR bin)
 endif()
 if(NOT ITK_INSTALL_LIBRARY_DIR)
-  set(ITK_INSTALL_LIBRARY_DIR lib)
+  set(ITK_INSTALL_LIBRARY_DIR ${CMAKE_INSTALL_LIBDIR})
 endif()
 if(NOT ITK_INSTALL_ARCHIVE_DIR)
-  set(ITK_INSTALL_ARCHIVE_DIR lib)
+  set(ITK_INSTALL_ARCHIVE_DIR ${CMAKE_INSTALL_LIBDIR})
 endif()
 if(NOT ITK_INSTALL_INCLUDE_DIR)
   set(ITK_INSTALL_INCLUDE_DIR include/ITK-${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR})
@@ -70,9 +97,10 @@ if(NOT ITK_INSTALL_DOC_DIR)
   set(ITK_INSTALL_DOC_DIR share/doc/ITK-${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR})
 endif()
 if(NOT ITK_INSTALL_PACKAGE_DIR)
-  set(ITK_INSTALL_PACKAGE_DIR "lib/cmake/ITK-${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR}")
+  set(ITK_INSTALL_PACKAGE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/ITK-${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR}")
 endif()
 
+include(${ITK_CMAKE_DIR}/ITKInitializeCXXStandard.cmake)
 include(${ITK_CMAKE_DIR}/ITKInitializeBuildType.cmake)
 
 # Use ITK's flags.
@@ -86,6 +114,15 @@ set(BUILD_DOCUMENTATION ${ITK_BUILD_DOCUMENTATION})
 option(BUILD_SHARED_LIBS "Build ITK with shared libraries." ${ITK_BUILD_SHARED})
 if(NOT CMAKE_POSITION_INDEPENDENT_CODE)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+if(MSVC)
+  if(ITK_MSVC_STATIC_CRT)
+    message(STATUS "ITK is setting ${PROJECT_NAME}'s MSVC_RUNTIME_LIBRARY to static")
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  else()
+    message(STATUS "ITK is setting ${PROJECT_NAME}'s MSVC_RUNTIME_LIBRARY to dynamic")
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+  endif()
 endif()
 
 # Add the ITK_MODULES_DIR to the CMAKE_MODULE_PATH and then use the binary
@@ -126,26 +163,11 @@ endif()
 if(ITK_WRAPPING)
   CMAKE_DEPENDENT_OPTION(${itk-module}_WRAP_PYTHON "Build Python support." ${ITK_WRAP_PYTHON}
                        "ITK_WRAP_PYTHON" OFF)
-  CMAKE_DEPENDENT_OPTION(${itk-module}_WRAP_JAVA "Build Java support." ${ITK_WRAP_JAVA}
-                       "ITK_WRAP_JAVA" OFF)
-  CMAKE_DEPENDENT_OPTION(${itk-module}_WRAP_RUBY "Build Ruby support." ${ITK_WRAP_RUBY}
-                       "ITK_WRAP_RUBY" OFF)
-  CMAKE_DEPENDENT_OPTION(${itk-module}_WRAP_PERL "Build Perl support." ${ITK_WRAP_PERL}
-                       "ITK_WRAP_PERL" OFF)
-  CMAKE_DEPENDENT_OPTION(${itk-module}_WRAP_TCL "Build Tcl support." ${ITK_WRAP_TCL}
-                       "ITK_WRAP_TCL" OFF)
-  CMAKE_DEPENDENT_OPTION(${itk-module}_WRAP_EXPLICIT "Build Explicit support." OFF
-                       "ITK_WRAP_EXPLICIT" OFF)
   CMAKE_DEPENDENT_OPTION(${itk-module}_WRAP_DOC "Build Doxygen support." OFF
                        "ITK_WRAP_DOC" OFF)
   set(${itk-module}_WRAP_CASTXML ${ITK_WRAPPING})
   set(${itk-module}_WRAP_SWIGINTERFACE ${ITK_WRAPPING})
-  if( (${itk-module}_WRAP_PYTHON OR
-       ${itk-module}_WRAP_JAVA OR
-       ${itk-module}_WRAP_RUBY OR
-       ${itk-module}_WRAP_PERL OR
-       ${itk-module}_WRAP_TCL OR
-       ${itk-module}_WRAP_EXPLICIT OR
+  if((${itk-module}_WRAP_PYTHON OR
        ${itk-module}_WRAP_DOC
       )
     AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/wrapping/CMakeLists.txt"

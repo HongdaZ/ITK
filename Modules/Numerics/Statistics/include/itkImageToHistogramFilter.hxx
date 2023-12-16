@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageToHistogramFilter_hxx
 #define itkImageToHistogramFilter_hxx
 
-#include "itkImageToHistogramFilter.h"
 #include "itkImageRegionConstIterator.h"
 
 namespace itk
@@ -55,8 +54,8 @@ ImageToHistogramFilter<TImage>::MakeOutput(DataObjectPointerArraySizeType itkNot
 }
 
 template <typename TImage>
-const typename ImageToHistogramFilter<TImage>::HistogramType *
-ImageToHistogramFilter<TImage>::GetOutput() const
+auto
+ImageToHistogramFilter<TImage>::GetOutput() const -> const HistogramType *
 {
   auto * output = itkDynamicCastInDebugMode<const HistogramType *>(this->ProcessObject::GetPrimaryOutput());
 
@@ -64,8 +63,8 @@ ImageToHistogramFilter<TImage>::GetOutput() const
 }
 
 template <typename TImage>
-typename ImageToHistogramFilter<TImage>::HistogramType *
-ImageToHistogramFilter<TImage>::GetOutput()
+auto
+ImageToHistogramFilter<TImage>::GetOutput() -> HistogramType *
 {
 
   auto * output = itkDynamicCastInDebugMode<HistogramType *>(this->ProcessObject::GetPrimaryOutput());
@@ -144,7 +143,7 @@ ImageToHistogramFilter<TImage>::InitializeOutputHistogram()
   {
     if (this->GetInput()->GetBufferedRegion() != this->GetInput()->GetLargestPossibleRegion())
     {
-      itkExceptionMacro(<< "AutoMinimumMaximumInput is not supported with streaming.")
+      itkExceptionMacro(<< "AutoMinimumMaximumInput is not supported with streaming.");
     }
 
     // we have to compute the minimum and maximum values
@@ -212,7 +211,7 @@ ImageToHistogramFilter<TImage>::ThreadedComputeMinimumAndMaximum(const RegionTyp
   {
     const PixelType & p = inputIt.Get();
     NumericTraits<PixelType>::AssignToArray(p, m);
-    for (unsigned int i = 0; i < nbOfComponents; i++)
+    for (unsigned int i = 0; i < nbOfComponents; ++i)
     {
       min[i] = std::min(m[i], min[i]);
       max[i] = std::max(m[i], max[i]);
@@ -221,7 +220,7 @@ ImageToHistogramFilter<TImage>::ThreadedComputeMinimumAndMaximum(const RegionTyp
   }
 
   std::lock_guard<std::mutex> mutexHolder(m_Mutex);
-  for (unsigned int i = 0; i < nbOfComponents; i++)
+  for (unsigned int i = 0; i < nbOfComponents; ++i)
   {
     m_Minimum[i] = std::min(m_Minimum[i], min[i]);
     m_Maximum[i] = std::max(m_Maximum[i], max[i]);
@@ -309,7 +308,7 @@ ImageToHistogramFilter<TImage>::ApplyMarginalScale(HistogramMeasurementVectorTyp
 {
   const unsigned int nbOfComponents = this->GetInput()->GetNumberOfComponentsPerPixel();
   bool               clipHistograms = true;
-  for (unsigned int i = 0; i < nbOfComponents; i++)
+  for (unsigned int i = 0; i < nbOfComponents; ++i)
   {
     if (!NumericTraits<HistogramMeasurementType>::is_integer)
     {

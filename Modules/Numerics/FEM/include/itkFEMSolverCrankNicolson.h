@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -71,7 +71,7 @@ template <unsigned int TDimension = 3>
 class ITK_TEMPLATE_EXPORT SolverCrankNicolson : public Solver<TDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SolverCrankNicolson);
+  ITK_DISALLOW_COPY_AND_MOVE(SolverCrankNicolson);
 
   using Self = SolverCrankNicolson;
   using Superclass = Solver<TDimension>;
@@ -186,7 +186,7 @@ public:
   inline Float
   GSSign(Float a, Float b)
   {
-    return b > 0.0 ? std::fabs(a) : -1. * std::fabs(a);
+    return b > 0.0 ? itk::Math::abs(a) : -1. * itk::Math::abs(a);
   }
   inline Float
   GSMax(Float a, Float b)

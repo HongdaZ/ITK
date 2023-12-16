@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,7 +58,7 @@ class ITK_TEMPLATE_EXPORT GPUDemonsRegistrationFunction
   : public GPUPDEDeformableRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUDemonsRegistrationFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(GPUDemonsRegistrationFunction);
 
   /** Standard class type aliases. */
   using Self = GPUDemonsRegistrationFunction;
@@ -73,29 +73,29 @@ public:
   itkTypeMacro(GPUDemonsRegistrationFunction, DemonsRegistrationFunction);
 
   /** MovingImage image type. */
-  using MovingImageType = typename Superclass::MovingImageType;
-  using MovingImagePointer = typename Superclass::MovingImagePointer;
+  using typename Superclass::MovingImageType;
+  using typename Superclass::MovingImagePointer;
 
   /** FixedImage image type. */
-  using FixedImageType = typename Superclass::FixedImageType;
-  using FixedImagePointer = typename Superclass::FixedImagePointer;
+  using typename Superclass::FixedImageType;
+  using typename Superclass::FixedImagePointer;
   using IndexType = typename FixedImageType::IndexType;
   using SizeType = typename FixedImageType::SizeType;
   using SpacingType = typename FixedImageType::SpacingType;
 
   /** Deformation field type. */
-  using DisplacementFieldType = typename Superclass::DisplacementFieldType;
-  using DisplacementFieldTypePointer = typename Superclass::DisplacementFieldTypePointer;
+  using typename Superclass::DisplacementFieldType;
+  using typename Superclass::DisplacementFieldTypePointer;
 
   /** Inherit some enums from the superclass. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Inherit some enums from the superclass. */
-  using PixelType = typename Superclass::PixelType;
-  using RadiusType = typename Superclass::RadiusType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
-  using FloatOffsetType = typename Superclass::FloatOffsetType;
-  using TimeStepType = typename Superclass::TimeStepType;
+  using typename Superclass::PixelType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::NeighborhoodType;
+  using typename Superclass::FloatOffsetType;
+  using typename Superclass::TimeStepType;
 
   /** Interpolator type. */
   using CoordRepType = double;

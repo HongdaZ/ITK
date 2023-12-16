@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ private:
 /**
  * Constructor
  */
-LBFGSBOptimizer ::LBFGSBOptimizer()
+LBFGSBOptimizer::LBFGSBOptimizer()
 
 {
   m_LowerBound = InternalBoundValueType(0);
@@ -63,16 +63,13 @@ LBFGSBOptimizer ::LBFGSBOptimizer()
 /**
  * Destructor
  */
-LBFGSBOptimizer ::~LBFGSBOptimizer()
-{
-  delete m_VnlOptimizer;
-}
+LBFGSBOptimizer::~LBFGSBOptimizer() = default;
 
 /**
  * PrintSelf
  */
 void
-LBFGSBOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
+LBFGSBOptimizer::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Trace: ";
@@ -116,7 +113,7 @@ LBFGSBOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
  * Set the optimizer trace flag
  */
 void
-LBFGSBOptimizer ::SetTrace(bool flag)
+LBFGSBOptimizer::SetTrace(bool flag)
 {
   if (flag == m_Trace)
   {
@@ -136,7 +133,7 @@ LBFGSBOptimizer ::SetTrace(bool flag)
  * Set lower bound
  */
 void
-LBFGSBOptimizer ::SetLowerBound(const BoundValueType & value)
+LBFGSBOptimizer::SetLowerBound(const BoundValueType & value)
 {
   this->m_LowerBound = value;
   if (m_OptimizerInitialized)
@@ -150,7 +147,7 @@ LBFGSBOptimizer ::SetLowerBound(const BoundValueType & value)
  * Set upper bound
  */
 void
-LBFGSBOptimizer ::SetUpperBound(const BoundValueType & value)
+LBFGSBOptimizer::SetUpperBound(const BoundValueType & value)
 {
   this->m_UpperBound = value;
   if (m_OptimizerInitialized)
@@ -164,7 +161,7 @@ LBFGSBOptimizer ::SetUpperBound(const BoundValueType & value)
  * Return Current Value
  */
 LBFGSBOptimizer::MeasureType
-LBFGSBOptimizer ::GetValue() const
+LBFGSBOptimizer::GetValue() const
 {
   return this->GetCachedValue();
 }
@@ -173,7 +170,7 @@ LBFGSBOptimizer ::GetValue() const
  * Set bound selection array
  */
 void
-LBFGSBOptimizer ::SetBoundSelection(const BoundSelectionType & value)
+LBFGSBOptimizer::SetBoundSelection(const BoundSelectionType & value)
 {
   m_BoundSelection = value;
   if (m_OptimizerInitialized)
@@ -190,7 +187,7 @@ LBFGSBOptimizer ::SetBoundSelection(const BoundSelectionType & value)
  * 1e+7 for moderate accuracy and 1e+1 for extremely high accuracy.
  */
 void
-LBFGSBOptimizer ::SetCostFunctionConvergenceFactor(double value)
+LBFGSBOptimizer::SetCostFunctionConvergenceFactor(double value)
 {
   if (value < 0.0)
   {
@@ -210,7 +207,7 @@ LBFGSBOptimizer ::SetCostFunctionConvergenceFactor(double value)
  * is 1e-5.
  */
 void
-LBFGSBOptimizer ::SetProjectedGradientTolerance(double value)
+LBFGSBOptimizer::SetProjectedGradientTolerance(double value)
 {
   m_ProjectedGradientTolerance = value;
   if (m_OptimizerInitialized)
@@ -222,7 +219,7 @@ LBFGSBOptimizer ::SetProjectedGradientTolerance(double value)
 
 /** Set/Get the MaximumNumberOfIterations. Default is 500 */
 void
-LBFGSBOptimizer ::SetMaximumNumberOfIterations(unsigned int value)
+LBFGSBOptimizer::SetMaximumNumberOfIterations(unsigned int value)
 {
   m_MaximumNumberOfIterations = value;
   this->Modified();
@@ -230,7 +227,7 @@ LBFGSBOptimizer ::SetMaximumNumberOfIterations(unsigned int value)
 
 /** Set/Get the MaximumNumberOfEvaluations. Default is 500 */
 void
-LBFGSBOptimizer ::SetMaximumNumberOfEvaluations(unsigned int value)
+LBFGSBOptimizer::SetMaximumNumberOfEvaluations(unsigned int value)
 {
   m_MaximumNumberOfEvaluations = value;
   if (m_OptimizerInitialized)
@@ -242,7 +239,7 @@ LBFGSBOptimizer ::SetMaximumNumberOfEvaluations(unsigned int value)
 
 /** Set/Get the MaximumNumberOfCorrections. Default is 5 */
 void
-LBFGSBOptimizer ::SetMaximumNumberOfCorrections(unsigned int value)
+LBFGSBOptimizer::SetMaximumNumberOfCorrections(unsigned int value)
 {
   m_MaximumNumberOfCorrections = value;
   if (m_OptimizerInitialized)
@@ -266,14 +263,9 @@ LBFGSBOptimizer::SetCostFunction(SingleValuedCostFunction * costFunction)
 
   adaptor->SetCostFunction(costFunction);
 
-  if (m_OptimizerInitialized)
-  {
-    delete m_VnlOptimizer;
-  }
-
   this->SetCostFunctionAdaptor(adaptor);
 
-  m_VnlOptimizer = new InternalOptimizerType(*adaptor, this);
+  m_VnlOptimizer = std::make_unique<InternalOptimizerType>(*adaptor, this);
 
   // set the optimizer parameters
   m_VnlOptimizer->set_lower_bound(m_LowerBound);
@@ -293,7 +285,7 @@ LBFGSBOptimizer::SetCostFunction(SingleValuedCostFunction * costFunction)
  * Start the optimization
  */
 void
-LBFGSBOptimizer ::StartOptimization()
+LBFGSBOptimizer::StartOptimization()
 {
   // Check if all the bounds parameters are the same size as the initial
   // parameters.
@@ -356,14 +348,14 @@ LBFGSBOptimizer ::StartOptimization()
  */
 
 /** Create with a reference to the ITK object */
-LBFGSBOptimizerHelper ::LBFGSBOptimizerHelper(vnl_cost_function & f, LBFGSBOptimizer * const itkObj)
+LBFGSBOptimizerHelper::LBFGSBOptimizerHelper(vnl_cost_function & f, LBFGSBOptimizer * const itkObj)
   : vnl_lbfgsb(f)
   , m_ItkObj(itkObj)
 {}
 
 /** Handle new iteration event */
 bool
-LBFGSBOptimizerHelper ::report_iter()
+LBFGSBOptimizerHelper::report_iter()
 {
   Superclass::report_iter();
 

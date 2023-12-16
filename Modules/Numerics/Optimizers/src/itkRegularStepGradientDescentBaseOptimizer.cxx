@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkRegularStepGradientDescentBaseOptimizer_hxx
-#define _itkRegularStepGradientDescentBaseOptimizer_hxx
 
 #include "itkRegularStepGradientDescentBaseOptimizer.h"
 
@@ -25,11 +23,9 @@ namespace itk
 /**
  * Constructor
  */
-RegularStepGradientDescentBaseOptimizer ::RegularStepGradientDescentBaseOptimizer()
+RegularStepGradientDescentBaseOptimizer::RegularStepGradientDescentBaseOptimizer()
 
 {
-  itkDebugMacro("Constructor");
-
   m_MaximumStepLength = 1.0;
   m_MinimumStepLength = 1e-3;
   m_GradientMagnitudeTolerance = 1e-4;
@@ -50,7 +46,7 @@ RegularStepGradientDescentBaseOptimizer ::RegularStepGradientDescentBaseOptimize
  * Start the optimization
  */
 void
-RegularStepGradientDescentBaseOptimizer ::StartOptimization()
+RegularStepGradientDescentBaseOptimizer::StartOptimization()
 {
   itkDebugMacro("StartOptimization");
 
@@ -84,7 +80,7 @@ RegularStepGradientDescentBaseOptimizer ::StartOptimization()
  * Resume the optimization
  */
 void
-RegularStepGradientDescentBaseOptimizer ::ResumeOptimization()
+RegularStepGradientDescentBaseOptimizer::ResumeOptimization()
 {
   itkDebugMacro("ResumeOptimization");
 
@@ -108,13 +104,13 @@ RegularStepGradientDescentBaseOptimizer ::ResumeOptimization()
     {
       m_CostFunction->GetValueAndDerivative(this->GetCurrentPosition(), m_Value, m_Gradient);
     }
-    catch (ExceptionObject & excp)
+    catch (const ExceptionObject & excp)
     {
       m_StopCondition = StopConditionEnum::CostFunctionError;
       m_StopConditionDescription << "Cost function error after " << m_CurrentIteration << " iterations. "
                                  << excp.GetDescription();
       this->StopOptimization();
-      throw excp;
+      throw;
     }
 
     if (m_Stop)
@@ -124,7 +120,7 @@ RegularStepGradientDescentBaseOptimizer ::ResumeOptimization()
 
     this->AdvanceOneStep();
 
-    m_CurrentIteration++;
+    ++m_CurrentIteration;
   }
 }
 
@@ -132,7 +128,7 @@ RegularStepGradientDescentBaseOptimizer ::ResumeOptimization()
  * Stop optimization
  */
 void
-RegularStepGradientDescentBaseOptimizer ::StopOptimization()
+RegularStepGradientDescentBaseOptimizer::StopOptimization()
 {
   itkDebugMacro("StopOptimization");
 
@@ -144,7 +140,7 @@ RegularStepGradientDescentBaseOptimizer ::StopOptimization()
  * Advance one Step following the gradient direction
  */
 void
-RegularStepGradientDescentBaseOptimizer ::AdvanceOneStep()
+RegularStepGradientDescentBaseOptimizer::AdvanceOneStep()
 {
   itkDebugMacro("AdvanceOneStep");
 
@@ -171,14 +167,14 @@ RegularStepGradientDescentBaseOptimizer ::AdvanceOneStep()
                       << ", but the NumberOfParameters for the CostFunction is " << spaceDimension << ".");
   }
 
-  for (unsigned int i = 0; i < spaceDimension; i++)
+  for (unsigned int i = 0; i < spaceDimension; ++i)
   {
     transformedGradient[i] = m_Gradient[i] / scales[i];
     previousTransformedGradient[i] = m_PreviousGradient[i] / scales[i];
   }
 
   double magnitudeSquare = 0;
-  for (unsigned int dim = 0; dim < spaceDimension; dim++)
+  for (unsigned int dim = 0; dim < spaceDimension; ++dim)
   {
     const double weighted = transformedGradient[dim];
     magnitudeSquare += weighted * weighted;
@@ -199,7 +195,7 @@ RegularStepGradientDescentBaseOptimizer ::AdvanceOneStep()
 
   double scalarProduct = 0;
 
-  for (unsigned int i = 0; i < spaceDimension; i++)
+  for (unsigned int i = 0; i < spaceDimension; ++i)
   {
     const double weight1 = transformedGradient[i];
     const double weight2 = previousTransformedGradient[i];
@@ -241,13 +237,13 @@ RegularStepGradientDescentBaseOptimizer ::AdvanceOneStep()
 }
 
 const std::string
-RegularStepGradientDescentBaseOptimizer ::GetStopConditionDescription() const
+RegularStepGradientDescentBaseOptimizer::GetStopConditionDescription() const
 {
   return m_StopConditionDescription.str();
 }
 
 void
-RegularStepGradientDescentBaseOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
+RegularStepGradientDescentBaseOptimizer::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "MaximumStepLength: " << m_MaximumStepLength << std::endl;
@@ -305,5 +301,3 @@ operator<<(std::ostream & out, const RegularStepGradientDescentBaseOptimizerEnum
   }();
 }
 } // end namespace itk
-
-#endif

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ namespace itk
 
 /** \class GaussianSmoothingOnUpdateDisplacementFieldTransform
  * \brief Modifies the UpdateTransformParameters method
- * to peform a Gaussian smoothing of the
+ * to perform a Gaussian smoothing of the
  * displacement field after adding the update array.
  *
  * This class is the same as \c DisplacementFieldTransform, except
@@ -42,16 +42,16 @@ namespace itk
  *
  * \ingroup ITKDisplacementField
  */
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 class ITK_TEMPLATE_EXPORT GaussianSmoothingOnUpdateDisplacementFieldTransform
-  : public DisplacementFieldTransform<TParametersValueType, NDimensions>
+  : public DisplacementFieldTransform<TParametersValueType, VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianSmoothingOnUpdateDisplacementFieldTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(GaussianSmoothingOnUpdateDisplacementFieldTransform);
 
   /** Standard class type aliases. */
   using Self = GaussianSmoothingOnUpdateDisplacementFieldTransform;
-  using Superclass = DisplacementFieldTransform<TParametersValueType, NDimensions>;
+  using Superclass = DisplacementFieldTransform<TParametersValueType, VDimension>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
@@ -62,14 +62,14 @@ public:
   itkNewMacro(Self);
 
   /** Types from superclass */
-  using ScalarType = typename Superclass::ScalarType;
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::ScalarType;
+  using typename Superclass::DerivativeType;
   using DerivativeValueType = typename DerivativeType::ValueType;
-  using DisplacementFieldType = typename Superclass::DisplacementFieldType;
-  using DisplacementFieldPointer = typename Superclass::DisplacementFieldPointer;
+  using typename Superclass::DisplacementFieldType;
+  using typename Superclass::DisplacementFieldPointer;
   using DisplacementVectorType = typename DisplacementFieldType::PixelType;
 
-  using TransformPointer = typename Transform<TParametersValueType, NDimensions, NDimensions>::Pointer;
+  using TransformPointer = typename Transform<TParametersValueType, VDimension, VDimension>::Pointer;
 
   /**
    * Get/Set the Gaussian smoothing standard deviation for the update field.

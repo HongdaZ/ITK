@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@
 #include "itkCastImageFilter.h"
 #include "itkStreamingImageFilter.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 // class to produce a linear image pattern
 template <int VDimension>
@@ -34,7 +35,7 @@ public:
   ImagePattern()
   {
     m_Offset = 0.0;
-    for (int j = 0; j < VDimension; j++)
+    for (int j = 0; j < VDimension; ++j)
     {
       m_Coeff[j] = 0.0;
     }
@@ -44,9 +45,9 @@ public:
   Evaluate(const IndexType & index)
   {
     double accum = m_Offset;
-    for (int j = 0; j < VDimension; j++)
+    for (int j = 0; j < VDimension; ++j)
     {
-      accum += m_Coeff[j] * (double)index[j];
+      accum += m_Coeff[j] * static_cast<double>(index[j]);
     }
     return accum;
   }
@@ -96,7 +97,7 @@ itkVectorExpandImageFilterTest(int, char *[])
   ImageType::SizeType   size = { { 64, 64 } };
   region.SetSize(size);
 
-  ImageType::Pointer input = ImageType::New();
+  auto input = ImageType::New();
   input->SetLargestPossibleRegion(region);
   input->SetBufferedRegion(region);
   input->Allocate();
@@ -104,7 +105,7 @@ itkVectorExpandImageFilterTest(int, char *[])
   int                          j, k;
   ImagePattern<ImageDimension> pattern;
   pattern.m_Offset = 64;
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     pattern.m_Coeff[j] = 1.0;
   }
@@ -119,7 +120,7 @@ itkVectorExpandImageFilterTest(int, char *[])
 
     double    value = pattern.Evaluate(inIter.GetIndex());
     PixelType pixel;
-    for (k = 0; k < VectorDimension; k++)
+    for (k = 0; k < VectorDimension; ++k)
     {
       pixel[k] = vectorCoeff[k] * value;
     }
@@ -132,15 +133,15 @@ itkVectorExpandImageFilterTest(int, char *[])
   std::cout << "Run ExpandImageFilter in standalone mode with progress.";
   std::cout << std::endl;
   using ExpanderType = itk::VectorExpandImageFilter<ImageType, ImageType>;
-  ExpanderType::Pointer expander = ExpanderType::New();
+  auto expander = ExpanderType::New();
 
   expander->SetInput(input);
 
   using InterpolatorType = itk::VectorNearestNeighborInterpolateImageFunction<ImageType, double>;
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
 
   expander->SetInterpolator(interpolator);
-  std::cout << "Interpolator: " << expander->GetInterpolator() << std::endl;
+  ITK_TEST_SET_GET_VALUE(interpolator, expander->GetInterpolator());
 
   expander->SetExpandFactors(5);
 
@@ -184,12 +185,11 @@ itkVectorExpandImageFilterTest(int, char *[])
     {
 
       ImageType::PointType point;
-      ImageType::IndexType inputIndex;
       expanderOutput->TransformIndexToPhysicalPoint(outIter.GetIndex(), point);
-      input->TransformPhysicalPointToIndex(point, inputIndex);
-      double baseValue = pattern.Evaluate(inputIndex);
+      ImageType::IndexType inputIndex = input->TransformPhysicalPointToIndex(point);
+      double               baseValue = pattern.Evaluate(inputIndex);
 
-      for (k = 0; k < VectorDimension; k++)
+      for (k = 0; k < VectorDimension; ++k)
       {
         if (itk::Math::abs(baseValue * vectorCoeff[k] - value[k]) > 1e-4)
         {
@@ -205,7 +205,7 @@ itkVectorExpandImageFilterTest(int, char *[])
     else
     {
 
-      for (k = 0; k < VectorDimension; k++)
+      for (k = 0; k < VectorDimension; ++k)
       {
         if (itk::Math::NotExactlyEquals(value[k], padValue[k]))
         {
@@ -227,11 +227,11 @@ itkVectorExpandImageFilterTest(int, char *[])
   std::cout << std::endl;
 
   using CasterType = itk::CastImageFilter<ImageType, ImageType>;
-  CasterType::Pointer caster = CasterType::New();
+  auto caster = CasterType::New();
 
   caster->SetInput(expander->GetInput());
 
-  ExpanderType::Pointer expander2 = ExpanderType::New();
+  auto expander2 = ExpanderType::New();
 
   expander2->SetInput(caster->GetOutput());
   expander2->SetExpandFactors(expander->GetExpandFactors());
@@ -239,7 +239,7 @@ itkVectorExpandImageFilterTest(int, char *[])
   expander2->SetInterpolator(expander->GetModifiableInterpolator());
 
   using StreamerType = itk::StreamingImageFilter<ImageType, ImageType>;
-  StreamerType::Pointer streamer = StreamerType::New();
+  auto streamer = StreamerType::New();
   streamer->SetInput(expander2->GetOutput());
   streamer->SetNumberOfStreamDivisions(3);
   streamer->Update();
@@ -256,7 +256,7 @@ itkVectorExpandImageFilterTest(int, char *[])
   while (!outIter.IsAtEnd())
   {
 
-    for (k = 0; k < VectorDimension; k++)
+    for (k = 0; k < VectorDimension; ++k)
     {
       if (itk::Math::NotExactlyEquals(outIter.Get()[k], streamIter.Get()[k]))
       {

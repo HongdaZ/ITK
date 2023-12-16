@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class WarpImageFilter
+ * \class WarpImageFilter
  * \brief Warps an image using an input displacement field.
  *
  * WarpImageFilter warps an existing image with respect to
@@ -85,7 +85,7 @@ template <typename TInputImage, typename TOutputImage, typename TDisplacementFie
 class ITK_TEMPLATE_EXPORT WarpImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WarpImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(WarpImageFilter);
 
   /** Standard class type aliases. */
   using Self = WarpImageFilter;
@@ -103,11 +103,11 @@ public:
   using OutputImageRegionType = typename TOutputImage::RegionType;
 
   /** Inherit some types from the superclass. */
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
+  using typename Superclass::InputImageType;
+  using typename Superclass::InputImagePointer;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::OutputImagePointer;
+  using typename Superclass::InputImageConstPointer;
   using IndexType = typename OutputImageType::IndexType;
   using IndexValueType = typename OutputImageType::IndexValueType;
   using SizeType = typename OutputImageType::SizeType;
@@ -153,7 +153,7 @@ public:
   /** Set the output image spacing. */
   itkSetMacro(OutputSpacing, SpacingType);
   virtual void
-  SetOutputSpacing(const double * values);
+  SetOutputSpacing(const double * spacing);
 
   /** Get the output image spacing. */
   itkGetConstReferenceMacro(OutputSpacing, SpacingType);
@@ -161,7 +161,7 @@ public:
   /** Set the output image origin. */
   itkSetMacro(OutputOrigin, PointType);
   virtual void
-  SetOutputOrigin(const double * values);
+  SetOutputOrigin(const double * origin);
 
   /** Get the output image origin. */
   itkGetConstReferenceMacro(OutputOrigin, PointType);
@@ -262,13 +262,13 @@ protected:
    * can be obtained using the GetDisplacementField() method
    */
   void
-  EvaluateDisplacementAtPhysicalPoint(const PointType & p, DisplacementType & output);
+  EvaluateDisplacementAtPhysicalPoint(const PointType & point, DisplacementType & output);
 
   /** This function should be in an interpolator but none of the ITK
    * interpolators at this point handle edge conditions properly
    */
   void
-  EvaluateDisplacementAtPhysicalPoint(const PointType &             p,
+  EvaluateDisplacementAtPhysicalPoint(const PointType &             point,
                                       const DisplacementFieldType * fieldPtr,
                                       DisplacementType &            output);
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class Array
+ * \class Array
  *  \brief Array class with size defined at construction time.
  *
  * This class derives from the vnl_vector<> class.
@@ -65,8 +65,13 @@ public:
   /** Construct from a VnlVectorType */
   explicit Array(const VnlVectorType &);
 
-  /** Constructor with size. Size can only be changed by assignment */
+  /** Constructor with size. Size can only be changed by assignment.
+   * \note This constructor may not initialize its elements.
+   */
   explicit Array(SizeValueType dimension);
+
+  /** Constructor with size and initial value for each element. */
+  explicit Array(SizeValueType dimension, const ValueType & value);
 
   /** Constructor that initializes array with contents from a user supplied
    * buffer. The pointer to the buffer and the length is specified. By default,
@@ -85,11 +90,9 @@ public:
 
 #else // defined ( ITK_LEGACY_REMOVE )
   /** Constructor that initializes array with contents from a user supplied
-   * buffer. The pointer to the buffer and the length is specified. By default,
-   * the array does not manage the memory of the buffer. It merely points to
-   * that location and it is the user's responsibility to delete it.
-   * If "LetArrayManageMemory" is true, then this class will free the
-   * memory when this object is destroyed. */
+   * buffer. The pointer to the buffer and the length is specified. The array
+   * does a deep copy of the const pointer data, so the array class also
+   * manages memory. The 3rd argument is only for backward compatibility. */
   Array(const ValueType * datain, SizeValueType sz, bool LetArrayManageMemory = false);
 #endif
 
@@ -97,15 +100,14 @@ public:
   template <typename TArrayValue>
   Array(const Array<TArrayValue> & r)
   {
-    this->m_LetArrayManageMemory = true;
     this->SetSize(r.GetSize());
-    for (SizeValueType i = 0; i < r.GetSize(); i++)
+    for (SizeValueType i = 0; i < r.GetSize(); ++i)
     {
       this->operator[](i) = static_cast<TValue>(r[i]);
     }
   }
 
-  /** Set the all the elements of the array to the specified value */
+  /** Set all the elements of the array to the specified value */
   void
   Fill(TValue const & v)
   {
@@ -113,10 +115,10 @@ public:
   }
 
   /** Copy operator */
-  const Self &
+  Self &
   operator=(const Self & rhs);
 
-  const Self &
+  Self &
   operator=(const VnlVectorType & rhs);
 
   /** Return the number of elements in the Array  */
@@ -202,7 +204,8 @@ public:
   }
 
 private:
-  bool m_LetArrayManageMemory;
+  /** Indicates whether this array manages the memory of its data. */
+  bool m_LetArrayManageMemory{ true };
 };
 
 template <typename TValue>

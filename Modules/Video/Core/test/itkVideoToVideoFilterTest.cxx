@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ namespace VideoToVideoFilterTest
 InputFrameType::Pointer
 CreateInputFrame(InputPixelType val)
 {
-  InputFrameType::Pointer out = InputFrameType::New();
+  auto out = InputFrameType::New();
 
   InputFrameType::RegionType largestRegion;
   InputFrameType::SizeType   sizeLR;
@@ -68,7 +68,7 @@ CreateInputFrame(InputPixelType val)
 }
 
 /**
- *\class DummyVideoToVideoFilter
+ * \class DummyVideoToVideoFilter
  * \brief A simple implementation of VideoTOVideoFilter for the test
  */
 template <typename TInputVideoStream, typename TOutputVideoStream>
@@ -173,15 +173,15 @@ itkVideoToVideoFilterTest(int, char *[])
 
   // Instantiate a filter
   using VideoFilterType = itk::VideoToVideoFilterTest::DummyVideoToVideoFilter<InputVideoType, OutputVideoType>;
-  VideoFilterType::Pointer filter = VideoFilterType::New();
+  auto filter = VideoFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, DummyVideoToVideoFilter, VideoToVideoFilter);
 
   // Set up an input video stream
-  InputVideoType::Pointer inputVideo = InputVideoType::New();
-  itk::TemporalRegion     inputLargestTemporalRegion;
-  SizeValueType           inputStart = 0;
-  SizeValueType           inputDuration = 10;
+  auto                inputVideo = InputVideoType::New();
+  itk::TemporalRegion inputLargestTemporalRegion;
+  SizeValueType       inputStart = 0;
+  SizeValueType       inputDuration = 10;
   inputLargestTemporalRegion.SetFrameStart(inputStart);
   inputLargestTemporalRegion.SetFrameDuration(inputDuration);
   inputVideo->SetLargestPossibleTemporalRegion(inputLargestTemporalRegion);

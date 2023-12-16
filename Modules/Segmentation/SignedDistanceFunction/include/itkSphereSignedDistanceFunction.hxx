@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSphereSignedDistanceFunction_hxx
 #define itkSphereSignedDistanceFunction_hxx
 
-#include "itkSphereSignedDistanceFunction.h"
 #include "itkMath.h"
 
 namespace itk
@@ -45,7 +44,7 @@ SphereSignedDistanceFunction<TCoordRep, VSpaceDimension>::SetParameters(const Pa
 
     m_Radius = parameters[0];
 
-    for (unsigned int i = 0; i < SpaceDimension; i++)
+    for (unsigned int i = 0; i < SpaceDimension; ++i)
     {
       m_Translation[i] = parameters[i + 1];
     }
@@ -67,13 +66,13 @@ SphereSignedDistanceFunction<TCoordRep, VSpaceDimension>::PrintSelf(std::ostream
 
 // Evaluate the signed distance
 template <typename TCoordRep, unsigned int VSpaceDimension>
-typename SphereSignedDistanceFunction<TCoordRep, VSpaceDimension>::OutputType
-SphereSignedDistanceFunction<TCoordRep, VSpaceDimension>::Evaluate(const PointType & point) const
+auto
+SphereSignedDistanceFunction<TCoordRep, VSpaceDimension>::Evaluate(const PointType & point) const -> OutputType
 {
   using RealType = typename NumericTraits<OutputType>::RealType;
   RealType output = 0.0;
 
-  for (unsigned int j = 0; j < SpaceDimension; j++)
+  for (unsigned int j = 0; j < SpaceDimension; ++j)
   {
     output += itk::Math::sqr((point[j] - m_Translation[j]));
   }

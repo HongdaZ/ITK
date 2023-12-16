@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkPCAShapeSignedDistanceFunction_hxx
 #define itkPCAShapeSignedDistanceFunction_hxx
 
-#include "itkPCAShapeSignedDistanceFunction.h"
 #include "itkTranslationTransform.h"
 #include "itkLinearInterpolateImageFunction.h"
 #include "itkNearestNeighborExtrapolateImageFunction.h"
@@ -68,7 +67,7 @@ PCAShapeSignedDistanceFunction<TCoordRep, VSpaceDimension, TImage>::SetParameter
 
   // set the shape parameters
   unsigned int i;
-  for (i = 0; i < m_NumberOfPrincipalComponents; i++)
+  for (i = 0; i < m_NumberOfPrincipalComponents; ++i)
   {
     m_WeightOfPrincipalComponents[i] = parameters[i];
   }
@@ -77,7 +76,7 @@ PCAShapeSignedDistanceFunction<TCoordRep, VSpaceDimension, TImage>::SetParameter
   m_NumberOfTransformParameters = parameters.size() - m_NumberOfPrincipalComponents;
   m_TransformParameters.SetSize(m_NumberOfTransformParameters);
 
-  for (i = 0; i < m_NumberOfTransformParameters; i++)
+  for (i = 0; i < m_NumberOfTransformParameters; ++i)
   {
     m_TransformParameters[i] = parameters[m_NumberOfPrincipalComponents + i];
   }
@@ -124,7 +123,7 @@ PCAShapeSignedDistanceFunction<TCoordRep, VSpaceDimension, TImage>::Initialize()
   // verify image buffered region
   typename ImageType::RegionType meanImageRegion = m_MeanImage->GetBufferedRegion();
 
-  for (unsigned int i = 0; i < m_NumberOfPrincipalComponents; i++)
+  for (unsigned int i = 0; i < m_NumberOfPrincipalComponents; ++i)
   {
     if (!m_PrincipalComponentImages[i])
     {
@@ -150,7 +149,7 @@ PCAShapeSignedDistanceFunction<TCoordRep, VSpaceDimension, TImage>::Initialize()
   m_Extrapolators[0]->SetInputImage(m_MeanImage);
 
   // interpolators/extrapolators for pc images
-  for (unsigned int k = 1; k <= m_NumberOfPrincipalComponents; k++)
+  for (unsigned int k = 1; k <= m_NumberOfPrincipalComponents; ++k)
   {
     m_Interpolators[k] = LinearInterpolateImageFunction<ImageType, CoordRepType>::New();
     m_Interpolators[k]->SetInputImage(m_PrincipalComponentImages[k - 1]);
@@ -162,8 +161,9 @@ PCAShapeSignedDistanceFunction<TCoordRep, VSpaceDimension, TImage>::Initialize()
 
 // Evaluate the signed distance
 template <typename TCoordRep, unsigned int VSpaceDimension, typename TImage>
-typename PCAShapeSignedDistanceFunction<TCoordRep, VSpaceDimension, TImage>::OutputType
+auto
 PCAShapeSignedDistanceFunction<TCoordRep, VSpaceDimension, TImage>::Evaluate(const PointType & point) const
+  -> OutputType
 {
   // transform the point into the shape model space
   PointType mappedPoint = m_Transform->TransformPoint(point);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class WeightedMeanSampleFilter
+ * \class WeightedMeanSampleFilter
  * \brief Given a sample where each measurement vector has
  * associated weight value, this filter computes the sample mean
  *
@@ -43,7 +43,7 @@ template <typename TSample>
 class ITK_TEMPLATE_EXPORT WeightedMeanSampleFilter : public MeanSampleFilter<TSample>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WeightedMeanSampleFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(WeightedMeanSampleFilter);
 
   /**Standard class type aliases. */
   using Self = WeightedMeanSampleFilter;
@@ -56,14 +56,14 @@ public:
   itkNewMacro(Self);
 
   /** Types derived from the base class */
-  using SampleType = typename Superclass::SampleType;
-  using MeasurementVectorType = typename Superclass::MeasurementVectorType;
-  using MeasurementVectorSizeType = typename Superclass::MeasurementVectorSizeType;
-  using MeasurementType = typename Superclass::MeasurementType;
+  using typename Superclass::SampleType;
+  using typename Superclass::MeasurementVectorType;
+  using typename Superclass::MeasurementVectorSizeType;
+  using typename Superclass::MeasurementType;
 
   /** Types derived from the base class */
-  using MeasurementVectorRealType = typename Superclass::MeasurementVectorRealType;
-  using MeasurementRealType = typename Superclass::MeasurementRealType;
+  using typename Superclass::MeasurementVectorRealType;
+  using typename Superclass::MeasurementRealType;
 
 
   /** Type of weight values */
@@ -91,8 +91,8 @@ public:
 
 
   /** Types derived from the base class */
-  using MeasurementVectorDecoratedType = typename Superclass::MeasurementVectorDecoratedType;
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::MeasurementVectorDecoratedType;
+  using typename Superclass::OutputType;
 
 protected:
   WeightedMeanSampleFilter();

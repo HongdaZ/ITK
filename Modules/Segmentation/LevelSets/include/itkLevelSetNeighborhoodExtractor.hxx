@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkLevelSetNeighborhoodExtractor_hxx
 #define itkLevelSetNeighborhoodExtractor_hxx
 
-#include "itkLevelSetNeighborhoodExtractor.h"
 #include "itkImageRegionIterator.h"
 #include "itkNumericTraits.h"
 #include "itkMath.h"
@@ -150,7 +149,7 @@ LevelSetNeighborhoodExtractor<TLevelSet>::GenerateDataFull()
     // update progress
     if (!(i % updateVisits))
     {
-      this->UpdateProgress((float)i / (float)totalPixels);
+      this->UpdateProgress(static_cast<float>(i) / static_cast<float>(totalPixels));
     }
 
     inputIndex = inIt.GetIndex();
@@ -191,7 +190,7 @@ LevelSetNeighborhoodExtractor<TLevelSet>::GenerateDataNarrowBand()
     // update progress
     if (!(i % updateVisits))
     {
-      this->UpdateProgress((float)i / (float)totalPixels);
+      this->UpdateProgress(static_cast<float>(i) / static_cast<float>(totalPixels));
     }
 
     node = pointsIter.Value();
@@ -215,7 +214,7 @@ LevelSetNeighborhoodExtractor<TLevelSet>::CalculateDistance(IndexType & index)
   PixelType                             inputPixel;
 
   inputPixel = m_InputLevelSet->GetPixel(index);
-  centerValue = (double)inputPixel;
+  centerValue = static_cast<double>(inputPixel);
   centerValue -= m_LevelSetValue;
 
   NodeType centerNode;
@@ -239,7 +238,7 @@ LevelSetNeighborhoodExtractor<TLevelSet>::CalculateDistance(IndexType & index)
 
   // In each dimension, find the distance to the zero set
   // by linear interpolating along the grid line.
-  for (unsigned int j = 0; j < SetDimension; j++)
+  for (unsigned int j = 0; j < SetDimension; ++j)
   {
     neighNode.SetValue(m_LargeValue);
     spacing = m_InputLevelSet->GetSpacing()[j];
@@ -282,7 +281,7 @@ LevelSetNeighborhoodExtractor<TLevelSet>::CalculateDistance(IndexType & index)
   // The final distance is given by the minimum distance to the plane
   // crossing formed by the zero set crossing points.
   distance = 0.0;
-  for (unsigned int j = 0; j < SetDimension; j++)
+  for (unsigned int j = 0; j < SetDimension; ++j)
   {
     neighNode = m_NodesUsed[j];
 
@@ -291,7 +290,7 @@ LevelSetNeighborhoodExtractor<TLevelSet>::CalculateDistance(IndexType & index)
       break;
     }
 
-    distance += 1.0 / itk::Math::sqr((double)neighNode.GetValue());
+    distance += 1.0 / itk::Math::sqr(static_cast<double>(neighNode.GetValue()));
   }
 
   if (distance == 0.0)

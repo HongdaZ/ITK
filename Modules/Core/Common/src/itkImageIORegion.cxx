@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,9 +22,9 @@
 namespace itk
 {
 
-ImageIORegion ::~ImageIORegion() = default;
+ImageIORegion::~ImageIORegion() = default;
 
-ImageIORegion ::ImageIORegion(unsigned int dimension)
+ImageIORegion::ImageIORegion(unsigned int dimension)
   : m_ImageDimension{ dimension }
   , m_Index(dimension)
   , m_Size(dimension)
@@ -32,7 +32,7 @@ ImageIORegion ::ImageIORegion(unsigned int dimension)
 
 
 ImageIORegion &
-ImageIORegion ::operator=(const Self & region)
+ImageIORegion::operator=(const Self & region)
 {
   if ((region.m_Index.size() == m_Index.size()) && (region.m_Size.size() == m_Size.size()))
   {
@@ -62,20 +62,20 @@ operator<<(std::ostream & os, const ImageIORegion & region)
 
 /** Set the index defining the corner of the region. */
 void
-ImageIORegion ::SetIndex(const IndexType & index)
+ImageIORegion::SetIndex(const IndexType & index)
 {
   m_Index = index;
 }
 
 /** Get index defining the corner of the region. */
 const ImageIORegion::IndexType &
-ImageIORegion ::GetIndex() const
+ImageIORegion::GetIndex() const
 {
   return m_Index;
 }
 
 ImageIORegion::IndexType &
-ImageIORegion ::GetModifiableIndex()
+ImageIORegion::GetModifiableIndex()
 {
   return m_Index;
 }
@@ -84,53 +84,53 @@ ImageIORegion ::GetModifiableIndex()
 /** Set the size of the region. This plus the index determines the
  * rectangular shape, or extent, of the region. */
 void
-ImageIORegion ::SetSize(const SizeType & size)
+ImageIORegion::SetSize(const SizeType & size)
 {
   m_Size = size;
 }
 
 /** Get the size of the region. */
 const ImageIORegion::SizeType &
-ImageIORegion ::GetSize() const
+ImageIORegion::GetSize() const
 {
   return m_Size;
 }
 
 ImageIORegion::SizeType &
-ImageIORegion ::GetModifiableSize()
+ImageIORegion::GetModifiableSize()
 {
   return m_Size;
 }
 
 unsigned int
-ImageIORegion ::GetImageDimension() const
+ImageIORegion::GetImageDimension() const
 {
   return m_ImageDimension;
 }
 
 ImageIORegion::RegionType
-ImageIORegion ::GetRegionType() const
+ImageIORegion::GetRegionType() const
 {
   return Superclass::RegionEnum::ITK_STRUCTURED_REGION;
 }
 
 unsigned int
-ImageIORegion ::GetRegionDimension() const
+ImageIORegion::GetRegionDimension() const
 {
   unsigned int dim = 0;
 
-  for (unsigned int i = 0; i < m_ImageDimension; i++)
+  for (unsigned int i = 0; i < m_ImageDimension; ++i)
   {
     if (m_Size[i] > 1)
     {
-      dim++;
+      ++dim;
     }
   }
   return dim;
 }
 
 ImageIORegion::SizeValueType
-ImageIORegion ::GetSize(unsigned long i) const
+ImageIORegion::GetSize(unsigned long i) const
 {
   if (i >= m_Size.size())
   {
@@ -140,7 +140,7 @@ ImageIORegion ::GetSize(unsigned long i) const
 }
 
 ImageIORegion::IndexValueType
-ImageIORegion ::GetIndex(unsigned long i) const
+ImageIORegion::GetIndex(unsigned long i) const
 {
   if (i >= m_Index.size())
   {
@@ -150,7 +150,7 @@ ImageIORegion ::GetIndex(unsigned long i) const
 }
 
 void
-ImageIORegion ::SetSize(const unsigned long i, SizeValueType size)
+ImageIORegion::SetSize(const unsigned long i, SizeValueType size)
 {
   if (i >= m_Size.size())
   {
@@ -160,7 +160,7 @@ ImageIORegion ::SetSize(const unsigned long i, SizeValueType size)
 }
 
 void
-ImageIORegion ::SetIndex(const unsigned long i, IndexValueType idx)
+ImageIORegion::SetIndex(const unsigned long i, IndexValueType idx)
 {
   if (i >= m_Index.size())
   {
@@ -170,13 +170,13 @@ ImageIORegion ::SetIndex(const unsigned long i, IndexValueType idx)
 }
 
 bool
-ImageIORegion ::IsInside(const IndexType & index) const
+ImageIORegion::IsInside(const IndexType & index) const
 {
   if (m_ImageDimension != index.size())
   {
     return false;
   }
-  for (unsigned int i = 0; i < m_ImageDimension; i++)
+  for (unsigned int i = 0; i < m_ImageDimension; ++i)
   {
     if (index[i] < m_Index[i])
     {
@@ -190,25 +190,28 @@ ImageIORegion ::IsInside(const IndexType & index) const
   return true;
 }
 
-/** Test if a region (the argument) is completly inside of this region */
-bool
-ImageIORegion ::IsInside(const Self & region) const
-{
-  IndexType beginCorner = region.GetIndex();
 
-  if (!this->IsInside(beginCorner))
+/** Test if a region (the argument) is completely inside of this region. If
+ * the region that is passed as argument has a size of value zero, or if the
+ * dimensionality is zero, then it will not be considered to be inside of the
+ * current region, even its starting index is inside. */
+bool
+ImageIORegion::IsInside(const Self & otherRegion) const
+{
+  if (m_ImageDimension == 0 || otherRegion.m_ImageDimension != m_ImageDimension)
   {
     return false;
   }
-  IndexType endCorner(region.m_ImageDimension);
-  SizeType  size = region.GetSize();
-  for (unsigned int i = 0; i < m_ImageDimension; i++)
+  const auto & otherIndex = otherRegion.m_Index;
+  const auto & otherSize = otherRegion.m_Size;
+
+  for (unsigned int i = 0; i < m_ImageDimension; ++i)
   {
-    endCorner[i] = beginCorner[i] + size[i] - 1;
-  }
-  if (!this->IsInside(endCorner))
-  {
-    return false;
+    if (otherIndex[i] < m_Index[i] || otherSize[i] == 0 ||
+        otherIndex[i] + static_cast<IndexValueType>(otherSize[i]) > m_Index[i] + static_cast<IndexValueType>(m_Size[i]))
+    {
+      return false;
+    }
   }
   return true;
 }
@@ -216,7 +219,7 @@ ImageIORegion ::IsInside(const Self & region) const
 /** Get the number of pixels contained in this region. This just
  * multiplies the size components. */
 ImageIORegion::SizeValueType
-ImageIORegion ::GetNumberOfPixels() const
+ImageIORegion::GetNumberOfPixels() const
 {
   size_t numPixels = 1;
 
@@ -229,20 +232,13 @@ ImageIORegion ::GetNumberOfPixels() const
 }
 
 bool
-ImageIORegion ::operator==(const Self & region) const
+ImageIORegion::operator==(const Self & region) const
 {
   return (m_Index == region.m_Index) && (m_Size == region.m_Size) && (m_ImageDimension == region.m_ImageDimension);
 }
 
-/** Compare two regions. */
-bool
-ImageIORegion ::operator!=(const Self & region) const
-{
-  return !(*this == region);
-}
-
 void
-ImageIORegion ::PrintSelf(std::ostream & os, Indent indent) const
+ImageIORegion::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

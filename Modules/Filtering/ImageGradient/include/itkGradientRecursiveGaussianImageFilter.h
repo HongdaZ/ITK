@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@
 namespace itk
 {
 /**
- *\class GradientRecursiveGaussianImageFilter
+ * \class GradientRecursiveGaussianImageFilter
  * \brief Computes the gradient of an image by convolution
  *        with the first derivative of a Gaussian.
  *
@@ -59,7 +59,7 @@ template <
 class ITK_TEMPLATE_EXPORT GradientRecursiveGaussianImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GradientRecursiveGaussianImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(GradientRecursiveGaussianImageFilter);
 
   /** Standard class type aliases. */
   using Self = GradientRecursiveGaussianImageFilter;
@@ -131,7 +131,7 @@ public:
 
   /** Set Sigma value. Sigma is measured in the units of image spacing. */
   void
-  SetSigmaArray(const SigmaArrayType & sigmas);
+  SetSigmaArray(const SigmaArrayType & sigma);
   void
   SetSigma(ScalarRealType sigma);
 
@@ -144,7 +144,7 @@ public:
    *  \sa  RecursiveGaussianImageFilter::SetNormalizeAcrossScale
    */
   void
-  SetNormalizeAcrossScale(bool normalizeInScaleSpace);
+  SetNormalizeAcrossScale(bool normalize);
   itkGetConstMacro(NormalizeAcrossScale, bool);
 
   /** GradientRecursiveGaussianImageFilter needs all of the input to produce an
@@ -211,22 +211,22 @@ private:
   void
   TransformOutputPixel(ImageRegionIterator<T> & it)
   {
-    OutputPixelType         correctedGradient;
+    OutputPixelType         correctedGradient{};
     const OutputPixelType & gradient = it.Get();
 
     const unsigned int nComponents = NumericTraits<OutputPixelType>::GetLength(gradient) / ImageDimension;
 
-    for (unsigned int nc = 0; nc < nComponents; nc++)
+    for (unsigned int nc = 0; nc < nComponents; ++nc)
     {
       GradientVectorType componentGradient;
       GradientVectorType correctedComponentGradient;
-      for (unsigned int dim = 0; dim < ImageDimension; dim++)
+      for (unsigned int dim = 0; dim < ImageDimension; ++dim)
       {
         componentGradient[dim] =
           DefaultConvertPixelTraits<OutputPixelType>::GetNthComponent(nc * ImageDimension + dim, gradient);
       }
       it.GetImage()->TransformLocalVectorToPhysicalVector(componentGradient, correctedComponentGradient);
-      for (unsigned int dim = 0; dim < ImageDimension; dim++)
+      for (unsigned int dim = 0; dim < ImageDimension; ++dim)
       {
         DefaultConvertPixelTraits<OutputPixelType>::SetNthComponent(
           nc * ImageDimension + dim, correctedGradient, correctedComponentGradient[dim]);
@@ -235,9 +235,9 @@ private:
     it.Set(correctedGradient);
   }
 
-  template <template <typename, unsigned int> class P, class T, unsigned int N>
+  template <template <typename, unsigned int> class P, class T, unsigned int VDimension>
   void
-  TransformOutputPixel(ImageRegionIterator<Image<P<T, N>, N>> & it)
+  TransformOutputPixel(ImageRegionIterator<Image<P<T, VDimension>, VDimension>> & it)
   {
     const OutputPixelType gradient = it.Get();
     // This uses the more efficient set by reference method

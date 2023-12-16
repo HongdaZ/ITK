@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,14 +23,14 @@
 
 namespace itk
 {
-/**\class RecursiveGaussianImageFilterEnums
+/** \class RecursiveGaussianImageFilterEnums
  * \brief Contains all enum classes used by RecursiveGaussianImageFilter class.
  * \ingroup ITKSmoothing
  */
 class RecursiveGaussianImageFilterEnums
 {
 public:
-  /**\class GaussianOrder
+  /** \class GaussianOrder
 * \ingroup ITKSmoothing
 * Enum type that indicates if the filter applies the equivalent operation
 of convolving with a gaussian, first derivative of a gaussian or the
@@ -59,7 +59,7 @@ static constexpr GaussianOrderEnum SecondOrder = GaussianOrderEnum::SecondOrder;
 #endif
 
 /**
- *\class RecursiveGaussianImageFilter
+ * \class RecursiveGaussianImageFilter
  * \brief Base class for computing IIR convolution with an approximation of a  Gaussian kernel.
  *
  *    \f[
@@ -78,8 +78,9 @@ static constexpr GaussianOrderEnum SecondOrder = GaussianOrderEnum::SecondOrder;
  * INRIA, 1993, ftp://ftp.inria.fr/INRIA/tech-reports/RR/RR-1893.ps.gz
  *
  * Further improvements of the algorithm are described in:
- * G. Farneback & C.-F. Westin, "On Implementation of Recursive Gaussian
- * Filters", so far unpublished.
+ * G. Farnebäck & C.-F. Westin, "Improving Deriche-style Recursive Gaussian
+ * Filters". J Math Imaging Vis 26, 293–299 (2006).
+ * https://doi.org/10.1007/s10851-006-8464-z
  *
  * As compared to itk::DiscreteGaussianImageFilter, this filter tends
  * to be faster for large kernels, and it can take the derivative
@@ -99,7 +100,7 @@ template <typename TInputImage, typename TOutputImage = TInputImage>
 class ITK_TEMPLATE_EXPORT RecursiveGaussianImageFilter : public RecursiveSeparableImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RecursiveGaussianImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(RecursiveGaussianImageFilter);
 
   /** Standard class type aliases. */
   using Self = RecursiveGaussianImageFilter;
@@ -107,8 +108,8 @@ public:
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
-  using RealType = typename Superclass::RealType;
-  using ScalarRealType = typename Superclass::ScalarRealType;
+  using typename Superclass::RealType;
+  using typename Superclass::ScalarRealType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

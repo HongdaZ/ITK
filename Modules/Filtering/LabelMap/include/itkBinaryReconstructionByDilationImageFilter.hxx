@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkBinaryReconstructionByDilationImageFilter_hxx
 #define itkBinaryReconstructionByDilationImageFilter_hxx
 
-#include "itkBinaryReconstructionByDilationImageFilter.h"
 #include "itkProgressAccumulator.h"
 
 
@@ -33,36 +32,6 @@ BinaryReconstructionByDilationImageFilter<TInputImage>::BinaryReconstructionByDi
   m_FullyConnected = false;
   this->SetPrimaryInputName("MarkerImage");
   this->AddRequiredInputName("MaskImage", 1);
-}
-
-template <typename TInputImage>
-void
-BinaryReconstructionByDilationImageFilter<TInputImage>::SetMarkerImage(const InputImageType * input)
-{
-  // Process object is not const-correct, so the const casting is required.
-  this->ProcessObject::SetInput("MarkerImage", const_cast<InputImageType *>(input));
-}
-
-template <typename TInputImage>
-typename BinaryReconstructionByDilationImageFilter<TInputImage>::InputImageType *
-BinaryReconstructionByDilationImageFilter<TInputImage>::GetMarkerImage()
-{
-  return static_cast<InputImageType *>(const_cast<DataObject *>(this->ProcessObject::GetInput("MarkerImage")));
-}
-
-template <typename TInputImage>
-void
-BinaryReconstructionByDilationImageFilter<TInputImage>::SetMaskImage(const InputImageType * input)
-{
-  // Process object is not const-correct, so the const casting is required.
-  this->ProcessObject::SetInput("MaskImage", const_cast<InputImageType *>(input));
-}
-
-template <typename TInputImage>
-typename BinaryReconstructionByDilationImageFilter<TInputImage>::InputImageType *
-BinaryReconstructionByDilationImageFilter<TInputImage>::GetMaskImage()
-{
-  return static_cast<InputImageType *>(const_cast<DataObject *>(this->ProcessObject::GetInput("MaskImage")));
 }
 
 template <typename TInputImage>
@@ -100,13 +69,13 @@ void
 BinaryReconstructionByDilationImageFilter<TInputImage>::GenerateData()
 {
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
 
   // Allocate the output
   this->AllocateOutputs();
 
-  typename LabelizerType::Pointer labelizer = LabelizerType::New();
+  auto labelizer = LabelizerType::New();
   labelizer->SetInput(this->GetMaskImage());
   labelizer->SetInputForegroundValue(m_ForegroundValue);
   labelizer->SetOutputBackgroundValue(m_BackgroundValue);
@@ -114,20 +83,20 @@ BinaryReconstructionByDilationImageFilter<TInputImage>::GenerateData()
   labelizer->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   progress->RegisterInternalFilter(labelizer, .25f);
 
-  typename ReconstructionType::Pointer reconstruction = ReconstructionType::New();
+  auto reconstruction = ReconstructionType::New();
   reconstruction->SetInput(labelizer->GetOutput());
   reconstruction->SetMarkerImage(this->GetMarkerImage());
   reconstruction->SetForegroundValue(m_ForegroundValue);
   reconstruction->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   progress->RegisterInternalFilter(reconstruction, .25f);
 
-  typename OpeningType::Pointer opening = OpeningType::New();
+  auto opening = OpeningType::New();
   opening->SetInput(reconstruction->GetOutput());
   opening->SetLambda(true);
   opening->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   progress->RegisterInternalFilter(opening, .25f);
 
-  typename BinarizerType::Pointer binarizer = BinarizerType::New();
+  auto binarizer = BinarizerType::New();
   binarizer->SetInput(opening->GetOutput());
   binarizer->SetForegroundValue(m_ForegroundValue);
   binarizer->SetBackgroundValue(m_BackgroundValue);

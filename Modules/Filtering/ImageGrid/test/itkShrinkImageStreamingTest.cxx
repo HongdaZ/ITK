@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ itkShrinkImageStreamingTest(int, char *[])
 
   // type alias to simplify the syntax
   using ShortImage = itk::Image<short, 2>;
-  ShortImage::Pointer sourceImage = ShortImage::New();
+  auto sourceImage = ShortImage::New();
 
   using MonitorFilter = itk::PipelineMonitorImageFilter<ShortImage>;
 
@@ -60,7 +60,7 @@ itkShrinkImageStreamingTest(int, char *[])
   caster->SetInput(sourceImage);
 
 
-  MonitorFilter::Pointer monitor1 = MonitorFilter::New();
+  auto monitor1 = MonitorFilter::New();
   monitor1->SetInput(caster->GetOutput());
 
   // Create a filter, shrink by 2,3
@@ -72,7 +72,7 @@ itkShrinkImageStreamingTest(int, char *[])
   shrink->SetShrinkFactors(factors);
 
 
-  MonitorFilter::Pointer monitor2 = MonitorFilter::New();
+  auto monitor2 = MonitorFilter::New();
   monitor2->SetInput(shrink->GetOutput());
 
   itk::StreamingImageFilter<ShortImage, ShortImage>::Pointer streamer;
@@ -82,7 +82,7 @@ itkShrinkImageStreamingTest(int, char *[])
   streamer->Update();
 
 
-  // this verifies that the pipeline was executed as expected allong
+  // this verifies that the pipeline was executed as expected along
   // with correct region propagation and output information
   if (!monitor2->VerifyAllInputCanStream(numberOfStreamDivisions))
   {

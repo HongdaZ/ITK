@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,29 +37,27 @@
 static bool
 IsEqualTolerant(const float lm, const float rm, double tol)
 {
-  tol = std::fabs(tol);
-  float temp = std::fabs(lm - rm);
-  return temp <= tol * std::fabs(lm) || temp <= tol * std::fabs(rm) ||
-         (std::fabs(lm) < std::numeric_limits<float>::epsilon() &&
-          std::fabs(rm) < std::numeric_limits<float>::epsilon());
+  tol = itk::Math::abs(tol);
+  float temp = itk::Math::abs(lm - rm);
+  return temp <= tol * itk::Math::abs(lm) || temp <= tol * itk::Math::abs(rm) ||
+         (itk::Math::abs(lm) < std::numeric_limits<float>::epsilon() &&
+          itk::Math::abs(rm) < std::numeric_limits<float>::epsilon());
 }
 
 int
 itkGDCMSeriesStreamReadImageWriteTest(int argc, char * argv[])
 {
-  if (argc < 6)
+  if (argc < 10)
   {
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
-    std::cerr << " DicomDirectory  outputFile ";
-    std::cerr << " spacingX spacingY spacingZ [ force-no-streaming 1|0]" << std::endl;
+    std::cerr << "Missing Parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " DicomDirectory  outputFile "
+              << " spacingX spacingY spacingZ recursive useSeriesDetails loadSequences loadPrivateTags [ "
+                 "force-no-streaming 1|0]"
+              << std::endl;
     return EXIT_FAILURE;
   }
 
   using ImageType = itk::Image<unsigned short, 3>;
-  using ReaderType = itk::ImageSeriesReader<ImageType>;
-  using ImageIOType = itk::GDCMImageIO;
-  using SeriesFileNames = itk::GDCMSeriesFileNames;
-
 
   unsigned int numberOfDataPieces = 4;
 
@@ -69,11 +67,10 @@ itkGDCMSeriesStreamReadImageWriteTest(int argc, char * argv[])
   expectedSpacing[1] = std::stod(argv[4]);
   expectedSpacing[2] = std::stod(argv[5]);
 
-
   bool forceNoStreaming = true;
-  if (argc > 6)
+  if (argc > 10)
   {
-    if (std::stoi(argv[6]) != 1)
+    if (std::stoi(argv[10]) != 1)
     {
       forceNoStreaming = false;
     }
@@ -81,11 +78,44 @@ itkGDCMSeriesStreamReadImageWriteTest(int argc, char * argv[])
 
   bool expectedToStream = !forceNoStreaming;
 
-  ImageIOType::Pointer     gdcmIO = ImageIOType::New();
-  SeriesFileNames::Pointer filenameGenerator = SeriesFileNames::New();
-  filenameGenerator->SetInputDirectory(argv[1]);
+  using ImageIOType = itk::GDCMImageIO;
+  using SeriesFileNames = itk::GDCMSeriesFileNames;
 
-  ReaderType::Pointer reader = ReaderType::New();
+  auto gdcmIO = ImageIOType::New();
+  auto filenameGenerator = SeriesFileNames::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filenameGenerator, GDCMSeriesFileNames, ProcessObject);
+
+
+  auto recursive = static_cast<bool>(std::stoi(argv[6]));
+  ITK_TEST_SET_GET_BOOLEAN(filenameGenerator, Recursive, recursive);
+
+  auto useSeriesDetails = static_cast<bool>(std::stoi(argv[7]));
+  filenameGenerator->SetUseSeriesDetails(useSeriesDetails);
+  ITK_TEST_SET_GET_VALUE(useSeriesDetails, filenameGenerator->GetUseSeriesDetails());
+
+  auto loadSequences = static_cast<bool>(std::stoi(argv[8]));
+  ITK_TEST_SET_GET_BOOLEAN(filenameGenerator, LoadSequences, loadSequences);
+
+  auto loadPrivateTags = static_cast<bool>(std::stoi(argv[9]));
+  ITK_TEST_SET_GET_BOOLEAN(filenameGenerator, LoadPrivateTags, loadPrivateTags);
+
+  // Test exceptions
+  const char * pInputDirectory = nullptr;
+  ITK_TRY_EXPECT_EXCEPTION(filenameGenerator->SetInputDirectory(pInputDirectory));
+
+  // Exercise warnings
+  std::string inputDirectory = "";
+  filenameGenerator->SetInputDirectory(inputDirectory);
+
+  inputDirectory = "NotADirectory";
+  filenameGenerator->SetInputDirectory(inputDirectory);
+
+  inputDirectory = argv[1];
+  filenameGenerator->SetInputDirectory(inputDirectory);
+
+  using ReaderType = itk::ImageSeriesReader<ImageType>;
+  auto reader = ReaderType::New();
 
   const ReaderType::FileNamesContainer & filenames = filenameGenerator->GetInputFileNames();
 
@@ -94,11 +124,11 @@ itkGDCMSeriesStreamReadImageWriteTest(int argc, char * argv[])
 
 
   using MonitorFilter = itk::PipelineMonitorImageFilter<ImageType>;
-  MonitorFilter::Pointer monitor = MonitorFilter::New();
+  auto monitor = MonitorFilter::New();
   monitor->SetInput(reader->GetOutput());
 
   using StreamingFilter = itk::StreamingImageFilter<ImageType, ImageType>;
-  StreamingFilter::Pointer streamer = StreamingFilter::New();
+  auto streamer = StreamingFilter::New();
   streamer->SetInput(monitor->GetOutput());
   streamer->SetNumberOfStreamDivisions(numberOfDataPieces);
 
@@ -153,7 +183,7 @@ itkGDCMSeriesStreamReadImageWriteTest(int argc, char * argv[])
   }
 
   std::cout << "Origin: " << reader->GetOutput()->GetOrigin() << std::endl;
-  std::cout << "direction: " << reader->GetOutput()->GetDirection() << std::endl;
+  std::cout << "Direction: " << reader->GetOutput()->GetDirection() << std::endl;
   std::cout << "Spacing: " << reader->GetOutput()->GetSpacing() << std::endl;
   std::cout << "Expected Spacing: " << expectedSpacing << std::endl;
 
@@ -161,7 +191,7 @@ itkGDCMSeriesStreamReadImageWriteTest(int argc, char * argv[])
   ImageType::SpacingType spacing = reader->GetOutput()->GetSpacing();
 
   // we only give 4 bits of tolerance, IEEE float a 24-bit mantissa
-  const double percentTolerance = 1.0 / double((unsigned int)(1) << 18);
+  const double percentTolerance = 1.0 / static_cast<double>(1U << 18);
 
   if (!IsEqualTolerant(spacing[0], expectedSpacing[0], percentTolerance) ||
       !IsEqualTolerant(spacing[1], expectedSpacing[1], percentTolerance) ||
@@ -173,21 +203,14 @@ itkGDCMSeriesStreamReadImageWriteTest(int argc, char * argv[])
 
 
   using WriterType = itk::ImageFileWriter<ImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   writer->SetFileName(argv[2]);
   writer->SetInput(reader->GetOutput());
 
-  try
-  {
-    writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << "Exception thrown while writing the image" << std::endl;
-    std::cerr << excp << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
 
+
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

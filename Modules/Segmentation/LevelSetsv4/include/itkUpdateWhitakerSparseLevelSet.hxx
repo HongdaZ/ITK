@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkUpdateWhitakerSparseLevelSet_hxx
 #define itkUpdateWhitakerSparseLevelSet_hxx
 
-#include "itkUpdateWhitakerSparseLevelSet.h"
 #include "itkConnectedImageNeighborhoodShape.h"
 
 namespace itk
@@ -78,7 +77,7 @@ UpdateWhitakerSparseLevelSet<VDimension, TLevelSetValueType, TEquationContainer>
 
   this->m_OutputLevelSet->SetLabelMap(this->m_InputLevelSet->GetModifiableLabelMap());
 
-  typename LabelMapToLabelImageFilterType::Pointer labelMapToLabelImageFilter = LabelMapToLabelImageFilterType::New();
+  auto labelMapToLabelImageFilter = LabelMapToLabelImageFilterType::New();
   labelMapToLabelImageFilter->SetInput(this->m_InputLevelSet->GetLabelMap());
   labelMapToLabelImageFilter->Update();
 
@@ -111,7 +110,7 @@ UpdateWhitakerSparseLevelSet<VDimension, TLevelSetValueType, TEquationContainer>
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&spNBC);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   const LevelSetLayerType & layerMinus2 = this->m_InputLevelSet->GetLayer(LevelSetType::MinusTwoLayer());
 
@@ -167,7 +166,7 @@ UpdateWhitakerSparseLevelSet<VDimension, TLevelSetValueType, TEquationContainer>
   this->MovePointFromMinus2();
   this->MovePointFromPlus2();
 
-  typename LabelImageToLabelMapFilterType::Pointer labelImageToLabelMapFilter = LabelImageToLabelMapFilterType::New();
+  auto labelImageToLabelMapFilter = LabelImageToLabelMapFilterType::New();
   labelImageToLabelMapFilter->SetInput(this->m_InternalImage);
   labelImageToLabelMapFilter->SetBackgroundValue(LevelSetType::PlusThreeLayer());
   labelImageToLabelMapFilter->Update();
@@ -202,7 +201,7 @@ UpdateWhitakerSparseLevelSet<VDimension, TLevelSetValueType, TEquationContainer>
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&spNBC);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   LevelSetInputType inputIndex;
   while (nodeIt != nodeEnd)
@@ -364,7 +363,7 @@ UpdateWhitakerSparseLevelSet<VDimension, TLevelSetValueType, TEquationContainer>
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&spNBC);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   LevelSetLayerType & outputlayerMinus1 = this->m_OutputLevelSet->GetLayer(LevelSetType::MinusOneLayer());
 
@@ -470,7 +469,7 @@ UpdateWhitakerSparseLevelSet<VDimension, TLevelSetValueType, TEquationContainer>
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&spNBC);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   TermContainerPointer termContainer = this->m_EquationContainer->GetEquation(this->m_CurrentLevelSetId);
 
@@ -576,7 +575,7 @@ UpdateWhitakerSparseLevelSet<VDimension, TLevelSetValueType, TEquationContainer>
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&spNBC);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   TermContainerPointer termContainer = this->m_EquationContainer->GetEquation(this->m_CurrentLevelSetId);
 
@@ -681,7 +680,7 @@ UpdateWhitakerSparseLevelSet<VDimension, TLevelSetValueType, TEquationContainer>
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&spNBC);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   TermContainerPointer termContainer = this->m_EquationContainer->GetEquation(this->m_CurrentLevelSetId);
 
@@ -809,7 +808,7 @@ UpdateWhitakerSparseLevelSet<VDimension, TLevelSetValueType, TEquationContainer>
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&spNBC);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   TermContainerPointer termContainer = this->m_EquationContainer->GetEquation(this->m_CurrentLevelSetId);
 
@@ -867,7 +866,7 @@ UpdateWhitakerSparseLevelSet<VDimension, TLevelSetValueType, TEquationContainer>
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&spNBC);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   TermContainerPointer termContainer = this->m_EquationContainer->GetEquation(this->m_CurrentLevelSetId);
 

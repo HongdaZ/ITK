@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkRegionBasedLevelSetFunction_hxx
 #define itkRegionBasedLevelSetFunction_hxx
 
-#include "itkRegionBasedLevelSetFunction.h"
 #include "itkImageRegionIteratorWithIndex.h"
 
 namespace itk
@@ -49,15 +48,15 @@ RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::RegionBasedLevelSetF
   m_FeatureImage = nullptr;
   m_UpdateC = false;
 
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     m_InvSpacing[i] = 1;
   }
 }
 
 template <typename TInput, typename TFeature, typename TSharedData>
-typename RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::VectorType
-RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::InitializeZeroVectorConstant()
+auto
+RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::InitializeZeroVectorConstant() -> VectorType
 {
   VectorType ans;
 
@@ -126,8 +125,9 @@ RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::UpdateSharedData(boo
 }
 
 template <typename TInput, typename TFeature, typename TSharedData>
-typename RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::TimeStepType
+auto
 RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::ComputeGlobalTimeStep(void * GlobalData) const
+  -> TimeStepType
 {
   /* Computing the time-step for stable curve evolution */
 
@@ -174,9 +174,9 @@ RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::ComputeCurvature(con
 
   unsigned int i, j;
 
-  for (i = 0; i < ImageDimension; i++)
+  for (i = 0; i < ImageDimension; ++i)
   {
-    for (j = 0; j < ImageDimension; j++)
+    for (j = 0; j < ImageDimension; ++j)
     {
       if (j != i)
       {
@@ -211,7 +211,7 @@ RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::ComputeHessian(const
   gd->m_GradMag = 0.;
   unsigned int i, j;
 
-  for (i = 0; i < ImageDimension; i++)
+  for (i = 0; i < ImageDimension; ++i)
   {
     const auto positionA = static_cast<unsigned int>(this->m_Center + this->m_xStride[i]);
     const auto positionB = static_cast<unsigned int>(this->m_Center - this->m_xStride[i]);
@@ -224,7 +224,7 @@ RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::ComputeHessian(const
 
     gd->m_dxy[i][i] = (this->m_InvSpacing[i]) * (gd->m_dx_forward[i] - gd->m_dx_backward[i]);
 
-    for (j = i + 1; j < ImageDimension; j++)
+    for (j = i + 1; j < ImageDimension; ++j)
     {
       const auto positionAa = static_cast<unsigned int>(this->m_Center - this->m_xStride[i] - this->m_xStride[j]);
       const auto positionBa = static_cast<unsigned int>(this->m_Center - this->m_xStride[i] + this->m_xStride[j]);
@@ -285,7 +285,7 @@ RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::ComputeUpdate(const 
   {
     advection_field = this->AdvectionField(it, offset, gd);
 
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       x_energy = m_AdvectionWeight * advection_field[i];
 
@@ -325,13 +325,13 @@ RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::ComputeUpdate(const 
 }
 
 template <typename TInput, typename TFeature, typename TSharedData>
-typename RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::ScalarValueType
-RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::ComputeLaplacian(GlobalDataStruct * gd)
+auto
+RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::ComputeLaplacian(GlobalDataStruct * gd) -> ScalarValueType
 {
   ScalarValueType laplacian = 0.;
 
   // Compute the laplacian using the existing second derivative values
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     laplacian += gd->m_dxy[i][i];
   }
@@ -340,8 +340,8 @@ RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::ComputeLaplacian(Glo
 }
 
 template <typename TInput, typename TFeature, typename TSharedData>
-typename RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::ScalarValueType
-RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::ComputeVolumeRegularizationTerm()
+auto
+RegionBasedLevelSetFunction<TInput, TFeature, TSharedData>::ComputeVolumeRegularizationTerm() -> ScalarValueType
 {
   return 2 *
          (this->m_SharedData->m_LevelSetDataPointerVector[this->m_FunctionId]->m_WeightedNumberOfPixelsInsideLevelSet -

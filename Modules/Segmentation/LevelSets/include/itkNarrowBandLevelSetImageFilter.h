@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -147,7 +147,7 @@ template <typename TInputImage,
 class ITK_TEMPLATE_EXPORT NarrowBandLevelSetImageFilter : public NarrowBandImageFilterBase<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NarrowBandLevelSetImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(NarrowBandLevelSetImageFilter);
 
   /** Standard class type aliases */
   using Self = NarrowBandLevelSetImageFilter;
@@ -156,10 +156,10 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Inherited type alias from the superclass. */
-  using ValueType = typename Superclass::ValueType;
-  using IndexType = typename Superclass::IndexType;
-  using TimeStepType = typename Superclass::TimeStepType;
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::ValueType;
+  using typename Superclass::IndexType;
+  using typename Superclass::TimeStepType;
+  using typename Superclass::InputImageType;
 
   /** Local image type alias */
   using OutputImageType = TOutputImage;
@@ -395,7 +395,8 @@ protected:
   {
     Superclass::InitializeIteration();
     // Estimate the progress of the filter
-    this->UpdateProgress((float)((float)this->GetElapsedIterations() / (float)this->GetNumberOfIterations()));
+    this->UpdateProgress(static_cast<float>(this->GetElapsedIterations()) /
+                         static_cast<float>(this->GetNumberOfIterations()));
   }
 
   /** Tells the solver how to reinitialize the narrowband when the reinitialization

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ class ITK_TEMPLATE_EXPORT EdgeDecimationQuadEdgeMeshFilter
   : public DecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(EdgeDecimationQuadEdgeMeshFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(EdgeDecimationQuadEdgeMeshFilter);
 
   using Self = EdgeDecimationQuadEdgeMeshFilter;
   using Pointer = SmartPointer<Self>;
@@ -142,7 +142,7 @@ protected:
   DeleteElement(OutputQEType * iEdge);
 
   virtual void
-  DeletePoint(const OutputPointIdentifier & iIdToBeDeleted, const OutputPointIdentifier & iRemaing);
+  DeletePoint(const OutputPointIdentifier & iIdToBeDeleted, const OutputPointIdentifier & iRemaining);
 
   /**
    * \brief Push iEdge in the priority queue if it is not already, else

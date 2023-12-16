@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@
 #ifndef itkIntensityWindowingImageFilter_hxx
 #define itkIntensityWindowingImageFilter_hxx
 
-#include "itkIntensityWindowingImageFilter.h"
 #include "itkMinimumMaximumImageCalculator.h"
 
 namespace itk
@@ -69,15 +68,15 @@ IntensityWindowingImageFilter<TInputImage, TOutputImage>::SetWindowLevel(const I
 }
 
 template <typename TInputImage, typename TOutputImage>
-typename IntensityWindowingImageFilter<TInputImage, TOutputImage>::InputPixelType
-IntensityWindowingImageFilter<TInputImage, TOutputImage>::GetWindow() const
+auto
+IntensityWindowingImageFilter<TInputImage, TOutputImage>::GetWindow() const -> InputPixelType
 {
   return this->m_WindowMaximum - this->m_WindowMinimum;
 }
 
 template <typename TInputImage, typename TOutputImage>
-typename IntensityWindowingImageFilter<TInputImage, TOutputImage>::InputPixelType
-IntensityWindowingImageFilter<TInputImage, TOutputImage>::GetLevel() const
+auto
+IntensityWindowingImageFilter<TInputImage, TOutputImage>::GetLevel() const -> InputPixelType
 {
   return (this->m_WindowMaximum + this->m_WindowMinimum) / 2;
 }

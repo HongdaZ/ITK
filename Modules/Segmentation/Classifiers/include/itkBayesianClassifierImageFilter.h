@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class BayesianClassifierImageFilter
+ * \class BayesianClassifierImageFilter
  *
  * \brief Performs Bayesian Classification on an image.
  *
@@ -82,10 +82,10 @@ template <typename TInputVectorImage,
           typename TPosteriorsPrecisionType = double,
           typename TPriorsPrecisionType = double>
 class ITK_TEMPLATE_EXPORT BayesianClassifierImageFilter
-  : public ImageToImageFilter<TInputVectorImage, Image<TLabelsType, TInputVectorImage ::ImageDimension>>
+  : public ImageToImageFilter<TInputVectorImage, Image<TLabelsType, TInputVectorImage::ImageDimension>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BayesianClassifierImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BayesianClassifierImageFilter);
 
   /** Standard class type aliases. */
   using Self = BayesianClassifierImageFilter;
@@ -101,10 +101,10 @@ public:
   itkTypeMacro(BayesianClassifierImageFilter, ImageToImageFilter);
 
   /** Input and Output image types. */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
 
   /** Dimension of the input image. */
-  static constexpr unsigned int Dimension = InputImageType ::ImageDimension;
+  static constexpr unsigned int Dimension = InputImageType::ImageDimension;
 
   using OutputImageType = Image<TLabelsType, Self::Dimension>;
   using InputImagePointer = typename InputImageType::ConstPointer;
@@ -149,7 +149,7 @@ public:
   using DecisionRuleType = Statistics::MaximumDecisionRule;
   using DecisionRulePointer = DecisionRuleType::Pointer;
 
-  using DataObjectPointer = typename Superclass::DataObjectPointer;
+  using typename Superclass::DataObjectPointer;
 
   /** An image from a single component of the Posterior. */
   using ExtractedComponentImageType = itk::Image<TPosteriorsPrecisionType, Self::Dimension>;

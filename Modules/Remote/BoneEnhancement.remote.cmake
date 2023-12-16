@@ -27,12 +27,12 @@
 #--   - [X] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -45,5 +45,5 @@ itk_fetch_module(BoneEnhancement
   "Various filters for enhancing cortical bones in quantitative computed tomography."
   MODULE_COMPLIANCE_LEVEL 3
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKBoneEnhancement.git
-  GIT_TAG b29ba808b0468762769d5e32bbc7a97745478df2
+  GIT_TAG 658b9cb31f7216f604dfd35b187bd1ae80fd7506
 )

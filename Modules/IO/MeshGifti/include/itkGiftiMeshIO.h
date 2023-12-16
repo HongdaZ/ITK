@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ namespace itk
 class ITKIOMeshGifti_EXPORT GiftiMeshIO : public MeshIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GiftiMeshIO);
+  ITK_DISALLOW_COPY_AND_MOVE(GiftiMeshIO);
 
   /** Standard class type aliases. */
   using Self = GiftiMeshIO;
@@ -82,12 +82,12 @@ public:
   /*-------- This part of the interfaces deals with reading data. ----- */
 
   /** Determine if the file can be read with this MeshIO implementation.
-   * \param FileNameToRead The name of the file to test for reading.
+   * \param fileName The name of the file to test for reading.
    * \post Sets classes MeshIOBase::m_FileName variable to be FileNameToWrite
    * \return Returns true if this MeshIO can read the file specified.
    */
   bool
-  CanReadFile(const char * FileNameToRead) override;
+  CanReadFile(const char * fileName) override;
 
   /** Set the spacing and dimension information for the set filename. */
   void
@@ -109,12 +109,12 @@ public:
   /*-------- This part of the interfaces deals with writing data. ----- */
 
   /** Determine if the file can be written with this MeshIO implementation.
-   * \param FileNameToWrite The name of the file to test for writing.
+   * \param fileName The name of the file to test for writing.
    * \post Sets classes MeshIOBase::m_FileName variable to be FileNameToWrite
    * \return Returns true if this MeshIO can write the file specified.
    */
   bool
-  CanWriteFile(const char * FileNameToWrite) override;
+  CanWriteFile(const char * fileName) override;
 
   /** Set the spacing and dimension information for the set filename. */
   void
@@ -150,7 +150,7 @@ protected:
   {
     if (input && output)
     {
-      for (SizeValueType ii = 0; ii < numberOfElements; ii++)
+      for (SizeValueType ii = 0; ii < numberOfElements; ++ii)
       {
         output[ii] = static_cast<TOutput>(input[ii]);
       }
@@ -170,6 +170,17 @@ private:
 
   bool          m_ReadPointData;
   DirectionType m_Direction;
+
+  // Translate (G|N)ifti datatypes to IOComponentEnum
+  IOComponentEnum
+  GetComponentTypeFromGifti(int datatype);
+
+  // Translate (G|N)ifti datatypes to IOPixelEnum
+  IOPixelEnum
+  GetPixelTypeFromGifti(int datatype);
+
+  int
+  GetNumberOfPixelComponentsFromGifti(int datatype);
 };
 } // end namespace itk
 

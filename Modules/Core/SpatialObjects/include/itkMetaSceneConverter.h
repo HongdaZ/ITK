@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@
 namespace itk
 {
 /**
- *\class MetaSceneConverter
+ * \class MetaSceneConverter
  *  \brief Converts between MetaObject and SpaitalObject group.
  *
  *  SpatialObject hierarchies are written to disk using the MetaIO
@@ -42,9 +42,9 @@ namespace itk
  *  \sa MetaConverterBase
  *  \ingroup ITKSpatialObjects
  */
-template <unsigned int NDimensions = 3,
+template <unsigned int VDimension = 3,
           typename PixelType = unsigned char,
-          typename TMeshTraits = DefaultStaticMeshTraits<PixelType, NDimensions, NDimensions>>
+          typename TMeshTraits = DefaultStaticMeshTraits<PixelType, VDimension, VDimension>>
 class ITK_TEMPLATE_EXPORT MetaSceneConverter : public Object
 {
 public:
@@ -60,11 +60,12 @@ public:
   itkTypeMacro(MetaSceneConverter, Object);
 
   /** SpatialObject Scene types */
-  using SpatialObjectType = itk::SpatialObject<NDimensions>;
+  using SpatialObjectType = itk::SpatialObject<VDimension>;
   using SpatialObjectPointer = typename SpatialObjectType::Pointer;
+  using SpatialObjectConstPointer = typename SpatialObjectType::ConstPointer;
 
   /** Typedef for auxiliary conversion classes */
-  using MetaConverterBaseType = MetaConverterBase<NDimensions>;
+  using MetaConverterBaseType = MetaConverterBase<VDimension>;
   using MetaConverterPointer = typename MetaConverterBaseType::Pointer;
   using ConverterMapType = std::map<std::string, MetaConverterPointer>;
 
@@ -74,17 +75,18 @@ public:
 
   /** write out a SpatialObject */
   bool
-  WriteMeta(SpatialObjectType * soScene,
-            const std::string & fileName,
-            unsigned int        depth = SpatialObjectType::MaximumDepth,
-            const std::string & spatialObjectTypeName = "");
+  WriteMeta(const SpatialObjectType * soScene,
+            const std::string &       fileName,
+            unsigned int              depth = SpatialObjectType::MaximumDepth,
+            const std::string &       soName = "");
 
   itkGetMacro(Event, MetaEvent *);
   itkSetObjectMacro(Event, MetaEvent);
 
   /** Set if the points should be saved in binary/ASCII */
   itkSetMacro(BinaryPoints, bool);
-  itkGetMacro(BinaryPoints, bool);
+  itkGetConstMacro(BinaryPoints, bool);
+  itkBooleanMacro(BinaryPoints);
 
   /** set/get the precision for writing out numbers as plain text */
   itkSetMacro(TransformPrecision, unsigned int);
@@ -93,6 +95,7 @@ public:
   /** Set if the images should be written in different files */
   itkSetMacro(WriteImagesInSeparateFile, bool);
   itkGetConstMacro(WriteImagesInSeparateFile, bool);
+  itkBooleanMacro(WriteImagesInSeparateFile);
 
   /** add new SpatialObject/MetaObject converters at runtime
    *
@@ -106,9 +109,9 @@ public:
                         MetaConverterBaseType * converter);
 
   MetaScene *
-  CreateMetaScene(SpatialObjectType * soScene,
-                  unsigned int        depth = SpatialObjectType::MaximumDepth,
-                  const std::string & name = "");
+  CreateMetaScene(const SpatialObjectType * soScene,
+                  unsigned int              depth = SpatialObjectType::MaximumDepth,
+                  const std::string &       name = "");
 
   SpatialObjectPointer
   CreateSpatialObjectScene(MetaScene * mScene);
@@ -124,9 +127,9 @@ private:
 
   template <typename TConverter>
   MetaObject *
-  SpatialObjectToMetaObject(SpatialObjectPointer & so)
+  SpatialObjectToMetaObject(SpatialObjectConstPointer & so)
   {
-    typename TConverter::Pointer converter = TConverter::New();
+    auto converter = TConverter::New();
     // needed just for Image & ImageMask
     converter->SetWriteImagesInSeparateFile(this->m_WriteImagesInSeparateFile);
     return converter->SpatialObjectToMetaObject(so);
@@ -135,7 +138,7 @@ private:
   SpatialObjectPointer
   MetaObjectToSpatialObject(const MetaObject * mo)
   {
-    typename TConverter::Pointer converter = TConverter::New();
+    auto converter = TConverter::New();
     return converter->MetaObjectToSpatialObject(mo);
   }
   void

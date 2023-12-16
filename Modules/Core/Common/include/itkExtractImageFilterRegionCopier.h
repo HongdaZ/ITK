@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -109,7 +109,7 @@ ExtractImageFilterCopyRegion(const typename BinaryUnsignedIntDispatch<T1, T2>::F
     {
       destIndex[dim] = srcIndex[count];
       destSize[dim] = srcSize[count];
-      count++;
+      ++count;
     }
   }
   destRegion.SetIndex(destIndex);
@@ -138,7 +138,7 @@ ExtractImageFilterCopyRegion(const typename BinaryUnsignedIntDispatch<T1, T2>::F
  * \ingroup ITKCommon
  */
 template <unsigned int T1, unsigned int T2>
-class ExtractImageFilterRegionCopier : public ImageRegionCopier<T1, T2>
+class ITK_TEMPLATE_EXPORT ExtractImageFilterRegionCopier : public ImageRegionCopier<T1, T2>
 {
 public:
   virtual void

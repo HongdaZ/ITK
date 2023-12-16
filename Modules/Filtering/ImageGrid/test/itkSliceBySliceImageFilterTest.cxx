@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,23 +66,29 @@ itkSliceBySliceImageFilterTest(int argc, char * argv[])
 
   using ReaderType = itk::ImageFileReader<ImageType>;
 
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
   using FilterType = itk::SliceBySliceImageFilter<ImageType, ImageType>;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, SliceBySliceImageFilter, ImageToImageFilter);
+
+
   filter->DebugOn();
 
   filter->SetInput(reader->GetOutput());
 
   using MedianType = itk::MedianImageFilter<FilterType::InternalInputImageType, FilterType::InternalOutputImageType>;
 
-  MedianType::Pointer median = MedianType::New();
+  auto median = MedianType::New();
   filter->SetFilter(median);
+  ITK_TEST_SET_GET_VALUE(median, filter->GetFilter());
+
 
   using MonitorType = itk::PipelineMonitorImageFilter<FilterType::InternalOutputImageType>;
-  MonitorType::Pointer monitor = MonitorType::New();
+  auto monitor = MonitorType::New();
 
   itk::CStyleCommand::Pointer command = itk::CStyleCommand::New();
   command->SetCallback(*sliceCallBack);
@@ -93,7 +99,7 @@ itkSliceBySliceImageFilterTest(int argc, char * argv[])
 
   using WriterType = itk::ImageFileWriter<ImageType>;
 
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(filter->GetOutput());
   writer->SetFileName(argv[2]);
 
@@ -101,8 +107,7 @@ itkSliceBySliceImageFilterTest(int argc, char * argv[])
   std::istringstream istrm(argv[3]);
   istrm >> slicingDimension;
   filter->SetDimension(slicingDimension);
-  std::cout << "Slicing dimension: " << slicingDimension << std::endl;
-  std::cout << "Slicing dimension: " << filter->GetDimension() << std::endl;
+  ITK_TEST_SET_GET_VALUE(slicingDimension, filter->GetDimension());
 
   try
   {
@@ -131,7 +136,10 @@ itkSliceBySliceImageFilterTest(int argc, char * argv[])
 
 
   monitor->SetInput(median->GetOutput());
+
   filter->SetOutputFilter(monitor);
+  ITK_TEST_SET_GET_VALUE(monitor, filter->GetOutputFilter());
+
   filter->GetOutput()->SetRequestedRegion(rr);
 
 
@@ -157,7 +165,7 @@ itkSliceBySliceImageFilterTest(int argc, char * argv[])
   // spacing. We are setting the input image to have a non-zero
   // starting index.
   //
-  ImageType::Pointer image = ImageType::New();
+  auto image = ImageType::New();
   {
     ImageType::RegionType region = reader->GetOutput()->GetLargestPossibleRegion();
     region.SetIndex(0, 10);
@@ -194,15 +202,10 @@ itkSliceBySliceImageFilterTest(int argc, char * argv[])
   ITK_TEST_EXPECT_EQUAL(monitor->GetUpdatedOutputOrigin(), expectedInternalOrigin);
 
   //
-  // Exercise PrintSelf()
-  //
-  filter->Print(std::cout);
-
-  //
   // Exercise exceptions
   //
-  bool                caughtException;
-  FilterType::Pointer badFilter = FilterType::New();
+  bool caughtException;
+  auto badFilter = FilterType::New();
 
   std::cout << "Testing with no filter set..." << std::endl;
   badFilter->SetInput(reader->GetOutput());
@@ -224,7 +227,10 @@ itkSliceBySliceImageFilterTest(int argc, char * argv[])
 
   std::cout << "Testing with no output filter set..." << std::endl;
   badFilter->SetInput(reader->GetOutput());
+
   badFilter->SetInputFilter(median);
+  ITK_TEST_SET_GET_VALUE(median, badFilter->GetInputFilter());
+
   caughtException = false;
   try
   {

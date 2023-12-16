@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,17 +15,18 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#include "itkInverseFFTImageFilter.h"
-
 #ifndef itkFFTWInverseFFTImageFilter_h
-#  define itkFFTWInverseFFTImageFilter_h
+#define itkFFTWInverseFFTImageFilter_h
 
-#  include "itkFFTWCommon.h"
+#include "itkInverseFFTImageFilter.h"
+#include "itkFFTWCommon.h"
+
+#include "itkFFTImageFilterFactory.h"
 
 namespace itk
 {
 /**
- *\class FFTWInverseFFTImageFilter
+ * \class FFTWInverseFFTImageFilter
  *
  * \brief FFTW-based inverse Fast Fourier Transform
  *
@@ -35,8 +36,7 @@ namespace itk
  * This filter is multithreaded and supports input images of any size.
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/10380/3154
- * or http://insight-journal.com/browse/publication/717
+ * https://www.insight-journal.org/browse/publication/717
  *
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
@@ -51,7 +51,7 @@ template <typename TInputImage,
 class ITK_TEMPLATE_EXPORT FFTWInverseFFTImageFilter : public InverseFFTImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FFTWInverseFFTImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(FFTWInverseFFTImageFilter);
 
   /** Standard class type aliases. */
   using InputImageType = TInputImage;
@@ -96,10 +96,10 @@ public:
   virtual void
   SetPlanRigor(const int & value)
   {
-#  ifndef ITK_USE_CUFFTW
+#ifndef ITK_USE_CUFFTW
     // Use that method to check the value.
     FFTWGlobalConfiguration::GetPlanRigorName(value);
-#  endif
+#endif
     if (m_PlanRigor != value)
     {
       m_PlanRigor = value;
@@ -110,9 +110,9 @@ public:
   void
   SetPlanRigor(const std::string & name)
   {
-#  ifndef ITK_USE_CUFFTW
+#ifndef ITK_USE_CUFFTW
     this->SetPlanRigor(FFTWGlobalConfiguration::GetPlanRigorValue(name));
-#  endif
+#endif
   }
 
   SizeValueType
@@ -136,10 +136,22 @@ private:
 };
 
 
+// Describe whether input/output are real- or complex-valued
+// for factory registration
+template <>
+struct FFTImageFilterTraits<FFTWInverseFFTImageFilter>
+{
+  template <typename TUnderlying>
+  using InputPixelType = std::complex<TUnderlying>;
+  template <typename TUnderlying>
+  using OutputPixelType = TUnderlying;
+  using FilterDimensions = std::integer_sequence<unsigned int, 4, 3, 2, 1>;
+};
+
 } // namespace itk
 
-#  ifndef ITK_MANUAL_INSTANTIATION
-#    include "itkFFTWInverseFFTImageFilter.hxx"
-#  endif
+#ifndef ITK_MANUAL_INSTANTIATION
+#  include "itkFFTWInverseFFTImageFilter.hxx"
+#endif
 
 #endif // itkFFTWInverseFFTImageFilter_h

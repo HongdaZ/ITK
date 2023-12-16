@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,12 +16,9 @@
  *
  *=========================================================================*/
 
-/**
- * This is a test file for the itkBlobSpatialObject class.
- */
-
 #include "itkBlobSpatialObject.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 int
 itkBlobSpatialObjectTest(int, char *[])
@@ -37,7 +34,7 @@ itkBlobSpatialObjectTest(int, char *[])
   BlobType::BlobPointListType list;
 
   unsigned int i;
-  for (i = 0; i < 10; i++)
+  for (i = 0; i < 10; ++i)
   {
     BlobPointType p;
     PointType     pnt;
@@ -63,14 +60,14 @@ itkBlobSpatialObjectTest(int, char *[])
 
   // Create a Blob Spatial Object
   BlobPointer blob = BlobType::New();
-  blob->Print(std::cout);
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(blob, BlobSpatialObject, PointBasedSpatialObject);
+
 
   blob->GetProperty().SetName("Blob 1");
   blob->SetId(1);
   blob->SetPoints(list);
   blob->Update();
-
-  blob->Print(std::cout);
 
   // Number of points
   std::cout << "Testing Consistency: " << std::endl;
@@ -94,9 +91,9 @@ itkBlobSpatialObjectTest(int, char *[])
   i = 0;
   while (it != blob->GetPoints().end())
   {
-    for (unsigned int d = 0; d < 3; d++)
+    for (unsigned int d = 0; d < 3; ++d)
     {
-      if (itk::Math::NotExactlyEquals((*it).GetPositionInObjectSpace()[d], i + d))
+      if (itk::Math::NotExactlyEquals(it->GetPositionInObjectSpace()[d], i + d))
       {
         std::cout << "[FAILED]" << std::endl;
         return EXIT_FAILURE;
@@ -140,26 +137,26 @@ itkBlobSpatialObjectTest(int, char *[])
   i = 0;
   while (it != blob->GetPoints().end())
   {
-    for (unsigned int d = 0; d < 3; d++)
+    for (unsigned int d = 0; d < 3; ++d)
     {
-      if (itk::Math::NotExactlyEquals((*it).GetBlue(), i))
+      if (itk::Math::NotExactlyEquals(it->GetBlue(), i))
       {
         std::cout << "[FAILED]" << std::endl;
         return EXIT_FAILURE;
       }
-      if (itk::Math::NotExactlyEquals((*it).GetGreen(), i + 1))
-      {
-        std::cout << "[FAILED]" << std::endl;
-        return EXIT_FAILURE;
-      }
-
-      if (itk::Math::NotExactlyEquals((*it).GetRed(), i + 2))
+      if (itk::Math::NotExactlyEquals(it->GetGreen(), i + 1))
       {
         std::cout << "[FAILED]" << std::endl;
         return EXIT_FAILURE;
       }
 
-      if (itk::Math::NotExactlyEquals((*it).GetAlpha(), i + 3))
+      if (itk::Math::NotExactlyEquals(it->GetRed(), i + 2))
+      {
+        std::cout << "[FAILED]" << std::endl;
+        return EXIT_FAILURE;
+      }
+
+      if (itk::Math::NotExactlyEquals(it->GetAlpha(), i + 3))
       {
         std::cout << "[FAILED]" << std::endl;
         return EXIT_FAILURE;
@@ -198,5 +195,6 @@ itkBlobSpatialObjectTest(int, char *[])
   std::cout << "[PASSED]" << std::endl;
 
 
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

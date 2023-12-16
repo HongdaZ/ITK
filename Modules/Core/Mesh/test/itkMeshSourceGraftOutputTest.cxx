@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ template <typename TInputMesh, typename TOutputMesh, typename TTransform>
 class MeshSourceGraftOutputFilter : public MeshToMeshFilter<TInputMesh, TOutputMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MeshSourceGraftOutputFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MeshSourceGraftOutputFilter);
 
   /** Standard class type aliases. */
   using Self = MeshSourceGraftOutputFilter;
@@ -119,7 +119,7 @@ MeshSourceGraftOutputFilter<TInputMesh, TOutputMesh, TTransform>::GenerateData()
 
 
   // Create a Filter
-  typename FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   // Connect the inputs
   filter->SetInput(inputMesh);
@@ -191,8 +191,8 @@ itkMeshSourceGraftOutputTest(int, char *[])
 
   // Declare the types of the Mesh
   // By default it is a 3D mesh using itk::Point<float,3>
-  // on the vertices, and an itk::VectorContainter
-  // as containter for points
+  // on the vertices, and an itk::VectorContainer
+  // as container for points
   using MeshType = itk::Mesh<PixelType>;
 
   // Declare the type for PointsContainer
@@ -204,7 +204,7 @@ itkMeshSourceGraftOutputTest(int, char *[])
   using PointType = MeshType::PointType;
 
   // Create an input Mesh
-  MeshType::Pointer inputMesh = MeshType::New();
+  auto inputMesh = MeshType::New();
 
   // Insert data on the Mesh
   PointsContainerPointer points = inputMesh->GetPoints();
@@ -213,11 +213,11 @@ itkMeshSourceGraftOutputTest(int, char *[])
   int                                    n = 1;     // let's start with a few of them
   PointsContainerType::ElementIdentifier count = 0; // count them
 
-  for (int x = -n; x <= n; x++)
+  for (int x = -n; x <= n; ++x)
   {
-    for (int y = -n; y <= n; y++)
+    for (int y = -n; y <= n; ++y)
     {
-      for (int z = -n; z <= n; z++)
+      for (int z = -n; z <= n; ++z)
       {
         PointType p;
         p[0] = x;
@@ -251,11 +251,11 @@ itkMeshSourceGraftOutputTest(int, char *[])
 
 
   // Create a Filter
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   // Create an  Transform
   // (it doesn't use smart pointers)
-  TransformType::Pointer affineTransform = TransformType::New();
+  auto affineTransform = TransformType::New();
   affineTransform->Scale(3.5);
   TransformType::OffsetType::ValueType tInit[3] = { 100, 200, 300 };
   TransformType::OffsetType            translation = tInit;

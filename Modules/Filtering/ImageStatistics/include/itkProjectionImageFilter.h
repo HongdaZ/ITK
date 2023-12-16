@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,7 +43,7 @@ namespace itk
  *
  * This class was contributed to the Insight Journal by Emilian Beronich and
  * Gaetan Lehmann. The original paper can be found at
- *      https://hdl.handle.net/1926/164
+ * https://www.insight-journal.org/browse/publication/71
  *
  * \author Emiliano Beronich
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction,
@@ -57,7 +57,7 @@ template <typename TInputImage, typename TOutputImage, typename TAccumulator>
 class ITK_TEMPLATE_EXPORT ProjectionImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ProjectionImageFilter);
 
   /** Standard class type aliases. */
   using Self = ProjectionImageFilter;

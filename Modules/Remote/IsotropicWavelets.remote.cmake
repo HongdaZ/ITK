@@ -27,12 +27,12 @@
 #--   - [ ] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -47,11 +47,11 @@ itk_fetch_module(IsotropicWavelets
 A more detailed description can be found in the Insight Journal article::
 
 Cerdan, P.H. \"Steerable Isotropic Wavelets for Multiscale and Phase Analysis\".
-  http://hdl.handle.net/10380/3558
+  https://www.insight-journal.org/browse/publication/986
   November, 2016.
 "
-  # Upstream repository was transfered from phcerdan to InsightSoftwareConsortium
+  # Upstream repository was transferred from phcerdan to InsightSoftwareConsortium
   MODULE_COMPLIANCE_LEVEL 2
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKIsotropicWavelets.git
-  GIT_TAG 8f28a1665cad0f12e33ed2b29f83e2c9d7c3c1cf
+  GIT_TAG b63d8d55f146d194b665e3599d5a154054d052e9
 )

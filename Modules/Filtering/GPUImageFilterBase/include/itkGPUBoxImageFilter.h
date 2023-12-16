@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,10 +39,11 @@ namespace itk
 template <typename TInputImage,
           typename TOutputImage,
           typename TParentImageFilter = BoxImageFilter<TInputImage, TOutputImage>>
-class GPUBoxImageFilter : public GPUImageToImageFilter<TInputImage, TOutputImage, TParentImageFilter>
+class ITK_TEMPLATE_EXPORT GPUBoxImageFilter
+  : public GPUImageToImageFilter<TInputImage, TOutputImage, TParentImageFilter>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUBoxImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(GPUBoxImageFilter);
 
   /** Standard class type aliases. */
   using Self = GPUBoxImageFilter;

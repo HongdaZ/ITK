@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include "itkFastMarchingImageFilter.h"
 #include "itkTextOutput.h"
 #include "itkCommand.h"
+#include "itkTestingMacros.h"
 
 
 namespace
@@ -39,8 +40,17 @@ public:
 } // namespace
 
 int
-itkFastMarchingTest(int, char *[])
+itkFastMarchingTest(int argc, char * argv[])
 {
+  if (argc != 9)
+  {
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " speedConstant normalizationFactor stoppingValue collectPoints outputIndexValue outputSpacingValue "
+                 "outputOriginValue overrideOutputInformation "
+              << std::endl;
+    return EXIT_FAILURE;
+  }
 
   itk::OutputWindow::SetInstance(itk::TextOutput::New().GetPointer());
 
@@ -49,7 +59,10 @@ itkFastMarchingTest(int, char *[])
   using FloatImage = itk::Image<PixelType, 2>;
   using FloatFMType = itk::FastMarchingImageFilter<FloatImage, FloatImage>;
 
-  FloatFMType::Pointer marcher = FloatFMType::New();
+  auto marcher = FloatFMType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(marcher, FastMarchingImageFilter, ImageToImageFilter);
+
 
   ShowProgressObject                                    progressWatch(marcher);
   itk::SimpleMemberCommand<ShowProgressObject>::Pointer command;
@@ -61,7 +74,7 @@ itkFastMarchingTest(int, char *[])
   using NodeContainer = FloatFMType::NodeContainer;
 
   // setup alive points
-  NodeContainer::Pointer alivePoints = NodeContainer::New();
+  auto alivePoints = NodeContainer::New();
 
   NodeType node;
 
@@ -80,10 +93,11 @@ itkFastMarchingTest(int, char *[])
   alivePoints->InsertElement(1, node);
 
   marcher->SetAlivePoints(alivePoints);
+  ITK_TEST_SET_GET_VALUE(alivePoints, marcher->GetAlivePoints());
 
 
   // setup trial points
-  NodeContainer::Pointer trialPoints = NodeContainer::New();
+  auto trialPoints = NodeContainer::New();
 
   node.SetValue(1.0);
 
@@ -115,13 +129,57 @@ itkFastMarchingTest(int, char *[])
   trialPoints->InsertElement(4, node);
 
   marcher->SetTrialPoints(trialPoints);
+  ITK_TEST_SET_GET_VALUE(trialPoints, marcher->GetTrialPoints());
 
-  // specify the size of the output image
-  FloatImage::SizeType size = { { 64, 64 } };
+  auto speedConstant = std::stod(argv[1]);
+  marcher->SetSpeedConstant(speedConstant);
+  ITK_TEST_SET_GET_VALUE(speedConstant, marcher->GetSpeedConstant());
+
+  auto normalizationFactor = std::stod(argv[2]);
+  marcher->SetNormalizationFactor(normalizationFactor);
+  ITK_TEST_SET_GET_VALUE(normalizationFactor, marcher->GetNormalizationFactor());
+
+  auto stoppingValue = std::stod(argv[3]);
+  marcher->SetStoppingValue(stoppingValue);
+  ITK_TEST_SET_GET_VALUE(stoppingValue, marcher->GetStoppingValue());
+
+  auto collectPoints = static_cast<bool>(std::stoi(argv[4]));
+  ITK_TEST_SET_GET_BOOLEAN(marcher, CollectPoints, collectPoints);
+
+  typename FloatImage::SizeType size = { { 64, 64 } };
   marcher->SetOutputSize(size);
+  ITK_TEST_SET_GET_VALUE(size, marcher->GetOutputSize());
+
+  auto outputRegionIndexValue =
+    static_cast<typename FloatFMType::LevelSetImageType::IndexType::IndexValueType>(std::stoi(argv[5]));
+  typename FloatFMType::LevelSetImageType::IndexType outputRegionIndex;
+  outputRegionIndex.Fill(outputRegionIndexValue);
+  typename FloatFMType::OutputRegionType outputRegion;
+  outputRegion.SetSize(size);
+  outputRegion.SetIndex(outputRegionIndex);
+  marcher->SetOutputRegion(outputRegion);
+  ITK_TEST_SET_GET_VALUE(outputRegion, marcher->GetOutputRegion());
+
+  auto outputSpacingValue = static_cast<typename FloatFMType::OutputSpacingType::ValueType>(std::stod(argv[6]));
+  auto outputSpacing = itk::MakeFilled<typename FloatFMType::OutputSpacingType>(outputSpacingValue);
+  marcher->SetOutputSpacing(outputSpacing);
+  ITK_TEST_SET_GET_VALUE(outputSpacing, marcher->GetOutputSpacing());
+
+  typename FloatFMType::OutputDirectionType outputDirection;
+  outputDirection.SetIdentity();
+  marcher->SetOutputDirection(outputDirection);
+  ITK_TEST_SET_GET_VALUE(outputDirection, marcher->GetOutputDirection());
+
+  auto outputOriginValue = static_cast<typename FloatFMType::OutputPointType::ValueType>(std::stod(argv[7]));
+  auto outputOrigin = itk::MakeFilled<typename FloatFMType::OutputPointType>(outputOriginValue);
+  marcher->SetOutputOrigin(outputOrigin);
+  ITK_TEST_SET_GET_VALUE(outputOrigin, marcher->GetOutputOrigin());
+
+  auto overrideOutputInformation = static_cast<bool>(std::stoi(argv[8]));
+  ITK_TEST_SET_GET_BOOLEAN(marcher, OverrideOutputInformation, overrideOutputInformation);
 
   // setup a speed image of ones
-  FloatImage::Pointer    speedImage = FloatImage::New();
+  auto                   speedImage = FloatImage::New();
   FloatImage::RegionType region;
   region.SetSize(size);
   speedImage->SetLargestPossibleRegion(region);
@@ -134,9 +192,8 @@ itkFastMarchingTest(int, char *[])
     speedIter.Set(1.0);
   }
 
-  speedImage->Print(std::cout);
   marcher->SetInput(speedImage);
-  marcher->SetStoppingValue(100.0);
+  ITK_TEST_SET_GET_VALUE(speedImage, marcher->GetInput());
 
   // turn on debugging
   marcher->DebugOn();
@@ -160,13 +217,13 @@ itkFastMarchingTest(int, char *[])
     tempIndex = iterator.GetIndex();
     tempIndex -= offset0;
     distance = 0.0;
-    for (int j = 0; j < 2; j++)
+    for (int j = 0; j < 2; ++j)
     {
       distance += tempIndex[j] * tempIndex[j];
     }
     distance = std::sqrt(distance);
 
-    outputValue = (float)iterator.Get();
+    outputValue = static_cast<float>(iterator.Get());
 
     if (distance < itk::NumericTraits<double>::epsilon())
     {
@@ -180,20 +237,6 @@ itkFastMarchingTest(int, char *[])
       passed = false;
     }
   }
-
-  // Exercise other member functions
-  std::cout << "SpeedConstant: " << marcher->GetSpeedConstant() << std::endl;
-  std::cout << "StoppingValue: " << marcher->GetStoppingValue() << std::endl;
-  std::cout << "CollectPoints: " << marcher->GetCollectPoints() << std::endl;
-
-  marcher->SetNormalizationFactor(2.0);
-  std::cout << "NormalizationFactor: " << marcher->GetNormalizationFactor();
-  std::cout << std::endl;
-
-  std::cout << "SpeedImage: " << marcher->GetInput();
-  std::cout << std::endl;
-
-  marcher->Print(std::cout);
 
   // Test streaming enumeration for FastMarchingImageFilterEnums::Label elements
   const std::set<itk::FastMarchingImageFilterEnums::Label> allLabel{

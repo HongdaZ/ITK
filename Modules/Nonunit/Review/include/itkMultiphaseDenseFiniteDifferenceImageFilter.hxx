@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMultiphaseDenseFiniteDifferenceImageFilter_hxx
 #define itkMultiphaseDenseFiniteDifferenceImageFilter_hxx
 
-#include "itkMultiphaseDenseFiniteDifferenceImageFilter.h"
 
 namespace itk
 {
@@ -42,7 +41,7 @@ MultiphaseDenseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputIm
 
   output->FillBuffer(0);
 
-  for (IdCellType i = 0; i < this->m_FunctionCount; i++)
+  for (IdCellType i = 0; i < this->m_FunctionCount; ++i)
   {
     const InputImagePointer input = this->m_LevelSet[i];
     const InputPointType    origin = input->GetOrigin();
@@ -88,7 +87,7 @@ void
 MultiphaseDenseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputImage, TFunction, TIdCell>::
   AllocateUpdateBuffer()
 {
-  for (IdCellType i = 0; i < this->m_FunctionCount; i++)
+  for (IdCellType i = 0; i < this->m_FunctionCount; ++i)
   {
     InputImagePointer input = this->m_LevelSet[i];
     InputRegionType   region = input->GetLargestPossibleRegion();
@@ -107,7 +106,7 @@ typename MultiphaseDenseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, 
 {
   TimeStepType timeStep = NumericTraits<TimeStepType>::max();
 
-  for (IdCellType i = 0; i < this->m_FunctionCount; i++)
+  for (IdCellType i = 0; i < this->m_FunctionCount; ++i)
   {
     InputImagePointer levelset = this->m_LevelSet[i];
 
@@ -176,7 +175,7 @@ MultiphaseDenseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputIm
 
   this->m_UpdateBuffers.resize(n, nullptr);
 
-  for (IdCellType i = 0; i < this->m_FunctionCount; i++)
+  for (IdCellType i = 0; i < this->m_FunctionCount; ++i)
   {
     this->m_UpdateBuffers[i] = InputImageType::New();
   }
@@ -192,7 +191,7 @@ MultiphaseDenseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputIm
   IdCellType     i;
   InputPixelType val;
 
-  for (i = 0; i < this->m_FunctionCount; i++)
+  for (i = 0; i < this->m_FunctionCount; ++i)
   {
     const double img_size = this->m_LevelSet[i]->GetLargestPossibleRegion().GetNumberOfPixels();
     den += img_size;
@@ -205,7 +204,7 @@ MultiphaseDenseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputIm
   }
 
   // Updating the output image
-  for (i = 0; i < this->m_FunctionCount; i++)
+  for (i = 0; i < this->m_FunctionCount; ++i)
   {
     // NOTE: here this->m_LevelSet[i]->GetRequestedRegion() is used and
     // previously

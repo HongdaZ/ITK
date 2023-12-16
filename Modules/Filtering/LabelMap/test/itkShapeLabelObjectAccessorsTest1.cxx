@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkShapeKeepNObjectsLabelMapFilter.h"
 #include "itkLabelImageToShapeLabelMapFilter.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 
 int
@@ -28,7 +29,8 @@ itkShapeLabelObjectAccessorsTest1(int argc, char * argv[])
 {
   if (argc != 2)
   {
-    std::cerr << "Usage: " << argv[0];
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
     std::cerr << " input ";
     std::cerr << std::endl;
     return EXIT_FAILURE;
@@ -78,11 +80,11 @@ itkShapeLabelObjectAccessorsTest1(int argc, char * argv[])
       status = EXIT_FAILURE;
     }
   }
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
   using I2LType = itk::LabelImageToShapeLabelMapFilter<ImageType, LabelMapType>;
-  I2LType::Pointer i2l = I2LType::New();
+  auto i2l = I2LType::New();
   i2l->SetInput(reader->GetOutput());
   i2l->SetComputePerimeter(true);
   i2l->SetComputeOrientedBoundingBox(true);
@@ -92,7 +94,7 @@ itkShapeLabelObjectAccessorsTest1(int argc, char * argv[])
   std::cout << "File " << argv[1] << " has " << labelMap->GetNumberOfLabelObjects() << " labels." << std::endl;
 
   // Retrieve all attributes
-  for (unsigned int n = 0; n < labelMap->GetNumberOfLabelObjects(); n++)
+  for (unsigned int n = 0; n < labelMap->GetNumberOfLabelObjects(); ++n)
   {
     ShapeLabelObjectType * labelObject = labelMap->GetNthLabelObject(n);
     std::cout << "Label: " << itk::NumericTraits<LabelMapType::LabelType>::PrintType(labelObject->GetLabel())
@@ -117,7 +119,7 @@ itkShapeLabelObjectAccessorsTest1(int argc, char * argv[])
     std::cout << "    OrientedBoundingBoxSize: " << labelObject->GetOrientedBoundingBoxSize() << std::endl;
     std::cout << "    OrientedBoundingBoxOrigin: " << labelObject->GetOrientedBoundingBoxOrigin() << std::endl;
   }
-  for (unsigned int n = 0; n < labelMap->GetNumberOfLabelObjects(); n++)
+  for (unsigned int n = 0; n < labelMap->GetNumberOfLabelObjects(); ++n)
   {
     ShapeLabelObjectType * labelCopy = labelMap->GetNthLabelObject(n);
     ShapeLabelObjectType * labelObject = labelMap->GetNthLabelObject(0);
@@ -247,7 +249,7 @@ itkShapeLabelObjectAccessorsTest1(int argc, char * argv[])
   }
   // Check that the accessors match the Get's
 
-  for (unsigned int n = 0; n < labelMap->GetNumberOfLabelObjects(); n++)
+  for (unsigned int n = 0; n < labelMap->GetNumberOfLabelObjects(); ++n)
   {
     itk::Functor::LabelLabelObjectAccessor<ShapeLabelObjectType> accessorLabel;
     ShapeLabelObjectType *                                       l = labelMap->GetNthLabelObject(n);
@@ -363,7 +365,7 @@ itkShapeLabelObjectAccessorsTest1(int argc, char * argv[])
   }
 
   // Cover PrintSelf
-  for (unsigned int n = 0; n < labelMap->GetNumberOfLabelObjects(); n++)
+  for (unsigned int n = 0; n < labelMap->GetNumberOfLabelObjects(); ++n)
   {
     ShapeLabelObjectType * l = labelMap->GetNthLabelObject(n);
     std::cout << "Print ShapeLabelObject " << n << std::endl;
@@ -371,7 +373,7 @@ itkShapeLabelObjectAccessorsTest1(int argc, char * argv[])
   }
 
   // Check transforms
-  for (unsigned int n = 0; n < labelMap->GetNumberOfLabelObjects(); n++)
+  for (unsigned int n = 0; n < labelMap->GetNumberOfLabelObjects(); ++n)
   {
     ShapeLabelObjectType *                       l = labelMap->GetNthLabelObject(n);
     ShapeLabelObjectType::AffineTransformPointer principleToPhysical = l->GetPrincipalAxesToPhysicalAxesTransform();

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,12 +73,15 @@ public:
   using Self = DerivativeOperator;
   using Superclass = NeighborhoodOperator<TPixel, VDimension, TAllocator>;
 
-  using PixelType = typename Superclass::PixelType;
-  using PixelRealType = typename Superclass::PixelRealType;
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(DerivativeOperator, NeighborhoodOperator);
+
+  /** Type alias support for pixel real type.*/
+  using typename Superclass::PixelRealType;
 
   /** Sets the order of the derivative. */
   void
-  SetOrder(const unsigned int & order)
+  SetOrder(const unsigned int order)
   {
     this->m_Order = order;
   }
@@ -90,18 +93,17 @@ public:
     return m_Order;
   }
 
-  /** Prints some debugging information */
   void
-  PrintSelf(std::ostream & os, Indent i) const override
+  PrintSelf(std::ostream & os, Indent indent) const override
   {
-    os << i << "DerivativeOperator { this=" << this << ", m_Order = " << m_Order << "}" << std::endl;
-    Superclass::PrintSelf(os, i.GetNextIndent());
+    Superclass::PrintSelf(os, indent);
+
+    os << indent << "Order: " << m_Order << std::endl;
   }
 
 protected:
-  /** Typedef support for coefficient vector type.  Necessary to
-   * work around compiler bug on VC++. */
-  using CoefficientVector = typename Superclass::CoefficientVector;
+  /** Type alias support for coefficient vector type.*/
+  using typename Superclass::CoefficientVector;
 
   /** Calculates operator coefficients. */
   CoefficientVector

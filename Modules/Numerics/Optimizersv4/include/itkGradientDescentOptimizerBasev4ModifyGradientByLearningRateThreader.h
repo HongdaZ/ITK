@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ template <typename TInternalComputationValueType>
 class ITK_FORWARD_EXPORT GradientDescentOptimizerBasev4Template;
 
 /**
- *\class GradientDescentOptimizerBasev4ModifyGradientByLearningRateThreaderTemplate
+ * \class GradientDescentOptimizerBasev4ModifyGradientByLearningRateThreaderTemplate
  * \brief Modify the gradient by the learning rate for
  * GradientDescentOptimizerBasev4.
  * \ingroup ITKOptimizersv4
@@ -39,7 +39,7 @@ class ITK_TEMPLATE_EXPORT GradientDescentOptimizerBasev4ModifyGradientByLearning
                           GradientDescentOptimizerBasev4Template<TInternalComputationValueType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GradientDescentOptimizerBasev4ModifyGradientByLearningRateThreaderTemplate);
+  ITK_DISALLOW_COPY_AND_MOVE(GradientDescentOptimizerBasev4ModifyGradientByLearningRateThreaderTemplate);
 
   /** Standard class type aliases. */
   using Self = GradientDescentOptimizerBasev4ModifyGradientByLearningRateThreaderTemplate;
@@ -52,8 +52,8 @@ public:
 
   itkNewMacro(Self);
 
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  using typename Superclass::DomainType;
+  using typename Superclass::AssociateType;
   using IndexRangeType = DomainType;
 
 protected:

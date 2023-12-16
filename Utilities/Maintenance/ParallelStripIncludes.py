@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#==========================================================================
+# ==========================================================================
 #
 #   Copyright NumFOCUS
 #
@@ -7,7 +7,7 @@
 #   you may not use this file except in compliance with the License.
 #   You may obtain a copy of the License at
 #
-#          http://www.apache.org/licenses/LICENSE-2.0.txt
+#          https://www.apache.org/licenses/LICENSE-2.0.txt
 #
 #   Unless required by applicable law or agreed to in writing, software
 #   distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-#==========================================================================*/
+# ==========================================================================*/
 # Author: Pat Marion
 # Modified by Xiaoxiao Liu.
 
@@ -34,13 +34,14 @@ FILES_PER_PROCESS = 2
 NUMBER_OF_PROCESSES = 8
 #################################################
 
+
 def main():
 
-    fileList = open(relativeFileList, 'r').read().splitlines()
+    fileList = open(relativeFileList).read().splitlines()
 
     args = []
     for i in xrange(0, len(fileList), FILES_PER_PROCESS):
-        args.append(fileList[i:i+FILES_PER_PROCESS])
+        args.append(fileList[i : i + FILES_PER_PROCESS])
 
     pool = Pool(processes=NUMBER_OF_PROCESSES)
     pool.map(processFileList, args)

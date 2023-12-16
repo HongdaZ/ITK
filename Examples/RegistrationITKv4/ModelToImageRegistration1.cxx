@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -257,9 +257,9 @@ public:
   using PointType = itk::Point<double, 2>;
   using PointListType = std::list<PointType>;
   using MovingSpatialObjectType = TMovingSpatialObject;
-  using ParametersType = typename Superclass::ParametersType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using MeasureType = typename Superclass::MeasureType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::MeasureType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -424,9 +424,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  EllipseType::Pointer ellipse1 = EllipseType::New();
-  EllipseType::Pointer ellipse2 = EllipseType::New();
-  EllipseType::Pointer ellipse3 = EllipseType::New();
+  auto ellipse1 = EllipseType::New();
+  auto ellipse2 = EllipseType::New();
+  auto ellipse3 = EllipseType::New();
   //  Software Guide : EndCodeSnippet
 
 
@@ -509,7 +509,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  GroupType::Pointer group = GroupType::New();
+  auto group = GroupType::New();
   group->AddChild(ellipse1);
   group->AddChild(ellipse2);
   group->AddChild(ellipse3);
@@ -546,8 +546,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  SpatialObjectToImageFilterType::Pointer imageFilter =
-    SpatialObjectToImageFilterType::New();
+  auto imageFilter = SpatialObjectToImageFilterType::New();
   //  Software Guide : EndCodeSnippet
 
 
@@ -609,7 +608,7 @@ main(int argc, char * argv[])
   //  Software Guide : BeginCodeSnippet
   using GaussianFilterType =
     itk::DiscreteGaussianImageFilter<ImageType, ImageType>;
-  GaussianFilterType::Pointer gaussianFilter = GaussianFilterType::New();
+  auto gaussianFilter = GaussianFilterType::New();
   //  Software Guide : EndCodeSnippet
 
 
@@ -658,7 +657,7 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   using RegistrationType =
     itk::ImageToSpatialObjectRegistrationMethod<ImageType, GroupType>;
-  RegistrationType::Pointer registration = RegistrationType::New();
+  auto registration = RegistrationType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -674,7 +673,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   using MetricType = SimpleImageToSpatialObjectMetric<ImageType, GroupType>;
-  MetricType::Pointer metric = MetricType::New();
+  auto metric = MetricType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -688,7 +687,7 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   using InterpolatorType =
     itk::LinearInterpolateImageFunction<ImageType, double>;
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -702,7 +701,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   using OptimizerType = itk::OnePlusOneEvolutionaryOptimizer;
-  OptimizerType::Pointer optimizer = OptimizerType::New();
+  auto optimizer = OptimizerType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -716,7 +715,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   using TransformType = itk::Euler2DTransform<>;
-  TransformType::Pointer transform = TransformType::New();
+  auto transform = TransformType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -734,8 +733,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  itk::Statistics::NormalVariateGenerator::Pointer generator =
-    itk::Statistics::NormalVariateGenerator::New();
+  auto generator = itk::Statistics::NormalVariateGenerator::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -782,7 +780,7 @@ main(int argc, char * argv[])
   parametersScale.set_size(3);
   parametersScale[0] = 1000; // angle scale
 
-  for (unsigned int i = 1; i < 3; i++)
+  for (unsigned int i = 1; i < 3; ++i)
   {
     parametersScale[i] = 2; // offset scale
   }
@@ -802,7 +800,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   using IterationCallbackType = IterationCallback<OptimizerType>;
-  IterationCallbackType::Pointer callback = IterationCallbackType::New();
+  auto callback = IterationCallbackType::New();
   callback->SetOptimizer(optimizer);
   // Software Guide : EndCodeSnippet
 

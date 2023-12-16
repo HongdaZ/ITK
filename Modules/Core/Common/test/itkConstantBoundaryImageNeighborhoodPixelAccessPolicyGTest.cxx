@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,19 +29,19 @@
 #include <gtest/gtest.h>
 
 // Test template instantiations for various template arguments:
-template class itk::Experimental::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<itk::Image<short, 1>>;
-template class itk::Experimental::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<itk::Image<short, 2>>;
-template class itk::Experimental::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<itk::Image<short, 3>>;
-template class itk::Experimental::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<itk::Image<short, 4>>;
-template class itk::Experimental::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<const itk::Image<short>>;
-template class itk::Experimental::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<itk::VectorImage<short>>;
-template class itk::Experimental::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<const itk::VectorImage<short>>;
+template class itk::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<itk::Image<short, 1>>;
+template class itk::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<itk::Image<short, 2>>;
+template class itk::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<itk::Image<short, 3>>;
+template class itk::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<itk::Image<short, 4>>;
+template class itk::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<const itk::Image<short>>;
+template class itk::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<itk::VectorImage<short>>;
+template class itk::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<const itk::VectorImage<short>>;
 
 namespace
 {
 template <typename TImage>
 typename TImage::Pointer
-CreateImage(const unsigned sizeX, const unsigned sizeY)
+CreateImage(const unsigned int sizeX, const unsigned int sizeY)
 {
   const auto                      image = TImage::New();
   const typename TImage::SizeType imageSize = { { sizeX, sizeY } };
@@ -54,16 +54,16 @@ CreateImage(const unsigned sizeX, const unsigned sizeY)
 // Creates a test image, filled with a sequence of natural numbers, 1, 2, 3, ..., N.
 template <typename TImage>
 typename TImage::Pointer
-CreateImageFilledWithSequenceOfNaturalNumbers(const unsigned sizeX, const unsigned sizeY)
+CreateImageFilledWithSequenceOfNaturalNumbers(const unsigned int sizeX, const unsigned int sizeY)
 {
   using PixelType = typename TImage::PixelType;
   const auto image = CreateImage<TImage>(sizeX, sizeY);
 
-  const unsigned numberOfPixels = sizeX * sizeY;
+  const unsigned int numberOfPixels = sizeX * sizeY;
 
   PixelType * const bufferPointer = image->GetBufferPointer();
 
-  for (unsigned i = 0; i < numberOfPixels; ++i)
+  for (unsigned int i = 0; i < numberOfPixels; ++i)
   {
     bufferPointer[i] = static_cast<typename TImage::PixelType>(i + 1);
   }
@@ -78,9 +78,8 @@ TEST(ConstantBoundaryImageNeighborhoodPixelAccessPolicy, YieldsZeroOutsideImageB
 {
   using PixelType = int;
   using ImageType = itk::Image<PixelType>;
-  using RangeType = itk::Experimental::ShapedImageNeighborhoodRange<
-    ImageType,
-    itk::Experimental::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<ImageType>>;
+  using RangeType =
+    itk::ShapedImageNeighborhoodRange<ImageType, itk::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<ImageType>>;
 
   enum
   {
@@ -93,7 +92,7 @@ TEST(ConstantBoundaryImageNeighborhoodPixelAccessPolicy, YieldsZeroOutsideImageB
   const ImageType::IndexType                                locationOutsideImage{ { -1, -1 } };
   const itk::Size<ImageType::ImageDimension>                radius = { {} };
   const std::vector<itk::Offset<ImageType::ImageDimension>> offsets =
-    itk::Experimental::GenerateRectangularImageNeighborhoodOffsets(radius);
+    itk::GenerateRectangularImageNeighborhoodOffsets(radius);
   const RangeType range{ *image, locationOutsideImage, offsets };
 
   for (const PixelType pixel : range)
@@ -109,9 +108,8 @@ TEST(ConstantBoundaryImageNeighborhoodPixelAccessPolicy, YieldsSpecifiedConstant
 {
   using PixelType = int;
   using ImageType = itk::Image<PixelType>;
-  using RangeType = itk::Experimental::ShapedImageNeighborhoodRange<
-    ImageType,
-    itk::Experimental::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<ImageType>>;
+  using RangeType =
+    itk::ShapedImageNeighborhoodRange<ImageType, itk::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<ImageType>>;
 
   enum
   {
@@ -124,7 +122,7 @@ TEST(ConstantBoundaryImageNeighborhoodPixelAccessPolicy, YieldsSpecifiedConstant
   const ImageType::IndexType                                locationOutsideImage{ { -1, -1 } };
   const itk::Size<ImageType::ImageDimension>                radius = { {} };
   const std::vector<itk::Offset<ImageType::ImageDimension>> offsets =
-    itk::Experimental::GenerateRectangularImageNeighborhoodOffsets(radius);
+    itk::GenerateRectangularImageNeighborhoodOffsets(radius);
   const auto numberOfExpectedNeighbors = offsets.size();
 
   for (PixelType constantValue = -1; constantValue <= 2; ++constantValue)
@@ -140,7 +138,7 @@ TEST(ConstantBoundaryImageNeighborhoodPixelAccessPolicy, YieldsSpecifiedConstant
     ASSERT_EQ(range.size(), numberOfExpectedNeighbors);
 
     // Test by using RangeType::operator[]:
-    for (std::size_t i = 0; i < numberOfExpectedNeighbors; ++i)
+    for (size_t i = 0; i < numberOfExpectedNeighbors; ++i)
     {
       const PixelType pixel = range[i];
       EXPECT_EQ(pixel, constantValue);
@@ -154,9 +152,9 @@ TEST(ConstantBoundaryImageNeighborhoodPixelAccessPolicy, YieldsSameValuesAsConst
 {
   using PixelType = int;
   using ImageType = itk::Image<PixelType>;
-  using RangeType = itk::Experimental::ShapedImageNeighborhoodRange<
-    ImageType,
-    itk::Experimental::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<const ImageType>>;
+  using RangeType =
+    itk::ShapedImageNeighborhoodRange<ImageType,
+                                      itk::ConstantBoundaryImageNeighborhoodPixelAccessPolicy<const ImageType>>;
 
   enum
   {
@@ -168,7 +166,7 @@ TEST(ConstantBoundaryImageNeighborhoodPixelAccessPolicy, YieldsSameValuesAsConst
   const ImageType::IndexType                                location{ {} };
   const itk::Size<ImageType::ImageDimension>                radius = { { 1, 2 } };
   const std::vector<itk::Offset<ImageType::ImageDimension>> offsets =
-    itk::Experimental::GenerateRectangularImageNeighborhoodOffsets(radius);
+    itk::GenerateRectangularImageNeighborhoodOffsets(radius);
 
   for (PixelType constantValue = -1; constantValue <= 2; ++constantValue)
   {

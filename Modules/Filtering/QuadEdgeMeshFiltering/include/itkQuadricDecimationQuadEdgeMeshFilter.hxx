@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkQuadricDecimationQuadEdgeMeshFilter_hxx
 #define itkQuadricDecimationQuadEdgeMeshFilter_hxx
 
-#include "itkQuadricDecimationQuadEdgeMeshFilter.h"
 
 namespace itk
 {
@@ -67,8 +66,8 @@ QuadricDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::DeletePoint(
 }
 
 template <typename TInput, typename TOutput, typename TCriterion>
-typename QuadricDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::OutputPointType
-QuadricDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::Relocate(OutputQEType * iEdge)
+auto
+QuadricDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::Relocate(OutputQEType * iEdge) -> OutputPointType
 {
   OutputPointIdentifier id_org = iEdge->GetOrigin();
   OutputPointIdentifier id_dest = iEdge->GetDestination();

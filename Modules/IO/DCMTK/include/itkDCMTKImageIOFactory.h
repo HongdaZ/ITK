@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,14 +25,14 @@
 namespace itk
 {
 /**
- *\class DCMTKImageIOFactory
+ * \class DCMTKImageIOFactory
  * \brief Create instances of DCMTKImageIO objects using an object factory.
  * \ingroup ITKIODCMTK
  */
 class ITKIODCMTK_EXPORT DCMTKImageIOFactory : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DCMTKImageIOFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(DCMTKImageIOFactory);
 
   /** Standard class type aliases. */
   using Self = DCMTKImageIOFactory;
@@ -57,7 +57,7 @@ public:
   static void
   RegisterOneFactory()
   {
-    DCMTKImageIOFactory::Pointer DCMTKFactory = DCMTKImageIOFactory::New();
+    auto DCMTKFactory = DCMTKImageIOFactory::New();
 
     ObjectFactoryBase::RegisterFactoryInternal(DCMTKFactory);
   }

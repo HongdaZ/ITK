@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,13 +20,14 @@
 #include "itkGroupSpatialObject.h"
 #include "itkTubeSpatialObject.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 int
 itkCastSpatialObjectFilterTest(int, char *[])
 {
   // Ellipse
   using EllipseType = itk::EllipseSpatialObject<3>;
-  EllipseType::Pointer ellipse = EllipseType::New();
+  auto ellipse = EllipseType::New();
   ellipse->SetRadiusInObjectSpace(3);
   ellipse->GetProperty().SetColor(0, 1, 1);
 
@@ -34,7 +35,7 @@ itkCastSpatialObjectFilterTest(int, char *[])
   using TubeType = itk::TubeSpatialObject<3>;
   using TubePointType = itk::TubeSpatialObjectPoint<3>;
   TubeType::TubePointListType list3;
-  for (unsigned int i = 0; i < 7; i++)
+  for (unsigned int i = 0; i < 7; ++i)
   {
     TubePointType p;
     p.SetPositionInObjectSpace(i * 3, i * 3, i * 3);
@@ -45,24 +46,30 @@ itkCastSpatialObjectFilterTest(int, char *[])
     p.SetAlpha(i + 3);
     list3.push_back(p);
   }
-  TubeType::Pointer tube = TubeType::New();
+  auto tube = TubeType::New();
   tube->GetProperty().SetName("Tube 3");
   tube->SetId(3);
   tube->SetPoints(list3);
 
   // Group
   using GroupType = itk::GroupSpatialObject<3>;
-  GroupType::Pointer group = GroupType::New();
+  auto group = GroupType::New();
   group->AddChild(ellipse);
   ellipse->AddChild(tube);
 
   using CastType = itk::CastSpatialObjectFilter<3>;
   using TubeListType = std::list<TubeType::Pointer>;
-  CastType::Pointer caster = CastType::New();
+  auto caster = CastType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(caster, CastSpatialObjectFilter, Object);
+
+
   caster->SetInput(group);
+  ITK_TEST_SET_GET_VALUE(group, caster->GetInput());
+
   std::unique_ptr<TubeListType> tList(caster->GetTubes());
 
-  TubeType::Pointer tListTube = (*tList).begin()->GetPointer();
+  TubeType::Pointer tListTube = tList->begin()->GetPointer();
 
   bool found = false;
   if (!strcmp(tListTube->GetTypeName().c_str(), "TubeSpatialObject"))
@@ -77,13 +84,13 @@ itkCastSpatialObjectFilterTest(int, char *[])
     }
 
     TubeType::TubePointListType::const_iterator pnt;
-    for (pnt = tListTube->GetPoints().begin(); pnt != tListTube->GetPoints().end(); pnt++)
+    for (pnt = tListTube->GetPoints().begin(); pnt != tListTube->GetPoints().end(); ++pnt)
     {
-      for (unsigned int d = 0; d < 3; d++)
+      for (unsigned int d = 0; d < 3; ++d)
       {
-        if (itk::Math::NotAlmostEquals((*pnt).GetPositionInWorldSpace()[d], value * tListTube->GetId()))
+        if (itk::Math::NotAlmostEquals(pnt->GetPositionInWorldSpace()[d], value * tListTube->GetId()))
         {
-          std::cout << " [FAILED] (Position is: " << (*pnt).GetPositionInWorldSpace()[d]
+          std::cout << " [FAILED] (Position is: " << pnt->GetPositionInWorldSpace()[d]
                     << " expected : " << value * tListTube->GetId() << " ) " << std::endl;
           return EXIT_FAILURE;
         }
@@ -103,8 +110,6 @@ itkCastSpatialObjectFilterTest(int, char *[])
   }
 
 
-  std::cout << "TEST: [DONE]" << std::endl;
-
-
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

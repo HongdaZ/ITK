@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class PointSetToListSampleAdaptor
+ * \class PointSetToListSampleAdaptor
  *  \brief This class provides ListSample interface to ITK PointSet
  *
  * After calling SetPointSet(PointSet*) method to plug-in
@@ -47,7 +47,7 @@ template <typename TPointSet>
 class ITK_TEMPLATE_EXPORT PointSetToListSampleAdaptor : public ListSample<typename TPointSet::PointType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PointSetToListSampleAdaptor);
+  ITK_DISALLOW_COPY_AND_MOVE(PointSetToListSampleAdaptor);
 
   /** Standard class type aliases */
   using Self = PointSetToListSampleAdaptor;
@@ -74,12 +74,12 @@ public:
 
   /** Superclass type alias for Measurement vector, measurement,
    * Instance Identifier, frequency, size, size element value */
-  using MeasurementType = typename Superclass::MeasurementType;
-  using MeasurementVectorType = typename Superclass::MeasurementVectorType;
-  using AbsoluteFrequencyType = typename Superclass::AbsoluteFrequencyType;
-  using TotalAbsoluteFrequencyType = typename Superclass::TotalAbsoluteFrequencyType;
-  using MeasurementVectorSizeType = typename Superclass::MeasurementVectorSizeType;
-  using InstanceIdentifier = typename Superclass::InstanceIdentifier;
+  using typename Superclass::MeasurementType;
+  using typename Superclass::MeasurementVectorType;
+  using typename Superclass::AbsoluteFrequencyType;
+  using typename Superclass::TotalAbsoluteFrequencyType;
+  using typename Superclass::MeasurementVectorSizeType;
+  using typename Superclass::InstanceIdentifier;
 
   using ValueType = MeasurementVectorType;
 
@@ -98,7 +98,7 @@ public:
   /** returns the measurement vector that is specified by the instance
    * identifier argument. */
   const MeasurementVectorType &
-  GetMeasurementVector(InstanceIdentifier id) const override;
+  GetMeasurementVector(InstanceIdentifier identifier) const override;
 
   /** returns 1 as other subclasses of ListSampleBase does */
   AbsoluteFrequencyType
@@ -109,7 +109,7 @@ public:
   GetTotalFrequency() const override;
 
   /**
-   *\class ConstIterator
+   * \class ConstIterator
    * \ingroup ITKStatistics
    */
   class ConstIterator
@@ -160,16 +160,12 @@ public:
     }
 
     bool
-    operator!=(const ConstIterator & it)
-    {
-      return (m_Iter != it.m_Iter);
-    }
-
-    bool
-    operator==(const ConstIterator & it)
+    operator==(const ConstIterator & it) const
     {
       return (m_Iter == it.m_Iter);
     }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
 
   protected:
     // This method should only be available to the ListSample class
@@ -186,7 +182,7 @@ public:
   };
 
   /**
-   *\class Iterator
+   * \class Iterator
    * \ingroup ITKStatistics
    */
   class Iterator : public ConstIterator

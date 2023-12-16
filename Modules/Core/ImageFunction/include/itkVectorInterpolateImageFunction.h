@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ namespace itk
 {
 
 /**
- *\class VectorInterpolateImageFunction
+ * \class VectorInterpolateImageFunction
  * \brief Base class for all vector image interpolators.
  *
  * VectorInterpolateImageFunction is the base for all ImageFunctions that
@@ -48,7 +48,7 @@ class ITK_TEMPLATE_EXPORT VectorInterpolateImageFunction
   : public ImageFunction<TInputImage, typename NumericTraits<typename TInputImage::PixelType>::RealType, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorInterpolateImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(VectorInterpolateImageFunction);
 
   /** Extract the vector dimension from the pixel template parameter. */
   static constexpr unsigned int Dimension = TInputImage::PixelType::Dimension;
@@ -68,22 +68,22 @@ public:
   itkTypeMacro(VectorInterpolateImageFunction, ImageFunction);
 
   /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
   using PixelType = typename InputImageType::PixelType;
   using ValueType = typename PixelType::ValueType;
   using RealType = typename NumericTraits<ValueType>::RealType;
 
   /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
 
   /** Output type is RealType of TInputImage::PixelType. */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** CoordRep type alias support */
   using CoordRepType = TCoordRep;
@@ -96,9 +96,8 @@ public:
   OutputType
   Evaluate(const PointType & point) const override
   {
-    ContinuousIndexType index;
-
-    this->GetInputImage()->TransformPhysicalPointToContinuousIndex(point, index);
+    const ContinuousIndexType index =
+      this->GetInputImage()->template TransformPhysicalPointToContinuousIndex<TCoordRep>(point);
     return (this->EvaluateAtContinuousIndex(index));
   }
 
@@ -128,7 +127,7 @@ public:
     OutputType output;
     PixelType  input = this->GetInputImage()->GetPixel(index);
 
-    for (unsigned int k = 0; k < this->GetInputImage()->GetNumberOfComponentsPerPixel(); k++)
+    for (unsigned int k = 0; k < this->GetInputImage()->GetNumberOfComponentsPerPixel(); ++k)
     {
       output[k] = static_cast<double>(input[k]);
     }

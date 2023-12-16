@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,8 +28,17 @@ int
 itkResampleImageTest6(int argc, char * argv[])
 {
 
+  if (argc < 2)
+  {
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cout << " scaling outputFilename" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+
   // Resample a Vector image
-  constexpr unsigned int NDimensions = 2;
+  constexpr unsigned int VDimension = 2;
 
   using ValueType = unsigned char;
 
@@ -43,15 +52,9 @@ itkResampleImageTest6(int argc, char * argv[])
 
   using CoordRepType = double;
 
-  using AffineTransformType = itk::AffineTransform<CoordRepType, NDimensions>;
+  using AffineTransformType = itk::AffineTransform<CoordRepType, VDimension>;
   using InterpolatorType = itk::LinearInterpolateImageFunction<ImageType, CoordRepType>;
   using WriterType = itk::ImageFileWriter<ImageType>;
-
-  if (argc < 2)
-  {
-    std::cout << "Usage: " << argv[0] << " scaling outputFilename" << std::endl;
-    return EXIT_FAILURE;
-  }
 
   float scaling = std::stod(argv[1]);
 
@@ -91,11 +94,11 @@ itkResampleImageTest6(int argc, char * argv[])
   std::cout << "Done." << std::endl;
 
   // Create an affine transformation
-  AffineTransformType::Pointer aff = AffineTransformType::New();
+  auto aff = AffineTransformType::New();
   aff->Scale(0.9);
 
   // Create a linear interpolation image function
-  InterpolatorType::Pointer interp = InterpolatorType::New();
+  auto interp = InterpolatorType::New();
   interp->SetInputImage(image);
 
   // Create and configure a resampling filter
@@ -138,7 +141,7 @@ itkResampleImageTest6(int argc, char * argv[])
 
   std::cout << "Resampling from " << size << " to " << osize << " took " << clock.GetMean() << " s" << std::endl;
 
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(resample->GetOutput());
   writer->SetFileName(argv[2]);
   writer->Update();

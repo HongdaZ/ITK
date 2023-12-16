@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -96,10 +96,10 @@ main(int argc, char * argv[])
 
   using FilterType = itk::RecursiveGaussianImageFilter<ImageType, ImageType>;
 
-  ReaderType::Pointer reader = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
+  auto reader = ReaderType::New();
+  auto writer = WriterType::New();
 
-  DuplicatorType::Pointer duplicator = DuplicatorType::New();
+  auto duplicator = DuplicatorType::New();
   // Software Guide : EndCodeSnippet
 
   reader->SetFileName(argv[1]);
@@ -130,9 +130,9 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   //  Software Guide : BeginCodeSnippet
-  FilterType::Pointer ga = FilterType::New();
-  FilterType::Pointer gb = FilterType::New();
-  FilterType::Pointer gc = FilterType::New();
+  auto ga = FilterType::New();
+  auto gb = FilterType::New();
+  auto gc = FilterType::New();
 
   ga->SetDirection(0);
   gb->SetDirection(1);

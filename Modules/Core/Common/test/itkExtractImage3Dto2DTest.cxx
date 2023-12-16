@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ itkExtractImage3Dto2DTest(int, char *[])
   using ExtractType = itk::ExtractImageFilter<Image3DType, Image2DType>;
   using RandomImageSourceType = itk::RandomImageSource<Image3DType>;
 
-  RandomImageSourceType::Pointer src = RandomImageSourceType::New();
+  auto src = RandomImageSourceType::New();
   src->SetMin(0);
   src->SetMax(255);
   Image3DType::SizeType size = { { 16, 16, 16 } };
@@ -48,7 +48,7 @@ itkExtractImage3Dto2DTest(int, char *[])
 
   im3d->SetDirection(dir);
 
-  ExtractType::Pointer extract = ExtractType::New();
+  auto extract = ExtractType::New();
   extract->SetDirectionCollapseToIdentity();
   Image3DType::RegionType extractRegion = im3d->GetLargestPossibleRegion();
   Image3DType::SizeType   extractSize = extractRegion.GetSize();

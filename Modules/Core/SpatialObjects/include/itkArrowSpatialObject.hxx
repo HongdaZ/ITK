@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkArrowSpatialObject_hxx
 #define itkArrowSpatialObject_hxx
 
-#include "itkArrowSpatialObject.h"
 
 namespace itk
 {
@@ -75,7 +74,7 @@ ArrowSpatialObject<TDimension>::IsInsideInObjectSpace(const PointType & point) c
   PointType pnt = this->GetPositionInObjectSpace();
 
   bool isInside = true;
-  for (unsigned int i = 0; i < TDimension; i++)
+  for (unsigned int i = 0; i < TDimension; ++i)
   {
     if (Math::NotExactlyEquals(point[i], pnt[i]))
     {
@@ -92,8 +91,8 @@ ArrowSpatialObject<TDimension>::IsInsideInObjectSpace(const PointType & point) c
 }
 
 template <unsigned int TDimension>
-typename ArrowSpatialObject<TDimension>::PointType
-ArrowSpatialObject<TDimension>::GetPositionInWorldSpace() const
+auto
+ArrowSpatialObject<TDimension>::GetPositionInWorldSpace() const -> PointType
 {
   PointType pnt = this->GetPositionInObjectSpace();
 
@@ -103,12 +102,12 @@ ArrowSpatialObject<TDimension>::GetPositionInWorldSpace() const
 }
 
 template <unsigned int TDimension>
-typename ArrowSpatialObject<TDimension>::VectorType
-ArrowSpatialObject<TDimension>::GetDirectionInWorldSpace() const
+auto
+ArrowSpatialObject<TDimension>::GetDirectionInWorldSpace() const -> VectorType
 {
   PointType pnt = this->GetPositionInObjectSpace();
   PointType pnt2;
-  for (unsigned int i = 0; i < TDimension; i++)
+  for (unsigned int i = 0; i < TDimension; ++i)
   {
     pnt2[i] = pnt[i] + m_LengthInObjectSpace * m_DirectionInObjectSpace[i];
   }
@@ -128,7 +127,7 @@ ArrowSpatialObject<TDimension>::GetLengthInWorldSpace() const
 {
   PointType pnt = this->GetPositionInObjectSpace();
   PointType pnt2;
-  for (unsigned int i = 0; i < TDimension; i++)
+  for (unsigned int i = 0; i < TDimension; ++i)
   {
     pnt2[i] = pnt[i] + m_LengthInObjectSpace * m_DirectionInObjectSpace[i];
   }

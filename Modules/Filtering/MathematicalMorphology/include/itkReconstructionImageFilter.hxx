@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkReconstructionImageFilter_hxx
 
 #include "itkMath.h"
-#include "itkReconstructionImageFilter.h"
 #include "itkConstantBoundaryCondition.h"
 #include "itkConnectedComponentAlgorithm.h"
 
@@ -33,6 +32,9 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::ReconstructionIm
 {
   m_FullyConnected = false;
   m_UseInternalCopy = true;
+
+  this->SetPrimaryInputName("MarkerImage");
+  this->AddRequiredInputName("MaskImage", 1);
 }
 
 template <typename TInputImage, typename TOutputImage, typename TCompare>
@@ -60,36 +62,6 @@ void
 ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::EnlargeOutputRequestedRegion(DataObject *)
 {
   this->GetOutput()->SetRequestedRegion(this->GetOutput()->GetLargestPossibleRegion());
-}
-
-template <typename TInputImage, typename TOutputImage, typename TCompare>
-void
-ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::SetMarkerImage(const MarkerImageType * markerImage)
-{
-  // Process object is not const-correct so the const casting is required.
-  this->SetNthInput(0, const_cast<MarkerImageType *>(markerImage));
-}
-
-template <typename TInputImage, typename TOutputImage, typename TCompare>
-const typename ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::MarkerImageType *
-ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::GetMarkerImage()
-{
-  return this->GetInput(0);
-}
-
-template <typename TInputImage, typename TOutputImage, typename TCompare>
-void
-ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::SetMaskImage(const MaskImageType * maskImage)
-{
-  // Process object is not const-correct so the const casting is required.
-  this->SetNthInput(1, const_cast<MaskImageType *>(maskImage));
-}
-
-template <typename TInputImage, typename TOutputImage, typename TCompare>
-const typename ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::MaskImageType *
-ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::GetMaskImage()
-{
-  return this->GetInput(1);
 }
 
 // a version that takes a padded copy of mask and marker
@@ -127,8 +99,8 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::GenerateData()
 
   if (m_UseInternalCopy)
   {
-    typename PadType::Pointer MaskPad = PadType::New();
-    typename PadType::Pointer MarkerPad = PadType::New();
+    auto MaskPad = PadType::New();
+    auto MarkerPad = PadType::New();
     padSize.Fill(1);
 
     MaskPad->SetConstant(m_MarkerValue);
@@ -351,7 +323,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::GenerateData()
   if (m_UseInternalCopy)
   {
     using CropType = typename itk::CropImageFilter<InputImageType, OutputImageType>;
-    typename CropType::Pointer crop = CropType::New();
+    auto crop = CropType::New();
 
     crop->SetInput(markerImageP);
     crop->SetUpperBoundaryCropSize(padSize);

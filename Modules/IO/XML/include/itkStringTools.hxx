@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkStringTools_hxx
 #define itkStringTools_hxx
 
-#include "itkStringTools.h"
 
 #include <sstream>
 
@@ -68,13 +67,13 @@ StringTools::ToData(std::string & s, std::vector<T> & data, int count)
     // the number of elements to be read is provided by count or, if count is 0, data.size()
     if (count == 0)
     {
-      count = (int)data.size();
+      count = static_cast<int>(data.size());
     }
     if (static_cast<size_t>(count) > data.size())
     {
       data.resize(static_cast<size_t>(count));
     }
-    for (size_t i = 0; i < static_cast<size_t>(count); i++)
+    for (size_t i = 0; i < static_cast<size_t>(count); ++i)
     {
       T value = T();
       iss >> value;
@@ -95,7 +94,7 @@ StringTools::FromData(std::string & s, const std::vector<T> & data)
 {
   std::ostringstream oss(std::ostringstream::out);
   oss.exceptions(oss.badbit);
-  for (size_t i = 0; i < data.size(); i++)
+  for (size_t i = 0; i < data.size(); ++i)
   {
     oss << " " << data[i];
   }
@@ -105,7 +104,7 @@ StringTools::FromData(std::string & s, const std::vector<T> & data)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// helper functions for converting a string to/from a itk::Array
+// helper functions for converting a string to/from an itk::Array
 /////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -144,7 +143,7 @@ StringTools::ToData(std::string & s, Array<T> & data, int count)
     data.SetSize(static_cast<typename Array<T>::SizeValueType>(v.size()));
     // Note: The data-cast to unsigned int is required
     //       because itk::Array only supports 'unsigned int' number of elements.
-    for (unsigned int i = 0; i < v.size(); i++)
+    for (unsigned int i = 0; i < v.size(); ++i)
     {
       data[i] = v[i];
     }
@@ -155,13 +154,13 @@ StringTools::ToData(std::string & s, Array<T> & data, int count)
     // the number of elements to be read is provided by count or, if count is 0, data.size()
     if (count == 0)
     {
-      count = (int)data.GetSize();
+      count = static_cast<int>(data.GetSize());
     }
     if (static_cast<size_t>(count) > data.GetSize())
     {
       data.SetSize(static_cast<size_t>(count));
     }
-    for (unsigned int i = 0; i < static_cast<unsigned int>(count); i++)
+    for (unsigned int i = 0; i < static_cast<unsigned int>(count); ++i)
     {
       T value = T();
       iss >> value;
@@ -182,7 +181,7 @@ StringTools::FromData(std::string & s, const Array<T> & data)
 {
   std::ostringstream oss(std::ostringstream::out);
   oss.exceptions(oss.badbit);
-  for (unsigned int i = 0; i < static_cast<unsigned int>(data.GetSize()); i++)
+  for (unsigned int i = 0; i < static_cast<unsigned int>(data.GetSize()); ++i)
   {
     oss << " " << data[i];
   }

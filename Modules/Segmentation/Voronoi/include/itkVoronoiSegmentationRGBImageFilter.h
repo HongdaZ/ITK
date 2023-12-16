@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,7 +55,7 @@ class ITK_TEMPLATE_EXPORT VoronoiSegmentationRGBImageFilter
   : public VoronoiSegmentationImageFilterBase<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VoronoiSegmentationRGBImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(VoronoiSegmentationRGBImageFilter);
 
   /** Standard class type aliases. */
   using Self = VoronoiSegmentationRGBImageFilter;
@@ -70,25 +70,25 @@ public:
   itkNewMacro(Self);
 
   /** Convenient type alias. */
-  using BinaryObjectImage = typename Superclass::BinaryObjectImage;
-  using IndexList = typename Superclass::IndexList;
-  using IndexType = typename Superclass::IndexType;
-  using RegionType = typename Superclass::RegionType;
-  using PixelType = typename Superclass::PixelType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::BinaryObjectImage;
+  using typename Superclass::IndexList;
+  using typename Superclass::IndexType;
+  using typename Superclass::RegionType;
+  using typename Superclass::PixelType;
+  using typename Superclass::InputImagePointer;
+  using typename Superclass::InputImageType;
   using RGBHCVPixel = Vector<float, 6>;
   using RGBHCVImage = Image<RGBHCVPixel>;
 
   /** \todo Document. */
   void
-  SetMeanPercentError(double x[6]);
+  SetMeanPercentError(const double x[6]);
   void
-  SetSTDPercentError(double x[6]);
+  SetSTDPercentError(const double x[6]);
   void
   GetMeanPercentError(double x[6])
   {
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 6; ++i)
     {
       x[i] = m_MeanPercentError[i];
     }
@@ -96,7 +96,7 @@ public:
   void
   GetSTDPercentError(double x[6])
   {
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 6; ++i)
     {
       x[i] = m_STDPercentError[i];
     }
@@ -104,7 +104,7 @@ public:
   void
   GetMean(double x[6])
   {
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 6; ++i)
     {
       x[i] = m_Mean[i];
     }
@@ -112,23 +112,23 @@ public:
   void
   GetSTD(double x[6])
   {
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 6; ++i)
     {
       x[i] = m_STD[i];
     }
   }
   void
-  SetMean(double x[6])
+  SetMean(const double x[6])
   {
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 6; ++i)
     {
       m_Mean[i] = x[i];
     }
   }
   void
-  SetSTD(double x[6])
+  SetSTD(const double x[6])
   {
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 6; ++i)
     {
       m_STD[i] = x[i];
     }
@@ -136,7 +136,7 @@ public:
   void
   GetMeanTolerance(double x[6])
   {
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 6; ++i)
     {
       x[i] = m_MeanTolerance[i];
     }
@@ -144,7 +144,7 @@ public:
   void
   GetSTDTolerance(double x[6])
   {
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 6; ++i)
     {
       x[i] = m_STDTolerance[i];
     }
@@ -198,7 +198,7 @@ public:
   SetInput(const InputImageType * input) override;
 
   void
-  SetInput(unsigned int, const InputImageType * image) override;
+  SetInput(unsigned int, const InputImageType * input) override;
 
   /** ImageDimension enumeration   */
   static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;

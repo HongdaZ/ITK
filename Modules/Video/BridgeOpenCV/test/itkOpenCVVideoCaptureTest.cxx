@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -63,7 +63,7 @@ itkOpenCVVideoCaptureTest(int argc, char * argv[])
 
   // Set up an itk reader
   itk::ObjectFactoryBase::RegisterFactory(itk::OpenCVVideoIOFactory::New());
-  scalarReaderType::Pointer scalarReader = scalarReaderType::New();
+  auto scalarReader = scalarReaderType::New();
   scalarReader->SetFileName(argv[1]);
 
   // Set up OpenCVVideoCapture
@@ -73,7 +73,7 @@ itkOpenCVVideoCaptureTest(int argc, char * argv[])
 
   // Check FourCC
   scalarCap->set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'P', '4', '2'));
-  if ((int)scalarCap->get(CV_CAP_PROP_FOURCC) != CV_FOURCC('M', 'P', '4', '2'))
+  if (static_cast<int>(scalarCap->get(CV_CAP_PROP_FOURCC)) != CV_FOURCC('M', 'P', '4', '2'))
   {
     std::cerr << "FourCC not reporting correctly" << std::endl;
     return EXIT_FAILURE;
@@ -88,8 +88,8 @@ itkOpenCVVideoCaptureTest(int argc, char * argv[])
   }
 
   // Check width and height
-  if ((int)(scalarCap->get(CV_CAP_PROP_FRAME_WIDTH)) != std::stoi(argv[4]) ||
-      (int)(scalarCap->get(CV_CAP_PROP_FRAME_HEIGHT)) != std::stoi(argv[5]))
+  if (static_cast<int>(scalarCap->get(CV_CAP_PROP_FRAME_WIDTH)) != std::stoi(argv[4]) ||
+      static_cast<int>(scalarCap->get(CV_CAP_PROP_FRAME_HEIGHT)) != std::stoi(argv[5]))
   {
     std::cerr << "Frame dimensions not reporting correctly. Got [" << scalarCap->get(CV_CAP_PROP_FRAME_WIDTH) << ","
               << scalarCap->get(CV_CAP_PROP_FRAME_HEIGHT) << "] Expected: [" << std::stoi(argv[4]) << ","
@@ -100,7 +100,7 @@ itkOpenCVVideoCaptureTest(int argc, char * argv[])
   // Set up OpenCV VideoWriter
   cv::VideoWriter scalarWriter(
     argv[2],
-    (int)scalarCap->get(CV_CAP_PROP_FOURCC),
+    static_cast<int>(scalarCap->get(CV_CAP_PROP_FOURCC)),
     scalarCap->get(CV_CAP_PROP_FPS),
     cv::Size(scalarCap->get(CV_CAP_PROP_FRAME_WIDTH), scalarCap->get(CV_CAP_PROP_FRAME_HEIGHT)),
     false);
@@ -121,7 +121,7 @@ itkOpenCVVideoCaptureTest(int argc, char * argv[])
 
   // Set up an itk reader
   itk::ObjectFactoryBase::RegisterFactory(itk::OpenCVVideoIOFactory::New());
-  rgbReaderType::Pointer rgbReader = rgbReaderType::New();
+  auto rgbReader = rgbReaderType::New();
   rgbReader->SetFileName(argv[1]);
 
   // Set up OpenCVVideoCapture
@@ -130,7 +130,7 @@ itkOpenCVVideoCaptureTest(int argc, char * argv[])
   rgbCap->open(rgbReader->GetOutput());
 
   // Check FourCC
-  if ((int)rgbCap->get(CV_CAP_PROP_FOURCC) != CV_FOURCC('M', 'P', '4', '2'))
+  if (static_cast<int>(rgbCap->get(CV_CAP_PROP_FOURCC)) != CV_FOURCC('M', 'P', '4', '2'))
   {
     std::cerr << "FourCC not reporting correctly" << std::endl;
     return EXIT_FAILURE;
@@ -145,7 +145,7 @@ itkOpenCVVideoCaptureTest(int argc, char * argv[])
 
   // Set up OpenCV VideoWriter
   cv::VideoWriter rgbWriter(argv[3],
-                            (int)rgbCap->get(CV_CAP_PROP_FOURCC),
+                            static_cast<int>(rgbCap->get(CV_CAP_PROP_FOURCC)),
                             rgbCap->get(CV_CAP_PROP_FPS),
                             cv::Size(rgbCap->get(CV_CAP_PROP_FRAME_WIDTH), rgbCap->get(CV_CAP_PROP_FRAME_HEIGHT)),
                             true);

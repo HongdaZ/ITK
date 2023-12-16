@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkPolygonSpatialObject_hxx
 #define itkPolygonSpatialObject_hxx
 
-#include "itkPolygonSpatialObject.h"
 #include "itkMath.h"
 
 namespace itk
@@ -68,7 +67,7 @@ PolygonSpatialObject<TDimension>::GetOrientationInObjectSpace() const
   while (it != itend)
   {
     PointType curpoint = it->GetPositionInObjectSpace();
-    for (unsigned int i = 0; i < TDimension; i++)
+    for (unsigned int i = 0; i < TDimension; ++i)
     {
       if (minPnt[i] > curpoint[i])
       {
@@ -79,10 +78,10 @@ PolygonSpatialObject<TDimension>::GetOrientationInObjectSpace() const
         maxPnt[i] = curpoint[i];
       }
     }
-    it++;
+    ++it;
   }
   m_OrientationInObjectSpace = -1;
-  for (unsigned int i = 0; i < TDimension; i++)
+  for (unsigned int i = 0; i < TDimension; ++i)
   {
     if (Math::ExactlyEquals(minPnt[i], maxPnt[i]))
     {
@@ -98,10 +97,10 @@ double
 PolygonSpatialObject<TDimension>::MeasureAreaInObjectSpace() const
 {
   // To find the area of a planar polygon not in the x-y plane, use:
-  // 2 A(P) = std::abs(N . (sum_{i=0}^{n-1} (v_i x v_{i+1})))
+  // 2 A(P) = itk::Math::abs(N . (sum_{i=0}^{n-1} (v_i x v_{i+1})))
   // where N is a unit vector normal to the plane. The `.' represents the
   // dot product operator, the `x' represents the cross product operator,
-  //        and std::abs() is the absolute value function.
+  //        and itk::Math::abs() is the absolute value function.
   double area = 0.0;
   int    numpoints = this->GetNumberOfPoints();
   int    X = 0;
@@ -137,7 +136,7 @@ PolygonSpatialObject<TDimension>::MeasureAreaInObjectSpace() const
     }
     area += a[X] * b[Y] - a[Y] * b[X];
     a = b;
-    it++;
+    ++it;
   }
   if (m_IsClosed)
   {
@@ -189,7 +188,7 @@ PolygonSpatialObject<TDimension>::MeasurePerimeterInObjectSpace() const
     double curdistance = a.EuclideanDistanceTo(b);
     perimeter += curdistance;
     a = b;
-    it++;
+    ++it;
   }
   if (m_IsClosed)
   {
@@ -259,7 +258,7 @@ PolygonSpatialObject<TDimension>::IsInsideInObjectSpace(const PointType & point)
           }
           node1 = node2;
         }
-        it++;
+        ++it;
       }
       if (m_IsClosed)
       {
@@ -268,7 +267,7 @@ PolygonSpatialObject<TDimension>::IsInsideInObjectSpace(const PointType & point)
         // closed PolygonGroup may have the first and last points the same
         if (node1 != node2)
         {
-          if ((node1[Y] <= y && node2[Y] > y) || (node2[Y] < y && node1[Y] >= y))
+          if ((node1[Y] < y && node2[Y] >= y) || (node2[Y] < y && node1[Y] >= y))
           {
             if (node1[X] + ((y - node1[Y]) / (node2[Y] - node1[Y])) * (node2[X] - node1[X]) < x)
             {
@@ -320,7 +319,7 @@ PolygonSpatialObject<TDimension>::PrintSelf(std::ostream & os, Indent indent) co
   }
   else
   {
-    os << indent << "IsClosed: True" << std::endl;
+    os << indent << "IsClosed: False" << std::endl;
   }
   os << indent << "ThicknessInObjectSpace: " << m_ThicknessInObjectSpace << std::endl;
 }

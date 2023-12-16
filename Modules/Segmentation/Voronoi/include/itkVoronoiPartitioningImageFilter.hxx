@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkVoronoiPartitioningImageFilter_hxx
 #define itkVoronoiPartitioningImageFilter_hxx
-#include "itkVoronoiPartitioningImageFilter.h"
 
 #include "itkImageRegionIteratorWithIndex.h"
 
@@ -34,7 +33,7 @@ VoronoiPartitioningImageFilter<TInputImage, TOutputImage>::ClassifyDiagram()
   IndexList       PixelPool;
 
   this->m_NumberOfBoundary = 0;
-  for (int i = 0; i < this->GetNumberOfSeeds(); i++)
+  for (int i = 0; i < this->GetNumberOfSeeds(); ++i)
   {
     CellAutoPointer currCell;
     this->m_WorkingVD->GetCellId(i, currCell);
@@ -102,7 +101,7 @@ VoronoiPartitioningImageFilter<TInputImage, TOutputImage>::MakeSegmentBoundary()
 
   NeighborIdIterator nit;
   NeighborIdIterator nitend;
-  for (int i = 0; i < this->GetNumberOfSeeds(); i++)
+  for (int i = 0; i < this->GetNumberOfSeeds(); ++i)
   {
     nitend = this->m_WorkingVD->NeighborIdsEnd(i);
     for (nit = this->m_WorkingVD->NeighborIdsBegin(i); nit != nitend; ++nit)
@@ -131,7 +130,7 @@ VoronoiPartitioningImageFilter<TInputImage, TOutputImage>::MakeSegmentObject()
   PointIdIterator currPitEnd;
   PointType       currP;
   PointTypeDeque  VertList;
-  for (int i = 0; i < this->GetNumberOfSeeds(); i++)
+  for (int i = 0; i < this->GetNumberOfSeeds(); ++i)
   {
     CellAutoPointer currCell;
     this->m_WorkingVD->GetCellId(i, currCell);
@@ -159,9 +158,9 @@ VoronoiPartitioningImageFilter<TInputImage, TOutputImage>::TestHomogeneity(Index
 
   const InputImageType * inputImage = this->GetInput();
 
-  for (i = 0; i < num; i++)
+  for (i = 0; i < num; ++i)
   {
-    getp = (double)(inputImage->GetPixel(Plist[i]));
+    getp = static_cast<double>(inputImage->GetPixel(Plist[i]));
     addp = addp + getp;
     addpp = addpp + getp * getp;
   }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,30 +23,31 @@
 #include "itkImageFileWriter.h"
 #include "itkTextOutput.h"
 #include "itkSimpleFilterWatcher.h"
+#include "itkTestingMacros.h"
 
 int
-itkMapGrayscaleDilateImageFilterTest(int ac, char * av[])
+itkMapGrayscaleDilateImageFilterTest(int argc, char * argv[])
 {
   // Comment the following if you want to use the itk text output window
   itk::OutputWindow::SetInstance(itk::TextOutput::New());
 
-  if (ac < 6)
+  if (argc < 6)
   {
-    std::cerr << "Usage: " << av[0] << " InputImage BASIC HISTO ANCHOR VHGW" << std::endl;
-    return -1;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " InputImage BASIC HISTO ANCHOR VHGW" << std::endl;
+    return EXIT_FAILURE;
   }
 
   unsigned int const dim = 2;
   using ImageType = itk::Image<unsigned short, dim>;
 
   using ReaderType = itk::ImageFileReader<ImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(av[1]);
+  auto reader = ReaderType::New();
+  reader->SetFileName(argv[1]);
 
   // Create a filter
   using SRType = itk::FlatStructuringElement<dim>;
   using FilterType = itk::GrayscaleDilateImageFilter<ImageType, ImageType, SRType>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
   filter->SetInput(reader->GetOutput());
 
   itk::SimpleFilterWatcher watcher(filter, "filter");
@@ -62,7 +63,7 @@ itkMapGrayscaleDilateImageFilterTest(int ac, char * av[])
     return EXIT_FAILURE;
   }
 
-  if (filter->GetAlgorithm() != FilterType::HISTO)
+  if (filter->GetAlgorithm() != FilterType::AlgorithmEnum::HISTO)
   {
     std::cerr << "Wrong default algorithm." << std::endl;
     return EXIT_FAILURE;
@@ -73,23 +74,23 @@ itkMapGrayscaleDilateImageFilterTest(int ac, char * av[])
     filter->SetRadius(4);
 
     using WriterType = itk::ImageFileWriter<ImageType>;
-    WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
     writer->SetInput(filter->GetOutput());
 
-    filter->SetAlgorithm(FilterType::BASIC);
-    writer->SetFileName(av[2]);
+    filter->SetAlgorithm(FilterType::AlgorithmEnum::BASIC);
+    writer->SetFileName(argv[2]);
     writer->Update();
 
-    filter->SetAlgorithm(FilterType::HISTO);
-    writer->SetFileName(av[3]);
+    filter->SetAlgorithm(FilterType::AlgorithmEnum::HISTO);
+    writer->SetFileName(argv[3]);
     writer->Update();
 
-    filter->SetAlgorithm(FilterType::ANCHOR);
-    writer->SetFileName(av[4]);
+    filter->SetAlgorithm(FilterType::AlgorithmEnum::ANCHOR);
+    writer->SetFileName(argv[4]);
     writer->Update();
 
-    filter->SetAlgorithm(FilterType::VHGW);
-    writer->SetFileName(av[5]);
+    filter->SetAlgorithm(FilterType::AlgorithmEnum::VHGW);
+    writer->SetFileName(argv[5]);
     writer->Update();
   }
   catch (const itk::ExceptionObject & e)
@@ -100,9 +101,9 @@ itkMapGrayscaleDilateImageFilterTest(int ac, char * av[])
 
   // Generate test image
   using WriterType = itk::ImageFileWriter<ImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(filter->GetOutput());
-  writer->SetFileName(av[2]);
+  writer->SetFileName(argv[2]);
   writer->Update();
 
   return EXIT_SUCCESS;

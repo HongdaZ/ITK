@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,15 +20,12 @@
 
 #include <iostream>
 
-#include "itkDanielssonDistanceMapImageFilter.h"
 #include "itkReflectiveImageRegionConstIterator.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
 
 namespace itk
 {
-/**
- *    Constructor
- */
+
 template <typename TInputImage, typename TOutputImage, typename TVoronoiImage>
 DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::DanielssonDistanceMapImageFilter()
 {
@@ -67,39 +64,27 @@ DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::Make
   return Superclass::MakeOutput(idx);
 }
 
-/**
- *  Return the distance map Image pointer
- */
 template <typename TInputImage, typename TOutputImage, typename TVoronoiImage>
-typename DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::OutputImageType *
-DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::GetDistanceMap()
+auto
+DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::GetDistanceMap() -> OutputImageType *
 {
   return dynamic_cast<OutputImageType *>(this->ProcessObject::GetOutput(0));
 }
 
-/**
- *  Return Closest Points Map
- */
 template <typename TInputImage, typename TOutputImage, typename TVoronoiImage>
-typename DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::VoronoiImageType *
-DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::GetVoronoiMap()
+auto
+DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::GetVoronoiMap() -> VoronoiImageType *
 {
   return dynamic_cast<VoronoiImageType *>(this->ProcessObject::GetOutput(1));
 }
 
-/**
- *  Return the distance vectors
- */
 template <typename TInputImage, typename TOutputImage, typename TVoronoiImage>
-typename DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::VectorImageType *
-DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::GetVectorDistanceMap()
+auto
+DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::GetVectorDistanceMap() -> VectorImageType *
 {
   return dynamic_cast<VectorImageType *>(this->ProcessObject::GetOutput(2));
 }
 
-/**
- *  Prepare data for computation
- */
 template <typename TInputImage, typename TOutputImage, typename TVoronoiImage>
 void
 DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::PrepareData()
@@ -133,7 +118,7 @@ DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::Prep
   SizeType      size = region.GetSize();
   SizeValueType maxLength = 0;
 
-  for (unsigned int dim = 0; dim < InputImageDimension; dim++)
+  for (unsigned int dim = 0; dim < InputImageDimension; ++dim)
   {
     if (maxLength < size[dim])
     {
@@ -190,7 +175,7 @@ DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::Prep
   OffsetType maxValue;
   OffsetType minValue;
 
-  for (unsigned int j = 0; j < InputImageDimension; j++)
+  for (unsigned int j = 0; j < InputImageDimension; ++j)
   {
     maxValue[j] = 2 * maxLength;
     minValue[j] = 0;
@@ -219,9 +204,6 @@ DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::Prep
   itkDebugMacro(<< "PrepareData End");
 }
 
-/**
- *  Post processing for computing the Voronoi Map
- */
 template <typename TInputImage, typename TOutputImage, typename TVoronoiImage>
 void
 DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::ComputeVoronoiMap()
@@ -253,7 +235,7 @@ DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::Comp
     double     distance = 0.0;
     if (m_UseImageSpacing)
     {
-      for (unsigned int i = 0; i < InputImageDimension; i++)
+      for (unsigned int i = 0; i < InputImageDimension; ++i)
       {
         double component = distanceVector[i] * static_cast<double>(m_InputSpacingCache[i]);
         distance += component * component;
@@ -261,7 +243,7 @@ DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::Comp
     }
     else
     {
-      for (unsigned int i = 0; i < InputImageDimension; i++)
+      for (unsigned int i = 0; i < InputImageDimension; ++i)
       {
         distance += distanceVector[i] * distanceVector[i];
       }
@@ -282,9 +264,6 @@ DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::Comp
   itkDebugMacro(<< "ComputeVoronoiMap End");
 }
 
-/**
- *  Locally update the distance.
- */
 template <typename TInputImage, typename TOutputImage, typename TVoronoiImage>
 void
 DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::UpdateLocalDistance(
@@ -298,7 +277,7 @@ DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::Upda
 
   double norm1 = 0.0;
   double norm2 = 0.0;
-  for (unsigned int i = 0; i < InputImageDimension; i++)
+  for (unsigned int i = 0; i < InputImageDimension; ++i)
   {
     auto v1 = static_cast<double>(offsetValueHere[i]);
     auto v2 = static_cast<double>(offsetValueThere[i]);
@@ -320,9 +299,6 @@ DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::Upda
   }
 }
 
-/**
- *  Compute Distance and Voronoi maps
- */
 template <typename TInputImage, typename TOutputImage, typename TVoronoiImage>
 void
 DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::GenerateData()
@@ -345,7 +321,7 @@ DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::Gene
   ReflectiveImageRegionConstIterator<VectorImageType> it(distanceComponents, region);
 
   typename VectorImageType::OffsetType voffset;
-  for (unsigned int dim = 0; dim < InputImageDimension; dim++)
+  for (unsigned int dim = 0; dim < InputImageDimension; ++dim)
   {
     if (region.GetSize()[dim] > 1)
     {
@@ -405,7 +381,7 @@ DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::Gene
     if (!inputIt.Get())
     {
       IndexType here = it.GetIndex();
-      for (unsigned int dim = 0; dim < InputImageDimension; dim++)
+      for (unsigned int dim = 0; dim < InputImageDimension; ++dim)
       {
         if (region.GetSize()[dim] <= 1)
         {
@@ -433,11 +409,8 @@ DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::Gene
   itkDebugMacro(<< "GenerateData: ComputeVoronoiMap");
 
   this->ComputeVoronoiMap();
-} // end GenerateData()
+}
 
-/**
- *  Print Self
- */
 template <typename TInputImage, typename TOutputImage, typename TVoronoiImage>
 void
 DanielssonDistanceMapImageFilter<TInputImage, TOutputImage, TVoronoiImage>::PrintSelf(std::ostream & os,

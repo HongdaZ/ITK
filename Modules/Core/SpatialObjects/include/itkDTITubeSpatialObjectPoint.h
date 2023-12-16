@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 
 namespace itk
 {
-/**\class DTITubeSpatialObjectPointEnums
+/** \class DTITubeSpatialObjectPointEnums
  * \brief Contains all enum classes used by DTITubeSpatialObjectPoint class.
  * \ingroup ITKSpatialObjects
  */
@@ -32,7 +32,7 @@ class DTITubeSpatialObjectPointEnums
 {
 public:
   /**
-*\class DTITubeSpatialObjectPointField
+* \class DTITubeSpatialObjectPointField
 * \ingroup ITKSpatialObjects
 * If you add a type here you need to modify the TranslateEnumToChar
 to translate the enum to a string */
@@ -47,7 +47,7 @@ to translate the enum to a string */
 extern ITKSpatialObjects_EXPORT std::ostream &
                                 operator<<(std::ostream & out, const DTITubeSpatialObjectPointEnums::DTITubeSpatialObjectPointField value);
 /**
- *\class DTITubeSpatialObjectPoint
+ * \class DTITubeSpatialObjectPoint
  * \brief Point used for a tube definition
  *
  * This class contains all the functions necessary to define a point
@@ -61,7 +61,7 @@ class ITK_TEMPLATE_EXPORT DTITubeSpatialObjectPoint : public TubeSpatialObjectPo
 {
 public:
   using Self = DTITubeSpatialObjectPoint;
-  using Superclass = SpatialObjectPoint<TPointDimension>;
+  using Superclass = TubeSpatialObjectPoint<TPointDimension>;
   using PointType = Point<double, TPointDimension>;
   using VectorType = Vector<double, TPointDimension>;
   using CovariantVectorType = CovariantVector<double, TPointDimension>;
@@ -83,6 +83,9 @@ public:
    * DTITubeSpatialObjectPoint */
   DTITubeSpatialObjectPoint();
 
+  /** Copy Constructor */
+  DTITubeSpatialObjectPoint(const DTITubeSpatialObjectPoint & other);
+
   /** Default destructor. */
   ~DTITubeSpatialObjectPoint() override = default;
 
@@ -102,7 +105,7 @@ public:
   void
   SetTensorMatrix(const float * matrix)
   {
-    for (unsigned int i = 0; i < 6; i++)
+    for (unsigned int i = 0; i < 6; ++i)
     {
       m_TensorMatrix[i] = matrix[i];
     }
@@ -140,7 +143,7 @@ public:
     return m_Fields;
   }
 
-  /** Return the value of the specific fiedls */
+  /** Return the value of the specific fields */
   float
   GetField(const char * name) const;
 

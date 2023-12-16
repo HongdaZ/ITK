@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ testVector(const TVector & v1, const TVector & v2)
   bool         pass = true;
   const double tolerance = 1e-10;
 
-  for (unsigned int i = 0; i < v1.Size() && i < v2.Size(); i++)
+  for (unsigned int i = 0; i < v1.Size() && i < v2.Size(); ++i)
   {
     if (!itk::Math::FloatAlmostEqual(v1[i], v2[i], 10, tolerance))
     {
@@ -51,9 +51,9 @@ itkDisplacementFieldTransformCloneTest(int, char *[])
   using FieldType = DisplacementTransformType::DisplacementFieldType;
 
   // Create a displacement field transform
-  DisplacementTransformType::Pointer displacementTransform = DisplacementTransformType::New();
+  auto displacementTransform = DisplacementTransformType::New();
 
-  FieldType::Pointer field = FieldType::New();
+  auto field = FieldType::New();
 
   FieldType::SizeType   size;
   FieldType::IndexType  start;
@@ -109,7 +109,7 @@ itkDisplacementFieldTransformCloneTest(int, char *[])
   if (!originalIt.IsAtEnd() || !cloneIt.IsAtEnd())
   {
     std::cerr << "Test failed!" << std::endl;
-    std::cerr << "Displacment field size mismatch" << std::endl;
+    std::cerr << "Displacement field size mismatch" << std::endl;
     return EXIT_FAILURE;
   }
 

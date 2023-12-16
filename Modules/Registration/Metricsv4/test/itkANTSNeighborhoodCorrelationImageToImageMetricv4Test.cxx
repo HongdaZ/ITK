@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,12 +46,12 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4Test_PrintDerivativeAsVectorImage
   IteratorType it(image, imageRegion);
   it.GoToBegin();
   itk::SizeValueType cnt = 0;
-  for (itk::SizeValueType ycnt = 0; ycnt < dim1; ycnt++)
+  for (itk::SizeValueType ycnt = 0; ycnt < dim1; ++ycnt)
   {
-    for (itk::SizeValueType xcnt = 0; xcnt < dim0; xcnt++)
+    for (itk::SizeValueType xcnt = 0; xcnt < dim0; ++xcnt)
     {
       std::cout << '[';
-      for (itk::SizeValueType d = 0; d < vecdim - 1; d++)
+      for (itk::SizeValueType d = 0; d < vecdim - 1; ++d)
       {
         std::cout << derivative[cnt * vecdim + d] << ",";
       }
@@ -82,9 +82,9 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4Test_PrintImage(ImageType * image
   IteratorType it(image, imageRegion);
   it.GoToBegin();
 
-  for (itk::SizeValueType ycnt = 0; ycnt < dim1; ycnt++)
+  for (itk::SizeValueType ycnt = 0; ycnt < dim1; ++ycnt)
   {
-    for (itk::SizeValueType xcnt = 0; xcnt < dim0; xcnt++)
+    for (itk::SizeValueType xcnt = 0; xcnt < dim0; ++xcnt)
     {
       std::cout << it.Get() << "\t";
       ++it;
@@ -109,9 +109,9 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4Test_PrintImage(const ImagePointe
   IteratorType it(image, imageRegion);
   it.GoToBegin();
 
-  for (itk::SizeValueType ycnt = 0; ycnt < dim1; ycnt++)
+  for (itk::SizeValueType ycnt = 0; ycnt < dim1; ++ycnt)
   {
-    for (itk::SizeValueType xcnt = 0; xcnt < dim0; xcnt++)
+    for (itk::SizeValueType xcnt = 0; xcnt < dim0; ++xcnt)
     {
       std::cout << it.Get() << "\t";
       ++it;
@@ -134,19 +134,19 @@ itkANTSNeighborhoodCorrelationImageToImageMetricv4Test(int, char ** const)
   using DisplacementTransformType = itk::DisplacementFieldTransform<double, ImageDimension>;
   using FieldType = DisplacementTransformType::DisplacementFieldType;
 
-  IdentityTransformType::Pointer transformFId = IdentityTransformType::New();
+  auto transformFId = IdentityTransformType::New();
 
-  IdentityTransformType::Pointer transformMId = IdentityTransformType::New();
+  auto transformMId = IdentityTransformType::New();
   if (transformMId.IsNull())
   {
     std::cerr << "transformMId == nullptr" << std::endl;
     return EXIT_FAILURE;
   }
-  DisplacementTransformType::Pointer transformMdisplacement = DisplacementTransformType::New();
-  TranslationTransformType::Pointer  transformMtranslation = TranslationTransformType::New();
-  TranslationTransformType::Pointer  transformMtranslation2 = TranslationTransformType::New();
-  CompositeTransformType::Pointer    transformMComp = CompositeTransformType::New();
-  CompositeTransformType::Pointer    transformFComp = CompositeTransformType::New();
+  auto transformMdisplacement = DisplacementTransformType::New();
+  auto transformMtranslation = TranslationTransformType::New();
+  auto transformMtranslation2 = TranslationTransformType::New();
+  auto transformMComp = CompositeTransformType::New();
+  auto transformFComp = CompositeTransformType::New();
 
 
   constexpr itk::SizeValueType imageSize = 6;
@@ -166,14 +166,14 @@ itkANTSNeighborhoodCorrelationImageToImageMetricv4Test(int, char ** const)
   direction.SetIdentity();
 
   /* Create simple test images. */
-  ImageType::Pointer fixedImage = ImageType::New();
+  auto fixedImage = ImageType::New();
   fixedImage->SetRegions(region);
   fixedImage->SetSpacing(spacing);
   fixedImage->SetOrigin(origin);
   fixedImage->SetDirection(direction);
   fixedImage->Allocate();
 
-  ImageType::Pointer movingImage = ImageType::New();
+  auto movingImage = ImageType::New();
   movingImage->SetRegions(region);
   movingImage->SetSpacing(spacing);
   movingImage->SetOrigin(origin);
@@ -204,7 +204,7 @@ itkANTSNeighborhoodCorrelationImageToImageMetricv4Test(int, char ** const)
   float      def_value = -0.5;
 
   zero.Fill(def_value);
-  FieldType::Pointer field = FieldType::New();
+  auto field = FieldType::New();
   field->SetRegions(fixedImage->GetLargestPossibleRegion());
   field->SetSpacing(fixedImage->GetSpacing());
   field->SetOrigin(fixedImage->GetOrigin());
@@ -212,7 +212,7 @@ itkANTSNeighborhoodCorrelationImageToImageMetricv4Test(int, char ** const)
   field->Allocate();
   field->FillBuffer(zero);
 
-  FieldType::Pointer fieldInv = FieldType::New();
+  auto fieldInv = FieldType::New();
 
   zero.Fill(def_value * (-1.0));
   fieldInv->SetRegions(fixedImage->GetLargestPossibleRegion());

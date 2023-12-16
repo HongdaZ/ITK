@@ -1,4 +1,4 @@
-#==========================================================================
+# ==========================================================================
 #
 #   Copyright NumFOCUS
 #
@@ -6,7 +6,7 @@
 #   you may not use this file except in compliance with the License.
 #   You may obtain a copy of the License at
 #
-#          http://www.apache.org/licenses/LICENSE-2.0.txt
+#          https://www.apache.org/licenses/LICENSE-2.0.txt
 #
 #   Unless required by applicable law or agreed to in writing, software
 #   distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-#==========================================================================*/
+# ==========================================================================*/
 
 import itk
 from sys import argv, stderr, exit
@@ -22,9 +22,13 @@ from sys import argv, stderr, exit
 itk.auto_progress(2)
 
 if len(argv) < 3:
-    print((
-        "Missing Parameters \n Usage: AntiAliasBinaryImageFilter"
-        " inputImage outputImage [RMS] [numberOfIterations]"), file=stderr)
+    print(
+        (
+            "Missing Parameters \n Usage: AntiAliasBinaryImageFilter"
+            " inputImage outputImage [RMS] [numberOfIterations]"
+        ),
+        file=stderr,
+    )
     exit(1)
 
 inputFilename = argv[1]

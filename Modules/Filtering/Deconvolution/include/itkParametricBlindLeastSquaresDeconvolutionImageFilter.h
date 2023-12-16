@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,12 +21,12 @@
 #include "itkIterativeDeconvolutionImageFilter.h"
 
 #include "itkParametricImageSource.h"
-#include "itkTernaryFunctorImageFilter.h"
+#include "itkTernaryGeneratorImageFilter.h"
 
 namespace itk
 {
 /**
- *\class ParametricBlindLeastSquaresDeconvolutionImageFilter
+ * \class ParametricBlindLeastSquaresDeconvolutionImageFilter
  *
  * \brief Least-squares blind deconvolution filter that also estimates
  * the parameters of a user-supplied parametric point-spread function.
@@ -60,7 +60,7 @@ class ITK_TEMPLATE_EXPORT ParametricBlindLeastSquaresDeconvolutionImageFilter
   : public IterativeDeconvolutionImageFilter<TInputImage, typename TKernelSource::OutputImageType, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ParametricBlindLeastSquaresDeconvolutionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ParametricBlindLeastSquaresDeconvolutionImageFilter);
 
   /** Standard type alias. */
   using Self = ParametricBlindLeastSquaresDeconvolutionImageFilter;
@@ -74,11 +74,11 @@ public:
   using OutputImageType = TOutputImage;
 
   /** Internal types used by the FFT filters. */
-  using InternalImageType = typename Superclass::InternalImageType;
-  using InternalImagePointerType = typename Superclass::InternalImagePointerType;
-  using InternalComplexType = typename Superclass::InternalComplexType;
-  using InternalComplexImageType = typename Superclass::InternalComplexImageType;
-  using InternalComplexImagePointerType = typename Superclass::InternalComplexImagePointerType;
+  using typename Superclass::InternalImageType;
+  using typename Superclass::InternalImagePointerType;
+  using typename Superclass::InternalComplexType;
+  using typename Superclass::InternalComplexImageType;
+  using typename Superclass::InternalComplexImagePointerType;
 
   /** Type for the parametric kernel source. */
   using KernelSourceType = TKernelSource;
@@ -122,74 +122,6 @@ protected:
   PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
-  template <typename TPixel>
-  class ITK_TEMPLATE_EXPORT ParametricBlindLeastSquaresDeconvolutionDifference
-  {
-  public:
-    ParametricBlindLeastSquaresDeconvolutionDifference() = default;
-    ~ParametricBlindLeastSquaresDeconvolutionDifference() = default;
-
-    bool
-    operator!=(const ParametricBlindLeastSquaresDeconvolutionDifference &) const
-    {
-      return false;
-    }
-
-    bool
-    operator==(const ParametricBlindLeastSquaresDeconvolutionDifference & other) const
-    {
-      return !(*this != other);
-    }
-
-    inline TPixel
-    operator()(const TPixel & estimateFT, const TPixel & kernelEstimateFT, const TPixel & inputFT)
-    {
-      return estimateFT * kernelEstimateFT - inputFT;
-    }
-  };
-
-  template <typename TPixel>
-  class ITK_TEMPLATE_EXPORT ParametricBlindLeastSquaresDeconvolutionImageUpdate
-  {
-  public:
-    ParametricBlindLeastSquaresDeconvolutionImageUpdate() = default;
-    ~ParametricBlindLeastSquaresDeconvolutionImageUpdate() = default;
-
-    bool
-    operator!=(const ParametricBlindLeastSquaresDeconvolutionImageUpdate &) const
-    {
-      return false;
-    }
-
-    bool
-    operator==(const ParametricBlindLeastSquaresDeconvolutionImageUpdate & other) const
-    {
-      return !(*this != other);
-    }
-
-    inline TPixel
-    operator()(const TPixel & estimateFT, const TPixel & differenceFT, const TPixel & kernelFT)
-    {
-      // Because of the linearity of the Fourier transform, we can
-      // perform the update step in the Fourier domain
-      return estimateFT - m_Alpha * (differenceFT * std::conj(kernelFT));
-    }
-
-    void
-    SetAlpha(double alpha)
-    {
-      m_Alpha = alpha;
-    }
-    double
-    GetAlpha() const
-    {
-      return m_Alpha;
-    }
-
-  private:
-    double m_Alpha{ 0.01 };
-  };
-
   KernelSourcePointer m_KernelSource;
 
   /** Step sizes for the gradient descent of the image and the
@@ -204,20 +136,16 @@ private:
 
   /** These are the internal filters that perform the updating of the
    * image estimate. */
-  using DifferenceFunctorType = ParametricBlindLeastSquaresDeconvolutionDifference<InternalComplexType>;
-  using DifferenceFilterType = TernaryFunctorImageFilter<InternalComplexImageType,
-                                                         InternalComplexImageType,
-                                                         InternalComplexImageType,
-                                                         InternalComplexImageType,
-                                                         DifferenceFunctorType>;
+  using DifferenceFilterType = TernaryGeneratorImageFilter<InternalComplexImageType,
+                                                           InternalComplexImageType,
+                                                           InternalComplexImageType,
+                                                           InternalComplexImageType>;
   typename DifferenceFilterType::Pointer m_DifferenceFilter;
 
-  using ImageUpdateFunctorType = ParametricBlindLeastSquaresDeconvolutionImageUpdate<InternalComplexType>;
-  using ImageUpdateFilterType = TernaryFunctorImageFilter<InternalComplexImageType,
-                                                          InternalComplexImageType,
-                                                          InternalComplexImageType,
-                                                          InternalComplexImageType,
-                                                          ImageUpdateFunctorType>;
+  using ImageUpdateFilterType = TernaryGeneratorImageFilter<InternalComplexImageType,
+                                                            InternalComplexImageType,
+                                                            InternalComplexImageType,
+                                                            InternalComplexImageType>;
   typename ImageUpdateFilterType::Pointer m_ImageUpdateFilter;
 };
 

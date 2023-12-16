@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -196,7 +196,7 @@ public:
     if (direction >= TImage::ImageDimension)
     {
       itkGenericExceptionMacro(<< "In image of dimension " << TImage::ImageDimension << " Direction " << direction
-                               << " sas selected");
+                               << " was selected");
     }
     m_Direction = direction;
     m_Jump = this->m_OffsetTable[m_Direction];
@@ -246,7 +246,7 @@ ImageLinearConstIteratorWithIndex<TImage>::NextLine()
 
   this->m_PositionIndex[m_Direction] = this->m_BeginIndex[m_Direction];
 
-  for (unsigned int n = 0; n < TImage::ImageDimension; n++)
+  for (unsigned int n = 0; n < TImage::ImageDimension; ++n)
   {
     this->m_Remaining = false;
 
@@ -282,7 +282,7 @@ ImageLinearConstIteratorWithIndex<TImage>::PreviousLine()
 
   this->m_PositionIndex[m_Direction] = this->m_EndIndex[m_Direction] - 1;
 
-  for (unsigned int n = 0; n < TImage::ImageDimension; n++)
+  for (unsigned int n = 0; n < TImage::ImageDimension; ++n)
   {
     this->m_Remaining = false;
 

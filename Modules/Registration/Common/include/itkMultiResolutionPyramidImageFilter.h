@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -109,7 +109,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT MultiResolutionPyramidImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiResolutionPyramidImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MultiResolutionPyramidImageFilter);
 
   /** Standard class type aliases. */
   using Self = MultiResolutionPyramidImageFilter;
@@ -131,11 +131,11 @@ public:
   static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
 
   /** Inherit types from Superclass. */
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
+  using typename Superclass::InputImageType;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::InputImagePointer;
+  using typename Superclass::OutputImagePointer;
+  using typename Superclass::InputImageConstPointer;
 
   /** Set the number of multi-resolution levels. The matrix containing the
    * schedule will be resized accordingly.  The schedule is populated with
@@ -195,7 +195,7 @@ public:
    * documentation of this method is below.  \sa
    * ProcessObject::GenerateOutputRequestedRegion(); */
   void
-  GenerateOutputRequestedRegion(DataObject * output) override;
+  GenerateOutputRequestedRegion(DataObject * refOutput) override;
 
   /** MultiResolutionPyramidImageFilter requires a larger input requested
    * region than the output requested regions to accommodate the shrinkage and

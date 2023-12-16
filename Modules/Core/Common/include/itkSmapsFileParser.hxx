@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSmapsFileParser_hxx
 #define itkSmapsFileParser_hxx
 
-#include "itkSmapsFileParser.h"
 
 #if defined(_WIN32)
 #  include <io.h>
@@ -43,45 +42,45 @@ MapFileParser<TMapDataType>::Update()
 }
 
 template <typename TMapDataType>
-typename MapFileParser<TMapDataType>::MemoryLoadType
-MapFileParser<TMapDataType>::GetHeapUsage()
+auto
+MapFileParser<TMapDataType>::GetHeapUsage() -> MemoryLoadType
 {
   if (m_MapData.Empty())
   {
-    std::cerr << "Read a map file before quering memory usage";
+    std::cerr << "Read a map file before querying memory usage";
   }
   return m_MapData.GetHeapUsage();
 }
 
 template <typename TMapDataType>
-typename MapFileParser<TMapDataType>::MemoryLoadType
-MapFileParser<TMapDataType>::GetStackUsage()
+auto
+MapFileParser<TMapDataType>::GetStackUsage() -> MemoryLoadType
 {
   if (m_MapData.Empty())
   {
-    std::cerr << "Read a map file before quering memory usage";
+    std::cerr << "Read a map file before querying memory usage";
   }
   return m_MapData.GetStackUsage();
 }
 
 template <typename TMapDataType>
-typename MapFileParser<TMapDataType>::MemoryLoadType
-MapFileParser<TMapDataType>::GetTotalMemoryUsage()
+auto
+MapFileParser<TMapDataType>::GetTotalMemoryUsage() -> MemoryLoadType
 {
   if (m_MapData.Empty())
   {
-    std::cerr << "Read a map file before quering memory usage";
+    std::cerr << "Read a map file before querying memory usage";
   }
   return m_MapData.GetTotalMemoryUsage();
 }
 
 template <typename TMapDataType>
-typename MapFileParser<TMapDataType>::MemoryLoadType
-MapFileParser<TMapDataType>::GetMemoryUsage(const char * filter, const char * token)
+auto
+MapFileParser<TMapDataType>::GetMemoryUsage(const char * filter, const char * token) -> MemoryLoadType
 {
   if (m_MapData.Empty())
   {
-    std::cerr << "Read a map file before quering memory usage";
+    std::cerr << "Read a map file before querying memory usage";
   }
   return m_MapData.GetMemoryUsage(filter, token);
 }
@@ -149,7 +148,6 @@ VMMapFileParser<TVMMapDataType>::ReadFile(const std::string & mapFileLocation)
       if (inputFile.is_open() == false)
       {
         itkGenericExceptionMacro(<< "The VMap file " << mapFileLocation << " could not be open");
-        return;
       }
       // load the file
       inputFile >> this->m_MapData;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,7 +73,7 @@ ImageToImageMetricv4RegistrationTestRun(typename TMetric::Pointer  metric,
   typename TImage::DirectionType direction;
   direction.Fill(itk::NumericTraits<CoordinateRepresentationType>::OneValue());
 
-  typename GaussianImageSourceType::Pointer fixedImageSource = GaussianImageSourceType::New();
+  auto fixedImageSource = GaussianImageSourceType::New();
 
   fixedImageSource->SetSize(size);
   fixedImageSource->SetOrigin(origin);
@@ -87,7 +87,7 @@ ImageToImageMetricv4RegistrationTestRun(typename TMetric::Pointer  metric,
   itk::ImageRegionIteratorWithIndex<TImage> it(fixedImage, fixedImage->GetLargestPossibleRegion());
   for (it.GoToBegin(); !it.IsAtEnd(); ++it)
   {
-    for (itk::SizeValueType n = 0; n < Dimension; n++)
+    for (itk::SizeValueType n = 0; n < Dimension; ++n)
     {
       if (it.GetIndex()[n] < boundary || (static_cast<itk::OffsetValueType>(size[n]) - it.GetIndex()[n]) <= boundary)
       {
@@ -99,7 +99,7 @@ ImageToImageMetricv4RegistrationTestRun(typename TMetric::Pointer  metric,
 
   // shift the fixed image to get the moving image
   using CyclicShiftFilterType = itk::CyclicShiftImageFilter<TImage, TImage>;
-  typename CyclicShiftFilterType::Pointer         shiftFilter = CyclicShiftFilterType::New();
+  auto                                            shiftFilter = CyclicShiftFilterType::New();
   typename CyclicShiftFilterType::OffsetType      imageShift;
   typename CyclicShiftFilterType::OffsetValueType maxImageShift = boundary - 1;
   imageShift.Fill(maxImageShift);
@@ -111,7 +111,7 @@ ImageToImageMetricv4RegistrationTestRun(typename TMetric::Pointer  metric,
 
   // create an affine transform
   using TranslationTransformType = itk::TranslationTransform<double, Dimension>;
-  typename TranslationTransformType::Pointer translationTransform = TranslationTransformType::New();
+  auto translationTransform = TranslationTransformType::New();
   translationTransform->SetIdentity();
 
   // setup metric
@@ -173,7 +173,7 @@ ImageToImageMetricv4RegistrationTestRun(typename TMetric::Pointer  metric,
   // optimizer
   //
   using OptimizerType = itk::GradientDescentOptimizerv4;
-  typename OptimizerType::Pointer optimizer = OptimizerType::New();
+  auto optimizer = OptimizerType::New();
   optimizer->SetMetric(metric);
   optimizer->SetNumberOfIterations(numberOfIterations);
   optimizer->SetScalesEstimator(shiftScaleEstimator);
@@ -194,10 +194,11 @@ ImageToImageMetricv4RegistrationTestRun(typename TMetric::Pointer  metric,
   std::cout << "metric value: initial: " << initialValue << ", final: " << finalValue << std::endl;
 
   // test that the final position is close to the truth
-  auto tolerance = static_cast<double>(0.11);
-  for (itk::SizeValueType n = 0; n < Dimension; n++)
+  double tolerance = 0.11;
+  for (itk::SizeValueType n = 0; n < Dimension; ++n)
   {
-    if (std::fabs(1.0 - (static_cast<double>(imageShift[n]) / translationTransform->GetParameters()[n])) > tolerance)
+    if (itk::Math::abs(1.0 - (static_cast<double>(imageShift[n]) / translationTransform->GetParameters()[n])) >
+        tolerance)
     {
       std::cerr << "XXX Failed. Final transform parameters are not within tolerance of image shift. XXX" << std::endl;
       return EXIT_FAILURE;
@@ -264,7 +265,7 @@ itkImageToImageMetricv4RegistrationTestRunAll(int argc, char * argv[])
   if (!doSampling)
   {
     using MetricType = itk::ANTSNeighborhoodCorrelationImageToImageMetricv4<ImageType, ImageType>;
-    typename MetricType::Pointer metric = MetricType::New();
+    auto metric = MetricType::New();
     std::cout << std::endl << "*** ANTSNeighborhoodCorrelation metric: " << std::endl;
     if (ImageToImageMetricv4RegistrationTestRun<Dimension, ImageType, MetricType>(
           metric, numberOfIterations1, maximumStepSize1, doSampling, doGradientFilter) != EXIT_SUCCESS)
@@ -276,7 +277,7 @@ itkImageToImageMetricv4RegistrationTestRunAll(int argc, char * argv[])
   // Correlation
   {
     using MetricType = itk::CorrelationImageToImageMetricv4<ImageType, ImageType>;
-    typename MetricType::Pointer metric = MetricType::New();
+    auto metric = MetricType::New();
     std::cout << std::endl << "*** Correlation metric: " << std::endl;
     if (ImageToImageMetricv4RegistrationTestRun<Dimension, ImageType, MetricType>(
           metric, numberOfIterations1, maximumStepSize1, doSampling, doGradientFilter) != EXIT_SUCCESS)
@@ -288,7 +289,7 @@ itkImageToImageMetricv4RegistrationTestRunAll(int argc, char * argv[])
   // Joint Histogram
   {
     using MetricType = itk::JointHistogramMutualInformationImageToImageMetricv4<ImageType, ImageType>;
-    typename MetricType::Pointer metric = MetricType::New();
+    auto metric = MetricType::New();
     std::cout << std::endl << "*** JointHistogramMutualInformation metric: " << std::endl;
     if (ImageToImageMetricv4RegistrationTestRun<Dimension, ImageType, MetricType>(
           metric, numberOfIterations1, maximumStepSize1, doSampling, doGradientFilter) != EXIT_SUCCESS)
@@ -300,7 +301,7 @@ itkImageToImageMetricv4RegistrationTestRunAll(int argc, char * argv[])
   // Mattes
   {
     using MetricType = itk::MattesMutualInformationImageToImageMetricv4<ImageType, ImageType>;
-    typename MetricType::Pointer metric = MetricType::New();
+    auto metric = MetricType::New();
     std::cout << std::endl << "*** MattesMutualInformation metric: " << std::endl;
     if (ImageToImageMetricv4RegistrationTestRun<Dimension, ImageType, MetricType>(
           metric, numberOfIterations2, maximumStepSize2, doSampling, doGradientFilter) != EXIT_SUCCESS)
@@ -312,7 +313,7 @@ itkImageToImageMetricv4RegistrationTestRunAll(int argc, char * argv[])
   // MeanSquares
   {
     using MetricType = itk::MeanSquaresImageToImageMetricv4<ImageType, ImageType>;
-    typename MetricType::Pointer metric = MetricType::New();
+    auto metric = MetricType::New();
     std::cout << std::endl << "*** MeanSquares metric: " << std::endl;
     if (ImageToImageMetricv4RegistrationTestRun<Dimension, ImageType, MetricType>(
           metric, numberOfIterations1, maximumStepSize1, doSampling, doGradientFilter) != EXIT_SUCCESS)

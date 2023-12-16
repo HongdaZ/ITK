@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,7 +62,7 @@ itkMultiScaleHessianBasedMeasureImageFilterTest(int argc, char * argv[])
   using MultiScaleEnhancementFilterType =
     itk::MultiScaleHessianBasedMeasureImageFilter<InputImageType, HessianImageType, OutputImageType>;
 
-  FileReaderType::Pointer imageReader = FileReaderType::New();
+  auto imageReader = FileReaderType::New();
   imageReader->SetFileName(argv[1]);
   try
   {
@@ -74,7 +74,7 @@ itkMultiScaleHessianBasedMeasureImageFilterTest(int argc, char * argv[])
     return EXIT_FAILURE;
   }
 
-  ObjectnessFilterType::Pointer objectnessFilter = ObjectnessFilterType::New();
+  auto objectnessFilter = ObjectnessFilterType::New();
   objectnessFilter->SetScaleObjectnessMeasure(false);
   objectnessFilter->SetBrightObject(true);
   objectnessFilter->SetAlpha(0.5);
@@ -82,9 +82,15 @@ itkMultiScaleHessianBasedMeasureImageFilterTest(int argc, char * argv[])
   objectnessFilter->SetGamma(5.0);
 
 
-  MultiScaleEnhancementFilterType::Pointer multiScaleEnhancementFilter = MultiScaleEnhancementFilterType::New();
+  auto multiScaleEnhancementFilter = MultiScaleEnhancementFilterType::New();
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    multiScaleEnhancementFilter, MultiScaleHessianBasedMeasureImageFilter, ImageToImageFilter);
+
+
   multiScaleEnhancementFilter->SetInput(imageReader->GetOutput());
   multiScaleEnhancementFilter->SetHessianToMeasureFilter(objectnessFilter);
+  ITK_TEST_SET_GET_VALUE(objectnessFilter, multiScaleEnhancementFilter->GetHessianToMeasureFilter());
+
   multiScaleEnhancementFilter->SetSigmaStepMethodToLogarithmic();
 
   itk::SimpleFilterWatcher watcher(multiScaleEnhancementFilter);
@@ -166,6 +172,10 @@ itkMultiScaleHessianBasedMeasureImageFilterTest(int argc, char * argv[])
   }
   multiScaleEnhancementFilter->SetGenerateHessianOutput(true);
 
+  bool nonNegativeHessianBasedMeasure = true;
+  ITK_TEST_SET_GET_BOOLEAN(multiScaleEnhancementFilter, NonNegativeHessianBasedMeasure, nonNegativeHessianBasedMeasure);
+
+
   try
   {
     multiScaleEnhancementFilter->Update();
@@ -175,7 +185,7 @@ itkMultiScaleHessianBasedMeasureImageFilterTest(int argc, char * argv[])
     std::cerr << e << std::endl;
   }
 
-  FileWriterType::Pointer writer = FileWriterType::New();
+  auto writer = FileWriterType::New();
   writer->SetFileName(argv[2]);
   writer->UseCompressionOn();
   writer->SetInput(multiScaleEnhancementFilter->GetOutput());
@@ -207,14 +217,13 @@ itkMultiScaleHessianBasedMeasureImageFilterTest(int argc, char * argv[])
   std::cout << "Hessian Image Buffered Region = " << std::endl;
   std::cout << hessianImage->GetBufferedRegion() << std::endl;
 
-  // Print out
-  multiScaleEnhancementFilter->Print(std::cout);
-
   if (argc > 9)
   {
     // Change sigma step to equispaced type and regnerate vesselness image
-    multiScaleEnhancementFilter->SetSigmaStepMethod(
+    auto sigmaStepMethod = static_cast<MultiScaleEnhancementFilterType::SigmaStepMethodEnum>(
       MultiScaleEnhancementFilterType::SigmaStepMethodEnum::EquispacedSigmaSteps);
+    multiScaleEnhancementFilter->SetSigmaStepMethod(sigmaStepMethod);
+    ITK_TEST_SET_GET_VALUE(sigmaStepMethod, multiScaleEnhancementFilter->GetSigmaStepMethod());
 
     try
     {
@@ -225,7 +234,7 @@ itkMultiScaleHessianBasedMeasureImageFilterTest(int argc, char * argv[])
       std::cerr << e << std::endl;
     }
 
-    FileWriterType::Pointer writer2 = FileWriterType::New();
+    auto writer2 = FileWriterType::New();
     writer2->SetFileName(argv[9]);
     writer2->UseCompressionOn();
     writer2->SetInput(multiScaleEnhancementFilter->GetOutput());
@@ -243,9 +252,9 @@ itkMultiScaleHessianBasedMeasureImageFilterTest(int argc, char * argv[])
   if (argc > 10)
   {
     // Change NonNegativeHessianBasedMeasure to Off and regnerate vesselness image
-    multiScaleEnhancementFilter->NonNegativeHessianBasedMeasureOff();
-
-    multiScaleEnhancementFilter->Print(std::cout);
+    nonNegativeHessianBasedMeasure = false;
+    ITK_TEST_SET_GET_BOOLEAN(
+      multiScaleEnhancementFilter, NonNegativeHessianBasedMeasure, nonNegativeHessianBasedMeasure);
 
     try
     {
@@ -256,7 +265,7 @@ itkMultiScaleHessianBasedMeasureImageFilterTest(int argc, char * argv[])
       std::cerr << e << std::endl;
     }
 
-    FileWriterType::Pointer writer3 = FileWriterType::New();
+    auto writer3 = FileWriterType::New();
     writer3->SetFileName(argv[10]);
     writer3->UseCompressionOn();
     writer3->SetInput(multiScaleEnhancementFilter->GetScalesOutput());

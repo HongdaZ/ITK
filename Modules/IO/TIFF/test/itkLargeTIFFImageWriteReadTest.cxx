@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,7 +51,7 @@ itkLargeTIFFImageWriteReadTestHelper(std::string filename, typename TImage::Size
 
   {
     // Write block
-    typename ImageType::Pointer image = ImageType::New();
+    auto image = ImageType::New();
     index.Fill(0);
     region.SetSize(size);
     region.SetIndex(index);
@@ -95,7 +95,7 @@ itkLargeTIFFImageWriteReadTestHelper(std::string filename, typename TImage::Size
 
     std::cout << "Trying to write the image to disk" << std::endl;
 
-    typename WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
     writer->SetInput(image);
     writer->SetFileName(filename);
 
@@ -109,7 +109,7 @@ itkLargeTIFFImageWriteReadTestHelper(std::string filename, typename TImage::Size
   } // end write block to free the memory
 
   std::cout << "Trying to read the image back from disk" << std::endl;
-  typename ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(filename);
 
   itk::TIFFImageIO::Pointer io = itk::TIFFImageIO::New();

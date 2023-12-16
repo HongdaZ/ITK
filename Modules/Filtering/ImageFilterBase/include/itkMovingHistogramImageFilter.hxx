@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMovingHistogramImageFilter_hxx
 #define itkMovingHistogramImageFilter_hxx
 
-#include "itkMovingHistogramImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkOffset.h"
 #include "itkTotalProgressReporter.h"
@@ -53,7 +52,7 @@ MovingHistogramImageFilter<TInputImage, TOutputImage, TKernel, THistogram>::Dyna
   TotalProgressReporter progress(this, outputImage->GetRequestedRegion().GetNumberOfPixels());
 
   // initialize the histogram
-  for (auto listIt = this->m_KernelOffsets.begin(); listIt != this->m_KernelOffsets.end(); listIt++)
+  for (auto listIt = this->m_KernelOffsets.begin(); listIt != this->m_KernelOffsets.end(); ++listIt)
   {
     IndexType idx = outputRegionForThread.GetIndex() + (*listIt);
     if (inputRegion.IsInside(idx))
@@ -78,7 +77,7 @@ MovingHistogramImageFilter<TInputImage, TOutputImage, TKernel, THistogram>::Dyna
 
   OffsetType   centerOffset;
   unsigned int i;
-  for (i = 0; i < ImageDimension; i++)
+  for (i = 0; i < ImageDimension; ++i)
   {
     centerOffset[i] = stRegion.GetSize()[i] / 2;
   }
@@ -108,9 +107,9 @@ MovingHistogramImageFilter<TInputImage, TOutputImage, TKernel, THistogram>::Dyna
 
   // Steps is used to keep track of the order in which the line
   // iterator passes over the various dimensions.
-  auto * Steps = new int[ImageDimension];
+  int Steps[ImageDimension];
 
-  for (i = 0; i < ImageDimension; i++)
+  for (i = 0; i < ImageDimension; ++i)
   {
     HistVec[i] = histogram;
     PrevLineStartVec[i] = InLineIt.GetIndex();
@@ -161,7 +160,7 @@ MovingHistogramImageFilter<TInputImage, TOutputImage, TKernel, THistogram>::Dyna
     // copy the updated histogram and line start entries to the
     // relevant directions. When updating direction 2, for example,
     // new copies of directions 0 and 1 should be made.
-    for (i = 0; i < ImageDimension; i++)
+    for (i = 0; i < ImageDimension; ++i)
     {
       if (Steps[i] > Steps[LineDirection])
       {
@@ -171,7 +170,6 @@ MovingHistogramImageFilter<TInputImage, TOutputImage, TKernel, THistogram>::Dyna
     }
     progress.Completed(outputRegionForThread.GetSize()[0]);
   }
-  delete[] Steps;
 }
 
 template <typename TInputImage, typename TOutputImage, typename TKernel, typename THistogram>
@@ -188,11 +186,11 @@ MovingHistogramImageFilter<TInputImage, TOutputImage, TKernel, THistogram>::Push
   if (inputRegion.IsInside(kernRegion))
   {
     // update the histogram
-    for (auto addedIt = addedList->begin(); addedIt != addedList->end(); addedIt++)
+    for (auto addedIt = addedList->begin(); addedIt != addedList->end(); ++addedIt)
     {
       histogram.AddPixel(inputImage->GetPixel(currentIdx + (*addedIt)));
     }
-    for (auto removedIt = removedList->begin(); removedIt != removedList->end(); removedIt++)
+    for (auto removedIt = removedList->begin(); removedIt != removedList->end(); ++removedIt)
     {
       histogram.RemovePixel(inputImage->GetPixel(currentIdx + (*removedIt)));
     }
@@ -200,7 +198,7 @@ MovingHistogramImageFilter<TInputImage, TOutputImage, TKernel, THistogram>::Push
   else
   {
     // update the histogram
-    for (auto addedIt = addedList->begin(); addedIt != addedList->end(); addedIt++)
+    for (auto addedIt = addedList->begin(); addedIt != addedList->end(); ++addedIt)
     {
       IndexType idx = currentIdx + (*addedIt);
       if (inputRegion.IsInside(idx))
@@ -212,7 +210,7 @@ MovingHistogramImageFilter<TInputImage, TOutputImage, TKernel, THistogram>::Push
         histogram.AddBoundary();
       }
     }
-    for (auto removedIt = removedList->begin(); removedIt != removedList->end(); removedIt++)
+    for (auto removedIt = removedList->begin(); removedIt != removedList->end(); ++removedIt)
     {
       IndexType idx = currentIdx + (*removedIt);
       if (inputRegion.IsInside(idx))

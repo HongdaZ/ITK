@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -80,7 +80,7 @@ itkLevelSetEquationCurvatureTermTest(int argc, char * argv[])
   region.SetSize(size);
 
   // Binary initialization
-  InputImageType::Pointer binary = InputImageType::New();
+  auto binary = InputImageType::New();
   binary->SetRegions(region);
   binary->SetSpacing(spacing);
   binary->SetOrigin(origin);
@@ -102,7 +102,7 @@ itkLevelSetEquationCurvatureTermTest(int argc, char * argv[])
   }
 
   // Convert binary mask to sparse level set
-  BinaryToSparseAdaptorType::Pointer adaptor = BinaryToSparseAdaptorType::New();
+  auto adaptor = BinaryToSparseAdaptorType::New();
   adaptor->SetInputImage(binary);
   adaptor->Initialize();
   std::cout << "Finished converting to sparse format" << std::endl;
@@ -112,22 +112,22 @@ itkLevelSetEquationCurvatureTermTest(int argc, char * argv[])
   IdListType list_ids;
   list_ids.push_back(1);
 
-  IdListImageType::Pointer id_image = IdListImageType::New();
+  auto id_image = IdListImageType::New();
   id_image->SetRegions(binary->GetLargestPossibleRegion());
   id_image->Allocate();
   id_image->FillBuffer(list_ids);
 
-  DomainMapImageFilterType::Pointer domainMapFilter = DomainMapImageFilterType::New();
+  auto domainMapFilter = DomainMapImageFilterType::New();
   domainMapFilter->SetInput(id_image);
   domainMapFilter->Update();
   std::cout << "Domain map computed" << std::endl;
 
   // Define the Heaviside function
-  HeavisideFunctionBaseType::Pointer heaviside = HeavisideFunctionBaseType::New();
+  auto heaviside = HeavisideFunctionBaseType::New();
   heaviside->SetEpsilon(1.0);
 
   // Insert the levelsets in a levelset container
-  LevelSetContainerType::Pointer lscontainer = LevelSetContainerType::New();
+  auto lscontainer = LevelSetContainerType::New();
   lscontainer->SetHeaviside(heaviside);
   lscontainer->SetDomainMapFilter(domainMapFilter);
 
@@ -138,7 +138,11 @@ itkLevelSetEquationCurvatureTermTest(int argc, char * argv[])
   }
 
   // Create ChanAndVese External term for phi_{1}
-  CurvatureTermType::Pointer term = CurvatureTermType::New();
+  auto term = CurvatureTermType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(term, LevelSetEquationCurvatureTerm, LevelSetEquationTermBase);
+
+
   term->SetInput(binary);
   term->SetCoefficient(1.0);
   term->SetCurrentLevelSetId(0);
@@ -188,7 +192,8 @@ itkLevelSetEquationCurvatureTermTest(int argc, char * argv[])
     return EXIT_FAILURE;
   }
 
-  term->SetUseCurvatureImage(false);
+  bool useCurvatureImage = false;
+  ITK_TEST_SET_GET_BOOLEAN(term, UseCurvatureImage, useCurvatureImage);
 
   if (itk::Math::NotAlmostEquals(term->Evaluate(index), value))
   {

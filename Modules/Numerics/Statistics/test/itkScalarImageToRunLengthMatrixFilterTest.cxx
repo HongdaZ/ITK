@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,8 +41,8 @@ itkScalarImageToRunLengthMatrixFilterTest(int, char *[])
   using InputImageIterator = itk::ImageRegionIterator<InputImageType>;
 
 
-  InputImageType::Pointer image = InputImageType::New();
-  InputImageType::Pointer mask = InputImageType::New();
+  auto image = InputImageType::New();
+  auto mask = InputImageType::New();
 
 
   InputImageType::SizeType inputImageSize = { { IMGWIDTH, IMGHEIGHT } };
@@ -73,7 +73,7 @@ itkScalarImageToRunLengthMatrixFilterTest(int, char *[])
 
   imageIt.GoToBegin();
 
-  for (unsigned int i = 0; i < 5; i++)
+  for (unsigned int i = 0; i < 5; ++i)
   {
     for (unsigned int j = 0; j < 5; j++, ++imageIt)
     {
@@ -96,7 +96,7 @@ itkScalarImageToRunLengthMatrixFilterTest(int, char *[])
   // setup the iterator
   InputImageIterator maskIt(mask, mask->GetBufferedRegion());
   maskIt.GoToBegin();
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 5; ++i)
     for (int j = 0; j < 5; j++, ++maskIt)
     {
       if (j == 2 && i > 0 && i < 4)
@@ -114,7 +114,7 @@ itkScalarImageToRunLengthMatrixFilterTest(int, char *[])
 
     using FilterType = itk::Statistics::ScalarImageToRunLengthMatrixFilter<InputImageType>;
 
-    FilterType::Pointer filter = FilterType::New();
+    auto filter = FilterType::New();
 
     filter->SetInput(image);
 
@@ -144,9 +144,9 @@ itkScalarImageToRunLengthMatrixFilterTest(int, char *[])
     };
 
     unsigned int count = 0;
-    for (unsigned int i = 0; i < 5; i++)
+    for (unsigned int i = 0; i < 5; ++i)
     {
-      for (unsigned int j = 0; j < 5; j++)
+      for (unsigned int j = 0; j < 5; ++j)
       {
         using IndexType = FilterType::HistogramType::IndexType;
         IndexType index(hist->GetMeasurementVectorSize());
@@ -240,9 +240,9 @@ itkScalarImageToRunLengthMatrixFilterTest(int, char *[])
     };
 
     count = 0;
-    for (unsigned int i = 0; i < 5; i++)
+    for (unsigned int i = 0; i < 5; ++i)
     {
-      for (unsigned int j = 0; j < 5; j++)
+      for (unsigned int j = 0; j < 5; ++j)
       {
         using IndexType = FilterType::HistogramType::IndexType;
         IndexType index(hist->GetMeasurementVectorSize());

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,22 +18,21 @@
 #ifndef itkMetaArrowConverter_hxx
 #define itkMetaArrowConverter_hxx
 
-#include "itkMetaArrowConverter.h"
 
 namespace itk
 {
 
-template <unsigned int NDimensions>
-typename MetaArrowConverter<NDimensions>::MetaObjectType *
-MetaArrowConverter<NDimensions>::CreateMetaObject()
+template <unsigned int VDimension>
+auto
+MetaArrowConverter<VDimension>::CreateMetaObject() -> MetaObjectType *
 {
   return dynamic_cast<MetaObjectType *>(new ArrowMetaObjectType);
 }
 
 /** Convert a metaArrow into an arrow SpatialObject  */
-template <unsigned int NDimensions>
-typename MetaArrowConverter<NDimensions>::SpatialObjectPointer
-MetaArrowConverter<NDimensions>::MetaObjectToSpatialObject(const MetaObjectType * mo)
+template <unsigned int VDimension>
+auto
+MetaArrowConverter<VDimension>::MetaObjectToSpatialObject(const MetaObjectType * mo) -> SpatialObjectPointer
 {
   const auto * metaArrow = dynamic_cast<const MetaArrow *>(mo);
   if (metaArrow == nullptr)
@@ -49,7 +48,7 @@ MetaArrowConverter<NDimensions>::MetaObjectToSpatialObject(const MetaObjectType 
   const double *                         metaDirection = metaArrow->Direction();
   typename SpatialObjectType::PointType  positionInObjectSpace;
   typename SpatialObjectType::VectorType directionInObjectSpace;
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     positionInObjectSpace[i] = metaPosition[i];
     directionInObjectSpace[i] = metaDirection[i];
@@ -71,9 +70,9 @@ MetaArrowConverter<NDimensions>::MetaObjectToSpatialObject(const MetaObjectType 
 }
 
 /** Convert an arrow SpatialObject into a metaArrow */
-template <unsigned int NDimensions>
-typename MetaArrowConverter<NDimensions>::MetaObjectType *
-MetaArrowConverter<NDimensions>::SpatialObjectToMetaObject(const SpatialObjectType * spatialObject)
+template <unsigned int VDimension>
+auto
+MetaArrowConverter<VDimension>::SpatialObjectToMetaObject(const SpatialObjectType * spatialObject) -> MetaObjectType *
 {
   ArrowSpatialObjectConstPointer arrowSO = dynamic_cast<const ArrowSpatialObjectType *>(spatialObject);
   if (arrowSO.IsNull())
@@ -81,7 +80,7 @@ MetaArrowConverter<NDimensions>::SpatialObjectToMetaObject(const SpatialObjectTy
     itkExceptionMacro(<< "Can't downcast SpatialObject to ArrowSpatialObject");
   }
 
-  auto * mo = new MetaArrow(NDimensions);
+  auto * mo = new MetaArrow(VDimension);
 
   float metaLength = arrowSO->GetLengthInObjectSpace();
 
@@ -91,11 +90,11 @@ MetaArrowConverter<NDimensions>::SpatialObjectToMetaObject(const SpatialObjectTy
   }
 
   // convert position and direction
-  double                                 metaPosition[NDimensions];
-  double                                 metaDirection[NDimensions];
+  double                                 metaPosition[VDimension];
+  double                                 metaDirection[VDimension];
   typename SpatialObjectType::PointType  spPositionInObjectSpace = arrowSO->GetPositionInObjectSpace();
   typename SpatialObjectType::VectorType spDirectionInObjectSpace = arrowSO->GetDirectionInObjectSpace();
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     metaPosition[i] = spPositionInObjectSpace[i];
     metaDirection[i] = spDirectionInObjectSpace[i];

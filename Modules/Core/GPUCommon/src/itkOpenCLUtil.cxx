@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,7 +66,7 @@ OpenCLGetAvailableDevices(cl_platform_id platform, cl_device_type devType, cl_ui
   (*numAvailableDevices) = 0;
 
   // check available devices
-  for (cl_uint i = 0; i < totalNumDevices; i++)
+  for (cl_uint i = 0; i < totalNumDevices; ++i)
   {
     cl_bool isAvailable;
     clGetDeviceInfo(totalDevices[i], CL_DEVICE_AVAILABLE, sizeof(cl_bool), &isAvailable, nullptr);
@@ -80,7 +80,7 @@ OpenCLGetAvailableDevices(cl_platform_id platform, cl_device_type devType, cl_ui
   availableDevices = (cl_device_id *)malloc((*numAvailableDevices) * sizeof(cl_device_id));
 
   int idx = 0;
-  for (cl_uint i = 0; i < totalNumDevices; i++)
+  for (cl_uint i = 0; i < totalNumDevices; ++i)
   {
     cl_bool isAvailable;
     clGetDeviceInfo(totalDevices[i], CL_DEVICE_AVAILABLE, sizeof(cl_bool), &isAvailable, nullptr);
@@ -348,7 +348,7 @@ OpenCLCheckError(cl_int error, const char * filename, int lineno, const char * l
     {
       errorMsg << "OpenCL Error : Unspecified Error" << std::endl;
     }
-    ::itk::ExceptionObject e_(filename, lineno, errorMsg.str().c_str(), location);
+    itk::ExceptionObject e_(filename, lineno, errorMsg.str().c_str(), location);
     throw e_;
   }
 }

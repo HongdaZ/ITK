@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ namespace itk
 LoggerManager::LoggerPointer
 LoggerManager::CreateLogger(const NameType & name, PriorityLevelEnum level, PriorityLevelEnum levelForFlushing)
 {
-  Logger::Pointer logger = Logger::New();
+  auto logger = Logger::New();
 
   logger->SetName(name.c_str());
   logger->SetPriorityLevel(level);
@@ -36,7 +36,7 @@ LoggerManager::CreateLogger(const NameType & name, PriorityLevelEnum level, Prio
 LoggerManager::ThreadLoggerPointer
 LoggerManager::CreateThreadLogger(const NameType & name, PriorityLevelEnum level, PriorityLevelEnum levelForFlushing)
 {
-  ThreadLogger::Pointer logger = ThreadLogger::New();
+  auto logger = ThreadLogger::New();
 
   logger->SetName(name.c_str());
   logger->SetPriorityLevel(level);
@@ -72,7 +72,7 @@ LoggerManager::SetPriorityLevel(PriorityLevelEnum level)
 
   while (itr != this->m_LoggerSet.end())
   {
-    (*itr).second->SetPriorityLevel(level);
+    itr->second->SetPriorityLevel(level);
     ++itr;
   }
 }
@@ -84,7 +84,7 @@ LoggerManager::SetLevelForFlushing(PriorityLevelEnum level)
 
   while (itr != this->m_LoggerSet.end())
   {
-    (*itr).second->SetLevelForFlushing(level);
+    itr->second->SetLevelForFlushing(level);
     ++itr;
   }
 }
@@ -96,7 +96,7 @@ LoggerManager::AddLogOutput(OutputType * output)
 
   while (itr != this->m_LoggerSet.end())
   {
-    (*itr).second->AddLogOutput(output);
+    itr->second->AddLogOutput(output);
     ++itr;
   }
 }
@@ -108,7 +108,7 @@ LoggerManager::Write(PriorityLevelEnum level, std::string const & content)
 
   while (itr != this->m_LoggerSet.end())
   {
-    (*itr).second->Write(level, content);
+    itr->second->Write(level, content);
     ++itr;
   }
 }
@@ -120,7 +120,7 @@ LoggerManager::Flush()
 
   while (itr != this->m_LoggerSet.end())
   {
-    (*itr).second->Flush();
+    itr->second->Flush();
     ++itr;
   }
 }

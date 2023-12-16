@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,7 +43,7 @@ namespace itk
 class ITKFEM_EXPORT FEMFactoryBase : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FEMFactoryBase);
+  ITK_DISALLOW_COPY_AND_MOVE(FEMFactoryBase);
 
   /** Standard class type aliases. */
   using Self = FEMFactoryBase;
@@ -82,14 +82,14 @@ public:
       if (m_Factory == nullptr)
       {
         // Make and register the factory
-        FEMFactoryBase::Pointer p = FEMFactoryBase::New();
+        auto p = FEMFactoryBase::New();
         if (p.IsNull())
         {
           std::ostringstream message;
           message << "itk::ERROR: "
                   << "FEMFactoryBase"
                   << " instance not created";
-          ::itk::ExceptionObject e_(__FILE__, __LINE__, message.str().c_str(), ITK_LOCATION);
+          itk::ExceptionObject e_(__FILE__, __LINE__, message.str().c_str(), ITK_LOCATION);
           throw e_; /* Explicit naming to work around for Intel compiler bug. */
         }
         ObjectFactoryBase::RegisterFactory(p);

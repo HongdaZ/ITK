@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,7 +55,7 @@ class ITK_TEMPLATE_EXPORT MaskNeighborhoodOperatorImageFilter
   : public NeighborhoodOperatorImageFilter<TInputImage, TOutputImage, TOperatorValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MaskNeighborhoodOperatorImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MaskNeighborhoodOperatorImageFilter);
 
   /** Standard "Self" & Superclass type alias. */
   using Self = MaskNeighborhoodOperatorImageFilter;
@@ -96,11 +96,11 @@ public:
   using ImageBoundaryConditionPointerType = ImageBoundaryCondition<OutputImageType> *;
 
   /** Superclass type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-  using OperatorValueType = typename Superclass::OperatorValueType;
+  using typename Superclass::OutputImageRegionType;
+  using typename Superclass::OperatorValueType;
 
   /** Neighborhood types */
-  using OutputNeighborhoodType = typename Superclass::OutputNeighborhoodType;
+  using typename Superclass::OutputNeighborhoodType;
 
   /** Set the mask image. Using a mask is optional.  When a mask is
    * specified, the normalized correlation is only calculated for

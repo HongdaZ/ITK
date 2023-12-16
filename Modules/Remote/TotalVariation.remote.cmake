@@ -27,12 +27,12 @@
 #--   - [ ] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -51,5 +51,5 @@ https://github.com/albarji/proxTV
 "
   MODULE_COMPLIANCE_LEVEL 2
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKTotalVariation.git
-  GIT_TAG e47fb5b1e2eef32cddb131d8ba47b78dbde9fbbd
+  GIT_TAG 1dda823f15c8e190ddcd9354f388af01f8b07b08
 )

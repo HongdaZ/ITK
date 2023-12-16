@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkVideoStream_hxx
 #define itkVideoStream_hxx
 
-#include "itkVideoStream.h"
 
 namespace itk
 {
@@ -202,6 +201,29 @@ VideoStream<TFrameType>::GetFrameDirection(SizeValueType frameNumber) const
   return const_cast<Self *>(this)->m_DirectionCache[frameNumber];
 }
 
+template <typename TFrameType>
+void
+VideoStream<TFrameType>::SetFrameNumberOfComponentsPerPixel(SizeValueType frameNumber, NumberOfComponentsPerPixelType n)
+{
+  m_NumberOfComponentsPerPixelCache[frameNumber] = n;
+
+  // If the frame is currently buffered, set the actual frame's region
+  SizeValueType bufStart = m_BufferedTemporalRegion.GetFrameStart();
+  SizeValueType bufDur = m_BufferedTemporalRegion.GetFrameDuration();
+  if (frameNumber >= bufStart && frameNumber < bufStart + bufDur)
+  {
+    FrameType * frame = this->GetFrame(frameNumber);
+    frame->SetNumberOfComponentsPerPixel(n);
+  }
+}
+
+template <typename TFrameType>
+auto
+VideoStream<TFrameType>::GetFrameNumberOfComponentsPerPixel(SizeValueType frameNumber) const
+  -> const NumberOfComponentsPerPixelType &
+{
+  return const_cast<Self *>(this)->m_NumberOfComponentsPerPixelCache[frameNumber];
+}
 
 template <typename TFrameType>
 void
@@ -309,6 +331,10 @@ VideoStream<TFrameType>::InitializeEmptyFrames()
     {
       this->GetFrame(i)->SetDirection(m_DirectionCache[i]);
     }
+    if (m_NumberOfComponentsPerPixelCache.find(i) != m_NumberOfComponentsPerPixelCache.end())
+    {
+      this->GetFrame(i)->SetNumberOfComponentsPerPixel(m_NumberOfComponentsPerPixelCache[i]);
+    }
   }
 }
 
@@ -332,8 +358,8 @@ VideoStream<TFrameType>::SetFrame(SizeValueType frameNumber, FramePointer frame)
 
 
 template <typename TFrameType>
-typename VideoStream<TFrameType>::FramePointer
-VideoStream<TFrameType>::GetFrame(SizeValueType frameNumber)
+auto
+VideoStream<TFrameType>::GetFrame(SizeValueType frameNumber) -> FrameType *
 {
 
   // Fetch the frame
@@ -344,8 +370,8 @@ VideoStream<TFrameType>::GetFrame(SizeValueType frameNumber)
 
 
 template <typename TFrameType>
-typename VideoStream<TFrameType>::FrameConstPointer
-VideoStream<TFrameType>::GetFrame(SizeValueType frameNumber) const
+auto
+VideoStream<TFrameType>::GetFrame(SizeValueType frameNumber) const -> const FrameType *
 {
   typename BufferType::ElementPointer element = m_DataObjectBuffer->GetBufferContents(frameNumber);
   FrameConstPointer                   frame = dynamic_cast<FrameType *>(element.GetPointer());
@@ -530,6 +556,30 @@ VideoStream<TFrameType>::SetAllFramesDirection(typename TFrameType::DirectionTyp
   for (SizeValueType i = startFrame; i < startFrame + numFrames; ++i)
   {
     this->SetFrameDirection(i, direction);
+  }
+}
+
+template <typename TFrameType>
+void
+VideoStream<TFrameType>::SetAllFramesNumberOfComponentsPerPixel(NumberOfComponentsPerPixelType n)
+{
+  SizeValueType numFrames = m_LargestPossibleTemporalRegion.GetFrameDuration();
+  SizeValueType startFrame = m_LargestPossibleTemporalRegion.GetFrameStart();
+
+  // If the largest region is infinite, use the largest of the requested or
+  // buffered region
+  if (numFrames == ITK_INFINITE_FRAME_DURATION)
+  {
+    SizeValueType bufEnd = m_BufferedTemporalRegion.GetFrameStart() + m_BufferedTemporalRegion.GetFrameDuration();
+    SizeValueType reqEnd = m_RequestedTemporalRegion.GetFrameStart() + m_RequestedTemporalRegion.GetFrameDuration();
+    (bufEnd > reqEnd) ? (numFrames = bufEnd) : (numFrames = reqEnd);
+  }
+
+  // Go through the number of required frames, making sure none are empty and
+  // setting the region
+  for (SizeValueType i = startFrame; i < startFrame + numFrames; ++i)
+  {
+    this->SetFrameNumberOfComponentsPerPixel(i, n);
   }
 }
 

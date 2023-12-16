@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -101,21 +101,21 @@ protected:
 ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
 ThreadedGenerateLogMessages2(void * arg)
 {
-  const auto * threadInfo = static_cast<itk::MultiThreaderBase::WorkUnitInfo *>(arg);
-  if (threadInfo)
+  const auto * workUnitInfo = static_cast<itk::MultiThreaderBase::WorkUnitInfo *>(arg);
+  if (workUnitInfo)
   {
-    const unsigned int threadId = threadInfo->WorkUnitID;
+    const unsigned int workUnitID = workUnitInfo->WorkUnitID;
     std::string        threadPrefix;
     {
       std::ostringstream msg;
-      msg << "<Thread " << threadId << "> ";
+      msg << "<Thread " << workUnitID << "> ";
       threadPrefix = msg.str();
     }
 
-    const ThreadDataVec * dataVec = static_cast<ThreadDataVec *>(threadInfo->UserData);
+    const ThreadDataVec * dataVec = static_cast<ThreadDataVec *>(workUnitInfo->UserData);
     if (dataVec)
     {
-      const ThreadDataStruct threadData = (*dataVec)[threadId];
+      const ThreadDataStruct threadData = (*dataVec)[workUnitID];
       {
         std::ostringstream msg;
         msg << threadPrefix << "unpacked arg\n";
@@ -280,7 +280,7 @@ itkLoggerThreadWrapperTest(int argc, char * argv[])
   }
   catch (...)
   {
-    std::cerr << "Exception catched !!" << std::endl;
+    std::cerr << "Exception caught !!" << std::endl;
     return EXIT_FAILURE;
   }
 

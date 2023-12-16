@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class Hessian3DToVesselnessMeasureImageFilter
+ * \class Hessian3DToVesselnessMeasureImageFilter
  * \brief Line filter to provide a vesselness measure for tubular objects from the
  * hessian matrix.
  *
@@ -61,7 +61,7 @@ namespace itk
  * Yoshinobu Sato, Shin Nakajima, Hideki Atsumi, Thomas Koller,
  * Guido Gerig, Shigeyuki Yoshida, Ron Kikinis.
  *
- * http://www.spl.harvard.edu/archive/spl-pre2007/pages/papers/yoshi/
+ * http://www.image.med.osaka-u.ac.jp/member/yoshi/paper/linefilter.pdf
  *
  *
  * \sa HessianRecursiveGaussianImageFilter
@@ -78,7 +78,7 @@ class ITK_TEMPLATE_EXPORT Hessian3DToVesselnessMeasureImageFilter
   : public ImageToImageFilter<Image<SymmetricSecondRankTensor<double, 3>, 3>, Image<TPixel, 3>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Hessian3DToVesselnessMeasureImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(Hessian3DToVesselnessMeasureImageFilter);
 
   /** Standard class type aliases. */
   using Self = Hessian3DToVesselnessMeasureImageFilter;
@@ -87,13 +87,13 @@ public:
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::OutputImageType;
   using InputPixelType = typename InputImageType::PixelType;
   using OutputPixelType = TPixel;
 
   /** Image dimension = 3. */
-  static constexpr unsigned int ImageDimension = InputImageType ::ImageDimension;
+  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
   static constexpr unsigned int InputPixelDimension = InputPixelType::Dimension;
 
   using EigenValueArrayType = FixedArray<double, Self::InputPixelDimension>;
@@ -108,12 +108,12 @@ public:
   itkNewMacro(Self);
 
   /** Set/Get macros for alpha_1. Please refer to
-   * http://www.spl.harvard.edu/archive/spl-pre2007/pages/papers/yoshi/ */
+   * http://www.image.med.osaka-u.ac.jp/member/yoshi/paper/linefilter.pdf */
   itkSetMacro(Alpha1, double);
   itkGetConstMacro(Alpha1, double);
 
   /** Set/Get macros for alpha_2. Please refer to
-   * http://www.spl.harvard.edu/archive/spl-pre2007/pages/papers/yoshi/ */
+   * http://www.image.med.osaka-u.ac.jp/member/yoshi/paper/linefilter.pdf */
   itkSetMacro(Alpha2, double);
   itkGetConstMacro(Alpha2, double);
 

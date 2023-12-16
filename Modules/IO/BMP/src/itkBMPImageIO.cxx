@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,12 +17,12 @@
  *=========================================================================*/
 #include "itkBMPImageIO.h"
 #include "itkByteSwapper.h"
+#include "itkMakeUniqueForOverwrite.h"
 #include "itksys/SystemTools.hxx"
 #include <iostream>
 
 namespace itk
 {
-/** Constructor */
 BMPImageIO::BMPImageIO()
   : m_ColorPalette(0) // palette has no element by default
 {
@@ -50,7 +50,6 @@ BMPImageIO::BMPImageIO()
   }
 }
 
-/** Destructor */
 BMPImageIO::~BMPImageIO() = default;
 
 bool
@@ -78,7 +77,7 @@ BMPImageIO::CanReadFile(const char * filename)
   {
     this->OpenFileForReading(inputStream, fname);
   }
-  catch (ExceptionObject &)
+  catch (const ExceptionObject &)
   {
     return false;
   }
@@ -173,33 +172,32 @@ BMPImageIO::Read(void * buffer)
 {
   auto *        p = static_cast<char *>(buffer);
   unsigned long l = 0;
-  char *        value;
 
   this->OpenFileForReading(m_Ifstream, m_FileName);
 
   // If the file is RLE compressed
   // RLE-compressed files are lower-left
   // About the RLE compression algorithm:
-  // http://msdn.microsoft.com/en-us/library/windows/desktop/dd183383%28v=vs.85%29.aspx
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/dd183383%28v=vs.85%29.aspx
   if (m_BMPCompression == 1 && (this->GetNumberOfComponents() == 3 || this->GetIsReadAsScalarPlusPalette()))
   {
-    value = new char[m_BMPDataSize + 1];
+    const auto value = make_unique_for_overwrite<char[]>(m_BMPDataSize + 1);
     m_Ifstream.seekg(m_BitMapOffset, std::ios::beg);
-    m_Ifstream.read((char *)value, m_BMPDataSize);
+    m_Ifstream.read(value.get(), m_BMPDataSize);
 
     SizeValueType posLine = 0;
     SizeValueType line = m_Dimensions[1] - 1;
-    for (unsigned int i = 0; i < m_BMPDataSize; i++)
+    for (unsigned int i = 0; i < m_BMPDataSize; ++i)
     {
       unsigned char byte1 = value[i];
-      i++;
+      ++i;
       unsigned char byte2 = value[i];
       if (byte1 == 0)
       {
         if (byte2 == 0)
         {
           // End of line
-          line--;
+          --line;
           posLine = 0;
           continue;
         }
@@ -211,9 +209,9 @@ BMPImageIO::Read(void * buffer)
         else if (byte2 == 2)
         {
           // Delta
-          i++;
+          ++i;
           unsigned char dx = value[i];
-          i++;
+          ++i;
           unsigned char dy = value[i];
           posLine += dx;
           line -= dy;
@@ -224,31 +222,31 @@ BMPImageIO::Read(void * buffer)
           // Unencoded run
           if (!this->GetIsReadAsScalarPlusPalette())
           {
-            for (unsigned long j = 0; j < byte2; j++)
+            for (unsigned long j = 0; j < byte2; ++j)
             {
-              i++;
+              ++i;
               RGBPixelType rgb = this->GetColorPaletteEntry(value[i]);
               l = 3 * (line * m_Dimensions[0] + posLine);
               p[l] = rgb.GetBlue();
               p[l + 1] = rgb.GetGreen();
               p[l + 2] = rgb.GetRed();
-              posLine++;
+              ++posLine;
             }
           }
           else
           {
-            for (unsigned long j = 0; j < byte2; j++)
+            for (unsigned long j = 0; j < byte2; ++j)
             {
-              i++;
+              ++i;
               l = (line * m_Dimensions[0] + posLine);
               p[l] = value[i];
-              posLine++;
+              ++posLine;
             }
           }
           // If a run's length is odd, the it is padded with 0
           if (byte2 % 2)
           {
-            i++;
+            ++i;
           }
         }
       }
@@ -258,22 +256,22 @@ BMPImageIO::Read(void * buffer)
         if (!this->GetIsReadAsScalarPlusPalette())
         {
           RGBPixelType rgb = this->GetColorPaletteEntry(byte2);
-          for (unsigned long j = 0; j < byte1; j++)
+          for (unsigned long j = 0; j < byte1; ++j)
           {
             l = 3 * (line * m_Dimensions[0] + posLine);
             p[l] = rgb.GetBlue();
             p[l + 1] = rgb.GetGreen();
             p[l + 2] = rgb.GetRed();
-            posLine++;
+            ++posLine;
           }
         }
         else
         {
-          for (unsigned long j = 0; j < byte1; j++)
+          for (unsigned long j = 0; j < byte1; ++j)
           {
             l = (line * m_Dimensions[0] + posLine);
             p[l] = byte2;
-            posLine++;
+            ++posLine;
           }
         }
       }
@@ -290,14 +288,14 @@ BMPImageIO::Read(void * buffer)
     {
       paddedStreamRead = ((streamRead / 4) + 1) * 4;
     }
-    value = new char[paddedStreamRead + 1];
+    const auto value = make_unique_for_overwrite<char[]>(paddedStreamRead + 1);
 
-    for (unsigned int id = 0; id < m_Dimensions[1]; id++)
+    for (unsigned int id = 0; id < m_Dimensions[1]; ++id)
     {
       const unsigned int line_id = m_FileLowerLeft ? (m_Dimensions[1] - id - 1) : id;
       m_Ifstream.seekg(m_BitMapOffset + paddedStreamRead * line_id, std::ios::beg);
-      m_Ifstream.read((char *)value, paddedStreamRead);
-      for (long i = 0; i < streamRead; i++)
+      m_Ifstream.read(value.get(), paddedStreamRead);
+      for (long i = 0; i < streamRead; ++i)
       {
         if (this->GetNumberOfComponents() == 1)
         {
@@ -309,16 +307,16 @@ BMPImageIO::Read(void * buffer)
           {
             if (this->GetNumberOfComponents() == 3)
             {
-              p[l++] = value[i + 2];
-              p[l++] = value[i + 1];
-              p[l++] = value[i];
+              p[l++] = value[i + 2]; // red
+              p[l++] = value[i + 1]; // green
+              p[l++] = value[i];     // blue
             }
             if (this->GetNumberOfComponents() == 4)
             {
-              p[l++] = value[i + 3];
-              p[l++] = value[i + 2];
-              p[l++] = value[i + 1];
-              p[l++] = value[i];
+              p[l++] = value[i + 2]; // red
+              p[l++] = value[i + 1]; // green
+              p[l++] = value[i];     // blue
+              p[l++] = value[i + 3]; // alpha
             }
             i += step - 1;
           }
@@ -333,7 +331,6 @@ BMPImageIO::Read(void * buffer)
       }
     }
   }
-  delete[] value;
   m_Ifstream.close();
 }
 
@@ -523,7 +520,7 @@ BMPImageIO::ReadImageInformation()
     }
   }
 
-  // http://msdn.microsoft.com/en-us/library/windows/desktop/dd183376%28v=vs.85%29.aspx
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/dd183376%28v=vs.85%29.aspx
   if (m_BMPCompression == 1 && !m_FileLowerLeft)
   {
     m_Ifstream.close();
@@ -548,7 +545,7 @@ BMPImageIO::ReadImageInformation()
   }
   unsigned char uctmp;
   m_ColorPalette.resize(m_ColorPaletteSize);
-  for (unsigned long i = 0; i < m_ColorPaletteSize; i++)
+  for (unsigned long i = 0; i < m_ColorPaletteSize; ++i)
   {
     RGBPixelType p;
     m_Ifstream.read((char *)&uctmp, 1);
@@ -599,7 +596,7 @@ BMPImageIO::ReadImageInformation()
 }
 
 void
-BMPImageIO ::SwapBytesIfNecessary(void * buffer, SizeValueType numberOfPixels)
+BMPImageIO::SwapBytesIfNecessary(void * buffer, SizeValueType numberOfPixels)
 {
   switch (m_ComponentType)
   {
@@ -657,7 +654,7 @@ BMPImageIO ::SwapBytesIfNecessary(void * buffer, SizeValueType numberOfPixels)
 }
 
 void
-BMPImageIO ::Write32BitsInteger(unsigned int value)
+BMPImageIO::Write32BitsInteger(unsigned int value)
 {
   auto tmp = static_cast<char>(value % 256);
   m_Ofstream.write(&tmp, sizeof(char));
@@ -670,7 +667,7 @@ BMPImageIO ::Write32BitsInteger(unsigned int value)
 }
 
 void
-BMPImageIO ::Write16BitsInteger(unsigned short value)
+BMPImageIO::Write16BitsInteger(unsigned short value)
 {
   auto tmp = static_cast<char>(value % 256);
   m_Ofstream.write(&tmp, sizeof(char));
@@ -679,7 +676,7 @@ BMPImageIO ::Write16BitsInteger(unsigned short value)
 }
 
 BMPImageIO::RGBPixelType
-BMPImageIO ::GetColorPaletteEntry(const unsigned char entry) const
+BMPImageIO::GetColorPaletteEntry(const unsigned char entry) const
 {
   if (entry < m_ColorPalette.size())
   {
@@ -696,12 +693,11 @@ BMPImageIO ::GetColorPaletteEntry(const unsigned char entry) const
 }
 
 void
-BMPImageIO ::WriteImageInformation()
+BMPImageIO::WriteImageInformation()
 {}
 
-/** The write function is not implemented */
 void
-BMPImageIO ::Write(const void * buffer)
+BMPImageIO::Write(const void * buffer)
 {
   unsigned int nDims = this->GetNumberOfDimensions();
 
@@ -721,8 +717,7 @@ BMPImageIO ::Write(const void * buffer)
 
   this->OpenFileForWriting(m_Ofstream, m_FileName);
 
-  //
-  //
+
   // A BMP file has four sections:
   //
   // * BMP Header                         14 bytes
@@ -732,9 +727,7 @@ BMPImageIO ::Write(const void * buffer)
   //
   // For more details:
   //
-  //             http://en.wikipedia.org/wiki/BMP_file_format
-  //
-  //
+  //             https://en.wikipedia.org/wiki/BMP_file_format
 
   // Write the BMP header
   //
@@ -752,7 +745,6 @@ BMPImageIO ::Write(const void * buffer)
   //  10      4    Provides an offset from the start of the file
   //               to the first byte of image sample data. This
   //               is normally 54 bytes (Hex: 36)
-  //
   char tmp = 66;
   m_Ofstream.write(&tmp, sizeof(char));
   tmp = 77;
@@ -784,11 +776,8 @@ BMPImageIO ::Write(const void * buffer)
     offsetToBinaryDataStart += 1024;
   }
   this->Write32BitsInteger(offsetToBinaryDataStart);
-  //
   // End of BMP header, 14 bytes written so far
-  //
 
-  //
   // Write the DIB header
   //
   // Offset Length Description
@@ -803,7 +792,6 @@ BMPImageIO ::Write(const void * buffer)
   //  blue, green and red intensities, respectively.
   //
   //  Finally the pixel data
-  //
   constexpr unsigned int bitmapHeaderSize = 40;
   this->Write32BitsInteger(bitmapHeaderSize);
 
@@ -857,18 +845,13 @@ BMPImageIO ::Write(const void * buffer)
   // zero here indicates that all colors in the palette are important.
   constexpr unsigned int numberOfImportantColorsInPalette = 0;
   this->Write32BitsInteger(numberOfImportantColorsInPalette);
-  //
   // End of DIB header, 54 bytes written so far
-  //
 
-  //
   // Write down colour LUT
-  //
   // only when using 1 byte per pixel
-  //
   if (bpp == 1)
   {
-    for (unsigned int n = 0; n < 256; n++)
+    for (unsigned int n = 0; n < 256; ++n)
     {
       char tmp2 = static_cast<unsigned char>(n);
       m_Ofstream.write(&tmp2, sizeof(char));
@@ -878,59 +861,57 @@ BMPImageIO ::Write(const void * buffer)
     }
   }
 
-  //
   // Write down the raw binary pixel data
-  //
   unsigned int i;
-  for (unsigned int h = 0; h < m_Dimensions[1]; h++)
+  for (unsigned int h = 0; h < m_Dimensions[1]; ++h)
   {
     constexpr char paddingValue = 0;
     const auto *   ptr = static_cast<const char *>(buffer);
     ptr += (m_Dimensions[1] - (h + 1)) * m_Dimensions[0] * bpp;
     if (bpp == 1)
     {
-      for (i = 0; i < m_Dimensions[0]; i++)
+      for (i = 0; i < m_Dimensions[0]; ++i)
       {
         m_Ofstream.write(ptr, sizeof(char));
-        ptr++;
+        ++ptr;
       }
-      for (i = 0; i < paddedBytes; i++)
+      for (i = 0; i < paddedBytes; ++i)
       {
         m_Ofstream.write(&paddingValue, sizeof(char));
       }
     }
     if (bpp == 3)
     {
-      for (i = 0; i < m_Dimensions[0]; i++)
+      for (i = 0; i < m_Dimensions[0]; ++i)
       {
         ptr += 2;
-        m_Ofstream.write(ptr, sizeof(char));
-        ptr--;
-        m_Ofstream.write(ptr, sizeof(char));
-        ptr--;
-        m_Ofstream.write(ptr, sizeof(char));
+        m_Ofstream.write(ptr, sizeof(char)); // blue
+        --ptr;
+        m_Ofstream.write(ptr, sizeof(char)); // green
+        --ptr;
+        m_Ofstream.write(ptr, sizeof(char)); // red
         ptr += 3;
       }
-      for (i = 0; i < paddedBytes; i++)
+      for (i = 0; i < paddedBytes; ++i)
       {
         m_Ofstream.write(&paddingValue, sizeof(char));
       }
     }
     if (bpp == 4)
     {
-      for (i = 0; i < m_Dimensions[0]; i++)
+      for (i = 0; i < m_Dimensions[0]; ++i)
       {
+        ptr += 2;
+        m_Ofstream.write(ptr, sizeof(char)); // blue
+        --ptr;
+        m_Ofstream.write(ptr, sizeof(char)); // green
+        --ptr;
+        m_Ofstream.write(ptr, sizeof(char)); // red
         ptr += 3;
-        m_Ofstream.write(ptr, sizeof(char));
-        ptr--;
-        m_Ofstream.write(ptr, sizeof(char));
-        ptr--;
-        m_Ofstream.write(ptr, sizeof(char));
-        ptr--;
-        m_Ofstream.write(ptr, sizeof(char));
-        ptr += 4;
+        m_Ofstream.write(ptr, sizeof(char)); // alpha
+        ++ptr;
       }
-      for (i = 0; i < paddedBytes; i++)
+      for (i = 0; i < paddedBytes; ++i)
       {
         m_Ofstream.write(&paddingValue, sizeof(char));
       }

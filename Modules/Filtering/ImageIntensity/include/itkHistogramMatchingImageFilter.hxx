@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkHistogramMatchingImageFilter_hxx
 #define itkHistogramMatchingImageFilter_hxx
 
-#include "itkHistogramMatchingImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkNumericTraits.h"
 #include "itkMath.h"
@@ -119,14 +118,14 @@ HistogramMatchingImageFilter<TInputImage, TOutputImage, THistogramMeasurement>::
   {
     if (this->GetReferenceImage() == nullptr)
     {
-      itkExceptionMacro(<< "ReferenceImage required when GenerateReferenceHistogramFromImage is true.")
+      itkExceptionMacro(<< "ReferenceImage required when GenerateReferenceHistogramFromImage is true.");
     }
   }
   else
   {
     if (this->GetReferenceHistogram() == nullptr)
     {
-      itkExceptionMacro(<< "ReferenceHistogram required when GenerateReferenceHistogramFromImage is false.")
+      itkExceptionMacro(<< "ReferenceHistogram required when GenerateReferenceHistogramFromImage is false.");
     }
   }
 }
@@ -147,7 +146,7 @@ HistogramMatchingImageFilter<TInputImage, TOutputImage, THistogramMeasurement>::
     InputImageConstPointer reference = this->GetReferenceImage();
     if (reference.IsNull())
     {
-      itkExceptionMacro(<< "ERROR: ReferenceImage required when GenerateReferenceHistogramFromImage is true.\n")
+      itkExceptionMacro(<< "ERROR: ReferenceImage required when GenerateReferenceHistogramFromImage is true.\n");
     }
     this->ComputeMinMaxMean(reference, m_ReferenceMinValue, m_ReferenceMaxValue, referenceMeanValue);
     if (m_ThresholdAtMeanIntensity)
@@ -174,7 +173,7 @@ HistogramMatchingImageFilter<TInputImage, TOutputImage, THistogramMeasurement>::
     const HistogramType * const referenceHistogram = this->GetReferenceHistogram();
     if (referenceHistogram == nullptr)
     {
-      itkExceptionMacro(<< "ERROR: ReferenceHistogram required when GenerateReferenceHistogramFromImage is false.\n")
+      itkExceptionMacro(<< "ERROR: ReferenceHistogram required when GenerateReferenceHistogramFromImage is false.\n");
     }
 
     // If the reference histogram is provided, then extract summary statistics
@@ -223,7 +222,7 @@ HistogramMatchingImageFilter<TInputImage, TOutputImage, THistogramMeasurement>::
   {
     const double                delta = 1.0 / (static_cast<double>(m_NumberOfMatchPoints) + 1.0);
     const HistogramType * const referenceHistogram = this->GetReferenceHistogram();
-    for (SizeValueType j = 1; j < m_NumberOfMatchPoints + 1; j++)
+    for (SizeValueType j = 1; j < m_NumberOfMatchPoints + 1; ++j)
     {
       m_QuantileTable[0][j] = m_SourceHistogram->Quantile(0, static_cast<double>(j) * delta);
       m_QuantileTable[1][j] = referenceHistogram->Quantile(0, static_cast<double>(j) * delta);
@@ -232,7 +231,7 @@ HistogramMatchingImageFilter<TInputImage, TOutputImage, THistogramMeasurement>::
 
   // Fill in the gradient array.
   m_Gradients.set_size(m_NumberOfMatchPoints + 1);
-  for (SizeValueType j = 0; j < m_NumberOfMatchPoints + 1; j++)
+  for (SizeValueType j = 0; j < m_NumberOfMatchPoints + 1; ++j)
   {
     const double denominator = m_QuantileTable[0][j + 1] - m_QuantileTable[0][j];
     if (Math::NotAlmostEquals(denominator, 0.0))
@@ -305,7 +304,7 @@ HistogramMatchingImageFilter<TInputImage, TOutputImage, THistogramMeasurement>::
 
   const double delta = 1.0 / (static_cast<double>(m_NumberOfMatchPoints) + 1.0);
 
-  for (SizeValueType j = 1; j < m_NumberOfMatchPoints + 1; j++)
+  for (SizeValueType j = 1; j < m_NumberOfMatchPoints + 1; ++j)
   {
     m_QuantileTable[2][j] = m_OutputHistogram->Quantile(0, static_cast<double>(j) * delta);
   }
@@ -331,7 +330,7 @@ HistogramMatchingImageFilter<TInputImage, TOutputImage, THistogramMeasurement>::
   {
     const auto    srcValue = static_cast<double>(inIter.Get());
     SizeValueType j = 0;
-    for (; j < m_NumberOfMatchPoints + 2; j++)
+    for (; j < m_NumberOfMatchPoints + 2; ++j)
     {
       if (srcValue < m_QuantileTable[0][j])
       {
@@ -426,7 +425,7 @@ HistogramMatchingImageFilter<TInputImage, TOutputImage, THistogramMeasurement>::
     lowerBound.Fill(minHistogramValidValue);
     upperBound.Fill(maxHistogramValidValue);
 
-    // Initialize with equally spaced bins withing the valid region.
+    // Initialize with equally spaced bins within the valid region.
     histogram->Initialize(size, lowerBound, upperBound);
 
     // Now expand the first and last bin to represent the true reference image range

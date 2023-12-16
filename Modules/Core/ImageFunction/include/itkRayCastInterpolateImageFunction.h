@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class RayCastInterpolateImageFunction
+ * \class RayCastInterpolateImageFunction
  * \brief Projective interpolation of an image at specified positions.
  *
  * RayCastInterpolateImageFunction casts rays through a 3-dimensional
@@ -41,7 +41,7 @@ template <typename TInputImage, typename TCoordRep = double>
 class ITK_TEMPLATE_EXPORT RayCastInterpolateImageFunction : public InterpolateImageFunction<TInputImage, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RayCastInterpolateImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(RayCastInterpolateImageFunction);
 
   /** Standard class type aliases. */
   using Self = RayCastInterpolateImageFunction;
@@ -82,25 +82,25 @@ public:
   itkNewMacro(Self);
 
   /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
 
   /** RealType type alias support */
-  using RealType = typename Superclass::RealType;
+  using typename Superclass::RealType;
 
   /** Dimension underlying input image. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
 
   /** \brief
    * Interpolate the image at a point position.
@@ -193,6 +193,36 @@ protected:
   InterpolatorPointer m_Interpolator;
 };
 } // namespace itk
+
+
+/** \class RayCastHelperEnums
+ * \brief Contains all enum classes used by RayCastHelper class.
+ * \ingroup ITKImageFunction
+ * @tparam TInputImage
+ * @tparam TCoordRep
+ */
+class RayCastHelperEnums
+{
+public:
+  /**
+   * \class TraversalDirection
+   * \ingroup ITKImageFunction
+   * The ray is traversed by stepping in the axial direction
+   * that enables the greatest number of planes in the volume to be
+   * intercepted.
+   *
+   * This enumeration is not exposed to the user, so no need to
+   * create an ostream operator<< for it.
+   */
+  enum class TraversalDirection : uint8_t
+  {
+    UNDEFINED_DIRECTION = 0, //!< Undefined
+    TRANSVERSE_IN_X,         //!< x
+    TRANSVERSE_IN_Y,         //!< y
+    TRANSVERSE_IN_Z,         //!< z
+    LAST_DIRECTION
+  };
+};
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkRayCastInterpolateImageFunction.hxx"

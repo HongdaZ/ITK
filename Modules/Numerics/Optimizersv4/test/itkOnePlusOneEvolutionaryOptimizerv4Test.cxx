@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 #include "itkNormalVariateGenerator.h"
 #include "itkCommand.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 namespace itk
 {
@@ -93,7 +94,7 @@ public:
   }
 
   void
-  Initialize() throw(itk::ExceptionObject) override
+  Initialize() override
   {
     m_Parameters.SetSize(SpaceDimension);
   }
@@ -175,7 +176,7 @@ public:
     }
     double currentValue = optimizer->GetValue();
     // Only print out when the Metric value changes
-    if (std::fabs(m_LastMetricValue - currentValue) > 1e-7)
+    if (itk::Math::abs(m_LastMetricValue - currentValue) > 1e-7)
     {
       std::cout << optimizer->GetCurrentIteration() << "   ";
       std::cout << currentValue << "   ";
@@ -197,8 +198,12 @@ itkOnePlusOneEvolutionaryOptimizerv4Test(int, char *[])
 
   using OptimizerType = itk::OnePlusOneEvolutionaryOptimizerv4<double>;
 
-  // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  // Declaration of an itkOptimizer
+  auto itkOptimizer = OptimizerType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    itkOptimizer, OnePlusOneEvolutionaryOptimizerv4, ObjectToObjectOptimizerBaseTemplate);
+
 
   itk::OnePlusOneCommandIterationUpdate::Pointer observer = itk::OnePlusOneCommandIterationUpdate::New();
   itkOptimizer->AddObserver(itk::IterationEvent(), observer);
@@ -218,12 +223,37 @@ itkOnePlusOneEvolutionaryOptimizerv4Test(int, char *[])
   initialPosition[1] = -100;
 
   itkOptimizer->Initialize(10);
-  itkOptimizer->SetEpsilon(0.1);
-  itkOptimizer->SetMaximumIteration(8000);
+
+  double growthFactor = 1.05;
+  itkOptimizer->SetGrowthFactor(growthFactor);
+  ITK_TEST_SET_GET_VALUE(growthFactor, itkOptimizer->GetGrowthFactor());
+
+  double shrinkFactor = std::pow(growthFactor, -0.25);
+  itkOptimizer->SetShrinkFactor(shrinkFactor);
+  ITK_TEST_SET_GET_VALUE(shrinkFactor, itkOptimizer->GetShrinkFactor());
+
+  double initialRadius = 1.01;
+  itkOptimizer->SetInitialRadius(initialRadius);
+  ITK_TEST_SET_GET_VALUE(initialRadius, itkOptimizer->GetInitialRadius());
+
+  double epsilon = 0.1;
+  itkOptimizer->SetEpsilon(epsilon);
+  ITK_TEST_SET_GET_VALUE(epsilon, itkOptimizer->GetEpsilon());
+
+  unsigned int maximumIteration = 8000;
+  itkOptimizer->SetMaximumIteration(maximumIteration);
+  ITK_TEST_SET_GET_VALUE(maximumIteration, itkOptimizer->GetMaximumIteration());
+
+  double metricWorstPossibleValue = 0;
+  itkOptimizer->SetMetricWorstPossibleValue(metricWorstPossibleValue);
+  ITK_TEST_SET_GET_VALUE(metricWorstPossibleValue, itkOptimizer->GetMetricWorstPossibleValue());
 
   using GeneratorType = itk::Statistics::NormalVariateGenerator;
-  GeneratorType::Pointer generator = GeneratorType::New();
+  auto generator = GeneratorType::New();
   itkOptimizer->SetNormalVariateGenerator(generator);
+
+  bool catchGetValueException = false;
+  ITK_TEST_SET_GET_BOOLEAN(itkOptimizer, CatchGetValueException, catchGetValueException);
 
   // Set the initial position by setting the metric
   // parameters.
@@ -253,7 +283,7 @@ itkOnePlusOneEvolutionaryOptimizerv4Test(int, char *[])
   //
   bool   pass = true;
   double trueParameters[2] = { 2, -2 };
-  for (unsigned int j = 0; j < 2; j++)
+  for (unsigned int j = 0; j < 2; ++j)
   {
     if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > 0.01)
     {

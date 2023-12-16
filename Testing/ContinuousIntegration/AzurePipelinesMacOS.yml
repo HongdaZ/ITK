@@ -6,13 +6,13 @@ trigger:
     - master
     - release*
 variables:
-  ExternalDataVersion: 5.0.1
+  ExternalDataVersion: 5.2.0
 jobs:
 - job: macOS
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
   pool:
-    vmImage: macOS-10.15
+    vmImage: macos-11
   steps:
     - checkout: self
       clean: true
@@ -23,6 +23,11 @@ jobs:
           git checkout $(System.PullRequest.SourceCommitId)
         fi
       displayName: Checkout pull request HEAD
+
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+        architecture: 'x64'
 
     - bash: |
         set -x

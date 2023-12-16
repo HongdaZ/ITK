@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageSink_hxx
 #define itkImageSink_hxx
 
-#include "itkImageSink.h"
 #include "itkProgressTransformer.h"
 #include "itkInputDataObjectConstIterator.h"
 #include "itkMultiThreaderBase.h"
@@ -47,16 +46,16 @@ ImageSink<TInputImage>::SetInput(const InputImageType * input)
 
 
 template <typename TInputImage>
-const typename ImageSink<TInputImage>::InputImageType *
-ImageSink<TInputImage>::GetInput() const
+auto
+ImageSink<TInputImage>::GetInput() const -> const InputImageType *
 {
   return itkDynamicCastInDebugMode<const TInputImage *>(this->ProcessObject::GetPrimaryInput());
 }
 
 
 template <typename TInputImage>
-const typename ImageSink<TInputImage>::InputImageType *
-ImageSink<TInputImage>::GetInput(unsigned int idx) const
+auto
+ImageSink<TInputImage>::GetInput(unsigned int idx) const -> const InputImageType *
 {
   const auto * in = dynamic_cast<const TInputImage *>(this->ProcessObject::GetInput(idx));
 
@@ -69,8 +68,8 @@ ImageSink<TInputImage>::GetInput(unsigned int idx) const
 
 
 template <typename TInputImage>
-const typename ImageSink<TInputImage>::InputImageType *
-ImageSink<TInputImage>::GetInput(const DataObjectIdentifierType & key) const
+auto
+ImageSink<TInputImage>::GetInput(const DataObjectIdentifierType & key) const -> const InputImageType *
 {
   const auto * in = dynamic_cast<const TInputImage *>(this->ProcessObject::GetInput(key));
 
@@ -160,7 +159,6 @@ ImageSink<TInputImage>::GenerateNthInputRequestedRegion(unsigned int inputReques
         continue;
       }
       // copy the requested region of the first input to the others
-      InputImageRegionType inputRegion;
       input->SetRequestedRegion(m_CurrentInputRegion);
     }
   }
@@ -205,7 +203,7 @@ ImageSink<TInputImage>::VerifyInputInformation() ITKv5_CONST
       // tolerance for origin and spacing depends on the size of pixel
       // tolerance for directions a fraction of the unit cube.
       const SpacePrecisionType coordinateTol =
-        std::abs(this->m_CoordinateTolerance * inputPtr1->GetSpacing()[0]); // use first dimension spacing
+        itk::Math::abs(this->m_CoordinateTolerance * inputPtr1->GetSpacing()[0]); // use first dimension spacing
 
       if (!inputPtr1->GetOrigin().GetVnlVector().is_equal(inputPtrN->GetOrigin().GetVnlVector(), coordinateTol) ||
           !inputPtr1->GetSpacing().GetVnlVector().is_equal(inputPtrN->GetSpacing().GetVnlVector(), coordinateTol) ||
@@ -254,8 +252,8 @@ ImageSink<TInputImage>::StreamedGenerateData(unsigned int inputRequestedRegionNu
 
   // calculate the progress range for this streamed chunk
   const ThreadIdType  total = this->GetNumberOfInputRequestedRegions();
-  const float         oldProgress = float(inputRequestedRegionNumber) / (total);
-  const float         newProgress = float(inputRequestedRegionNumber + 1) / (total);
+  const float         oldProgress = static_cast<float>(inputRequestedRegionNumber) / (total);
+  const float         newProgress = static_cast<float>(inputRequestedRegionNumber + 1) / (total);
   ProgressTransformer pt(oldProgress, newProgress, this);
 
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -78,7 +78,7 @@ class ITK_TEMPLATE_EXPORT AdaptiveHistogramEqualizationImageFilter
 
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AdaptiveHistogramEqualizationImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(AdaptiveHistogramEqualizationImageFilter);
 
   /**
    * Standard class type aliases
@@ -147,7 +147,7 @@ public:
     h.SetMaximum(this->m_InputMaximum);
 
     typename Superclass::HistogramType::RealType kernelSize = 1;
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       kernelSize *= (2 * this->GetRadius()[i] + 1);
     }

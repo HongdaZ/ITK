@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkChildTreeIterator_hxx
 #define itkChildTreeIterator_hxx
 
-#include "itkChildTreeIterator.h"
 
 namespace itk
 {
@@ -81,8 +80,8 @@ ChildTreeIterator<TTreeType>::GoToParent()
 
 /** Return the type of the iterator */
 template <typename TTreeType>
-typename ChildTreeIterator<TTreeType>::NodeType
-ChildTreeIterator<TTreeType>::GetType() const
+auto
+ChildTreeIterator<TTreeType>::GetType() const -> NodeType
 {
   return TreeIteratorBaseEnums::TreeIteratorBaseNode::CHILD;
 }
@@ -104,10 +103,10 @@ ChildTreeIterator<TTreeType>::HasNext() const
 
 /** Return the next node */
 template <typename TTreeType>
-const typename ChildTreeIterator<TTreeType>::ValueType &
-ChildTreeIterator<TTreeType>::Next()
+auto
+ChildTreeIterator<TTreeType>::Next() -> const ValueType &
 {
-  m_ListPosition++;
+  ++m_ListPosition;
   this->m_Position = m_ParentNode->GetChild(m_ListPosition);
   if (this->m_Position == nullptr)
   {

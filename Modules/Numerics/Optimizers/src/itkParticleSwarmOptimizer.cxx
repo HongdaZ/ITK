@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ namespace itk
 {
 
 
-ParticleSwarmOptimizer ::ParticleSwarmOptimizer()
+ParticleSwarmOptimizer::ParticleSwarmOptimizer()
 {
   // magic numbers based on the analysis described in M. Clerc, J. Kennedy,
   //"The particle swarm - explosion, stability, and convergence in a
@@ -32,10 +32,10 @@ ParticleSwarmOptimizer ::ParticleSwarmOptimizer()
 }
 
 
-ParticleSwarmOptimizer ::~ParticleSwarmOptimizer() = default;
+ParticleSwarmOptimizer::~ParticleSwarmOptimizer() = default;
 
 void
-ParticleSwarmOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
+ParticleSwarmOptimizer::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << "Acceleration coefficients [inertia, personal, global]: ";
@@ -44,7 +44,7 @@ ParticleSwarmOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
 }
 
 void
-ParticleSwarmOptimizer ::UpdateSwarm()
+ParticleSwarmOptimizer::UpdateSwarm()
 {
   unsigned int                                                    j, k, n;
   itk::Statistics::MersenneTwisterRandomVariateGenerator::Pointer randomGenerator =
@@ -52,13 +52,13 @@ ParticleSwarmOptimizer ::UpdateSwarm()
 
   n = static_cast<unsigned int>((GetCostFunction())->GetNumberOfParameters());
 
-  for (j = 0; j < m_NumberOfParticles; j++)
+  for (j = 0; j < m_NumberOfParticles; ++j)
   {
     ParticleData &            p = m_Particles[j];
     ParametersType::ValueType phi1, phi2;
     phi1 = randomGenerator->GetVariateWithClosedRange() * this->m_PersonalCoefficient;
     phi2 = randomGenerator->GetVariateWithClosedRange() * this->m_GlobalCoefficient;
-    for (k = 0; k < n; k++)
+    for (k = 0; k < n; ++k)
     { // update velocity
       p.m_CurrentVelocity[k] = m_InertiaCoefficient * p.m_CurrentVelocity[k] +
                                phi1 * (p.m_BestParameters[k] - p.m_CurrentParameters[k]) +

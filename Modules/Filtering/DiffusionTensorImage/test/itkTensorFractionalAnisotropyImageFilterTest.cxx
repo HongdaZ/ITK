@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include "itkHessianRecursiveGaussianImageFilter.h"
 #include "itkTensorFractionalAnisotropyImageFilter.h"
 #include "itkDiffusionTensor3D.h"
+#include "itkTestingMacros.h"
 
 
 int
@@ -41,7 +42,7 @@ itkTensorFractionalAnisotropyImageFilterTest(int, char *[])
   using myRegionType = itk::ImageRegion<myDimension>;
 
   // Create the image
-  myImageType::Pointer inputImage = myImageType::New();
+  auto inputImage = myImageType::New();
 
 
   // Define their size, and start index
@@ -58,9 +59,7 @@ itkTensorFractionalAnisotropyImageFilterTest(int, char *[])
   region.SetSize(size);
 
   // Initialize Image A
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetRegions(region);
   inputImage->Allocate();
 
   // Declare Iterator type for the input image
@@ -108,7 +107,7 @@ itkTensorFractionalAnisotropyImageFilterTest(int, char *[])
 
 
   // Create a  Filter
-  myFilterType::Pointer filter = myFilterType::New();
+  auto filter = myFilterType::New();
 
 
   // Connect the input images
@@ -120,7 +119,10 @@ itkTensorFractionalAnisotropyImageFilterTest(int, char *[])
 
   using FAFilterType = itk::TensorFractionalAnisotropyImageFilter<myDTIImageType, myFaImageType>;
 
-  FAFilterType::Pointer fractionalAnisotropyFilter = FAFilterType::New();
+  auto fractionalAnisotropyFilter = FAFilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    fractionalAnisotropyFilter, TensorFractionalAnisotropyImageFilter, UnaryFunctorImageFilter);
 
   fractionalAnisotropyFilter->SetInput(filter->GetOutput());
 
@@ -150,6 +152,6 @@ itkTensorFractionalAnisotropyImageFilterTest(int, char *[])
   }
 
 
-  // All objects should be automatically destroyed at this point
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

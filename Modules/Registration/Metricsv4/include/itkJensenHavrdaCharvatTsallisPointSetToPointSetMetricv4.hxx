@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkJensenHavrdaCharvatTsallisPointSetToPointSetMetricv4_hxx
 
 #include "itkMath.h"
-#include "itkJensenHavrdaCharvatTsallisPointSetToPointSetMetricv4.h"
 
 namespace itk
 {
@@ -30,8 +29,8 @@ JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4<TPointSet, TInternalComputa
   JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4()
   : m_PointSetSigma(static_cast<RealType>(1.0))
   , m_KernelSigma(static_cast<RealType>(10.0))
-  , m_CovarianceKNeighborhood(static_cast<unsigned int>(5))
-  , m_EvaluationKNeighborhood(static_cast<unsigned int>(50))
+  , m_CovarianceKNeighborhood(5U)
+  , m_EvaluationKNeighborhood(50U)
   , m_Alpha(static_cast<RealType>(1.0))
   , m_TotalNumberOfPoints(0)
   , m_Prefactor0(0.0)
@@ -141,7 +140,7 @@ JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4<TPointSet, TInternalComputa
     this->m_MovingDensityFunction->GetPointsLocator()->FindClosestNPoints(
       samplePoint, this->m_EvaluationKNeighborhood, neighbors);
 
-    for (SizeValueType n = 0; n < neighbors.size(); n++)
+    for (SizeValueType n = 0; n < neighbors.size(); ++n)
     {
       RealType gaussian = this->m_MovingDensityFunction->GetGaussian(neighbors[n])->Evaluate(samplePoint);
 
@@ -153,7 +152,7 @@ JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4<TPointSet, TInternalComputa
       typename GaussianType::MeanVectorType mean = this->m_MovingDensityFunction->GetGaussian(neighbors[n])->GetMean();
 
       Array<CoordRepType> diffMean(PointDimension);
-      for (unsigned int i = 0; i < PointDimension; i++)
+      for (unsigned int i = 0; i < PointDimension; ++i)
       {
         diffMean[i] = mean[i] - samplePoint[i];
       }
@@ -170,7 +169,7 @@ JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4<TPointSet, TInternalComputa
       }
 
       DerivativeValueType factor = this->m_Prefactor1 * gaussian / probabilityStarFactor;
-      for (unsigned int i = 0; i < PointDimension; i++)
+      for (unsigned int i = 0; i < PointDimension; ++i)
       {
         derivativeReturn[i] += diffMean[i] * factor;
       }
@@ -182,7 +181,7 @@ template <typename TPointSet, class TInternalComputationValueType>
 typename LightObject::Pointer
 JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4<TPointSet, TInternalComputationValueType>::InternalClone() const
 {
-  typename Self::Pointer rval = Self::New();
+  auto rval = Self::New();
   rval->SetMovingPointSet(this->m_MovingPointSet);
   rval->SetFixedPointSet(this->m_FixedPointSet);
   rval->SetPointSetSigma(this->m_PointSetSigma);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,7 @@ namespace itk
 class ITKOptimizers_EXPORT SingleValuedNonLinearVnlOptimizer : public SingleValuedNonLinearOptimizer
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SingleValuedNonLinearVnlOptimizer);
+  ITK_DISALLOW_COPY_AND_MOVE(SingleValuedNonLinearVnlOptimizer);
 
   /** Standard class type aliases. */
   using Self = SingleValuedNonLinearVnlOptimizer;
@@ -100,6 +100,15 @@ public:
   itkGetConstReferenceMacro(CachedValue, MeasureType);
   itkGetConstReferenceMacro(CachedDerivative, DerivativeType);
   itkGetConstReferenceMacro(CachedCurrentPosition, ParametersType);
+
+  /** Returns true if derived optimizer supports using scales.
+   * For optimizers that do not support scaling, this
+   * default function is overriden to return false.*/
+  virtual bool
+  CanUseScales() const
+  {
+    return true;
+  }
 
 protected:
   SingleValuedNonLinearVnlOptimizer();

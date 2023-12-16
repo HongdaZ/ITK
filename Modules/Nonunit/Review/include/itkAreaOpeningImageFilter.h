@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,30 +27,18 @@ namespace itk
  * \class AreaOpeningImageFilter
  * \brief Morphological opening by attributes
  *
- * This is the base class for morphology attribute
- * operations. Attribute openings remove blobs according to criteria
- * such as area. When applied to grayscale images it has the effect of
- * trimming peaks based on area while leaving the rest of the image
- * unchanged. It is possible to use attributes besides area, but no
- * others are implemented yet. This filter uses some dodgy coding
- * practices - most notably copying the image data to a linear buffer
- * to allow direct implementation of the published algorithm. It
- * should therefore be quite a good candidate to carry out tests of
- * itk iterator performance with randomish access patterns.
- *
- * This filter is implemented using the method of Wilkinson, "A
- * comparison of algorithms for Connected set openings and Closings",
- * A. Meijster and M. H. Wilkinson, PAMI, vol 24, no. 4, April 2002.
- * Attempts at implementing the method from ISMM 2000 are also
- * included, but operation appears incorrect. Check the ifdefs if you
- * are interested.
+ * An attribute opening removes blobs according to criteria
+ * such as area. When applied to grayscale images they have the effect of
+ * trimming peaks (regions brighter than their surrounings)
+ * based on area while leaving the rest of the image
+ * unchanged.
  *
  * This code was contributed in the Insight Journal paper
  *
  * "Grayscale morphological attribute operations"
  * by Beare R.
  * https://hdl.handle.net/1926/1316
- * http://www.insight-journal.org/browse/publication/203
+ * https://www.insight-journal.org/browse/publication/203
  *
  *
  * \author Richard Beare. Department of Medicine, Monash University, Melbourne, Australia.
@@ -68,7 +56,7 @@ class AreaOpeningImageFilter
 
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AreaOpeningImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(AreaOpeningImageFilter);
 
   using Self = AreaOpeningImageFilter;
   using Superclass = AttributeMorphologyBaseImageFilter<TInputImage,
@@ -120,7 +108,7 @@ protected:
     {
       // compute pixel size
       double psize = 1.0;
-      for (unsigned i = 0; i < ImageDimension; i++)
+      for (unsigned int i = 0; i < ImageDimension; ++i)
       {
         psize *= this->GetInput()->GetSpacing()[i];
       }

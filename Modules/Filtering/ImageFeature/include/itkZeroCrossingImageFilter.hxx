@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkZeroCrossingImageFilter_hxx
 
 #include "itkConstNeighborhoodIterator.h"
-#include "itkZeroCrossingImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkNeighborhoodAlgorithm.h"
 #include "itkFixedArray.h"
@@ -123,7 +122,7 @@ ZeroCrossingImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
 
   bit = ConstNeighborhoodIterator<InputImageType>(radius, input, *faceList.begin());
   // Set the offset of the neighbors to the center pixel.
-  for (i = 0; i < ImageDimension; i++)
+  for (i = 0; i < ImageDimension; ++i)
   {
     offset[i] = -1 * static_cast<OffsetValueType>(bit.GetStride(i));
     offset[i + ImageDimension] = bit.GetStride(i);
@@ -143,7 +142,7 @@ ZeroCrossingImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
     {
       this_one = bit.GetPixel(center);
       it.Set(m_BackgroundValue);
-      for (i = 0; i < ImageDimension * 2; i++)
+      for (i = 0; i < ImageDimension * 2; ++i)
       {
         that = bit.GetPixel(center + offset[i]);
         if (((this_one < zero) && (that > zero)) || ((this_one > zero) && (that < zero)) ||

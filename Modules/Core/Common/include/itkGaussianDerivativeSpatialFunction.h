@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ template <typename TOutput = double, unsigned int VImageDimension = 3, typename 
 class ITK_TEMPLATE_EXPORT GaussianDerivativeSpatialFunction : public SpatialFunction<TOutput, VImageDimension, TInput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianDerivativeSpatialFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(GaussianDerivativeSpatialFunction);
 
   /** Standard class type aliases. */
   using Self = GaussianDerivativeSpatialFunction;
@@ -57,10 +57,10 @@ public:
   itkTypeMacro(GaussianDerivativeSpatialFunction, SpatialFunction);
 
   /** Input type for the function. */
-  using InputType = typename Superclass::InputType;
+  using typename Superclass::InputType;
 
   /** Output type for the function. */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** Type used to store derivatives parameters. */
   using ArrayType = FixedArray<double, VImageDimension>;

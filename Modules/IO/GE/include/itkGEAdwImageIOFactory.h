@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,14 +26,14 @@
 namespace itk
 {
 /**
- *\class GEAdwImageIOFactory
+ * \class GEAdwImageIOFactory
  * \brief Create instances of GEAdwImageIO objects using an object factory.
  * \ingroup ITKIOGE
  */
 class ITKIOGE_EXPORT GEAdwImageIOFactory : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GEAdwImageIOFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(GEAdwImageIOFactory);
 
   /** Standard class type aliases. */
   using Self = GEAdwImageIOFactory;
@@ -58,7 +58,7 @@ public:
   static void
   RegisterOneFactory()
   {
-    GEAdwImageIOFactory::Pointer metaFactory = GEAdwImageIOFactory::New();
+    auto metaFactory = GEAdwImageIOFactory::New();
 
     ObjectFactoryBase::RegisterFactoryInternal(metaFactory);
   }

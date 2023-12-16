@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageFunction_hxx
 #define itkImageFunction_hxx
 
-#include "itkImageFunction.h"
 
 namespace itk
 {
@@ -65,7 +64,7 @@ ImageFunction<TInputImage, TOutput, TCoordRep>::SetInputImage(const InputImageTy
     typename InputImageType::SizeType size = ptr->GetBufferedRegion().GetSize();
     m_StartIndex = ptr->GetBufferedRegion().GetIndex();
 
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       m_EndIndex[j] = m_StartIndex[j] + static_cast<IndexValueType>(size[j]) - 1;
       m_StartContinuousIndex[j] = static_cast<CoordRepType>(m_StartIndex[j] - 0.5);

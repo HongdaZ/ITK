@@ -77,6 +77,7 @@ itk_wrap_simple_class("itk::OutputDataObjectIterator")
 itk_wrap_simple_class("itk::DataObjectConstIterator")
 itk_wrap_simple_class("itk::InputDataObjectConstIterator")
 itk_wrap_simple_class("itk::OutputDataObjectConstIterator")
+itk_wrap_simple_class("itk::Boolean")
 itk_wrap_simple_class("itk::Statistics::RandomVariateGeneratorBase" POINTER)
 itk_wrap_simple_class("itk::Statistics::MersenneTwisterRandomVariateGenerator" POINTER)
 
@@ -87,3 +88,10 @@ itk_wrap_simple_class("itk::MeshEnums")
 itk_wrap_simple_class("itk::OctreeEnums")
 itk_wrap_simple_class("itk::ObjectEnums")
 itk_wrap_simple_class("itk::ObjectFactoryEnums")
+
+itk_wrap_include("itkSpatialOrientation.h")
+itk_wrap_simple_class("itk::SpatialOrientationEnums")
+
+set(WRAPPER_AUTO_INCLUDE_HEADERS ON)
+
+itk_wrap_simple_class("itk::SpatialOrientationAdapter")

@@ -7,6 +7,8 @@ This article documents how to contribute improvements to ITK.
 
 For a *quick start guide*, see the [ITK Git Cheatsheet].
 
+If you are looking for an issue to resolve that will help the ITK community, see the *good first issue* label in the [ITKSphinxExamples](https://github.com/InsightSoftwareConsortium/ITKSphinxExamples/labels/good-first-issue) or [ITK](https://github.com/InsightSoftwareConsortium/ITK/labels/Good%20first%20issue) repositories.
+
 Setup
 -----
 
@@ -162,8 +164,8 @@ commits, the message body should follow the following guidelines:
   2. Try to keep the subject line below 72 characters, ideally 50.
   3. Capitalize the subject line.
   4. Do not end the subject line with a period.
-  5. Use the imperative mood in the subject line (e.g. `BUG: Fix spacing
-  not being considered.`).
+  5. Use the imperative mood in the subject line (e.g. `STYLE: Change
+  template parameter name prefix N to V`).
   6. Wrap the body at 80 characters.
   7. Use semantic line feeds to separate different ideas, which improves the
   readability.
@@ -367,5 +369,5 @@ More Information
 
 [ITK's Discourse]: https://discourse.itk.org/
 
-[Git]: http://git-scm.com
+[Git]: https://git-scm.com
 [GitHub flow guide]: https://guides.github.com/introduction/flow/index.html

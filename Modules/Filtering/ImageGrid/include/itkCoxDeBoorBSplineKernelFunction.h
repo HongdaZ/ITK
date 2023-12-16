@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class CoxDeBoorBSplineKernelFunction
+ * \class CoxDeBoorBSplineKernelFunction
  * \brief BSpline kernel used for density estimation and nonparametric
  *  regression.
  *
@@ -46,8 +46,7 @@ namespace itk
  * This code was contributed in the Insight Journal paper:
  * "N-D C^k B-Spline Scattered Data Approximation"
  * by Nicholas J. Tustison, James C. Gee
- * https://hdl.handle.net/1926/140
- * http://www.insight-journal.org/browse/publication/57
+ * https://www.insight-journal.org/browse/publication/57
  *
  *
  * \sa KernelFunctionBase
@@ -58,7 +57,7 @@ template <unsigned int VSplineOrder = 3, typename TRealValueType = double>
 class ITK_TEMPLATE_EXPORT CoxDeBoorBSplineKernelFunction : public KernelFunctionBase<TRealValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CoxDeBoorBSplineKernelFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(CoxDeBoorBSplineKernelFunction);
 
   /** Standard class type aliases. */
   using Self = CoxDeBoorBSplineKernelFunction;
@@ -66,7 +65,7 @@ public:
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
-  using RealType = typename Superclass::RealType;
+  using typename Superclass::RealType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

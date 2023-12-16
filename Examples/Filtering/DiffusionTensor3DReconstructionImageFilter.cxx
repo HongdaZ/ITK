@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,7 +51,7 @@
 // through the NIH Roadmap for Medical Research, Grant U54 EB005149.
 //
 // Additional documentation: For details on the Nrrd format for DTI, see
-// http://wiki.na-mic.org/Wiki/index.php/NAMIC_Wiki:DTI:Nrrd_format
+// https://wiki.na-mic.org/Wiki/index.php/NAMIC_Wiki:DTI:Nrrd_format
 //
 
 
@@ -111,7 +111,7 @@ main(int argc, char * argv[])
   // Here we instantiate the DiffusionTensor3DReconstructionImageFilter class.
   // The class is templated over the pixel types of the reference, gradient
   // and the to be created tensor pixel's precision. (We use double here). It
-  // takes as input the Reference (B0 image aquired in the absence of
+  // takes as input the Reference (B0 image acquired in the absence of
   // diffusion sensitizing gradients), 'n' Gradient images and their
   // directions and produces as output an image of tensors with pixel-type
   // DiffusionTensor3D.
@@ -186,7 +186,7 @@ main(int argc, char * argv[])
 
   // -------------------------------------------------------------------------
   // Extract the Reference and gradient images from the NRRD file
-  // as seperate images.
+  // as separate images.
   //
   // This is not really necessary, the filter is capable of gobbling the
   // entire VectorImage (which contains the reference and the gradient image)
@@ -196,7 +196,7 @@ main(int argc, char * argv[])
   //
   // Nevertheless, we go through the "unnecessary pain" of extracting the
   // gradient and reference images in separate images and writing them out to
-  // files, so they can be fired up in you favourite volume viewer.
+  // files, so they can be fired up in your favourite volume viewer.
   //
   using ReferenceImageType = itk::Image<PixelType, Dimension>;
   using GradientImageType = ReferenceImageType;
@@ -214,9 +214,9 @@ main(int argc, char * argv[])
   // In this for loop, we will extract the 'n' gradient images + 1 reference
   // image from the DWI Vector image.
   //
-  for (unsigned int i = 0; i < numberOfImages; i++)
+  for (unsigned int i = 0; i < numberOfImages; ++i)
   {
-    GradientImageType::Pointer image = GradientImageType::New();
+    auto image = GradientImageType::New();
     image->CopyInformation(img);
     image->SetBufferedRegion(img->GetBufferedRegion());
     image->SetRequestedRegion(img->GetRequestedRegion());
@@ -242,22 +242,22 @@ main(int argc, char * argv[])
   {
     unsigned int referenceImageIndex = 0;
     using GradientWriterType = itk::ImageFileWriter<GradientImageType>;
-    for (unsigned int i = 0; i < numberOfImages; i++)
+    for (unsigned int i = 0; i < numberOfImages; ++i)
     {
-      GradientWriterType::Pointer gradientWriter = GradientWriterType::New();
+      auto gradientWriter = GradientWriterType::New();
       gradientWriter->SetInput(imageContainer[i]);
       char filename[100];
       if (DiffusionVectors->ElementAt(i).two_norm() <=
           0.0) // this is a reference image
       {
         std::string fn("ReferenceImage%d.mhd");
-        sprintf(filename, fn.c_str(), referenceImageIndex);
+        snprintf(filename, sizeof(filename), fn.c_str(), referenceImageIndex);
         ++referenceImageIndex;
       }
       else
       {
         std::string fn("Gradient%d.mhd");
-        sprintf(filename, fn.c_str(), i);
+        snprintf(filename, sizeof(filename), fn.c_str(), i);
       }
       gradientWriter->SetFileName(filename);
       gradientWriter->Update();
@@ -266,7 +266,7 @@ main(int argc, char * argv[])
 
 
   // -------------------------------------------------------------------------
-  TensorReconstructionImageFilterType::Pointer tensorReconstructionFilter =
+  auto tensorReconstructionFilter =
     TensorReconstructionImageFilterType::New();
 
   // The reference and the gradient images are conveniently provided as
@@ -280,7 +280,7 @@ main(int argc, char * argv[])
   // images may be specified.
   //
   // An alternate way to provide the inputs, when you have the reference and
-  // gradient images in seperate itk::Image< type, 3 > is  :
+  // gradient images in separate itk::Image< type, 3 > is  :
   //
   //   tensorReconstructionFilter->SetReferenceImage( image0 );
   //   tensorReconstructionFilter->AddGradientImage( direction1, image1 );
@@ -305,7 +305,7 @@ main(int argc, char * argv[])
   //
   using TensorWriterType = itk::ImageFileWriter<
     TensorReconstructionImageFilterType::OutputImageType>;
-  TensorWriterType::Pointer tensorWriter = TensorWriterType::New();
+  auto tensorWriter = TensorWriterType::New();
   tensorWriter->SetFileName(argv[3]);
   tensorWriter->SetInput(tensorReconstructionFilter->GetOutput());
   tensorWriter->Update();
@@ -324,14 +324,14 @@ main(int argc, char * argv[])
     TensorReconstructionImageFilterType::OutputImageType,
     FAImageType>;
 
-  FAFilterType::Pointer fractionalAnisotropyFilter = FAFilterType::New();
+  auto fractionalAnisotropyFilter = FAFilterType::New();
   fractionalAnisotropyFilter->SetInput(
     tensorReconstructionFilter->GetOutput());
 
   // Write the FA image
   //
   using FAWriterType = itk::ImageFileWriter<FAFilterType::OutputImageType>;
-  FAWriterType::Pointer faWriter = FAWriterType::New();
+  auto faWriter = FAWriterType::New();
   faWriter->SetInput(fractionalAnisotropyFilter->GetOutput());
   faWriter->SetFileName(argv[4]);
   faWriter->Update();
@@ -346,11 +346,11 @@ main(int argc, char * argv[])
     TensorReconstructionImageFilterType::OutputImageType,
     RAImageType>;
 
-  RAFilterType::Pointer relativeAnisotropyFilter = RAFilterType::New();
+  auto relativeAnisotropyFilter = RAFilterType::New();
   relativeAnisotropyFilter->SetInput(tensorReconstructionFilter->GetOutput());
 
   using RAWriterType = itk::ImageFileWriter<RAFilterType::OutputImageType>;
-  RAWriterType::Pointer raWriter = RAWriterType::New();
+  auto raWriter = RAWriterType::New();
   raWriter->SetInput(relativeAnisotropyFilter->GetOutput());
   raWriter->SetFileName(argv[5]);
   raWriter->Update();

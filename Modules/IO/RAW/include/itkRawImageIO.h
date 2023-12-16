@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@
 namespace itk
 {
 /**
- *\class RawImageIO
+ * \class RawImageIO
  *
  * \brief Read and write raw binary images.
  *
@@ -49,7 +49,7 @@ template <typename TPixel, unsigned int VImageDimension = 2>
 class ITK_TEMPLATE_EXPORT RawImageIO : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RawImageIO);
+  ITK_DISALLOW_COPY_AND_MOVE(RawImageIO);
 
   /** Standard class type aliases. */
   using Self = RawImageIO;
@@ -132,7 +132,7 @@ public:
     {
       return;
     }
-    m_ImageMask = ((unsigned short)(val));
+    m_ImageMask = (static_cast<unsigned short>(val));
     this->Modified();
   }
 
@@ -181,7 +181,7 @@ template <typename TPixel, unsigned int VImageDimension>
 class ITK_TEMPLATE_EXPORT RawImageIOFactory : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RawImageIOFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(RawImageIOFactory);
 
   /** Standard class type aliases. */
   using Self = RawImageIOFactory<TPixel, VImageDimension>;

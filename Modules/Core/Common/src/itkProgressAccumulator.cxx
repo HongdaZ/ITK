@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@
 
 namespace itk
 {
-ProgressAccumulator ::ProgressAccumulator()
+ProgressAccumulator::ProgressAccumulator()
 {
   m_MiniPipelineFilter = nullptr;
 
@@ -32,13 +32,13 @@ ProgressAccumulator ::ProgressAccumulator()
   m_CallbackCommand->SetCallbackFunction(this, &Self::ReportProgress);
 }
 
-ProgressAccumulator ::~ProgressAccumulator()
+ProgressAccumulator::~ProgressAccumulator()
 {
   UnregisterAllFilters();
 }
 
 void
-ProgressAccumulator ::RegisterInternalFilter(GenericFilterType * filter, float weight)
+ProgressAccumulator::RegisterInternalFilter(GenericFilterType * filter, float weight)
 {
   // Observe the filter
   unsigned long progressTag = filter->AddObserver(ProgressEvent(), m_CallbackCommand);
@@ -57,7 +57,7 @@ ProgressAccumulator ::RegisterInternalFilter(GenericFilterType * filter, float w
 }
 
 void
-ProgressAccumulator ::UnregisterAllFilters()
+ProgressAccumulator::UnregisterAllFilters()
 {
   // The filters should no longer be observing us
   FilterRecordVector::iterator it;
@@ -78,13 +78,13 @@ ProgressAccumulator ::UnregisterAllFilters()
 
 #if !defined(ITK_LEGACY_REMOVE)
 void
-ProgressAccumulator ::ResetProgress()
+ProgressAccumulator::ResetProgress()
 {
   // Reset the accumulated progress
   m_AccumulatedProgress = 0.0f;
   m_BaseAccumulatedProgress = 0.0f;
 
-  // Reset each of the individial progress meters
+  // Reset each of the individual progress meters
   FilterRecordVector::iterator it;
   for (it = m_FilterRecord.begin(); it != m_FilterRecord.end(); ++it)
   {
@@ -95,14 +95,14 @@ ProgressAccumulator ::ResetProgress()
 
 #if !defined(ITK_LEGACY_REMOVE)
 void
-ProgressAccumulator ::ResetFilterProgressAndKeepAccumulatedProgress()
+ProgressAccumulator::ResetFilterProgressAndKeepAccumulatedProgress()
 {
   // Do nothing.  After all, this method is deprecated.
 }
 #endif
 
 void
-ProgressAccumulator ::ReportProgress(Object * who, const EventObject & event)
+ProgressAccumulator::ReportProgress(Object * who, const EventObject & event)
 {
   ProgressEvent pe;
   StartEvent    se;
@@ -116,7 +116,13 @@ ProgressAccumulator ::ReportProgress(Object * who, const EventObject & event)
     FilterRecordVector::iterator it;
     for (it = m_FilterRecord.begin(); it != m_FilterRecord.end(); ++it)
     {
-      m_AccumulatedProgress += it->Filter->GetProgress() * it->Weight;
+      float progress = it->Filter->GetProgress();
+      if (progress != it->AccumulatedProgress)
+      {
+        m_AccumulatedProgress += progress * it->Weight;
+        it->AccumulatedProgress = 0.0; // this filter is now active
+      }
+      // else skip this filter, as it has finished
     }
 
     // Update the progress of the client mini-pipeline filter
@@ -154,14 +160,15 @@ ProgressAccumulator ::ReportProgress(Object * who, const EventObject & event)
         // and then reset this filter's progress.
         // It is not necessary to call UpdateProgress(0.0f) explicitly on the filter because this is done
         // automatically when the filter is restarted.
-        m_BaseAccumulatedProgress += it->Filter->GetProgress() * it->Weight;
+        it->AccumulatedProgress = it->Filter->GetProgress();
+        m_BaseAccumulatedProgress += it->AccumulatedProgress * it->Weight;
       }
     }
   }
 }
 
 void
-ProgressAccumulator ::PrintSelf(std::ostream & os, Indent indent) const
+ProgressAccumulator::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ namespace itk
  * \f$ G(x) = \frac{1}{{\sigma \sqrt {2\pi } }}e^{ - \frac{{\left( {x -
  * \mu } \right)^2 }}{{2\sigma ^2 }}} \f$.
  * The Cumulative Gaussian, is acquired by integrating G(x) then scaling and
- * offseting it by the lower asymptotes \f$ I_1 \f$ and upper \f$ I_2 \f$:
+ * offsetting it by the lower asymptotes \f$ I_1 \f$ and upper \f$ I_2 \f$:
  * \f$ C\left( x \right) = I_1  + \frac{{I_2  - I_1 }}{2}\left( {1 +
  * erf\left( {\frac{{x - \mu }}{{\sigma \sqrt 2 }}} \right)} \right) \f$, where
  * \f$ C\left( { - \infty } \right) = I_1 \f$ and

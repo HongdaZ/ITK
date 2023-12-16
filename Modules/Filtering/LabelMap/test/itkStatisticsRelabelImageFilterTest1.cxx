@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,9 @@ itkStatisticsRelabelImageFilterTest1(int argc, char * argv[])
 
   if (argc != 7)
   {
-    std::cerr << "Usage: " << argv[0] << " input feature output";
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " input feature output";
     std::cerr << " background";
     std::cerr << " reverseOrdering attribute" << std::endl;
     return EXIT_FAILURE;
@@ -40,14 +42,14 @@ itkStatisticsRelabelImageFilterTest1(int argc, char * argv[])
   using IType = itk::Image<unsigned char, dim>;
 
   using ReaderType = itk::ImageFileReader<IType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
-  ReaderType::Pointer reader2 = ReaderType::New();
+  auto reader2 = ReaderType::New();
   reader2->SetFileName(argv[2]);
 
   using RelabelType = itk::StatisticsRelabelImageFilter<IType, IType>;
-  RelabelType::Pointer statisticsRelabel = RelabelType::New();
+  auto statisticsRelabel = RelabelType::New();
 
   statisticsRelabel->SetInput(reader->GetOutput());
   statisticsRelabel->SetFeatureImage(reader2->GetOutput());
@@ -77,7 +79,7 @@ itkStatisticsRelabelImageFilterTest1(int argc, char * argv[])
   itk::SimpleFilterWatcher watcher(statisticsRelabel, "filter");
 
   using WriterType = itk::ImageFileWriter<IType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(statisticsRelabel->GetOutput());
   writer->SetFileName(argv[3]);
   writer->UseCompressionOn();

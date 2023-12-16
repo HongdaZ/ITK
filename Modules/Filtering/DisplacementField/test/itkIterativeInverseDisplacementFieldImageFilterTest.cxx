@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,11 +26,11 @@ int
 itkIterativeInverseDisplacementFieldImageFilterTest(int argc, char * argv[])
 {
 
-  if (argc < 2)
+  if (argc < 4)
   {
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
-    std::cerr << " outputImage" << std::endl;
+    std::cerr << " outputImage numberOfIterations stopValue" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -43,12 +43,24 @@ itkIterativeInverseDisplacementFieldImageFilterTest(int argc, char * argv[])
 
   using FilterType = itk::IterativeInverseDisplacementFieldImageFilter<DisplacementFieldType, DisplacementFieldType>;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, IterativeInverseDisplacementFieldImageFilter, ImageToImageFilter);
+
 
   itk::SimpleFilterWatcher watcher(filter);
 
+  auto numberOfIterations = static_cast<unsigned int>(std::stoi(argv[2]));
+  filter->SetNumberOfIterations(numberOfIterations);
+  ITK_TEST_SET_GET_VALUE(numberOfIterations, filter->GetNumberOfIterations());
+
+  auto stopValue = std::stod(argv[3]);
+  filter->SetStopValue(stopValue);
+  ITK_TEST_SET_GET_VALUE(stopValue, filter->GetStopValue());
+
+
   // Creating an input displacement field
-  DisplacementFieldType::Pointer field = DisplacementFieldType::New();
+  auto field = DisplacementFieldType::New();
 
   DisplacementFieldType::SpacingType spacing;
   spacing.Fill(1.0);
@@ -119,7 +131,7 @@ itkIterativeInverseDisplacementFieldImageFilterTest(int argc, char * argv[])
   // Write an image for regression testing
   using WriterType = itk::ImageFileWriter<DisplacementFieldType>;
 
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   writer->SetInput(filter->GetOutput());
   writer->SetFileName(argv[1]);

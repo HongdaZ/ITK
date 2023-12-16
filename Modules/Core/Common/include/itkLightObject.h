@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,11 +28,7 @@
 #include <typeinfo>
 
 #if defined(_WIN32)
-// To get LONG defined
 #  include "itkWindows.h"
-#elif defined(__APPLE__)
-// To get MAC_OS_X_VERSION_MIN_REQUIRED defined
-#  include <AvailabilityMacros.h>
 #endif
 
 namespace itk
@@ -53,13 +49,13 @@ namespace itk
  * \ingroup ITKCommon
  *
  * \sphinx
- * \sphinx{Core/Common/GetNameOfClass, Get Name Of Class}
+ * \sphinxexample{Core/Common/GetNameOfClass,Get Name Of Class}
  * \endsphinx
  */
 class ITKCommon_EXPORT LightObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LightObject);
+  ITK_DISALLOW_COPY_AND_MOVE(LightObject);
 
   /** Standard class type aliases. */
   using Self = LightObject;
@@ -78,7 +74,12 @@ public:
   virtual Pointer
   CreateAnother() const;
 
-  itkCloneMacro(Self);
+  /** Creates and returns a clone of this object. */
+  Pointer
+  Clone() const
+  {
+    return this->InternalClone();
+  }
 
   /** Delete an itk object.  This method should always be used to delete an
    * object when the new operator was used to create it. Using the C

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,11 +36,11 @@ itkComposeRGBImageFilterTest(int, char *[])
   using SizeType = InputImageType::SizeType;
   using IndexType = InputImageType::IndexType;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
-  InputImageType::Pointer redImage = InputImageType::New();
-  InputImageType::Pointer greenImage = InputImageType::New();
-  InputImageType::Pointer blueImage = InputImageType::New();
+  auto redImage = InputImageType::New();
+  auto greenImage = InputImageType::New();
+  auto blueImage = InputImageType::New();
 
   SizeType size;
   size[0] = 2;

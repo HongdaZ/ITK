@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,18 +65,18 @@ itkFEMScatteredDataPointSetToImageFilterTest(int, char *[])
 
   using ConstIteratorType = itk::ImageRegionConstIterator<DeformationFieldType>;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   // Construct a feature point set
-  FeaturePointSetType::Pointer featurePoints = FeaturePointSetType::New();
-  PointType                    p0;
-  PointType                    p1;
-  PointType                    p2;
-  PointType                    p3;
+  auto      featurePoints = FeaturePointSetType::New();
+  PointType p0;
+  PointType p1;
+  PointType p2;
+  PointType p3;
   // point is on the bottom boundary
   p0[0] = 1.0;
   p0[1] = 0.0;
-  // point is inside a element
+  // point is inside an element
   p1[0] = 3.0;
   p1[1] = 1.0;
   // point is the node
@@ -114,7 +114,7 @@ itkFEMScatteredDataPointSetToImageFilterTest(int, char *[])
   filter->SetInput(featurePoints);
 
   // Set the parameters for a rectilinear mesh.
-  // Ingore this setting if users provide a mesh
+  // Ignore this setting if users provide a mesh
   DeformationFieldType::SpacingType elementSpacing;
   elementSpacing[0] = 2.0;
   elementSpacing[1] = 2.0;

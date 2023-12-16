@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -67,34 +67,33 @@ template <typename TPixel, unsigned int VDimension = 2, typename TAllocator = Ne
 class ITK_TEMPLATE_EXPORT LaplacianOperator : public NeighborhoodOperator<TPixel, VDimension, TAllocator>
 {
 public:
-  /** Standard "Self" type alias support   */
+  /** Standard class type aliases. */
   using Self = LaplacianOperator;
-
-  /** Standard "Superclass" type alias.   */
   using Superclass = NeighborhoodOperator<TPixel, VDimension, TAllocator>;
 
-  using PixelType = typename Superclass::PixelType;
-  using SizeType = typename Superclass::SizeType;
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(LaplacianOperator, NeighborhoodOperator);
 
-  /**  Default constructor  */
+  using typename Superclass::SizeType;
+
   LaplacianOperator()
   {
-    for (unsigned i = 0; i < VDimension; ++i)
+    for (unsigned int i = 0; i < VDimension; ++i)
     {
       m_DerivativeScalings[i] = 1.0;
     }
   }
 
-  /** This function is called to create the operator  */
+  /** Create the operator. */
   void
   CreateOperator();
 
-  /** Prints some debugging information   */
   void
-  PrintSelf(std::ostream & os, Indent i) const override
+  PrintSelf(std::ostream & os, Indent indent) const override
   {
-    os << i << "LaplacianOperator { this=" << this << "}" << std::endl;
-    Superclass::PrintSelf(os, i.GetNextIndent());
+    Superclass::PrintSelf(os, indent);
+
+    os << indent << "DerivativeScalings: " << m_DerivativeScalings << std::endl;
   }
 
   /** Sets the weights that are applied to the derivative in each axial
@@ -102,18 +101,18 @@ public:
    *  default. This method must be called BEFORE CreateOperator */
   void
   SetDerivativeScalings(const double * s);
+  itkGetConstMacro(DerivativeScalings, const double *);
 
 protected:
-  /** Typedef support for coefficient vector type.  Necessary to
-   * work around compiler bug on VC++.   */
-  using CoefficientVector = typename Superclass::CoefficientVector;
+  /** Type alias support for coefficient vector type.*/
+  using typename Superclass::CoefficientVector;
 
-  /** Calculates operator coefficients.   */
+  /** Calculates operator coefficients. */
   CoefficientVector
   GenerateCoefficients() override;
 
   /** Arranges coefficients spatially in the memory buffer, default
-   * function was NOT used.   */
+   * function was NOT used. */
   void
   Fill(const CoefficientVector &) override;
 

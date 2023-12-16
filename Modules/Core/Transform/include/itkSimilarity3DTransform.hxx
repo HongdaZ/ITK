@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSimilarity3DTransform_hxx
 #define itkSimilarity3DTransform_hxx
 
-#include "itkSimilarity3DTransform.h"
 #include "itkMath.h"
 #include "vnl/vnl_det.h"
 
@@ -62,6 +61,7 @@ Similarity3DTransform<TParametersValueType>::SetScale(ScaleType scale)
 {
   m_Scale = scale;
   this->ComputeMatrix();
+  this->ComputeOffset();
 }
 
 // Directly set the matrix
@@ -184,8 +184,8 @@ Similarity3DTransform<TParametersValueType>::SetParameters(const ParametersType 
 //
 
 template <typename TParametersValueType>
-const typename Similarity3DTransform<TParametersValueType>::ParametersType &
-Similarity3DTransform<TParametersValueType>::GetParameters() const
+auto
+Similarity3DTransform<TParametersValueType>::GetParameters() const -> const ParametersType &
 {
   itkDebugMacro(<< "Getting parameters ");
 

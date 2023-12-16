@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 
 #include "itkImageToImageFilter.h"
 #include "itkArray.h"
+#include <mutex>
 
 namespace itk
 {
@@ -39,7 +40,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT ShiftScaleImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShiftScaleImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ShiftScaleImageFilter);
 
   /** Standard class type aliases. */
   using Self = ShiftScaleImageFilter;
@@ -90,8 +91,8 @@ public:
   itkGetConstMacro(Scale, RealType);
 
   /** Get the number of pixels that underflowed and overflowed. */
-  itkGetConstMacro(UnderflowCount, long);
-  itkGetConstMacro(OverflowCount, long);
+  itkGetConstMacro(UnderflowCount, SizeValueType);
+  itkGetConstMacro(OverflowCount, SizeValueType);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
@@ -102,8 +103,9 @@ public:
 #endif
 
 protected:
-  ShiftScaleImageFilter();
+  ShiftScaleImageFilter() = default;
   ~ShiftScaleImageFilter() override = default;
+
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 
@@ -111,32 +113,17 @@ protected:
   void
   BeforeThreadedGenerateData() override;
 
-  /** Tally accumulated in threads. */
   void
-  AfterThreadedGenerateData() override;
-
-  /** Multi-thread version GenerateData. */
-  void
-  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
-
-  void
-  DynamicThreadedGenerateData(const OutputImageRegionType &) override
-  {
-    itkExceptionMacro("This class requires threadId so it must use classic multi-threading model");
-  }
+  DynamicThreadedGenerateData(const OutputImageRegionType &) override;
 
 private:
-  RealType m_Shift;
-  RealType m_Scale;
+  RealType m_Shift{ NumericTraits<RealType>::ZeroValue() };
+  RealType m_Scale{ NumericTraits<RealType>::OneValue() };
 
-  long m_UnderflowCount;
-  long m_OverflowCount;
+  SizeValueType m_UnderflowCount{ 0 };
+  SizeValueType m_OverflowCount{ 0 };
 
-  Array<long> m_ThreadUnderflow;
-  Array<long> m_ThreadOverflow;
-
-  const TInputImage * m_InputImage;
-  TOutputImage *      m_OutputImage;
+  std::mutex m_Mutex;
 };
 } // end namespace itk
 

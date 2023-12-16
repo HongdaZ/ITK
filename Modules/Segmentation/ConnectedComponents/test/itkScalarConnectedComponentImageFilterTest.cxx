@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,11 +53,11 @@ itkScalarConnectedComponentImageFilterTest(int argc, char * argv[])
   using FilterType = itk::ScalarConnectedComponentImageFilter<InternalImageType, OutputImageType, MaskImageType>;
   using RelabelType = itk::RelabelComponentImageFilter<OutputImageType, OutputImageType>;
 
-  ReaderType::Pointer reader = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
+  auto reader = ReaderType::New();
+  auto writer = WriterType::New();
 
-  FilterType::Pointer  filter = FilterType::New();
-  RelabelType::Pointer relabel = RelabelType::New();
+  auto filter = FilterType::New();
+  auto relabel = RelabelType::New();
 
   itk::SimpleFilterWatcher watcher(filter);
   watcher.QuietOn();
@@ -67,7 +67,7 @@ itkScalarConnectedComponentImageFilterTest(int argc, char * argv[])
 
   // create a mask containing the upper left hand corner and
   // a chunk out of the middle
-  MaskImageType::Pointer mask = MaskImageType::New();
+  auto mask = MaskImageType::New();
   mask->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
   mask->CopyInformation(reader->GetOutput());
   mask->Allocate();
@@ -82,7 +82,7 @@ itkScalarConnectedComponentImageFilterTest(int argc, char * argv[])
 
   // use upper left corner
   index.Fill(0);
-  for (unsigned int i = 0; i < MaskImageType::ImageDimension; i++)
+  for (unsigned int i = 0; i < MaskImageType::ImageDimension; ++i)
   {
     size[i] = static_cast<unsigned long>(0.5 * maskSize[i]);
   }
@@ -97,7 +97,7 @@ itkScalarConnectedComponentImageFilterTest(int argc, char * argv[])
   }
 
   // use middle section
-  for (unsigned int i = 0; i < MaskImageType::ImageDimension; i++)
+  for (unsigned int i = 0; i < MaskImageType::ImageDimension; ++i)
   {
     index[i] = static_cast<long>(0.375 * maskSize[i]);
     size[i] = static_cast<unsigned long>(0.25 * maskSize[i]);
@@ -114,7 +114,11 @@ itkScalarConnectedComponentImageFilterTest(int argc, char * argv[])
 
   filter->SetInput(reader->GetOutput());
   filter->SetMaskImage(mask);
-  filter->SetDistanceThreshold(std::stoi(argv[3]));
+
+  auto distanceThreshold = static_cast<typename FilterType::InputImageType::ValueType>(std::stod(argv[3]));
+  filter->SetDistanceThreshold(distanceThreshold);
+  ITK_TEST_SET_GET_VALUE(distanceThreshold, filter->GetDistanceThreshold());
+
   filter->SetFunctor(filter->GetFunctor());
 
   if (argc > 4)
@@ -141,7 +145,7 @@ itkScalarConnectedComponentImageFilterTest(int argc, char * argv[])
   }
 
   // Remap the labels to viewable colors
-  RGBImageType::Pointer colored = RGBImageType::New();
+  auto colored = RGBImageType::New();
   colored->SetRegions(filter->GetOutput()->GetBufferedRegion());
   colored->Allocate();
 
@@ -168,7 +172,7 @@ itkScalarConnectedComponentImageFilterTest(int argc, char * argv[])
   {
     if (it.Get() == 0)
     {
-      cit.Set(RGBPixelType(static_cast<unsigned char>(0)));
+      cit.Set(RGBPixelType());
     }
     else
     {

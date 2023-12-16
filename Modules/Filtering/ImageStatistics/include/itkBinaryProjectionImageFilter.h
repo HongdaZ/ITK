@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ namespace itk
  *
  * This class was contributed to the Insight Journal by Gaetan Lehmann.
  * The original paper can be found at
- *   https://hdl.handle.net/1926/164
+ * https://www.insight-journal.org/browse/publication/71
  *
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction,
  *  INRA de Jouy-en-Josas, France.
@@ -97,7 +97,7 @@ class BinaryProjectionImageFilter
       Functor::BinaryAccumulator<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryProjectionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BinaryProjectionImageFilter);
 
   using Self = BinaryProjectionImageFilter;
   using Superclass = ProjectionImageFilter<
@@ -122,7 +122,7 @@ public:
   using InputPixelType = typename InputImageType::PixelType;
   using OutputPixelType = typename OutputImageType::PixelType;
 
-  using AccumulatorType = typename Superclass::AccumulatorType;
+  using typename Superclass::AccumulatorType;
 
   /** Set the value in the image to consider as "foreground". Defaults to
    * maximum value of PixelType. Subclasses may alias this to

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ namespace itk
 {
 namespace Statistics
 {
-GaussianDistribution ::GaussianDistribution()
+GaussianDistribution::GaussianDistribution()
 {
   m_Parameters = ParametersType(2);
   m_Parameters[0] = 0.0;
@@ -31,7 +31,7 @@ GaussianDistribution ::GaussianDistribution()
 }
 
 double
-GaussianDistribution ::GetMean() const
+GaussianDistribution::GetMean() const
 {
   if (m_Parameters.GetSize() != 2)
   {
@@ -42,7 +42,7 @@ GaussianDistribution ::GetMean() const
 }
 
 void
-GaussianDistribution ::SetMean(double mean)
+GaussianDistribution::SetMean(double mean)
 {
   bool modified = false;
 
@@ -91,7 +91,7 @@ GaussianDistribution ::SetMean(double mean)
 }
 
 double
-GaussianDistribution ::GetVariance() const
+GaussianDistribution::GetVariance() const
 {
   if (m_Parameters.GetSize() != 2)
   {
@@ -102,7 +102,7 @@ GaussianDistribution ::GetVariance() const
 }
 
 void
-GaussianDistribution ::SetVariance(double variance)
+GaussianDistribution::SetVariance(double variance)
 {
   bool modified = false;
 
@@ -151,13 +151,13 @@ GaussianDistribution ::SetVariance(double variance)
 }
 
 double
-GaussianDistribution ::PDF(double x)
+GaussianDistribution::PDF(double x)
 {
   return itk::Math::one_over_sqrt2pi * std::exp(-0.5 * x * x);
 }
 
 double
-GaussianDistribution ::PDF(double x, double mean, double variance)
+GaussianDistribution::PDF(double x, double mean, double variance)
 {
   double xminusmean = x - mean;
 
@@ -165,7 +165,7 @@ GaussianDistribution ::PDF(double x, double mean, double variance)
 }
 
 double
-GaussianDistribution ::PDF(double x, const ParametersType & p)
+GaussianDistribution::PDF(double x, const ParametersType & p)
 {
   // verify the parameter vector length
   if (p.GetSize() == 2)
@@ -180,13 +180,13 @@ GaussianDistribution ::PDF(double x, const ParametersType & p)
 }
 
 double
-GaussianDistribution ::CDF(double x)
+GaussianDistribution::CDF(double x)
 {
   return 0.5 * (vnl_erf(itk::Math::sqrt1_2 * x) + 1.0);
 }
 
 double
-GaussianDistribution ::CDF(double x, double mean, double variance)
+GaussianDistribution::CDF(double x, double mean, double variance)
 {
   // convert to zero mean unit variance
   double u = (x - mean) / std::sqrt(variance);
@@ -195,7 +195,7 @@ GaussianDistribution ::CDF(double x, double mean, double variance)
 }
 
 double
-GaussianDistribution ::CDF(double x, const ParametersType & p)
+GaussianDistribution::CDF(double x, const ParametersType & p)
 {
   if (p.GetSize() != 2)
   {
@@ -206,7 +206,7 @@ GaussianDistribution ::CDF(double x, const ParametersType & p)
 }
 
 double
-GaussianDistribution ::InverseCDF(double p)
+GaussianDistribution::InverseCDF(double p)
 {
   double dp, dx, dt, ddq, dq;
   int    newt;
@@ -238,7 +238,7 @@ GaussianDistribution ::InverseCDF(double p)
 
   /**  Step 2:  do 3 Newton steps to improve this */
 
-  for (newt = 0; newt < 3; newt++)
+  for (newt = 0; newt < 3; ++newt)
   {
     dq = 0.5e+0 * vnl_erfc(dx * itk::Math::sqrt1_2) - dp;
     ddq = std::exp(-0.5e+0 * dx * dx) / 2.506628274631000e+0;
@@ -257,7 +257,7 @@ GaussianDistribution ::InverseCDF(double p)
 }
 
 double
-GaussianDistribution ::InverseCDF(double p, double mean, double variance)
+GaussianDistribution::InverseCDF(double p, double mean, double variance)
 {
   double x = GaussianDistribution::InverseCDF(p);
 
@@ -279,7 +279,7 @@ GaussianDistribution ::InverseCDF(double p, double mean, double variance)
 }
 
 double
-GaussianDistribution ::InverseCDF(double p, const ParametersType & params)
+GaussianDistribution::InverseCDF(double p, const ParametersType & params)
 {
   if (params.GetSize() != 2)
   {
@@ -290,7 +290,7 @@ GaussianDistribution ::InverseCDF(double p, const ParametersType & params)
 }
 
 double
-GaussianDistribution ::EvaluatePDF(double x) const
+GaussianDistribution::EvaluatePDF(double x) const
 {
   if (m_Parameters.GetSize() == 2)
   {
@@ -309,7 +309,7 @@ GaussianDistribution ::EvaluatePDF(double x) const
 }
 
 double
-GaussianDistribution ::EvaluatePDF(double x, const ParametersType & p) const
+GaussianDistribution::EvaluatePDF(double x, const ParametersType & p) const
 {
   if (p.GetSize() == 2)
   {
@@ -328,7 +328,7 @@ GaussianDistribution ::EvaluatePDF(double x, const ParametersType & p) const
 }
 
 double
-GaussianDistribution ::EvaluatePDF(double x, double mean, double variance) const
+GaussianDistribution::EvaluatePDF(double x, double mean, double variance) const
 {
   if (mean == 0.0 && variance == 1.0)
   {
@@ -339,7 +339,7 @@ GaussianDistribution ::EvaluatePDF(double x, double mean, double variance) const
 }
 
 double
-GaussianDistribution ::EvaluateCDF(double x) const
+GaussianDistribution::EvaluateCDF(double x) const
 {
   if (m_Parameters.GetSize() == 2)
   {
@@ -358,7 +358,7 @@ GaussianDistribution ::EvaluateCDF(double x) const
 }
 
 double
-GaussianDistribution ::EvaluateCDF(double x, const ParametersType & p) const
+GaussianDistribution::EvaluateCDF(double x, const ParametersType & p) const
 {
   if (p.GetSize() == 2)
   {
@@ -377,7 +377,7 @@ GaussianDistribution ::EvaluateCDF(double x, const ParametersType & p) const
 }
 
 double
-GaussianDistribution ::EvaluateCDF(double x, double mean, double variance) const
+GaussianDistribution::EvaluateCDF(double x, double mean, double variance) const
 {
   if (mean == 0.0 && variance == 1.0)
   {
@@ -388,7 +388,7 @@ GaussianDistribution ::EvaluateCDF(double x, double mean, double variance) const
 }
 
 double
-GaussianDistribution ::EvaluateInverseCDF(double p) const
+GaussianDistribution::EvaluateInverseCDF(double p) const
 {
   if (m_Parameters.GetSize() == 2)
   {
@@ -407,7 +407,7 @@ GaussianDistribution ::EvaluateInverseCDF(double p) const
 }
 
 double
-GaussianDistribution ::EvaluateInverseCDF(double p, const ParametersType & params) const
+GaussianDistribution::EvaluateInverseCDF(double p, const ParametersType & params) const
 {
   if (params.GetSize() == 2)
   {
@@ -426,7 +426,7 @@ GaussianDistribution ::EvaluateInverseCDF(double p, const ParametersType & param
 }
 
 double
-GaussianDistribution ::EvaluateInverseCDF(double p, double mean, double variance) const
+GaussianDistribution::EvaluateInverseCDF(double p, double mean, double variance) const
 {
   if (mean == 0.0 && variance == 1.0)
   {
@@ -437,7 +437,7 @@ GaussianDistribution ::EvaluateInverseCDF(double p, double mean, double variance
 }
 
 void
-GaussianDistribution ::PrintSelf(std::ostream & os, Indent indent) const
+GaussianDistribution::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

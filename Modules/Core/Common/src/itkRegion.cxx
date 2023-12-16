@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@
 namespace itk
 {
 void
-Region ::Print(std::ostream & os, Indent indent) const
+Region::Print(std::ostream & os, Indent indent) const
 {
   this->PrintHeader(os, indent);
   this->PrintSelf(os, indent.GetNextIndent());
@@ -38,16 +38,16 @@ Region ::Print(std::ostream & os, Indent indent) const
 }
 
 void
-Region ::PrintHeader(std::ostream & os, Indent indent) const
+Region::PrintHeader(std::ostream & os, Indent indent) const
 {
   os << indent << this->GetNameOfClass() << " (" << this << ")\n";
 }
 
 void
-Region ::PrintTrailer(std::ostream & itkNotUsed(os), Indent itkNotUsed(indent)) const
+Region::PrintTrailer(std::ostream & itkNotUsed(os), Indent itkNotUsed(indent)) const
 {}
 
 void
-Region ::PrintSelf(std::ostream &, Indent) const
+Region::PrintSelf(std::ostream &, Indent) const
 {}
 } // end namespace itk

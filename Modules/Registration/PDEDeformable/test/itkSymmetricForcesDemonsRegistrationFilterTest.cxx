@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkWarpImageFilter.h"
 #include "itkNearestNeighborInterpolateImageFunction.h"
 #include "itkCommand.h"
+#include "itkTestingMacros.h"
 
 
 namespace
@@ -61,9 +62,9 @@ FillWithCircle(TImage *                   image,
   {
     index = it.GetIndex();
     double distance = 0;
-    for (unsigned int j = 0; j < TImage::ImageDimension; j++)
+    for (unsigned int j = 0; j < TImage::ImageDimension; ++j)
     {
-      distance += itk::Math::sqr((double)index[j] - center[j]);
+      distance += itk::Math::sqr(static_cast<double>(index[j]) - center[j]);
     }
     if (distance <= r2)
       it.Set(foregnd);
@@ -119,9 +120,9 @@ itkSymmetricForcesDemonsRegistrationFilterTest(int, char *[])
   region.SetSize(size);
   region.SetIndex(index);
 
-  ImageType::Pointer moving = ImageType::New();
-  ImageType::Pointer fixed = ImageType::New();
-  FieldType::Pointer initField = FieldType::New();
+  auto moving = ImageType::New();
+  auto fixed = ImageType::New();
+  auto initField = FieldType::New();
 
   moving->SetLargestPossibleRegion(region);
   moving->SetBufferedRegion(region);
@@ -161,7 +162,10 @@ itkSymmetricForcesDemonsRegistrationFilterTest(int, char *[])
   std::cout << "Run registration and warp moving" << std::endl;
 
   using RegistrationType = itk::SymmetricForcesDemonsRegistrationFilter<ImageType, ImageType, FieldType>;
-  RegistrationType::Pointer registrator = RegistrationType::New();
+  auto registrator = RegistrationType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    registrator, SymmetricForcesDemonsRegistrationFilter, PDEDeformableRegistrationFilter);
 
   registrator->SetInitialDisplacementField(initField);
   registrator->SetMovingImage(moving);
@@ -169,8 +173,11 @@ itkSymmetricForcesDemonsRegistrationFilterTest(int, char *[])
   registrator->SetNumberOfIterations(150);
   registrator->SetStandardDeviations(2.0);
   registrator->SetStandardDeviations(1.0);
-  registrator->SetIntensityDifferenceThreshold(0.001);
-  registrator->Print(std::cout);
+
+  double intensityDifferenceThreshold = 0.001;
+  registrator->SetIntensityDifferenceThreshold(intensityDifferenceThreshold);
+  ITK_TEST_SET_GET_VALUE(intensityDifferenceThreshold, registrator->GetIntensityDifferenceThreshold());
+
 
   std::cout << "\n\n\nPrinting function" << std::endl;
   using FunctionType = RegistrationType::DemonsRegistrationFunctionType;
@@ -184,7 +191,7 @@ itkSymmetricForcesDemonsRegistrationFilterTest(int, char *[])
   std::cout << "No. Iterations: " << registrator->GetNumberOfIterations() << std::endl;
 
   double v[ImageDimension];
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     v[j] = registrator->GetStandardDeviations()[j];
   }
@@ -196,13 +203,15 @@ itkSymmetricForcesDemonsRegistrationFilterTest(int, char *[])
   command->SetCallbackFunction(&progressWatch, &ShowProgressObject::ShowProgress);
   registrator->AddObserver(itk::ProgressEvent(), command);
 
+  std::cout << "Registration metric: " << registrator->GetMetric() << std::endl;
+
   // warp moving image
   using WarperType = itk::WarpImageFilter<ImageType, ImageType, FieldType>;
-  WarperType::Pointer warper = WarperType::New();
+  auto warper = WarperType::New();
 
   using CoordRepType = WarperType::CoordRepType;
   using InterpolatorType = itk::NearestNeighborInterpolateImageFunction<ImageType, CoordRepType>;
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
 
 
   warper->SetInput(moving);
@@ -214,6 +223,9 @@ itkSymmetricForcesDemonsRegistrationFilterTest(int, char *[])
   warper->Print(std::cout);
 
   warper->Update();
+
+
+  std::cout << "Registration RMS change: " << registrator->GetRMSChange() << std::endl;
 
   // ---------------------------------------------------------
   std::cout << "Compare warped moving and fixed." << std::endl;

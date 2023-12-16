@@ -6,17 +6,18 @@ trigger:
     - master
     - release*
 variables:
-  ExternalDataVersion: 5.0.1
+  ExternalDataVersion: 5.2.0
 jobs:
 - job: macOS
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
   pool:
-    vmImage: macOS-10.15
+    vmImage: macos-11
   steps:
     - checkout: self
       clean: true
       fetchDepth: 5
+
     - bash: |
         set -x
         if [ -n "$(System.PullRequest.SourceCommitId)" ]; then
@@ -24,12 +25,18 @@ jobs:
         fi
       displayName: 'Checkout pull request HEAD'
 
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.9'
+        architecture: 'x64'
+
     - bash: |
         set -x
         sudo pip3 install ninja numpy
+        sudo pip3 install ninja numpy>=1.20 typing-extensions
         sudo python3 -m pip install --upgrade setuptools
         sudo python3 -m pip install scikit-ci-addons
-        sudo python3 -m pip install lxml
+        sudo python3 -m pip install lxml dask distributed
       displayName: 'Install dependencies'
 
     - bash: |

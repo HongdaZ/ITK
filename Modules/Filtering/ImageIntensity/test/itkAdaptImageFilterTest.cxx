@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -76,7 +76,7 @@ itkAdaptImageFilterTest(int, char *[])
   region.SetIndex(index);
   region.SetSize(size);
 
-  myRGBImageType::Pointer myImage = myRGBImageType::New();
+  auto myImage = myRGBImageType::New();
 
 
   myImage->SetRegions(region);
@@ -91,8 +91,9 @@ itkAdaptImageFilterTest(int, char *[])
   it1.GoToBegin();
   while (!it1.IsAtEnd())
   {
-    color.Set(
-      (float)vnl_sample_uniform(0.0, 1.0), (float)vnl_sample_uniform(0.0, 1.0), (float)vnl_sample_uniform(0.0, 1.0));
+    color.Set(static_cast<float>(vnl_sample_uniform(0.0, 1.0)),
+              static_cast<float>(vnl_sample_uniform(0.0, 1.0)),
+              static_cast<float>(vnl_sample_uniform(0.0, 1.0)));
     it1.Set(color);
     ++it1;
   }

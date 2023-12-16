@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 #include <limits>
 #include <type_traits> // For is_same.
 
-constexpr auto maxUnsignedValue = std::numeric_limits<std::uintmax_t>::max();
+constexpr auto maxUnsignedValue = std::numeric_limits<uintmax_t>::max();
 
 using itk::Math::UnsignedPower;
 using itk::Math::UnsignedProduct;
@@ -41,15 +41,15 @@ static_assert((UnsignedPower(2, 1) == 2) && (UnsignedPower(3, 1) == 3) &&
               "Check one as exponent");
 static_assert((UnsignedPower(2, 2) == 4) && (UnsignedPower(2, 3) == 8), "Check powers of two");
 static_assert((UnsignedPower(3, 2) == 9) && (UnsignedPower(3, 3) == 27), "Check powers of three");
-static_assert(UnsignedPower(2, std::numeric_limits<std::uintmax_t>::digits - 1) ==
-                (std::uintmax_t{ 1 } << (std::numeric_limits<std::uintmax_t>::digits - 1)),
+static_assert(UnsignedPower(2, std::numeric_limits<uintmax_t>::digits - 1) ==
+                (uintmax_t{ 1 } << (std::numeric_limits<uintmax_t>::digits - 1)),
               "Check 2^63 (at least when uintmax_t is 64 bits)");
 
-static_assert(std::is_same<decltype(UnsignedPower(1, 1)), std::uintmax_t>::value,
+static_assert(std::is_same<decltype(UnsignedPower(1, 1)), uintmax_t>::value,
               "The return type of UnsignedPower should be uintmax_t by default.");
-static_assert(std::is_same<decltype(UnsignedPower<std::uint8_t>(1, 1)), std::uint8_t>::value &&
-                std::is_same<decltype(UnsignedPower<std::uint16_t>(1, 1)), std::uint16_t>::value &&
-                std::is_same<decltype(UnsignedPower<std::uint32_t>(1, 1)), std::uint32_t>::value,
+static_assert(std::is_same<decltype(UnsignedPower<uint8_t>(1, 1)), uint8_t>::value &&
+                std::is_same<decltype(UnsignedPower<uint16_t>(1, 1)), uint16_t>::value &&
+                std::is_same<decltype(UnsignedPower<uint32_t>(1, 1)), uint32_t>::value,
               "UnsignedPower allows specifying the return type by its template argument.");
 
 static_assert((UnsignedProduct(0, 0) == 0) && (UnsignedProduct(0, 1) == 0) && (UnsignedProduct(1, 0) == 0) &&
@@ -68,7 +68,7 @@ TestIntegersAreSame(const T1 & v1, const T2 & v2)
   int testPassStatus = EXIT_SUCCESS;
   if (static_cast<T2>(v1) != v2)
   {
-    std::cout << "ERROR: static cast did not perform as expected for wrap arround." << std::endl;
+    std::cout << "ERROR: static cast did not perform as expected for wrap around." << std::endl;
     std::cout << v1 << " static_cast " << static_cast<T2>(v1) << std::endl;
     std::cout << v2 << std::endl;
     testPassStatus = EXIT_FAILURE;
@@ -622,8 +622,7 @@ main(int, char *[])
     }
 
     // Test comparison values of different types
-    if (itk::Math::NotExactlyEquals(itk::NumericTraits<float>::OneValue(), itk::NumericTraits<double>::OneValue()) ||
-        itk::Math::NotExactlyEquals(itk::NumericTraits<double>::OneValue(), static_cast<float>(1)))
+    if (itk::Math::NotExactlyEquals(1.0f, 1.0) || itk::Math::NotExactlyEquals(1.0, 1.0f))
     {
       std::cout << __FILE__ << " " << __LINE__ << " " << f << " == " << d << std::endl;
       testPassStatus = EXIT_FAILURE;
@@ -633,8 +632,8 @@ main(int, char *[])
     FloatRepresentationD oneExact;
     FloatRepresentationD oneAlmost;
 
-    oneExact.asFloat = itk::NumericTraits<double>::OneValue();
-    oneAlmost.asFloat = itk::NumericTraits<double>::OneValue();
+    oneExact.asFloat = 1.0;
+    oneAlmost.asFloat = 1.0;
     oneAlmost.asInt += 1;
 
     // Very close values should be AlmostEqual

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -61,8 +61,7 @@ namespace itk
  * This code was contributed in the Insight Journal paper:
  * "Finding regional extrema - methods and performance"
  * by Beare R., Lehmann G.
- * https://hdl.handle.net/1926/153
- * http://www.insight-journal.org/browse/publication/65
+ * https://www.insight-journal.org/browse/publication/65
  *
  * \author Richard Beare. Department of Medicine, Monash University,
  * Melbourne, Australia.
@@ -78,7 +77,7 @@ template <typename TInputImage, typename TOutputImage, typename TFunction1, type
 class ITK_TEMPLATE_EXPORT ValuedRegionalExtremaImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ValuedRegionalExtremaImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ValuedRegionalExtremaImageFilter);
 
   /** Standard class type aliases. */
   using Self = ValuedRegionalExtremaImageFilter;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkGridForwardWarpImageFilter_hxx
 #define itkGridForwardWarpImageFilter_hxx
 
-#include "itkGridForwardWarpImageFilter.h"
 
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkImageRegionConstIterator.h"
@@ -73,7 +72,7 @@ GridForwardWarpImageFilter<TDisplacementField, TOutputImage>::GenerateData()
     index = iter.GetIndex();
 
     unsigned int numGridIntersect = 0;
-    for (unsigned int dim = 0; dim < ImageDimension; dim++)
+    for (unsigned int dim = 0; dim < ImageDimension; ++dim)
     {
       numGridIntersect += ((index[dim] % m_GridPixSpacing) == 0);
     }
@@ -87,7 +86,7 @@ GridForwardWarpImageFilter<TDisplacementField, TOutputImage>::GenerateData()
 
       // Compute the mapped point
       inside = true;
-      for (unsigned int j = 0; j < ImageDimension; j++)
+      for (unsigned int j = 0; j < ImageDimension; ++j)
       {
         contindex[j] = index[j] + displacement[j] / spacing[j];
         if (contindex[j] < FirstIndex[j] || contindex[j] > (LastIndex[j] - 1))
@@ -103,7 +102,7 @@ GridForwardWarpImageFilter<TDisplacementField, TOutputImage>::GenerateData()
         // We know the current grid point is inside.
         // We will check if the grid points that are above are also inside
         // In such a case we draw a Bresenham line
-        for (unsigned int dim = 0; dim < ImageDimension; dim++)
+        for (unsigned int dim = 0; dim < ImageDimension; ++dim)
         {
           targetIndex = index;
           targetIndex[dim] += m_GridPixSpacing;
@@ -114,7 +113,7 @@ GridForwardWarpImageFilter<TDisplacementField, TOutputImage>::GenerateData()
 
             // Compute the mapped point
             targetIn = true;
-            for (unsigned int j = 0; j < ImageDimension; j++)
+            for (unsigned int j = 0; j < ImageDimension; ++j)
             {
               contindex[j] = targetIndex[j] + displacement[j] / spacing[j];
               if (contindex[j] < FirstIndex[j] || contindex[j] > (LastIndex[j] - 1))

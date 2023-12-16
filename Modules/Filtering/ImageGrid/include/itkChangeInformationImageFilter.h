@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,7 +49,7 @@ template <typename TInputImage>
 class ITK_TEMPLATE_EXPORT ChangeInformationImageFilter : public ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ChangeInformationImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ChangeInformationImageFilter);
 
   /** Standard class type aliases. */
   using Self = ChangeInformationImageFilter;
@@ -223,7 +223,7 @@ public:
   GenerateData() override;
 
 protected:
-  ChangeInformationImageFilter();
+  ChangeInformationImageFilter() = default;
   ~ChangeInformationImageFilter() override = default;
 
   void
@@ -239,20 +239,20 @@ protected:
   {}
 
 private:
-  InputImagePointer m_ReferenceImage;
+  InputImagePointer m_ReferenceImage{ nullptr };
 
-  bool m_CenterImage;
-  bool m_ChangeSpacing;
-  bool m_ChangeOrigin;
-  bool m_ChangeDirection;
-  bool m_ChangeRegion;
-  bool m_UseReferenceImage;
+  bool m_CenterImage{ false };
+  bool m_ChangeSpacing{ false };
+  bool m_ChangeOrigin{ false };
+  bool m_ChangeDirection{ false };
+  bool m_ChangeRegion{ false };
+  bool m_UseReferenceImage{ false };
 
-  SpacingType   m_OutputSpacing;
-  PointType     m_OutputOrigin;
-  DirectionType m_OutputDirection;
+  SpacingType   m_OutputSpacing{ MakeFilled<SpacingType>(1.0) };
+  PointType     m_OutputOrigin{};
+  DirectionType m_OutputDirection{ DirectionType::GetIdentity() };
 
-  OutputImageOffsetType m_OutputOffset;
+  OutputImageOffsetType m_OutputOffset{};
   OutputImageOffsetType m_Shift;
 };
 } // end namespace itk

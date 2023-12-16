@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ itkImageRandomIteratorTest(int, char *[])
 
   using ImageType = itk::Image<PixelType, ImageDimension>;
 
-  ImageType::Pointer      myImage = ImageType::New();
+  auto                    myImage = ImageType::New();
   ImageType::ConstPointer myConstImage = myImage;
 
   ImageType::SizeType size0;
@@ -50,9 +50,7 @@ itkImageRandomIteratorTest(int, char *[])
   region0.SetIndex(start0);
   region0.SetSize(size0);
 
-  myImage->SetLargestPossibleRegion(region0);
-  myImage->SetBufferedRegion(region0);
-  myImage->SetRequestedRegion(region0);
+  myImage->SetRegions(region0);
   myImage->Allocate();
 
   using IteratorType = itk::ImageRegionIteratorWithIndex<ImageType>;

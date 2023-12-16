@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -71,7 +71,7 @@ template <typename TInputImage, typename TOutputMesh>
 class ITK_TEMPLATE_EXPORT BinaryMask3DMeshSource : public ImageToMeshFilter<TInputImage, TOutputMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryMask3DMeshSource);
+  ITK_DISALLOW_COPY_AND_MOVE(BinaryMask3DMeshSource);
 
   /** Standard "Self" type alias. */
   using Self = BinaryMask3DMeshSource;
@@ -133,7 +133,7 @@ public:
   /** accept the input image */
   using Superclass::SetInput;
   virtual void
-  SetInput(const InputImageType * inputImage);
+  SetInput(const InputImageType * image);
 
   void
   SetRegionOfInterest(const RegionType & iRegion)
@@ -172,25 +172,25 @@ private:
   CreateMesh();
 
   void
-  XFlip(unsigned char * tp); // 7 kinds of transformation
+  XFlip(unsigned char * x); // 7 kinds of transformation
 
   void
-  YFlip(unsigned char * tp);
+  YFlip(unsigned char * x);
 
   void
-  ZFlip(unsigned char * tp);
+  ZFlip(unsigned char * x);
 
   void
-  XRotation(unsigned char * tp);
+  XRotation(unsigned char * x);
 
   void
-  YRotation(unsigned char * tp);
+  YRotation(unsigned char * x);
 
   void
-  ZRotation(unsigned char * tp);
+  ZRotation(unsigned char * x);
 
   void
-  inverse(unsigned char * tp);
+  inverse(unsigned char * x);
 
   void
   InitializeLUT(); // initialize the look up table before the mesh

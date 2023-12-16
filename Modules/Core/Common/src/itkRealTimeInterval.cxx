@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,17 +21,18 @@
 // This macro ensures that the sign of the seconds is the same as the sign of
 // the microseconds. In other words, both of them are measured toward the same
 // direction of time.
-#define ALIGN_THE_ARROW_OF_TIME(seconds, micro_seconds)                                                                \
-  if (seconds > 0 && micro_seconds < 0)                                                                                \
-  {                                                                                                                    \
-    seconds -= 1;                                                                                                      \
-    micro_seconds = 1000000L - micro_seconds;                                                                          \
-  }                                                                                                                    \
-  if (seconds < 0 && micro_seconds > 0)                                                                                \
-  {                                                                                                                    \
-    seconds += 1;                                                                                                      \
-    micro_seconds = 1000000L + micro_seconds;                                                                          \
-  }
+#define ALIGN_THE_ARROW_OF_TIME(seconds, micro_seconds) \
+  if (seconds > 0 && micro_seconds < 0)                 \
+  {                                                     \
+    seconds -= 1;                                       \
+    micro_seconds = 1000000L - micro_seconds;           \
+  }                                                     \
+  if (seconds < 0 && micro_seconds > 0)                 \
+  {                                                     \
+    seconds += 1;                                       \
+    micro_seconds = 1000000L + micro_seconds;           \
+  }                                                     \
+  ITK_MACROEND_NOOP_STATEMENT
 
 namespace itk
 {
@@ -307,15 +308,6 @@ bool
 RealTimeInterval::operator==(const Self & other) const
 {
   return ((this->m_MicroSeconds == other.m_MicroSeconds) && (this->m_Seconds == other.m_Seconds));
-}
-
-/**
- * Compare two time Intervals.
- */
-bool
-RealTimeInterval::operator!=(const Self & other) const
-{
-  return ((this->m_MicroSeconds != other.m_MicroSeconds) || (this->m_Seconds != other.m_Seconds));
 }
 
 /** Default print out of a RealTimeStamp */

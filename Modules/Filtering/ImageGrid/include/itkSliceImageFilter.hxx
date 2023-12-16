@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@
 #ifndef itkSliceImageFilter_hxx
 #define itkSliceImageFilter_hxx
 
-#include "itkSliceImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkMath.h"
 #include "itkContinuousIndex.h"
@@ -210,9 +209,7 @@ SliceImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
   }
 
 
-  typename TInputImage::RegionType inputRequestedRegion;
-  inputRequestedRegion.SetIndex(inputRequestedRegionIndex);
-  inputRequestedRegion.SetSize(inputRequestedRegionSize);
+  const typename TInputImage::RegionType inputRequestedRegion(inputRequestedRegionIndex, inputRequestedRegionSize);
 
   // test if input RR is completely inside input largest region
   if (inputRequestedRegion.GetNumberOfPixels() > 0 &&
@@ -247,21 +244,19 @@ SliceImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
   typename TOutputImage::SpacingType outputSpacing;
   typename TOutputImage::SizeType    outputSize;
 
-  typename TOutputImage::IndexType outputStartIndex;
-  outputStartIndex.Fill(0);
-
   for (unsigned int i = 0; i < TOutputImage::ImageDimension; ++i)
   {
     outputSpacing[i] = inputSpacing[i] * itk::Math::abs(m_Step[i]);
 
     // clamp start, inclusive start interval
-    IndexValueType start = std::max(m_Start[i], inputIndex[i] - int(m_Step[i] < 0));
-    start = std::min(start, static_cast<IndexValueType>(inputIndex[i] + inputSize[i]) - int(m_Step[i] < 0));
+    IndexValueType start = std::max(m_Start[i], inputIndex[i] - static_cast<int>(m_Step[i] < 0));
+    start =
+      std::min(start, static_cast<IndexValueType>(inputIndex[i] + inputSize[i]) - static_cast<int>(m_Step[i] < 0));
 
     // clamp stop as open interval
     // Based on the sign of the step include 1 after the end.
-    IndexValueType stop = std::max(m_Stop[i], inputIndex[i] - int(m_Step[i] < 0));
-    stop = std::min(stop, static_cast<IndexValueType>(inputIndex[i] + inputSize[i]) - int(m_Step[i] < 0));
+    IndexValueType stop = std::max(m_Stop[i], inputIndex[i] - static_cast<int>(m_Step[i] < 0));
+    stop = std::min(stop, static_cast<IndexValueType>(inputIndex[i] + inputSize[i]) - static_cast<int>(m_Step[i] < 0));
 
     // If both the numerator and the denominator have the same sign,
     // then the range is a valid and non-zero sized. Truncation is the
@@ -299,9 +294,8 @@ SliceImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
   outputPtr->SetOrigin(outputOrigin);
 
   // Set region
-  typename TOutputImage::RegionType outputLargestPossibleRegion;
-  outputLargestPossibleRegion.SetSize(outputSize);
-  outputLargestPossibleRegion.SetIndex(outputStartIndex);
+
+  const typename TOutputImage::RegionType outputLargestPossibleRegion(outputSize);
 
   outputPtr->SetLargestPossibleRegion(outputLargestPossibleRegion);
 }

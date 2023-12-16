@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@
 #ifndef itkInPlaceImageFilter_hxx
 #define itkInPlaceImageFilter_hxx
 
-#include "itkInPlaceImageFilter.h"
 
 namespace itk
 {
@@ -53,7 +52,7 @@ InPlaceImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Inde
 
 template <typename TInputImage, typename TOutputImage>
 void
-InPlaceImageFilter<TInputImage, TOutputImage>::InternalAllocateOutputs(const TrueType &)
+InPlaceImageFilter<TInputImage, TOutputImage>::InternalAllocateOutputs()
 {
   // Use ProcessObject's GetInput method to get a DataObject pointer,
   // then perform a dynamic_cast to the expected InputImageType. This
@@ -66,9 +65,10 @@ InPlaceImageFilter<TInputImage, TOutputImage>::InternalAllocateOutputs(const Tru
   // additionally the buffered and requested regions of the input and
   // output must match.
   bool rMatch = true;
-  if (inputPtr != nullptr && (unsigned int)InputImageDimension == (unsigned int)OutputImageDimension)
+  if (inputPtr != nullptr &&
+      static_cast<unsigned int>(InputImageDimension) == static_cast<unsigned int>(OutputImageDimension))
   {
-    for (unsigned int i = 0; i < (unsigned int)InputImageDimension; i++)
+    for (unsigned int i = 0; i < static_cast<unsigned int>(InputImageDimension); ++i)
     {
       if (inputPtr->GetBufferedRegion().GetIndex(i) != outputPtr->GetRequestedRegion().GetIndex(i))
       {
@@ -90,10 +90,7 @@ InPlaceImageFilter<TInputImage, TOutputImage>::InternalAllocateOutputs(const Tru
     // remove the input's hold on the bulk data.
     //
     OutputImagePointer inputAsOutput = nullptr;
-    if (IsSame<TInputImage, TOutputImage>())
-    {
-      inputAsOutput = reinterpret_cast<TOutputImage *>(const_cast<TInputImage *>(inputPtr));
-    }
+    inputAsOutput = reinterpret_cast<TOutputImage *>(const_cast<TInputImage *>(inputPtr));
     itkAssertOrThrowMacro(inputAsOutput.IsNotNull(), "Unable to convert input image to output image as expected!");
 
     this->GraftOutput(inputAsOutput);
@@ -102,7 +99,7 @@ InPlaceImageFilter<TInputImage, TOutputImage>::InternalAllocateOutputs(const Tru
     using ImageBaseType = ImageBase<OutputImageDimension>;
 
     // If there are more than one outputs, allocate the remaining outputs
-    for (unsigned int i = 1; i < this->GetNumberOfIndexedOutputs(); i++)
+    for (unsigned int i = 1; i < this->GetNumberOfIndexedOutputs(); ++i)
     {
       // Check whether the output is an image of the appropriate
       // dimension (use ProcessObject's version of the GetInput()
@@ -131,7 +128,7 @@ template <typename TInputImage, typename TOutputImage>
 bool
 InPlaceImageFilter<TInputImage, TOutputImage>::CanRunInPlace() const
 {
-  return IsSame<TInputImage, TOutputImage>();
+  return std::is_same<TInputImage, TOutputImage>::value;
 }
 
 template <typename TInputImage, typename TOutputImage>

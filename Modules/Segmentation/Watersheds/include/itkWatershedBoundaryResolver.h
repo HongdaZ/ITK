@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 namespace watershed
 {
 /**
- *\class BoundaryResolver
+ * \class BoundaryResolver
  *  This filter implements a piece of the streaming watershed
  *  segmentation algorithm.  It takes in pairs of itk::watershed::Boundary
  *  objects and connects the labeling of pixels across image chunk boundaries.
@@ -65,13 +65,15 @@ template <typename TPixelType, unsigned int TDimension>
 class ITK_TEMPLATE_EXPORT BoundaryResolver : public ProcessObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_MOVE(BoundaryResolver);
+
   /** Set up smart pointer and object factory definitions.   */
   using Self = BoundaryResolver;
   using Superclass = ProcessObject;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
   itkNewMacro(Self);
-  itkTypeMacro(WatershedBoundaryResolver, ProcessObject);
+  itkTypeMacro(BoundaryResolver, ProcessObject);
 
   /** Expose the image dimension at run time. */
   static constexpr unsigned int ImageDimension = TDimension;
@@ -146,10 +148,7 @@ protected:
   }
 
   ~BoundaryResolver() override = default;
-  BoundaryResolver(const Self &) {}
-  void
-  operator=(const Self &)
-  {}
+
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 

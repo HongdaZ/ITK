@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -124,7 +124,7 @@ public:
   GetMemoryUsage() override;
 };
 
-#  if defined(ITK_HAS_MALLINFO)
+#  if defined(ITK_HAS_MALLINFO) || defined(ITK_HAS_MALLINFO2)
 /** \class MallinfoMemoryUsageObserver
  * \brief The MallinfoMemoryUsageObserver
  * \ingroup ITKCommon

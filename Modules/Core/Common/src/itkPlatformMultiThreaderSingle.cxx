@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,12 +44,11 @@ PlatformMultiThreader::MultipleMethodExecute()
     m_NumberOfWorkUnits = m_GlobalMaximumNumberOfThreads;
   }
 
-  for (thread_loop = 0; thread_loop < m_NumberOfWorkUnits; thread_loop++)
+  for (thread_loop = 0; thread_loop < m_NumberOfWorkUnits; ++thread_loop)
   {
     if (m_MultipleMethod[thread_loop] == (ThreadFunctionType)0)
     {
       itkExceptionMacro(<< "No multiple method set for: " << thread_loop);
-      return;
     }
   }
 
@@ -78,14 +77,14 @@ PlatformMultiThreader::TerminateThread(ThreadIdType WorkUnitID)
 #endif
 
 void
-PlatformMultiThreader ::SpawnWaitForSingleMethodThread(ThreadProcessIdType itkNotUsed(threadHandle))
+PlatformMultiThreader::SpawnWaitForSingleMethodThread(ThreadProcessIdType itkNotUsed(threadHandle))
 {
   // No threading library specified.  Do nothing.  No joining or waiting
   // necessary.
 }
 
 ThreadProcessIdType
-PlatformMultiThreader ::SpawnDispatchSingleMethodThread(PlatformMultiThreader::WorkUnitInfo * itkNotUsed(threadInfo))
+PlatformMultiThreader::SpawnDispatchSingleMethodThread(PlatformMultiThreader::WorkUnitInfo * itkNotUsed(threadInfo))
 {
   // No threading library specified.  Do nothing.  The computation
   // will be run by the main execution thread.

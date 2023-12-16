@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@
 #include "itkTestingComparisonImageFilter.h"
 #include "itkExtractImageFilter.h"
 #include "itkPipelineMonitorImageFilter.h"
+#include "itkTestingMacros.h"
 
 using PixelType = unsigned char;
 using ImageType = itk::Image<PixelType, 3>;
@@ -35,7 +36,7 @@ SameImage(ImagePointer testImage, ImagePointer baselineImage)
   unsigned long numberOfPixelTolerance = 0;
 
   using DiffType = itk::Testing::ComparisonImageFilter<ImageType, ImageType>;
-  DiffType::Pointer diff = DiffType::New();
+  auto diff = DiffType::New();
   diff->SetValidInput(baselineImage);
   diff->SetTestInput(testImage);
   diff->SetDifferenceThreshold(intensityTolerance);
@@ -57,7 +58,9 @@ itkImageFileWriterPastingTest2(int argc, char * argv[])
 {
   if (argc < 3)
   {
-    std::cerr << "Usage: " << argv[0] << " input output [existingFile]" << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " input output [existingFile]" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -76,7 +79,7 @@ itkImageFileWriterPastingTest2(int argc, char * argv[])
   using ReaderType = itk::ImageFileReader<ImageType>;
   using WriterType = itk::ImageFileWriter<ImageType>;
 
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
   reader->SetUseStreaming(true);
 
@@ -98,11 +101,11 @@ itkImageFileWriterPastingTest2(int argc, char * argv[])
   ImageType::RegionType pasteRegion(pasteIndex, pasteSize);
 
   using MonitorFilter = itk::PipelineMonitorImageFilter<ImageType>;
-  MonitorFilter::Pointer monitor = MonitorFilter::New();
+  auto monitor = MonitorFilter::New();
   monitor->SetInput(reader->GetOutput());
 
   // Setup the writer
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(argv[2]);
   writer->SetInput(monitor->GetOutput());
 
@@ -147,14 +150,14 @@ itkImageFileWriterPastingTest2(int argc, char * argv[])
   }
 
   using ExtractImageFilterType = itk::ExtractImageFilter<ImageType, ImageType>;
-  ExtractImageFilterType::Pointer extractBaselineImage = ExtractImageFilterType::New();
+  auto extractBaselineImage = ExtractImageFilterType::New();
   extractBaselineImage->SetDirectionCollapseToSubmatrix();
   extractBaselineImage->SetInput(reader->GetOutput());
   extractBaselineImage->SetExtractionRegion(pasteRegion);
 
-  ReaderType::Pointer readerTestImage = ReaderType::New();
+  auto readerTestImage = ReaderType::New();
   readerTestImage->SetFileName(argv[2]);
-  ExtractImageFilterType::Pointer extractTestImage = ExtractImageFilterType::New();
+  auto extractTestImage = ExtractImageFilterType::New();
   extractTestImage->SetDirectionCollapseToSubmatrix();
   extractTestImage->SetInput(readerTestImage->GetOutput());
   extractTestImage->SetExtractionRegion(pasteRegion);

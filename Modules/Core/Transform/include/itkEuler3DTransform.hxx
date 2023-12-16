@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkEuler3DTransform_hxx
 #define itkEuler3DTransform_hxx
 
-#include "itkEuler3DTransform.h"
 
 namespace itk
 {
@@ -106,8 +105,8 @@ Euler3DTransform<TParametersValueType>::SetParameters(const ParametersType & par
 
 // Get Parameters
 template <typename TParametersValueType>
-const typename Euler3DTransform<TParametersValueType>::ParametersType &
-Euler3DTransform<TParametersValueType>::GetParameters() const
+auto
+Euler3DTransform<TParametersValueType>::GetParameters() const -> const ParametersType &
 {
   this->m_Parameters[0] = m_AngleX;
   this->m_Parameters[1] = m_AngleY;
@@ -120,8 +119,8 @@ Euler3DTransform<TParametersValueType>::GetParameters() const
 }
 
 template <typename TParametersValueType>
-const typename Euler3DTransform<TParametersValueType>::FixedParametersType &
-Euler3DTransform<TParametersValueType>::GetFixedParameters() const
+auto
+Euler3DTransform<TParametersValueType>::GetFixedParameters() const -> const FixedParametersType &
 {
   // Call the superclass GetFixedParameters so that it fills the
   // array, we ignore the returned data and add the additional
@@ -135,8 +134,14 @@ template <typename TParametersValueType>
 void
 Euler3DTransform<TParametersValueType>::SetFixedParameters(const FixedParametersType & parameters)
 {
+  if (parameters.size() < InputSpaceDimension)
+  {
+    itkExceptionMacro(<< "Error setting fixed parameters: parameters array size (" << parameters.size()
+                      << ") is less than expected  (InputSpaceDimension = " << InputSpaceDimension << ")");
+  }
+
   InputPointType c;
-  for (unsigned int i = 0; i < InputSpaceDimension; i++)
+  for (unsigned int i = 0; i < InputSpaceDimension; ++i)
   {
     c[i] = this->m_FixedParameters[i] = parameters[i];
   }
@@ -183,7 +188,7 @@ Euler3DTransform<TParametersValueType>::ComputeMatrixParameters()
   {
     m_AngleY = -std::asin(this->GetMatrix()[2][0]);
     double C = std::cos(m_AngleY);
-    if (std::fabs(C) > 0.00005)
+    if (itk::Math::abs(C) > 0.00005)
     {
       double x = this->GetMatrix()[2][2] / C;
       double y = this->GetMatrix()[2][1] / C;
@@ -204,7 +209,7 @@ Euler3DTransform<TParametersValueType>::ComputeMatrixParameters()
   {
     m_AngleX = std::asin(this->GetMatrix()[2][1]);
     double A = std::cos(m_AngleX);
-    if (std::fabs(A) > 0.00005)
+    if (itk::Math::abs(A) > 0.00005)
     {
       double x = this->GetMatrix()[2][2] / A;
       double y = -this->GetMatrix()[2][0] / A;
@@ -273,7 +278,7 @@ Euler3DTransform<TParametersValueType>::ComputeMatrix()
   RotationZ[2][1] = zero;
   RotationZ[2][2] = one;
 
-  /** Aply the rotation first around Y then X then Z */
+  /** Apply the rotation first around Y then X then Z */
   if (m_ComputeZYX)
   {
     this->SetVarMatrix(RotationZ * RotationY * RotationX);
@@ -336,7 +341,7 @@ Euler3DTransform<TParametersValueType>::ComputeJacobianWithRespectToParameters(c
 
   // compute derivatives for the translation part
   unsigned int blockOffset = 3;
-  for (unsigned int dim = 0; dim < SpaceDimension; dim++)
+  for (unsigned int dim = 0; dim < SpaceDimension; ++dim)
   {
     jacobian[dim][blockOffset + dim] = 1.0;
   }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class StatisticsLabelObject
+ * \class StatisticsLabelObject
  *  \brief A Label object to store the common attributes related to the statistics of the object
  *
  * StatisticsLabelObject stores  the common attributes related to the statistics of the object
@@ -32,17 +32,16 @@ namespace itk
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/584  or
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  * \ingroup DataRepresentation
  * \ingroup ITKLabelMap
  */
 template <typename TLabel, unsigned int VImageDimension>
-class StatisticsLabelObject : public ShapeLabelObject<TLabel, VImageDimension>
+class ITK_TEMPLATE_EXPORT StatisticsLabelObject : public ShapeLabelObject<TLabel, VImageDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(StatisticsLabelObject);
+  ITK_DISALLOW_COPY_AND_MOVE(StatisticsLabelObject);
 
   /** Standard class type aliases */
   using Self = StatisticsLabelObject;
@@ -62,15 +61,15 @@ public:
 
   static constexpr unsigned int ImageDimension = VImageDimension;
 
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   using PointType = Point<double, Self::ImageDimension>;
 
   using LabelType = TLabel;
 
-  using LineType = typename Superclass::LineType;
+  using typename Superclass::LineType;
 
-  using LengthType = typename Superclass::LengthType;
+  using typename Superclass::LengthType;
 
   using MatrixType = Matrix<double, Self::ImageDimension, Self::ImageDimension>;
 
@@ -78,7 +77,7 @@ public:
 
   using HistogramType = Statistics::Histogram<double>;
 
-  using AttributeType = typename Superclass::AttributeType;
+  using typename Superclass::AttributeType;
   static constexpr AttributeType MINIMUM = 200;
   static constexpr AttributeType MAXIMUM = 201;
   static constexpr AttributeType MEAN = 202;
@@ -245,7 +244,7 @@ public:
 
   using RegionType = ImageRegion<Self::ImageDimension>;
 
-  using CentroidType = typename Superclass::CentroidType;
+  using typename Superclass::CentroidType;
 
   template <typename TSourceLabelObject>
   void
@@ -289,7 +288,7 @@ public:
   }
 
   void
-  SetMinimum(const double & v)
+  SetMinimum(const double v)
   {
     m_Minimum = v;
   }
@@ -301,7 +300,7 @@ public:
   }
 
   void
-  SetMaximum(const double & v)
+  SetMaximum(const double v)
   {
     m_Maximum = v;
   }
@@ -313,7 +312,7 @@ public:
   }
 
   void
-  SetMean(const double & v)
+  SetMean(const double v)
   {
     m_Mean = v;
   }
@@ -325,7 +324,7 @@ public:
   }
 
   void
-  SetSum(const double & v)
+  SetSum(const double v)
   {
     m_Sum = v;
   }
@@ -337,7 +336,7 @@ public:
   }
 
   void
-  SetStandardDeviation(const double & v)
+  SetStandardDeviation(const double v)
   {
     m_StandardDeviation = v;
   }
@@ -349,7 +348,7 @@ public:
   }
 
   void
-  SetVariance(const double & v)
+  SetVariance(const double v)
   {
     m_Variance = v;
   }
@@ -361,7 +360,7 @@ public:
   }
 
   void
-  SetMedian(const double & v)
+  SetMedian(const double v)
   {
     m_Median = v;
   }
@@ -444,7 +443,7 @@ public:
   }
 
   void
-  SetSkewness(const double & v)
+  SetSkewness(const double v)
   {
     m_Skewness = v;
   }
@@ -456,7 +455,7 @@ public:
   }
 
   void
-  SetKurtosis(const double & v)
+  SetKurtosis(const double v)
   {
     m_Kurtosis = v;
   }
@@ -468,7 +467,7 @@ public:
   }
 
   void
-  SetWeightedElongation(const double & v)
+  SetWeightedElongation(const double v)
   {
     m_WeightedElongation = v;
   }
@@ -492,7 +491,7 @@ public:
   }
 
   void
-  SetWeightedFlatness(const double & v)
+  SetWeightedFlatness(const double v)
   {
     m_WeightedFlatness = v;
   }
@@ -510,10 +509,10 @@ public:
   {
     typename AffineTransformType::MatrixType matrix;
     typename AffineTransformType::OffsetType offset;
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       offset[i] = m_CenterOfGravity[i];
-      for (unsigned int j = 0; j < ImageDimension; j++)
+      for (unsigned int j = 0; j < ImageDimension; ++j)
       {
         matrix[j][i] = m_WeightedPrincipalAxes[i][j]; // Note the transposition
       }
@@ -536,10 +535,10 @@ public:
   {
     typename AffineTransformType::MatrixType matrix;
     typename AffineTransformType::OffsetType offset;
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       offset[i] = m_CenterOfGravity[i];
-      for (unsigned int j = 0; j < ImageDimension; j++)
+      for (unsigned int j = 0; j < ImageDimension; ++j)
       {
         matrix[j][i] = m_WeightedPrincipalAxes[i][j]; // Note the transposition
       }

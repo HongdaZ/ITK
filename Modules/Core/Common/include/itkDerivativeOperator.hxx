@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,15 +17,14 @@
  *=========================================================================*/
 #ifndef itkDerivativeOperator_hxx
 #define itkDerivativeOperator_hxx
-#include "itkDerivativeOperator.h"
 
 #include "itkNumericTraits.h"
 
 namespace itk
 {
 template <typename TPixel, unsigned int VDimension, typename TAllocator>
-typename DerivativeOperator<TPixel, VDimension, TAllocator>::CoefficientVector
-DerivativeOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients()
+auto
+DerivativeOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients() -> CoefficientVector
 {
   unsigned int       i;
   unsigned int       j;
@@ -35,10 +34,10 @@ DerivativeOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients()
   CoefficientVector  coeff(w);
 
   coeff[w / 2] = 1.0;
-  for (i = 0; i < m_Order / 2; i++)
+  for (i = 0; i < m_Order / 2; ++i)
   {
     previous = coeff[1] - 2 * coeff[0];
-    for (j = 1; j < w - 1; j++)
+    for (j = 1; j < w - 1; ++j)
     {
       next = coeff[j - 1] + coeff[j + 1] - 2 * coeff[j];
       coeff[j - 1] = previous;
@@ -48,10 +47,10 @@ DerivativeOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients()
     coeff[j - 1] = previous;
     coeff[j] = next;
   }
-  for (i = 0; i < m_Order % 2; i++)
+  for (i = 0; i < m_Order % 2; ++i)
   {
     previous = 0.5 * coeff[1];
-    for (j = 1; j < w - 1; j++)
+    for (j = 1; j < w - 1; ++j)
     {
       next = -0.5 * coeff[j - 1] + 0.5 * coeff[j + 1];
       coeff[j - 1] = previous;

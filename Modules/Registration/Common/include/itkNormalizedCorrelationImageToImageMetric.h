@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,7 +46,7 @@ template <typename TFixedImage, typename TMovingImage>
 class ITK_TEMPLATE_EXPORT NormalizedCorrelationImageToImageMetric : public ImageToImageMetric<TFixedImage, TMovingImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NormalizedCorrelationImageToImageMetric);
+  ITK_DISALLOW_COPY_AND_MOVE(NormalizedCorrelationImageToImageMetric);
 
   /** Standard class type aliases. */
   using Self = NormalizedCorrelationImageToImageMetric;
@@ -58,28 +58,28 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(NormalizedCorrelationImageToImageMetric, Object);
+  itkTypeMacro(NormalizedCorrelationImageToImageMetric, ImageToImageMetric);
 
   /** Types transferred from the base class */
-  using RealType = typename Superclass::RealType;
-  using TransformType = typename Superclass::TransformType;
-  using TransformPointer = typename Superclass::TransformPointer;
-  using TransformParametersType = typename Superclass::TransformParametersType;
-  using TransformJacobianType = typename Superclass::TransformJacobianType;
-  using GradientPixelType = typename Superclass::GradientPixelType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using InputPointType = typename Superclass::InputPointType;
+  using typename Superclass::RealType;
+  using typename Superclass::TransformType;
+  using typename Superclass::TransformPointer;
+  using typename Superclass::TransformParametersType;
+  using typename Superclass::TransformJacobianType;
+  using typename Superclass::GradientPixelType;
+  using typename Superclass::OutputPointType;
+  using typename Superclass::InputPointType;
 
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using FixedImageType = typename Superclass::FixedImageType;
-  using MovingImageType = typename Superclass::MovingImageType;
-  using FixedImageConstPointer = typename Superclass::FixedImageConstPointer;
-  using MovingImageConstPointer = typename Superclass::MovingImageConstPointer;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::FixedImageType;
+  using typename Superclass::MovingImageType;
+  using typename Superclass::FixedImageConstPointer;
+  using typename Superclass::MovingImageConstPointer;
 
   /** Get the derivatives of the match measure. */
   void
-  GetDerivative(const TransformParametersType & parameters, DerivativeType & Derivative) const override;
+  GetDerivative(const TransformParametersType & parameters, DerivativeType & derivative) const override;
 
   /**  Get the value for single valued optimizers. */
   MeasureType
@@ -88,8 +88,8 @@ public:
   /**  Get value and derivatives for multiple valued optimizers. */
   void
   GetValueAndDerivative(const TransformParametersType & parameters,
-                        MeasureType &                   Value,
-                        DerivativeType &                Derivative) const override;
+                        MeasureType &                   value,
+                        DerivativeType &                derivative) const override;
 
   /** Set/Get SubtractMean boolean. If true, the sample mean is subtracted
    * from the sample values in the cross-correlation formula and

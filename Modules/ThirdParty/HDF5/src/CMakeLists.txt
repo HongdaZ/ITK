@@ -1,5 +1,10 @@
 set(HDF5_EXTERNALLY_CONFIGURED ON)
-set(HDF5_INSTALL_NO_DEVELOPMENT ${ITK_INSTALL_NO_DEVELOPMENT})
+# Modern CMake install COMPONENTS
+# Setting HDF5_INSTALL_NO_DEVELOPMENT & HDF5_INSTALL_NO_LIBRARIES to
+# FALSE to make explicit that the development and libraries
+# can not be skipped for installation.  Use the install COMPONENTS
+# features instead.
+set(HDF5_INSTALL_NO_DEVELOPMENT FALSE)
 set(HDF5_EXTERNAL_LIB_PREFIX "itk")
 set(HDF5_EXPORTED_TARGETS ${ITKHDF5-targets})
 set(HDF5_INSTALL_LIB_DIR ${ITKHDF5_INSTALL_LIBRARY_DIR})
@@ -9,7 +14,7 @@ set(HDF5_INSTALL_INCLUDE_DIR ${ITKHDF5_INSTALL_INCLUDE_DIR}/itkhdf5)
 # Configure HDF5 privately so its options do not appear to the user.
 set(HDF5_ALLOW_EXTERNAL_SUPPORT OFF CACHE INTERNAL "Allow External Library Building")
 set(HDF5_BUILD_CPP_LIB ON CACHE INTERNAL "Build HDF5 C++ Library")
-set(HDF5_BUILD_HL_LIB OFF CACHE INTERNAL "Build HIGH Level HDF5 Library")
+set(HDF5_BUILD_HL_LIB ON CACHE INTERNAL "Build High Level HDF5 Library")
 set(HDF5_DISABLE_COMPILER_WARNINGS OFF CACHE INTERNAL "Disable HDF5 warnings")
 set(HDF5_ENABLE_CODESTACK OFF CACHE INTERNAL "Enable the function stack tracing (for developer debugging).")
 set(HDF5_ENABLE_COVERAGE OFF CACHE INTERNAL "Enable code coverage for Libraries and Programs")
@@ -19,7 +24,7 @@ set(HDF5_ENABLE_HSIZET ON CACHE INTERNAL "Enable datasets larger than memory")
 set(HDF5_ENABLE_LARGE_FILE ON CACHE INTERNAL "Enable support for large (64-bit) files on Linux.")
 set(HDF5_ENABLE_PARALLEL OFF CACHE INTERNAL "Enable parallel build (requires MPI)")
 set(HDF5_ENABLE_SZIP_SUPPORT OFF CACHE INTERNAL "Use SZip Filter")
-set(HDF5_ENABLE_THREADSAFE OFF CACHE INTERNAL "Enable Threadsafety")
+set(HDF5_ENABLE_THREADSAFE ON CACHE INTERNAL "Enable Threadsafety")
 set(HDF5_ENABLE_TRACE OFF CACHE INTERNAL "Enable API tracing capability")
 set(HDF5_ENABLE_USING_MEMCHECKER OFF CACHE INTERNAL "Indicate that a memory checker is used")
 set(HDF5_ENABLE_Z_LIB_SUPPORT ON CACHE INTERNAL "Enable HDF5 Zlib Filters")
@@ -78,10 +83,14 @@ mark_as_advanced(HDF_ENABLE_LARGE_FILE)
 mark_as_advanced(CTEST_TEST_TIMEOUT)
 mark_as_advanced(HDF5_BUILD_GENERATORS)
 mark_as_advanced(HDF5_ENABLE_DEV_WARNINGS)
+mark_as_advanced(HDF5_ENABLE_MIRROR_VFD)
+mark_as_advanced(HDF5_IGNORE_DISABLED_FILE_LOCKS)
 mark_as_advanced(HDF5_MEMORY_ALLOC_SANITY_CHECK)
 mark_as_advanced(HDF5_USE_110_API_DEFAULT)
 mark_as_advanced(HDF5_USE_18_API_DEFAULT)
+mark_as_advanced(HDF5_USE_FILE_LOCKING)
 mark_as_advanced(HDF5_USE_PREGEN)
+mark_as_advanced(USE_LIBAEC)
 unset(ALLOW_UNSUPPORTED CACHE)
 
 if(BUILD_SHARED_LIBS)
@@ -92,6 +101,7 @@ endif()
 foreach(lib
     hdf5
     hdf5_cpp
+    hdf5_hl
     )
   itk_module_target(${lib}${target_extension} NO_INSTALL)
 endforeach()

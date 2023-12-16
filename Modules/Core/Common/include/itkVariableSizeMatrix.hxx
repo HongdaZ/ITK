@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkVariableSizeMatrix_hxx
 #define itkVariableSizeMatrix_hxx
 
-#include "itkVariableSizeMatrix.h"
 #include "itkNumericTraits.h"
 
 namespace itk
@@ -44,10 +43,10 @@ Array<T> VariableSizeMatrix<T>::operator*(const Array<T> & vect) const
   }
 
   Array<T> result(rows);
-  for (unsigned int r = 0; r < rows; r++)
+  for (unsigned int r = 0; r < rows; ++r)
   {
     T sum = NumericTraits<T>::ZeroValue();
-    for (unsigned int c = 0; c < cols; c++)
+    for (unsigned int c = 0; c < cols; ++c)
     {
       sum += m_Matrix(r, c) * vect[c];
     }
@@ -88,9 +87,9 @@ VariableSizeMatrix<T>::operator+(const Self & matrix) const
   }
 
   Self result(this->Rows(), this->Cols());
-  for (unsigned int r = 0; r < this->Rows(); r++)
+  for (unsigned int r = 0; r < this->Rows(); ++r)
   {
-    for (unsigned int c = 0; c < this->Cols(); c++)
+    for (unsigned int c = 0; c < this->Cols(); ++c)
     {
       result.m_Matrix(r, c) = m_Matrix(r, c) + matrix.m_Matrix(r, c);
     }
@@ -112,9 +111,9 @@ VariableSizeMatrix<T>::operator+=(const Self & matrix)
                              << ")");
   }
 
-  for (unsigned int r = 0; r < this->Rows(); r++)
+  for (unsigned int r = 0; r < this->Rows(); ++r)
   {
-    for (unsigned int c = 0; c < this->Cols(); c++)
+    for (unsigned int c = 0; c < this->Cols(); ++c)
     {
       m_Matrix(r, c) += matrix.m_Matrix(r, c);
     }
@@ -137,9 +136,9 @@ VariableSizeMatrix<T>::operator-(const Self & matrix) const
   }
 
   Self result(this->Rows(), this->Cols());
-  for (unsigned int r = 0; r < this->Rows(); r++)
+  for (unsigned int r = 0; r < this->Rows(); ++r)
   {
-    for (unsigned int c = 0; c < this->Cols(); c++)
+    for (unsigned int c = 0; c < this->Cols(); ++c)
     {
       result.m_Matrix(r, c) = m_Matrix(r, c) - matrix.m_Matrix(r, c);
     }
@@ -161,9 +160,9 @@ VariableSizeMatrix<T>::operator-=(const Self & matrix)
                              << ")");
   }
 
-  for (unsigned int r = 0; r < this->Rows(); r++)
+  for (unsigned int r = 0; r < this->Rows(); ++r)
   {
-    for (unsigned int c = 0; c < this->Cols(); c++)
+    for (unsigned int c = 0; c < this->Cols(); ++c)
     {
       m_Matrix(r, c) -= matrix.m_Matrix(r, c);
     }
@@ -175,9 +174,9 @@ template <typename T>
 VariableSizeMatrix<T> &
 VariableSizeMatrix<T>::operator-()
 {
-  for (unsigned int r = 0; r < this->Rows(); r++)
+  for (unsigned int r = 0; r < this->Rows(); ++r)
   {
-    for (unsigned int c = 0; c < this->Cols(); c++)
+    for (unsigned int c = 0; c < this->Cols(); ++c)
     {
       m_Matrix(r, c) = -m_Matrix(r, c);
     }

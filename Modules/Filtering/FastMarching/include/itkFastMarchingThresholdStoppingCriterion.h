@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,10 +32,11 @@ namespace itk
  * \ingroup ITKFastMarching
  */
 template <typename TInput, typename TOutput>
-class FastMarchingThresholdStoppingCriterion : public FastMarchingStoppingCriterionBase<TInput, TOutput>
+class ITK_TEMPLATE_EXPORT FastMarchingThresholdStoppingCriterion
+  : public FastMarchingStoppingCriterionBase<TInput, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingThresholdStoppingCriterion);
+  ITK_DISALLOW_COPY_AND_MOVE(FastMarchingThresholdStoppingCriterion);
 
   using Self = FastMarchingThresholdStoppingCriterion;
   using Superclass = FastMarchingStoppingCriterionBase<TInput, TOutput>;
@@ -48,8 +49,8 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(FastMarchingThresholdStoppingCriterion, FastMarchingStoppingCriterionBase);
 
-  using OutputPixelType = typename Superclass::OutputPixelType;
-  using NodeType = typename Superclass::NodeType;
+  using typename Superclass::OutputPixelType;
+  using typename Superclass::NodeType;
 
   /** Get/set the threshold used by the stopping criteria. */
   itkSetMacro(Threshold, OutputPixelType);

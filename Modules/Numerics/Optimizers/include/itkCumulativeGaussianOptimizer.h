@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,6 +72,7 @@ public:
   itkGetMacro(DifferenceTolerance, double);
   itkSetMacro(Verbose, bool);
   itkGetMacro(Verbose, bool);
+  itkBooleanMacro(Verbose);
   itkGetMacro(ComputedMean, double);
   itkGetMacro(ComputedStandardDeviation, double);
   itkGetMacro(UpperAsymptote, double);
@@ -80,7 +81,7 @@ public:
   itkGetMacro(FitError, double);
 
   void
-  SetDataArray(MeasureType * dataArray);
+  SetDataArray(MeasureType * cumGaussianArray);
 
   /** Start the optimizer. */
   void
@@ -143,7 +144,7 @@ private:
   MeasureType *
   ExtendGaussian(MeasureType * originalArray, MeasureType * extendedArray, int startingPointForInsertion);
 
-  /** Recalulate the parameters of the extended Gaussian array. */
+  /** Recalculate the parameters of the extended Gaussian array. */
   MeasureType *
   RecalculateExtendedArrayFromGaussianParameters(MeasureType * originalArray,
                                                  MeasureType * extendedArray,

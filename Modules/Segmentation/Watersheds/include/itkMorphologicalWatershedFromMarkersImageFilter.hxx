@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,6 @@
 #include <algorithm>
 #include <queue>
 #include <list>
-#include "itkMorphologicalWatershedFromMarkersImageFilter.h"
 #include "itkProgressReporter.h"
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
@@ -165,7 +164,7 @@ MorphologicalWatershedFromMarkersImageFilter<TInputImage, TLabelImage>::Generate
     // create a temporary image to store the state of each pixel (processed or
     // not)
     using StatusImageType = Image<bool, ImageDimension>;
-    typename StatusImageType::Pointer statusImage = StatusImageType::New();
+    auto statusImage = StatusImageType::New();
     statusImage->SetRegions(markerImage->GetLargestPossibleRegion());
     statusImage->Allocate();
 
@@ -268,7 +267,7 @@ MorphologicalWatershedFromMarkersImageFilter<TInputImage, TLabelImage>::Generate
         // that value to the pixel, else keep it as is (watershed line)
         LabelImagePixelType marker = wsLabel;
         bool                collision = false;
-        for (noIt = outputIt.Begin(); noIt != outputIt.End(); noIt++)
+        for (noIt = outputIt.Begin(); noIt != outputIt.End(); ++noIt)
         {
           LabelImagePixelType o = noIt.Get();
           if (o != wsLabel)
@@ -344,7 +343,7 @@ MorphologicalWatershedFromMarkersImageFilter<TInputImage, TLabelImage>::Generate
         outputIt.SetCenterPixel(markerPixel);
         // search if it has background pixel in its neighborhood
         bool haveBgNeighbor = false;
-        for (nmIt = markerIt.Begin(); nmIt != markerIt.End(); nmIt++)
+        for (nmIt = markerIt.Begin(); nmIt != markerIt.End(); ++nmIt)
         {
           if (nmIt.Get() == bgLabel)
           {

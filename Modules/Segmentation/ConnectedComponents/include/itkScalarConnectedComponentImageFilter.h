@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@
 namespace itk
 {
 /**
- *\class ScalarConnectedComponentImageFilter
+ * \class ScalarConnectedComponentImageFilter
  *
  *  \brief A connected components filter that labels the
  *         objects in an arbitrary image.  Two pixels are
@@ -59,20 +59,12 @@ public:
   ~SimilarPixelsFunctor() = default;
 
   bool
-  operator!=(const SimilarPixelsFunctor & other) const
-  {
-    if (m_Threshold != other.m_Threshold)
-    {
-      return true;
-    }
-    return false;
-  }
-
-  bool
   operator==(const SimilarPixelsFunctor & other) const
   {
-    return !(*this != other);
+    return m_Threshold == other.m_Threshold;
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(SimilarPixelsFunctor);
 
   void
   SetDistanceThreshold(const TInput & thresh)
@@ -115,7 +107,7 @@ class ScalarConnectedComponentImageFilter
                                                 TMaskImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarConnectedComponentImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ScalarConnectedComponentImageFilter);
 
   /** Standard class type aliases. */
   using Self = ScalarConnectedComponentImageFilter;

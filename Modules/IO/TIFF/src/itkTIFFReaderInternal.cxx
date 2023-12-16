@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -144,9 +144,9 @@ TIFFReaderInternal::Initialize()
       this->m_SubFiles = 0;
       this->m_IgnoredSubFiles = 0;
 
-      for (unsigned int page = 0; page < this->m_NumberOfPages; page++)
+      for (unsigned int page = 0; page < this->m_NumberOfPages; ++page)
       {
-        int32 subfiletype = 6;
+        int32_t subfiletype = 6;
         if (TIFFGetField(this->m_Image, TIFFTAG_SUBFILETYPE, &subfiletype))
         {
           if (subfiletype == 0)

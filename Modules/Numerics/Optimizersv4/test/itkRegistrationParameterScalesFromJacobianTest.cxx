@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,10 +37,10 @@ public:
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::ParametersValueType;
 
   itkTypeMacro(RegistrationParameterScalesFromJacobianTestMetric, ImageToImageMetricv4);
 
@@ -83,7 +83,7 @@ public:
   }
 
   void
-  Initialize() throw(itk::ExceptionObject) override
+  Initialize() override
   {}
 
   ParametersType m_Parameters;
@@ -124,8 +124,8 @@ itkRegistrationParameterScalesFromJacobianTest(int, char *[])
   using MovingImageType = itk::Image<PixelType, ImageDimension>;
   using VirtualImageType = itk::Image<PixelType, ImageDimension>;
 
-  FixedImageType::Pointer   fixedImage = FixedImageType::New();
-  MovingImageType::Pointer  movingImage = MovingImageType::New();
+  auto                      fixedImage = FixedImageType::New();
+  auto                      movingImage = MovingImageType::New();
   VirtualImageType::Pointer virtualImage = fixedImage;
 
   MovingImageType::SizeType size;
@@ -137,17 +137,17 @@ itkRegistrationParameterScalesFromJacobianTest(int, char *[])
 
   // Transform begins
   using MovingTransformType = itk::AffineTransform<double, ImageDimension>;
-  MovingTransformType::Pointer movingTransform = MovingTransformType::New();
+  auto movingTransform = MovingTransformType::New();
   movingTransform->SetIdentity();
 
   using FixedTransformType = itk::TranslationTransform<double, ImageDimension>;
-  FixedTransformType::Pointer fixedTransform = FixedTransformType::New();
+  auto fixedTransform = FixedTransformType::New();
   fixedTransform->SetIdentity();
   // Transform done
 
   // Metric begins
   using MetricType = RegistrationParameterScalesFromJacobianTestMetric<FixedImageType, MovingImageType>;
-  MetricType::Pointer metric = MetricType::New();
+  auto metric = MetricType::New();
 
   metric->SetVirtualDomainFromImage(virtualImage);
   metric->SetFixedImage(fixedImage);
@@ -178,24 +178,24 @@ itkRegistrationParameterScalesFromJacobianTest(int, char *[])
   virtualImage->TransformIndexToPhysicalPoint(virtualImage->GetLargestPossibleRegion().GetUpperIndex(), upperPoint);
 
   itk::SizeValueType param = 0;
-  for (itk::SizeValueType row = 0; row < ImageDimension; row++)
+  for (itk::SizeValueType row = 0; row < ImageDimension; ++row)
   {
-    for (itk::SizeValueType col = 0; col < ImageDimension; col++)
+    for (itk::SizeValueType col = 0; col < ImageDimension; ++col)
     {
       // uses the corners for affine transform
       // = (0 + 0 + n*n + n*n)/4 = n*n/2
       theoreticalJacobianScales[param++] = upperPoint[col] * upperPoint[col] / 2.0;
     }
   }
-  for (itk::SizeValueType row = 0; row < ImageDimension; row++)
+  for (itk::SizeValueType row = 0; row < ImageDimension; ++row)
   {
     theoreticalJacobianScales[param++] = 1;
   }
 
   bool jacobianPass = true;
-  for (itk::SizeValueType p = 0; p < jacobianScales.GetSize(); p++)
+  for (itk::SizeValueType p = 0; p < jacobianScales.GetSize(); ++p)
   {
-    if (std::abs((jacobianScales[p] - theoreticalJacobianScales[p]) / theoreticalJacobianScales[p]) > 0.01)
+    if (itk::Math::abs((jacobianScales[p] - theoreticalJacobianScales[p]) / theoreticalJacobianScales[p]) > 0.01)
     {
       jacobianPass = false;
       break;
@@ -211,7 +211,7 @@ itkRegistrationParameterScalesFromJacobianTest(int, char *[])
   }
 
   bool nonUniformForJacobian = false;
-  for (itk::SizeValueType p = 1; p < jacobianScales.GetSize(); p++)
+  for (itk::SizeValueType p = 1; p < jacobianScales.GetSize(); ++p)
   {
     if (itk::Math::NotExactlyEquals(jacobianScales[p], jacobianScales[0]))
     {
@@ -248,7 +248,7 @@ itkRegistrationParameterScalesFromJacobianTest(int, char *[])
   theoreticalStepScale /= count;
 
   bool stepScalePass = false;
-  if (std::abs((stepScale - theoreticalStepScale) / theoreticalStepScale) < 0.01)
+  if (itk::Math::abs((stepScale - theoreticalStepScale) / theoreticalStepScale) < 0.01)
   {
     stepScalePass = true;
   }
@@ -269,7 +269,7 @@ itkRegistrationParameterScalesFromJacobianTest(int, char *[])
   VectorType zero;
   zero.Fill(0.0);
 
-  FieldType::Pointer field = FieldType::New();
+  auto field = FieldType::New();
   field->SetRegions(virtualImage->GetLargestPossibleRegion());
   field->SetSpacing(virtualImage->GetSpacing());
   field->SetOrigin(virtualImage->GetOrigin());
@@ -277,7 +277,7 @@ itkRegistrationParameterScalesFromJacobianTest(int, char *[])
   field->Allocate();
   field->FillBuffer(zero);
 
-  DisplacementTransformType::Pointer displacementTransform = DisplacementTransformType::New();
+  auto displacementTransform = DisplacementTransformType::New();
   displacementTransform->SetDisplacementField(field);
 
   metric->SetMovingTransform(displacementTransform);
@@ -292,9 +292,9 @@ itkRegistrationParameterScalesFromJacobianTest(int, char *[])
   theoreticalLocalScales.Fill(1.0);
 
   bool displacementPass = true;
-  for (itk::SizeValueType p = 0; p < theoreticalLocalScales.GetSize(); p++)
+  for (itk::SizeValueType p = 0; p < theoreticalLocalScales.GetSize(); ++p)
   {
-    if (std::abs((localScales[p] - theoreticalLocalScales[p]) / theoreticalLocalScales[p]) > 0.01)
+    if (itk::Math::abs((localScales[p] - theoreticalLocalScales[p]) / theoreticalLocalScales[p]) > 0.01)
     {
       displacementPass = false;
       break;
@@ -321,7 +321,7 @@ itkRegistrationParameterScalesFromJacobianTest(int, char *[])
 
   bool      localStepScalePass = false;
   FloatType theoreticalLocalStepScale = std::sqrt(2.0);
-  if (std::abs((localStepScale - theoreticalLocalStepScale) / theoreticalLocalStepScale) < 0.01)
+  if (itk::Math::abs((localStepScale - theoreticalLocalStepScale) / theoreticalLocalStepScale) < 0.01)
   {
     localStepScalePass = true;
   }

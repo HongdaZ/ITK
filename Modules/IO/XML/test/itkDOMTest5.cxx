@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,13 +26,14 @@ especially the change of working directory for reading/writing external files in
 
 #include <iostream>
 #include "itkMacro.h"
+#include "itkTestingMacros.h"
 
 int
 itkDOMTest5(int argc, char * argv[])
 {
   if (argc < 2)
   {
-    std::cerr << "arguments expected: <output>.DOMTestObject.xml" << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " <output>.DOMTestObject.xml" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -54,14 +55,20 @@ itkDOMTest5(int argc, char * argv[])
     // write the test object to an XML file
     itk::DOMTestObjectDOMWriter::Pointer writer = itk::DOMTestObjectDOMWriter::New();
     writer->SetInput(testobj1);
-    writer->SetFileName(argv[1]);
+
+    const auto filename = std::string(argv[1]);
+    writer->SetFileName(filename);
+    ITK_TEST_SET_GET_VALUE(filename, std::string(writer->GetFileName()));
+
     writer->Update();
 
     itk::DOMTestObject::Pointer testobj2;
 
     // read the object back to memory from the disk
     itk::DOMTestObjectDOMReader::Pointer reader = itk::DOMTestObjectDOMReader::New();
-    reader->SetFileName(argv[1]);
+    reader->SetFileName(filename);
+    ITK_TEST_SET_GET_VALUE(filename, std::string(reader->GetFileName()));
+
     reader->Update();
     testobj2 = reader->GetOutput();
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,14 +28,14 @@
 namespace itk
 {
 /**
- *\class Point
+ * \class Point
  * \brief A templated class holding a geometric point in n-Dimensional space.
  *
  * Point is a templated class that holds a set of coordinates (components).
  * Point can be used as the data type held at each pixel in
  * an Image or at each vertex of an Mesh. The template parameter T can
  * be any data type that behaves like a primitive (or atomic) data type (int,
- * short, float, complex).  The NPointDimension defines the number of
+ * short, float, complex).  The VPointDimension defines the number of
  * components in the point array.
  *
  * \ingroup Geometry
@@ -49,13 +49,13 @@ namespace itk
  * \sphinxexample{Core/Common/DistanceBetweenIndices,Distance between two indices}
  * \endsphinx
  */
-template <typename TCoordRep, unsigned int NPointDimension = 3>
-class ITK_TEMPLATE_EXPORT Point : public FixedArray<TCoordRep, NPointDimension>
+template <typename TCoordRep, unsigned int VPointDimension = 3>
+class ITK_TEMPLATE_EXPORT Point : public FixedArray<TCoordRep, VPointDimension>
 {
 public:
   /** Standard class type aliases. */
   using Self = Point;
-  using Superclass = FixedArray<TCoordRep, NPointDimension>;
+  using Superclass = FixedArray<TCoordRep, VPointDimension>;
 
   /** ValueType can be used to declare a variable that is the same type
    * as a data element held in an Point.   */
@@ -65,10 +65,10 @@ public:
   using RealType = typename NumericTraits<ValueType>::RealType;
 
   /** Dimension of the Space */
-  static constexpr unsigned int PointDimension = NPointDimension;
+  static constexpr unsigned int PointDimension = VPointDimension;
 
   /** The Array type from which this Vector is derived. */
-  using BaseArray = FixedArray<TCoordRep, NPointDimension>;
+  using BaseArray = FixedArray<TCoordRep, VPointDimension>;
   using Iterator = typename BaseArray::Iterator;
   using ConstIterator = typename BaseArray::ConstIterator;
 
@@ -76,35 +76,45 @@ public:
   static unsigned int
   GetPointDimension()
   {
-    return NPointDimension;
+    return VPointDimension;
   }
 
   /** VectorType define the difference between two Points */
-  using VectorType = Vector<ValueType, NPointDimension>;
+  using VectorType = Vector<ValueType, VPointDimension>;
 
-  /** Default constructor, assignments */
+  /** Default-constructor.
+   * \note The other five "special member functions" are defaulted implicitly, following the C++ "Rule of Zero". */
   Point() = default;
-  Point(const Point &) = default;
-  Point(Point &&) = default;
-  Point &
-  operator=(const Point &) = default;
-  Point &
-  operator=(Point &&) = default;
-  ~Point() = default;
+
   /** Pass-through constructors for different type points. */
   template <typename TPointValueType>
-  Point(const Point<TPointValueType, NPointDimension> & r)
+  Point(const Point<TPointValueType, VPointDimension> & r)
     : BaseArray(r)
   {}
   /** Pass-through constructors for plain arrays. */
   template <typename TPointValueType>
-  Point(const TPointValueType r[NPointDimension])
+  Point(const TPointValueType r[VPointDimension])
     : BaseArray(r)
   {}
-  Point(const ValueType r[NPointDimension])
+  Point(const ValueType r[VPointDimension])
     : BaseArray(r)
   {}
-  /** Pass-through constructors for single values */
+
+#if defined(ITK_LEGACY_REMOVE)
+  /** Prevents copy-initialization from `nullptr`, as well as from `0` (NULL). */
+  Point(std::nullptr_t) = delete;
+
+  /** Explicit constructors for single values */
+  template <typename TPointValueType>
+  explicit Point(const TPointValueType & v)
+    : BaseArray(v)
+  {}
+  explicit Point(const ValueType & v)
+    : BaseArray(v)
+  {}
+#else
+  /** Pass-through constructors for single values
+   * \note ITK_LEGACY_REMOVE=ON will disallow implicit conversion from a single value. */
   template <typename TPointValueType>
   Point(const TPointValueType & v)
     : BaseArray(v)
@@ -112,15 +122,16 @@ public:
   Point(const ValueType & v)
     : BaseArray(v)
   {}
+#endif
 
   /** Explicit constructor for std::array. */
-  explicit Point(const std::array<ValueType, NPointDimension> & stdArray)
+  explicit Point(const std::array<ValueType, VPointDimension> & stdArray)
     : BaseArray(stdArray)
   {}
 
   /** Pass-through assignment operator for a plain array. */
   Point &
-  operator=(const ValueType r[NPointDimension]);
+  operator=(const ValueType r[VPointDimension]);
 
   /** Compare two points for equality. */
   bool
@@ -128,25 +139,14 @@ public:
   {
     bool same = true;
 
-    for (unsigned int i = 0; i < NPointDimension && same; ++i)
+    for (unsigned int i = 0; i < VPointDimension && same; ++i)
     {
       same = (Math::ExactlyEquals((*this)[i], pt[i]));
     }
     return same;
   }
 
-  /** Compare two points for inequality. */
-  bool
-  operator!=(const Self & pt) const
-  {
-    bool same = true;
-
-    for (unsigned int i = 0; i < NPointDimension && same; ++i)
-    {
-      same = (Math::ExactlyEquals((*this)[i], pt[i]));
-    }
-    return !same;
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
 
   /** Point operator+=.  Adds a vector to the current point. */
   const Self &
@@ -236,10 +236,10 @@ public:
                           +  (1-w_1-w_2 ) * \overrightarrow{P}_3
    * \f]
    *
-   * If the two weight are \f$ \in [0,1] \f$ , The resulting point will alway be placed
+   * If the two weight are \f$ \in [0,1] \f$ , The resulting point will always be placed
    * inside the triangle formed by the three points given as arguments. */
   void
-  SetToBarycentricCombination(const Self & A, const Self & B, const Self & C, double weightA, double weightB);
+  SetToBarycentricCombination(const Self & A, const Self & B, const Self & C, double weightForA, double weightForB);
 
   /** Set the current point to a barycentric combination of an array of N points
    * An array of (N-1) values is expected to weight the contribution of the
@@ -260,9 +260,9 @@ public:
    *  Casting is done with C-Like rules  */
   template <typename TCoordRepB>
   void
-  CastFrom(const Point<TCoordRepB, NPointDimension> & pa)
+  CastFrom(const Point<TCoordRepB, VPointDimension> & pa)
   {
-    for (unsigned int i = 0; i < NPointDimension; i++)
+    for (unsigned int i = 0; i < VPointDimension; ++i)
     {
       (*this)[i] = static_cast<TCoordRep>(pa[i]);
     }
@@ -274,11 +274,11 @@ public:
 
   template <typename TCoordRepB>
   RealType
-  SquaredEuclideanDistanceTo(const Point<TCoordRepB, NPointDimension> & pa) const
+  SquaredEuclideanDistanceTo(const Point<TCoordRepB, VPointDimension> & pa) const
   {
     RealType sum = NumericTraits<RealType>::ZeroValue();
 
-    for (unsigned int i = 0; i < NPointDimension; i++)
+    for (unsigned int i = 0; i < VPointDimension; ++i)
     {
       const auto     component = static_cast<RealType>(pa[i]);
       const RealType difference = static_cast<RealType>((*this)[i]) - component;
@@ -292,7 +292,7 @@ public:
    * C-Like rules */
   template <typename TCoordRepB>
   RealType
-  EuclideanDistanceTo(const Point<TCoordRepB, NPointDimension> & pa) const
+  EuclideanDistanceTo(const Point<TCoordRepB, VPointDimension> & pa) const
   {
     const double distance = std::sqrt(static_cast<double>(this->SquaredEuclideanDistanceTo(pa)));
 
@@ -300,16 +300,16 @@ public:
   }
 };
 
-template <typename T, unsigned int NPointDimension>
+template <typename T, unsigned int VPointDimension>
 std::ostream &
-operator<<(std::ostream & os, const Point<T, NPointDimension> & v);
+operator<<(std::ostream & os, const Point<T, VPointDimension> & vct);
 
-template <typename T, unsigned int NPointDimension>
+template <typename T, unsigned int VPointDimension>
 std::istream &
-operator>>(std::istream & is, Point<T, NPointDimension> & v);
+operator>>(std::istream & is, Point<T, VPointDimension> & vct);
 
 /**
- *\class BarycentricCombination
+ * \class BarycentricCombination
  *  \brief Computes the barycentric combination of an array of N points.
  *
  * This class computes the barycentric combination of an array of N points.
@@ -352,11 +352,31 @@ public:
 };
 
 
-template <typename TCoordRep, unsigned int NPointDimension>
+template <typename TCoordRep, unsigned int VPointDimension>
 inline void
-swap(Point<TCoordRep, NPointDimension> & a, Point<TCoordRep, NPointDimension> & b)
+swap(Point<TCoordRep, VPointDimension> & a, Point<TCoordRep, VPointDimension> & b)
 {
   a.swap(b);
+}
+
+
+/** Makes a Point object, having the specified values as coordinates. */
+template <typename TValue, typename... TVariadic>
+auto
+MakePoint(const TValue firstValue, const TVariadic... otherValues)
+{
+  // Assert that the other values have the same type as the first value.
+  const auto assertSameType = [](const auto value) {
+    static_assert(std::is_same<decltype(value), const TValue>::value, "Each value must have the same type!");
+    return true;
+  };
+  const bool assertions[] = { true, assertSameType(otherValues)... };
+  (void)assertions;
+  (void)assertSameType;
+
+  constexpr unsigned int              dimension{ 1 + sizeof...(TVariadic) };
+  const std::array<TValue, dimension> stdArray{ { firstValue, otherValues... } };
+  return Point<TValue, dimension>{ stdArray };
 }
 
 } // end namespace itk

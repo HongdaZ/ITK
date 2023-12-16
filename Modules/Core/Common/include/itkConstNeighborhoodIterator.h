@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,6 +40,7 @@ namespace itk
  * \ingroup ImageIterators
  *
  * \sa Neighborhood \sa ImageIterator \sa NeighborhoodIterator
+ * \sa ShapedImageNeighborhoodRange
  * \ingroup ITKCommon
  *
  * \sphinx
@@ -66,11 +67,11 @@ public:
   using Superclass = Neighborhood<InternalPixelType *, Self::Dimension>;
 
   /** Inherit type alias from superclass */
-  using OffsetType = typename Superclass::OffsetType;
-  using RadiusType = typename Superclass::RadiusType;
-  using SizeType = typename Superclass::SizeType;
-  using Iterator = typename Superclass::Iterator;
-  using ConstIterator = typename Superclass::ConstIterator;
+  using typename Superclass::OffsetType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::SizeType;
+  using typename Superclass::Iterator;
+  using typename Superclass::ConstIterator;
 
   /** Typedef support for common objects */
   using ImageType = TImage;
@@ -110,7 +111,7 @@ public:
   ConstNeighborhoodIterator(const SizeType & radius, const ImageType * ptr, const RegionType & region)
   {
     this->Initialize(radius, ptr, region);
-    for (DimensionValueType i = 0; i < Dimension; i++)
+    for (DimensionValueType i = 0; i < Dimension; ++i)
     {
       m_InBounds[i] = false;
     }
@@ -238,7 +239,7 @@ public:
    *  center in the positive specified "axis" direction. No bounds checking
    *  is done on the size of the neighborhood. */
   ITK_ITERATOR_VIRTUAL PixelType
-                       GetNext(const unsigned axis, NeighborIndexType i) const ITK_ITERATOR_FINAL
+                       GetNext(const unsigned int axis, NeighborIndexType i) const ITK_ITERATOR_FINAL
   {
     return (this->GetPixel(this->GetCenterNeighborhoodIndex() + (i * this->GetStride(axis))));
   }
@@ -247,7 +248,7 @@ public:
    *  center in the specified positive axis direction. No bounds checking is
    *  done on the size of the neighborhood. */
   ITK_ITERATOR_VIRTUAL PixelType
-                       GetNext(const unsigned axis) const ITK_ITERATOR_FINAL
+                       GetNext(const unsigned int axis) const ITK_ITERATOR_FINAL
   {
     return (this->GetPixel(this->GetCenterNeighborhoodIndex() + this->GetStride(axis)));
   }
@@ -256,7 +257,7 @@ public:
    *  center in the negative specified "axis" direction. No bounds checking
    *  is done on the size of the neighborhood. */
   ITK_ITERATOR_VIRTUAL PixelType
-                       GetPrevious(const unsigned axis, NeighborIndexType i) const ITK_ITERATOR_FINAL
+                       GetPrevious(const unsigned int axis, NeighborIndexType i) const ITK_ITERATOR_FINAL
   {
     return (this->GetPixel(this->GetCenterNeighborhoodIndex() - (i * this->GetStride(axis))));
   }
@@ -265,7 +266,7 @@ public:
    *  center in the specified negative axis direction. No bounds checking is
    *  done on the size of the neighborhood. */
   ITK_ITERATOR_VIRTUAL PixelType
-                       GetPrevious(const unsigned axis) const ITK_ITERATOR_FINAL
+                       GetPrevious(const unsigned int axis) const ITK_ITERATOR_FINAL
   {
     return (this->GetPixel(this->GetCenterNeighborhoodIndex() - this->GetStride(axis)));
   }
@@ -387,14 +388,7 @@ public:
     return it.GetCenterPointer() == this->GetCenterPointer();
   }
 
-  /** Returns a boolean != comparison of the memory addresses of the center
-   * elements of two ConstNeighborhoodIterators of like pixel type and
-   * dimensionality.  The radii of the iterators are ignored. */
-  bool
-  operator!=(const Self & it) const
-  {
-    return it.GetCenterPointer() != this->GetCenterPointer();
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
 
   /** Returns a boolean < comparison of the memory addresses of the center
    * elements of two ConstNeighborhoodIterators of like pixel type and
@@ -587,26 +581,26 @@ protected:
 
   /** The starting index for iteration within the itk::Image region
    * on which this ConstNeighborhoodIterator is defined. */
-  IndexType m_BeginIndex;
+  IndexType m_BeginIndex{ { 0 } };
 
   /** An array of upper looping boundaries used during iteration. */
-  IndexType m_Bound;
+  IndexType m_Bound{ { 0 } };
 
   /** A pointer to the first pixel in the iteration region. */
-  const InternalPixelType * m_Begin;
+  const InternalPixelType * m_Begin{ nullptr };
 
   /** The image on which iteration is defined. */
   typename ImageType::ConstWeakPointer m_ConstImage;
 
   /** A pointer to one past the last pixel in the iteration region. */
-  const InternalPixelType * m_End;
+  const InternalPixelType * m_End{ nullptr };
 
   /** The end index for iteration within the itk::Image region
    * on which this ConstNeighborhoodIterator is defined. */
-  IndexType m_EndIndex;
+  IndexType m_EndIndex{ { 0 } };
 
   /** Array of loop counters used during iteration. */
-  IndexType m_Loop;
+  IndexType m_Loop{ { 0 } };
 
   /** The region over which iteration is defined. */
   RegionType m_Region;
@@ -616,7 +610,7 @@ protected:
    *  An offset for each dimension is necessary to shift pointers when wrapping
    *  around region edges because region memory is not necessarily contiguous
    *  within the buffer. */
-  OffsetType m_WrapOffset;
+  OffsetType m_WrapOffset{ { 0 } };
 
   /** Pointer to the actual boundary condition that will be used.
    * By default this points to m_BoundaryCondition, but
@@ -625,8 +619,8 @@ protected:
   ImageBoundaryConditionPointerType m_BoundaryCondition;
 
   /** Denotes which of the iterators dimensional sides spill outside
-   * region of interest boundaries. */
-  mutable bool m_InBounds[Dimension];
+   * region of interest boundaries. By default `false` for each dimension. */
+  mutable bool m_InBounds[Dimension]{ false };
 
   /** Denotes if iterator is entirely within bounds */
   mutable bool m_IsInBounds{ false };

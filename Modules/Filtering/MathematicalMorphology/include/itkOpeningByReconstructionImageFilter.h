@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ namespace itk
  * erosion.  The opening by reconstruction of an image "f" is defined
  * as:
  *
- *   OpeningByReconstruction(f) = DilationByRecontruction(f, Erosion(f)).
+ *   OpeningByReconstruction(f) = DilationByReconstruction(f, Erosion(f)).
  *
  * Opening by reconstruction not only removes structures destroyed by
  * the erosion, but also levels down the contrast of the brightest
@@ -55,7 +55,7 @@ template <typename TInputImage, typename TOutputImage, typename TKernel>
 class ITK_TEMPLATE_EXPORT OpeningByReconstructionImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(OpeningByReconstructionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(OpeningByReconstructionImageFilter);
 
   /** Standard class type aliases. */
   using Self = OpeningByReconstructionImageFilter;

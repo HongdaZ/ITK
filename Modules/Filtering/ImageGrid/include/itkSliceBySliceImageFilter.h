@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,7 +65,7 @@ namespace itk
  * \author Gaetan Lehmann
  *
  * This class was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/368
+ * https://insight-journal.org/browse/publication/133
  *
  * \ingroup ITKImageGrid
  */
@@ -74,14 +74,14 @@ template <typename TInputImage,
           typename TOutputImage,
           typename TInputFilter =
             ImageToImageFilter<Image<typename TInputImage::PixelType, TInputImage::ImageDimension - 1>,
-                               Image<typename TOutputImage::PixelType, TOutputImage ::ImageDimension - 1>>,
+                               Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension - 1>>,
           class TOutputFilter = typename TInputFilter::Superclass,
           class TInternalInputImage = typename TInputFilter::InputImageType,
           class TInternalOutputImage = typename TOutputFilter::OutputImageType>
 class ITK_TEMPLATE_EXPORT SliceBySliceImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SliceBySliceImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SliceBySliceImageFilter);
 
   /** Standard class type aliases. */
   using Self = SliceBySliceImageFilter;
@@ -90,7 +90,7 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Superclass type alias. */
-  using InputImagePointer = typename Superclass::InputImagePointer;
+  using typename Superclass::InputImagePointer;
 
   /** Standard New method. */
   itkNewMacro(Self);

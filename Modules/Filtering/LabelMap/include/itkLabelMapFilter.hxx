@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,17 +27,16 @@
  *=========================================================================*/
 #ifndef itkLabelMapFilter_hxx
 #define itkLabelMapFilter_hxx
-#include "itkLabelMapFilter.h"
 #include <mutex>
-#include <itkTotalProgressReporter.h>
+#include "itkTotalProgressReporter.h"
 
 namespace itk
 {
 template <typename TInputImage, typename TOutputImage>
 LabelMapFilter<TInputImage, TOutputImage>::LabelMapFilter()
-
 {
   this->DynamicMultiThreadingOn();
+  this->ThreaderUpdateProgressOff();
 }
 
 template <typename TInputImage, typename TOutputImage>

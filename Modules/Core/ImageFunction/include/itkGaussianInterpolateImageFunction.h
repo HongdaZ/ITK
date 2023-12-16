@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ namespace itk
 {
 
 /**
- *\class GaussianInterpolateImageFunction
+ * \class GaussianInterpolateImageFunction
  * \brief Evaluates the Gaussian interpolation of an image.
  *
  * This class defines an N-dimensional Gaussian interpolation function using
@@ -42,7 +42,7 @@ namespace itk
  *
  * This work was originally described in the Insight Journal article:
  * P. Yushkevich, N. Tustison, J. Gee, Gaussian interpolation.
- * \sa{https://hdl.handle.net/10380/3139}
+ * \sa{https://www.insight-journal.org/browse/publication/705}
  *
  * \author Paul Yushkevich
  * \author Nick Tustison
@@ -54,7 +54,7 @@ template <typename TInputImage, typename TCoordRep = double>
 class ITK_TEMPLATE_EXPORT GaussianInterpolateImageFunction : public InterpolateImageFunction<TInputImage, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianInterpolateImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(GaussianInterpolateImageFunction);
 
   /** Standard class type aliases. */
   using Self = GaussianInterpolateImageFunction;
@@ -73,22 +73,22 @@ public:
 
 
   /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
 
   /** RealType type alias support */
-  using RealType = typename Superclass::RealType;
+  using typename Superclass::RealType;
 
   /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   /** Size type alias support */
-  using SizeType = typename Superclass::SizeType;
+  using typename Superclass::SizeType;
 
   /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
 
   /** Array type alias support */
   using ArrayType = FixedArray<RealType, ImageDimension>;
@@ -116,7 +116,7 @@ public:
   SetSigma(RealType * s)
   {
     ArrayType sigma;
-    for (unsigned int d = 0; d < ImageDimension; d++)
+    for (unsigned int d = 0; d < ImageDimension; ++d)
     {
       sigma[d] = s[d];
     }

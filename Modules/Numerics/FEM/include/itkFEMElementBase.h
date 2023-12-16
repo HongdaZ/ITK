@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -161,7 +161,7 @@ public:
     static Pointer
     New()
     {
-      Pointer smartPtr = ::itk::ObjectFactory<Self>::Create();
+      Pointer smartPtr = itk::ObjectFactory<Self>::Create();
 
       if (smartPtr.IsNull())
       {
@@ -176,7 +176,7 @@ public:
 
     /** CreateAnother method will clone the existing instance of this type,
      * including its internal member variables. */
-    ::itk::LightObject::Pointer
+    itk::LightObject::Pointer
     CreateAnother() const override;
 
     /**
@@ -329,7 +329,7 @@ public:
    *     a
    *
    * where (rho c) is constant (element density), which is here assumed to be
-   * equal to one. If this is not the case, this function must be overriden in
+   * equal to one. If this is not the case, this function must be overridden in
    * a derived class. Implementation is similar to GetStiffnessMatrix.
    */
   virtual void
@@ -706,7 +706,7 @@ public:
    * equal to number of unknowns that we want to solve for at each point
    * within an element.
    *
-   * \note This function must be overriden in all derived classes.
+   * \note This function must be overridden in all derived classes.
    */
   virtual unsigned int
   GetNumberOfDegreesOfFreedomPerNode() const = 0;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,7 @@ SimpleSignedDistance(const TPoint & p)
   double radius = 16;
 
   double accum = 0.0;
-  for (unsigned int j = 0; j < TPoint::PointDimension; j++)
+  for (unsigned int j = 0; j < TPoint::PointDimension; ++j)
   {
     accum += itk::Math::sqr(p[j] - center[j]);
   }
@@ -74,7 +74,7 @@ itkApproximateSignedDistanceMapImageFilterTest(int argc, char * argv[])
   const InputPixelType     insideValue = std::stoi(argv[1]);
   constexpr InputPixelType outsideValue = 0;
 
-  InputImageType::Pointer  image = InputImageType::New();
+  auto                     image = InputImageType::New();
   InputImageType::SizeType size;
   size.Fill(64);
   InputImageType::RegionType region(size);
@@ -96,7 +96,7 @@ itkApproximateSignedDistanceMapImageFilterTest(int argc, char * argv[])
 
   // Set up the filter
   using DistanceMapFilterType = itk::ApproximateSignedDistanceMapImageFilter<InputImageType, OutputImageType>;
-  DistanceMapFilterType::Pointer signedDistanceMapFilter = DistanceMapFilterType::New();
+  auto signedDistanceMapFilter = DistanceMapFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(
     signedDistanceMapFilter, ApproximateSignedDistanceMapImageFilter, ImageToImageFilter);
@@ -114,7 +114,7 @@ itkApproximateSignedDistanceMapImageFilterTest(int argc, char * argv[])
 
   // Write the output image
   using RescaleFilterType = itk::ShiftScaleImageFilter<OutputImageType, WriterImageType>;
-  RescaleFilterType::Pointer rescaler = RescaleFilterType::New();
+  auto rescaler = RescaleFilterType::New();
 
   rescaler->SetInput(signedDistanceMapFilter->GetOutput());
   rescaler->SetScale(1000);
@@ -132,7 +132,7 @@ itkApproximateSignedDistanceMapImageFilterTest(int argc, char * argv[])
   }
 
   using WriterType = itk::ImageFileWriter<WriterImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(rescaler->GetOutput());
   writer->SetFileName(argv[2]);
 

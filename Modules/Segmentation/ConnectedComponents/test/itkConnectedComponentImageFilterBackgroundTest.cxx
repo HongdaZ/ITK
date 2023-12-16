@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ itkConnectedComponentImageFilterBackgroundTest(int argc, char * argv[])
 
   // Create an image with an arbitrary background value and a number
   // of islands with pixel values above and below the background value
-  ImageType::Pointer  image = ImageType::New();
+  auto                image = ImageType::New();
   ImageType::SizeType size;
   size.Fill(512);
   image->SetRegions(size);
@@ -59,7 +59,7 @@ itkConnectedComponentImageFilterBackgroundTest(int argc, char * argv[])
 
   // Instantiate and run the filter
   using FilterType = itk::ConnectedComponentImageFilter<ImageType, ImageType>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
   filter->SetBackgroundValue(background);
   filter->SetInput(image);
   itk::SimpleFilterWatcher watcher(filter);

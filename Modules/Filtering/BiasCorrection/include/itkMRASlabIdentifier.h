@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,8 +25,8 @@
 namespace itk
 {
 /**
- *\class MRASlabIdentifier
- * \brief identifies slab in MR images comparing minimum intensity averages
+ * \class MRASlabIdentifier
+ * \brief Identifies slabs in MR images comparing minimum intensity averages.
  *
  * This class is templated over the type of image.
  * In many cases, a 3D MR image is constructed by merging smaller 3D
@@ -35,38 +35,39 @@ namespace itk
  * can be present in the resulting image. Such artifacts are called "slab
  * boundary" artifacts or "venetian blind" artifacts.
  *
- * With the slab boundary artifacts in an image, even a same tissue class's
+ * Due to the slab boundary artifacts in an image, even same tissue class'
  * intensity values might vary significantly along the borders of slabs.
  * Such rough value changes are not appropriate for some image processing
  * methods. For example, MRIBiasFieldCorrectionFilter assumes a smooth bias
  * field. However, with the slab boundary artifacts, the bias field estimation
- * scheme that MRIBiasFieldCorrectionFilter uses might not adopt well.
- * So, the MRIBiasFieldCorrectionFilter creates regions for slabs using the
- * MRASlabIdentifier and then apply its bias correction scheme to each slab.
+ * scheme that MRIBiasFieldCorrectionFilter uses might not adapt well.
+ * The MRIBiasFieldCorrectionFilter creates regions for slabs using the
+ * MRASlabIdentifier and then applies its bias correction scheme to each slab.
  *
  * For this identifier, a slice means 2D image data which is extracted from
- * the input image along one of three axes (x, y, z). Users can specify
- * the slicing axis using the SetSlicingDirection(int dimension) member.
- * (0 - x, 1 - y, 2 - z).
+ * the input image along one of three axes \f$(x, y, z)\f$. Users can specify
+ * the slicing axis using the SetSlicingDirection(int dimension) member, where
+ * the \p dimension variable follows the convention \f${X, Y, Z} : {0, 1, 2}\f$.
  *
- * The identification scheme used here is very simple.
- * 1) Users should specify how many pixels per slice the identifier
- *    will sample.
- * 2) For each slice, the identifier searches the specified number of pixels
- *    of which intensity values are greater than 0 and less than those
- *    of the other pixels in the slice
- * 3) The identifier calculates the average for each slice and the overall
- *    average using the search results.
- * 4) For each slice, it subtracts the overall average from the slice average.
- *    If the sign of the subtraction result changes, then it assumes that a
- *    slab ends and another slab begins.
+ * The identification scheme used works according to the following steps:
+ *   -# Users should specify how many pixels per slice the identifier
+ *      will sample.
+ *   -# For each slice, the identifier searches the specified number of pixels
+ *      of which intensity values are greater than 0 and less than those
+ *      of the other pixels in the slice.
+ *   -# The identifier calculates the average for each slice and the overall
+ *      average using the search results.
+ *   -# For each slice, it subtracts the overall average from the slice average.
+ *      If the sign of the subtraction result changes, then it assumes that a
+ *      slab ends and another slab begins.
+ *
  * \ingroup ITKBiasCorrection
  */
 template <typename TInputImage>
 class ITK_TEMPLATE_EXPORT MRASlabIdentifier : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MRASlabIdentifier);
+  ITK_DISALLOW_COPY_AND_MOVE(MRASlabIdentifier);
 
   /** Standard class type aliases. */
   using Self = MRASlabIdentifier;
@@ -117,7 +118,7 @@ public:
   itkSetMacro(SlicingDirection, int);
   itkGetConstReferenceMacro(SlicingDirection, int);
 
-  /** Compute the average values of mininum intensity pixels for each slice and
+  /** Compute the average values of minimum intensity pixels for each slice and
    * compare the average values with overall averages. */
   void
   GenerateSlabRegions();

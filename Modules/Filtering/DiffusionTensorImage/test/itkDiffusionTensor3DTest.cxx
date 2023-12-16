@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,7 +50,7 @@ itkDiffusionTensor3DTest(int, char *[])
   std::cout << "pixel.GetNumberOfComponents = " << pixel.GetNumberOfComponents() << std::endl;
   std::cout << "pixel.GetNthComponent()" << std::endl;
   bool passed = true;
-  for (unsigned int i = 0; i < pixel.GetNumberOfComponents(); i++)
+  for (unsigned int i = 0; i < pixel.GetNumberOfComponents(); ++i)
   {
     if (itk::Math::NotExactlyEquals(pixel.GetNthComponent(i), val[i]))
     {
@@ -76,7 +76,7 @@ itkDiffusionTensor3DTest(int, char *[])
   pixel(2, 2) = 14.0;
 
   std::cout << "testing the pixel(i,j) API" << std::endl;
-  for (unsigned int i = 0; i < pixel.GetNumberOfComponents(); i++)
+  for (unsigned int i = 0; i < pixel.GetNumberOfComponents(); ++i)
   {
     std::cout << "\tpixel[" << i << "] = " << pixel.GetNthComponent(i) << std::endl;
   }
@@ -91,7 +91,7 @@ itkDiffusionTensor3DTest(int, char *[])
   pixel[4] = 555;
   pixel[5] = 666;
 
-  for (unsigned int i = 0; i < pixel.GetNumberOfComponents(); i++)
+  for (unsigned int i = 0; i < pixel.GetNumberOfComponents(); ++i)
   {
     std::cout << "\tpixel[" << i << "] = " << pixel.GetNthComponent(i) << std::endl;
   }
@@ -99,12 +99,12 @@ itkDiffusionTensor3DTest(int, char *[])
   std::cout << "std::cout << pixel << std::endl;" << std::endl;
   std::cout << "\t" << pixel << std::endl;
 
-  for (unsigned int j = 0; j < 2; j++)
+  for (unsigned int j = 0; j < 2; ++j)
   {
     std::cout << "pixelArray[" << j << "].GetNumberOfComponents = " << pixelArray[j].GetNumberOfComponents()
               << std::endl;
     std::cout << "pixelArray[" << j << "].GetNthComponent()" << std::endl;
-    for (unsigned int i = 0; i < pixelArray[j].GetNumberOfComponents(); i++)
+    for (unsigned int i = 0; i < pixelArray[j].GetNumberOfComponents(); ++i)
     {
       std::cout << "\tpixelArray[" << j << "].GetNthComponent(" << i
                 << ") = " << static_cast<int>(pixelArray[j].GetNthComponent(i)) << std::endl;
@@ -150,7 +150,7 @@ itkDiffusionTensor3DTest(int, char *[])
   using PixelType = Float3DTensorType;
   using ImageType = itk::Image<PixelType, 3>;
 
-  ImageType::Pointer dti = ImageType::New();
+  auto dti = ImageType::New();
 
   ImageType::SizeType   size;
   ImageType::IndexType  start;
@@ -248,9 +248,9 @@ itkDiffusionTensor3DTest(int, char *[])
       expectedValues[1] = v[1];
       expectedValues[2] = v[2];
 
-      for (unsigned int i = 0; i < 3; i++)
+      for (unsigned int i = 0; i < 3; ++i)
       {
-        if (std::fabs(expectedValues[i] - eigenValues[i]) > tolerance)
+        if (itk::Math::abs(expectedValues[i] - eigenValues[i]) > tolerance)
         {
           std::cerr << "Eigenvalue computation failed" << std::endl;
           std::cerr << "expectedValues = " << expectedValues << std::endl;
@@ -288,9 +288,9 @@ itkDiffusionTensor3DTest(int, char *[])
       expectedValues[1] = 4.0;
       expectedValues[2] = 10.0;
 
-      for (unsigned int i = 0; i < 3; i++)
+      for (unsigned int i = 0; i < 3; ++i)
       {
-        if (std::fabs(expectedValues[i] - eigenValues[i]) > tolerance)
+        if (itk::Math::abs(expectedValues[i] - eigenValues[i]) > tolerance)
         {
           std::cerr << "Eigenvalue computation failed" << std::endl;
           std::cerr << "expectedValues = " << expectedValues << std::endl;
@@ -328,9 +328,9 @@ itkDiffusionTensor3DTest(int, char *[])
       expectedValues[1] = 0.00000;
       expectedValues[2] = 13.61580;
 
-      for (unsigned int i = 0; i < 3; i++)
+      for (unsigned int i = 0; i < 3; ++i)
       {
-        if (std::fabs(expectedValues[i] - eigenValues[i]) > tolerance)
+        if (itk::Math::abs(expectedValues[i] - eigenValues[i]) > tolerance)
         {
           std::cerr << "Eigenvalue computation failed" << std::endl;
           std::cerr << "expectedValues = " << expectedValues << std::endl;
@@ -369,7 +369,7 @@ itkDiffusionTensor3DTest(int, char *[])
     const double tolerance = 1e-4;
 
     AccumulateValueType computedTrace = tensor3.GetTrace();
-    if (std::fabs(computedTrace - expectedTrace) > tolerance)
+    if (itk::Math::abs(computedTrace - expectedTrace) > tolerance)
     {
       std::cerr << "Error computing the Trace" << std::endl;
       std::cerr << "Expected trace = " << expectedTrace << std::endl;
@@ -381,7 +381,7 @@ itkDiffusionTensor3DTest(int, char *[])
     constexpr RealValueType expectedInternalScalarProduct = 1829;
 
     RealValueType computedInternalScalarProduct = tensor3.GetInnerScalarProduct();
-    if (std::fabs(computedInternalScalarProduct - expectedInternalScalarProduct) > tolerance)
+    if (itk::Math::abs(computedInternalScalarProduct - expectedInternalScalarProduct) > tolerance)
     {
       std::cerr << "Error computing Internal Scalar Product" << std::endl;
       std::cerr << "Expected = " << expectedInternalScalarProduct << std::endl;
@@ -394,7 +394,7 @@ itkDiffusionTensor3DTest(int, char *[])
     constexpr RealValueType expectedFractionalAnisotropy = 0.349177;
 
     RealValueType computedFractionalAnisotropy = tensor3.GetFractionalAnisotropy();
-    if (std::fabs(computedFractionalAnisotropy - expectedFractionalAnisotropy) > tolerance)
+    if (itk::Math::abs(computedFractionalAnisotropy - expectedFractionalAnisotropy) > tolerance)
     {
       std::cerr << "Error computing Fractional Anisotropy" << std::endl;
       std::cerr << "Expected = " << expectedFractionalAnisotropy << std::endl;
@@ -406,7 +406,7 @@ itkDiffusionTensor3DTest(int, char *[])
     constexpr RealValueType expectedRelativeAnisotropy = 1.9044;
 
     RealValueType computedRelativeAnisotropy = tensor3.GetRelativeAnisotropy();
-    if (std::fabs(computedRelativeAnisotropy - expectedRelativeAnisotropy) > tolerance)
+    if (itk::Math::abs(computedRelativeAnisotropy - expectedRelativeAnisotropy) > tolerance)
     {
       std::cerr << "Error computing Relative Anisotropy" << std::endl;
       std::cerr << "Expected = " << expectedRelativeAnisotropy << std::endl;

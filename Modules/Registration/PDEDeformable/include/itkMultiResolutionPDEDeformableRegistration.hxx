@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkMultiResolutionPDEDeformableRegistration_hxx
 #define itkMultiResolutionPDEDeformableRegistration_hxx
-#include "itkMultiResolutionPDEDeformableRegistration.h"
 
 #include "itkRecursiveGaussianImageFilter.h"
 #include "itkRecursiveMultiResolutionPyramidImageFilter.h"
@@ -48,7 +47,7 @@ MultiResolutionPDEDeformableRegistration<TFixedImage,
   // Primary input is optional in this filter
   this->RemoveRequiredInputName("Primary");
 
-  typename DefaultRegistrationType::Pointer registrator = DefaultRegistrationType::New();
+  auto registrator = DefaultRegistrationType::New();
   m_RegistrationFilter = registrator.GetPointer();
 
   m_MovingImagePyramid = MovingImagePyramidType::New();
@@ -62,7 +61,7 @@ MultiResolutionPDEDeformableRegistration<TFixedImage,
   m_MovingImagePyramid->SetNumberOfLevels(m_NumberOfLevels);
 
   unsigned int ilevel;
-  for (ilevel = 0; ilevel < m_NumberOfLevels; ilevel++)
+  for (ilevel = 0; ilevel < m_NumberOfLevels; ++ilevel)
   {
     m_NumberOfIterations[ilevel] = 10;
   }
@@ -194,12 +193,12 @@ MultiResolutionPDEDeformableRegistration<TFixedImage,
 
   if (this->GetFixedImage())
   {
-    num++;
+    ++num;
   }
 
   if (this->GetMovingImage())
   {
-    num++;
+    ++num;
   }
 
   return num;
@@ -266,7 +265,7 @@ MultiResolutionPDEDeformableRegistration<TFixedImage,
 
   os << indent << "NumberOfIterations: [";
   unsigned int ilevel;
-  for (ilevel = 0; ilevel < m_NumberOfLevels - 1; ilevel++)
+  for (ilevel = 0; ilevel < m_NumberOfLevels - 1; ++ilevel)
   {
     os << m_NumberOfIterations[ilevel] << ", ";
   }
@@ -343,7 +342,7 @@ MultiResolutionPDEDeformableRegistration<TFixedImage,
   }
 
   // as per suggestion in this bug report:
-  // http://public.kitware.com/Bug/view.php?id=3590
+  // https://public.kitware.com/Bug/view.php?id=3590
   // this should allow input images to be released, since
   // they are no longer needed after generating the image pyramid
   this->RestoreInputReleaseDataFlags();
@@ -359,9 +358,11 @@ MultiResolutionPDEDeformableRegistration<TFixedImage,
   m_CurrentLevel = 0;
   m_StopRegistrationFlag = false;
 
-  unsigned int movingLevel = std::min((int)m_CurrentLevel, (int)m_MovingImagePyramid->GetNumberOfLevels());
+  unsigned int movingLevel =
+    std::min(static_cast<int>(m_CurrentLevel), static_cast<int>(m_MovingImagePyramid->GetNumberOfLevels()));
 
-  unsigned int fixedLevel = std::min((int)m_CurrentLevel, (int)m_FixedImagePyramid->GetNumberOfLevels());
+  unsigned int fixedLevel =
+    std::min(static_cast<int>(m_CurrentLevel), static_cast<int>(m_FixedImagePyramid->GetNumberOfLevels()));
 
   DisplacementFieldPointer tempField = nullptr;
 
@@ -380,7 +381,7 @@ MultiResolutionPDEDeformableRegistration<TFixedImage,
     tempField = inputPtr;
 
     using GaussianFilterType = RecursiveGaussianImageFilter<DisplacementFieldType, DisplacementFieldType>;
-    typename GaussianFilterType::Pointer smoother = GaussianFilterType::New();
+    auto smoother = GaussianFilterType::New();
 
     for (unsigned int dim = 0; dim < DisplacementFieldType::ImageDimension; ++dim)
     {
@@ -453,7 +454,7 @@ MultiResolutionPDEDeformableRegistration<TFixedImage,
 
     // cache shrink factors for computing the next expand factors.
     lastShrinkFactorsAllOnes = true;
-    for (unsigned int idim = 0; idim < ImageDimension; idim++)
+    for (unsigned int idim = 0; idim < ImageDimension; ++idim)
     {
       if (m_FixedImagePyramid->GetSchedule()[fixedLevel][idim] > 1)
       {
@@ -468,9 +469,10 @@ MultiResolutionPDEDeformableRegistration<TFixedImage,
     tempField->DisconnectPipeline();
 
     // Increment level counter.
-    m_CurrentLevel++;
-    movingLevel = std::min((int)m_CurrentLevel, (int)m_MovingImagePyramid->GetNumberOfLevels());
-    fixedLevel = std::min((int)m_CurrentLevel, (int)m_FixedImagePyramid->GetNumberOfLevels());
+    ++m_CurrentLevel;
+    movingLevel =
+      std::min(static_cast<int>(m_CurrentLevel), static_cast<int>(m_MovingImagePyramid->GetNumberOfLevels()));
+    fixedLevel = std::min(static_cast<int>(m_CurrentLevel), static_cast<int>(m_FixedImagePyramid->GetNumberOfLevels()));
 
     // Invoke an iteration event.
     this->InvokeEvent(MultiResolutionIterationEvent());

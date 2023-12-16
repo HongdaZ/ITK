@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,14 +22,14 @@
 namespace itk
 {
 
-ThreadLogger ::ThreadLogger()
+ThreadLogger::ThreadLogger()
 {
   m_Delay = 300; // ms
   m_TerminationRequested = false;
   m_Thread = std::thread(&ThreadLogger::ThreadFunction, this);
 }
 
-ThreadLogger ::~ThreadLogger()
+ThreadLogger::~ThreadLogger()
 {
   if (m_Thread.joinable())
   {
@@ -39,7 +39,7 @@ ThreadLogger ::~ThreadLogger()
 }
 
 void
-ThreadLogger ::SetPriorityLevel(PriorityLevelEnum level)
+ThreadLogger::SetPriorityLevel(PriorityLevelEnum level)
 {
   this->m_Mutex.lock();
   this->m_OperationQ.push(SET_PRIORITY_LEVEL);
@@ -48,7 +48,7 @@ ThreadLogger ::SetPriorityLevel(PriorityLevelEnum level)
 }
 
 Logger::PriorityLevelEnum
-ThreadLogger ::GetPriorityLevel() const
+ThreadLogger::GetPriorityLevel() const
 {
   this->m_Mutex.lock();
   PriorityLevelEnum level = this->m_PriorityLevel;
@@ -57,7 +57,7 @@ ThreadLogger ::GetPriorityLevel() const
 }
 
 void
-ThreadLogger ::SetLevelForFlushing(PriorityLevelEnum level)
+ThreadLogger::SetLevelForFlushing(PriorityLevelEnum level)
 {
   this->m_Mutex.lock();
   this->m_LevelForFlushing = level;
@@ -67,7 +67,7 @@ ThreadLogger ::SetLevelForFlushing(PriorityLevelEnum level)
 }
 
 Logger::PriorityLevelEnum
-ThreadLogger ::GetLevelForFlushing() const
+ThreadLogger::GetLevelForFlushing() const
 {
   this->m_Mutex.lock();
   PriorityLevelEnum level = this->m_LevelForFlushing;
@@ -76,7 +76,7 @@ ThreadLogger ::GetLevelForFlushing() const
 }
 
 void
-ThreadLogger ::SetDelay(DelayType delay)
+ThreadLogger::SetDelay(DelayType delay)
 {
   this->m_Mutex.lock();
   this->m_Delay = delay;
@@ -84,7 +84,7 @@ ThreadLogger ::SetDelay(DelayType delay)
 }
 
 ThreadLogger::DelayType
-ThreadLogger ::GetDelay() const
+ThreadLogger::GetDelay() const
 {
   this->m_Mutex.lock();
   DelayType delay = this->m_Delay;
@@ -93,7 +93,7 @@ ThreadLogger ::GetDelay() const
 }
 
 void
-ThreadLogger ::AddLogOutput(OutputType * output)
+ThreadLogger::AddLogOutput(OutputType * output)
 {
   this->m_Mutex.lock();
   this->m_OperationQ.push(ADD_LOG_OUTPUT);
@@ -102,32 +102,32 @@ ThreadLogger ::AddLogOutput(OutputType * output)
 }
 
 void
-ThreadLogger ::Write(PriorityLevelEnum level, std::string const & content)
+ThreadLogger::Write(PriorityLevelEnum level, std::string const & content)
 {
   this->m_Mutex.lock();
   this->m_OperationQ.push(WRITE);
   this->m_MessageQ.push(content);
   this->m_LevelQ.push(level);
-  this->m_Mutex.unlock();
   if (this->m_LevelForFlushing >= level)
   {
     this->InternalFlush();
   }
+  this->m_Mutex.unlock();
 }
 
 void
-ThreadLogger ::Flush()
+ThreadLogger::Flush()
 {
   this->m_Mutex.lock();
   this->m_OperationQ.push(FLUSH);
-  this->m_Mutex.unlock();
   this->InternalFlush();
+  this->m_Mutex.unlock();
 }
 
 void
-ThreadLogger ::InternalFlush()
+ThreadLogger::InternalFlush()
 {
-  this->m_Mutex.lock();
+  // m_Mutex must already be held here!
 
   while (!this->m_OperationQ.empty())
   {
@@ -160,11 +160,10 @@ ThreadLogger ::InternalFlush()
     this->m_OperationQ.pop();
   }
   this->m_Output->Flush();
-  this->m_Mutex.unlock();
 }
 
 void
-ThreadLogger ::ThreadFunction()
+ThreadLogger::ThreadFunction()
 {
   while (!m_TerminationRequested)
   {
@@ -205,7 +204,7 @@ ThreadLogger ::ThreadFunction()
 }
 
 void
-ThreadLogger ::PrintSelf(std::ostream & os, Indent indent) const
+ThreadLogger::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,7 +48,7 @@ itkWarpJacobianDeterminantFilterTest(int, char *[])
   using RegionType = itk::ImageRegion<ImageDimension>;
 
   // Create two images
-  DisplacementFieldType ::Pointer inputDisplacementField = DisplacementFieldType ::New();
+  auto inputDisplacementField = DisplacementFieldType::New();
 
   // Define their size, and start index
   SizeType size;
@@ -66,9 +66,7 @@ itkWarpJacobianDeterminantFilterTest(int, char *[])
   region.SetSize(size);
 
   // Initialize Image A
-  inputDisplacementField->SetLargestPossibleRegion(region);
-  inputDisplacementField->SetBufferedRegion(region);
-  inputDisplacementField->SetRequestedRegion(region);
+  inputDisplacementField->SetRegions(region);
   inputDisplacementField->Allocate();
 
   // Create one iterator for the Input Image (this is a light object)
@@ -91,7 +89,7 @@ itkWarpJacobianDeterminantFilterTest(int, char *[])
 
 
   // Create one Filter
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
 
   // Connect the input images

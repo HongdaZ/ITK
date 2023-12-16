@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,14 +30,14 @@ itkCompensatedSummationTest(int, char *[])
   itk::StdStreamStateSave coutState(std::cout);
 
   using FloatType = float;
-  long int seedValue = 17;
+  long seedValue = 17;
 
   constexpr FloatType expectedMean = 0.5;
 
   constexpr itk::SizeValueType accumSize = 50000000;
 
   using GeneratorType = itk::Statistics::MersenneTwisterRandomVariateGenerator;
-  GeneratorType::Pointer generator = GeneratorType::New();
+  auto generator = GeneratorType::New();
   generator->Initialize(seedValue);
 
   FloatType vanillaSum = 0.0;

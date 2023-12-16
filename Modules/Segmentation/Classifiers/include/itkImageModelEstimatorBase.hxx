@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageModelEstimatorBase_hxx
 #define itkImageModelEstimatorBase_hxx
 
-#include "itkImageModelEstimatorBase.h"
 #include "itkCommand.h"
 
 namespace itk
@@ -56,7 +55,7 @@ ImageModelEstimatorBase<TInputImage, TMembershipFunction>::PrintSelf(std::ostrea
   os << indent << "Results of the model estimator." << std::endl;
   os << indent << "====================================" << std::endl;
 
-  for (unsigned int classIndex = 0; classIndex < m_NumberOfModels; classIndex++)
+  for (unsigned int classIndex = 0; classIndex < m_NumberOfModels; ++classIndex)
   {
     os << indent << "Statistics for " << classIndex << std::endl;
     (m_MembershipFunctions[classIndex])->Print(os);

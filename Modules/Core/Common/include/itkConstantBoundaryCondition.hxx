@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkConstantBoundaryCondition_hxx
 #define itkConstantBoundaryCondition_hxx
 
-#include "itkConstantBoundaryCondition.h"
 
 namespace itk
 {
@@ -26,7 +25,7 @@ namespace itk
 template <typename TInputImage, typename TOutputImage>
 ConstantBoundaryCondition<TInputImage, TOutputImage>::ConstantBoundaryCondition()
 {
-  OutputPixelType p;
+  OutputPixelType p{};
   m_Constant = NumericTraits<OutputPixelType>::ZeroValue(p);
 }
 
@@ -57,8 +56,8 @@ ConstantBoundaryCondition<TInputImage, TOutputImage>::SetConstant(const OutputPi
 }
 
 template <typename TInputImage, typename TOutputImage>
-const typename ConstantBoundaryCondition<TInputImage, TOutputImage>::OutputPixelType &
-ConstantBoundaryCondition<TInputImage, TOutputImage>::GetConstant() const
+auto
+ConstantBoundaryCondition<TInputImage, TOutputImage>::GetConstant() const -> const OutputPixelType &
 {
   return m_Constant;
 }
@@ -74,20 +73,17 @@ ConstantBoundaryCondition<TInputImage, TOutputImage>::GetInputRequestedRegion(
 
   if (!cropped)
   {
-    IndexType index;
-    index.Fill(0);
-    SizeType size;
-    size.Fill(0);
-    inputRequestedRegion.SetIndex(index);
-    inputRequestedRegion.SetSize(size);
+    inputRequestedRegion.SetIndex({ { 0 } });
+    inputRequestedRegion.SetSize({ { 0 } });
   }
 
   return inputRequestedRegion;
 }
 
 template <typename TInputImage, typename TOutputImage>
-typename ConstantBoundaryCondition<TInputImage, TOutputImage>::OutputPixelType
+auto
 ConstantBoundaryCondition<TInputImage, TOutputImage>::GetPixel(const IndexType & index, const TInputImage * image) const
+  -> OutputPixelType
 {
   RegionType imageRegion = image->GetLargestPossibleRegion();
   if (imageRegion.IsInside(index))

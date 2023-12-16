@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -159,12 +159,7 @@ public:
     return (void *)m_Pointer == (void *)r.m_Pointer;
   }
 
-  /** Comparison of pointers. NonEqual comparison.  */
-  bool
-  operator!=(const AutoPointer & r) const
-  {
-    return (void *)m_Pointer != (void *)r.m_Pointer;
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
 
   /** Comparison of pointers. Less than comparison.  */
   bool
@@ -210,7 +205,7 @@ public:
   /*  ObjectType *Print (std::ostream& os) const
       {
       // This prints the object pointed to by the pointer
-      (*m_Pointer).Print(os);
+      m_Pointer->Print(os);
       os << "Owner: " << m_IsOwner << std::endl;
       return m_Pointer;
       }

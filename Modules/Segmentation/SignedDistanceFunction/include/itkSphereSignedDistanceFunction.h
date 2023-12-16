@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class SphereSignedDistanceFunction
+ * \class SphereSignedDistanceFunction
  * \brief Compute the signed distance from a N-dimensional sphere.
  *
  * A instance of sphere is defined by a set parameters. The first parameter
@@ -45,7 +45,7 @@ template <typename TCoordRep, unsigned int VSpaceDimension>
 class ITK_TEMPLATE_EXPORT SphereSignedDistanceFunction : public ShapeSignedDistanceFunction<TCoordRep, VSpaceDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SphereSignedDistanceFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(SphereSignedDistanceFunction);
 
   /** Standard class type aliases. */
   using Self = SphereSignedDistanceFunction;
@@ -60,22 +60,22 @@ public:
   itkNewMacro(Self);
 
   /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** InputeType type alias support */
-  using InputType = typename Superclass::InputType;
+  using typename Superclass::InputType;
 
   /** Dimension underlying input image. */
   static constexpr unsigned int SpaceDimension = Superclass::SpaceDimension;
 
   /** CoordRep type alias support */
-  using CoordRepType = typename Superclass::CoordRepType;
+  using typename Superclass::CoordRepType;
 
   /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** Type of the shape parameters. */
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
 
   /** A sphere is defined by a set of shape parameters. The first parameter
    * is the radius and the next SpaceDimension parameters represent the center. */

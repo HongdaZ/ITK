@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,6 +33,25 @@
 #include "itkImageFileWriter.h"
 #include "itkTestingComparisonImageFilter.h"
 #include "itkTestingMacros.h"
+
+#include "itkTestDriverIncludeRequiredFactories.h"
+
+namespace
+{
+class FrequencyIterators : public ::testing::Test
+{
+public:
+  FrequencyIterators() = default;
+  ~FrequencyIterators() override = default;
+
+protected:
+  void
+  SetUp() override
+  {
+    RegisterRequiredFactories();
+  }
+};
+} // namespace
 
 template <typename TOutputImageType>
 static typename TOutputImageType::Pointer
@@ -189,13 +208,13 @@ compareAllTypesOfIterators(typename TImageType::Pointer image, double difference
   // Compare full and hermitian
   // Hermitian saves memory, but at the cost of less precision
   // in the reconstruction (forward + inverse == original_image)
-  // This is the minimun threshold for the comparison between
+  // This is the minimum threshold for the comparison between
   // original and reconstructed image to be equal (without any extra band filter).
   bool fullAndHermitian = compareImages<ImageType>(filteredHermitianImage, filteredImage, differenceHermitianThreshold);
   EXPECT_TRUE(fullAndHermitian);
 }
 
-TEST(FrequencyIterators, Even3D)
+TEST_F(FrequencyIterators, Even3D)
 {
   constexpr unsigned int ImageDimension = 3;
   using PixelType = float;
@@ -205,7 +224,7 @@ TEST(FrequencyIterators, Even3D)
   compareAllTypesOfIterators<ImageType>(image, differenceHermitianThreshold);
 }
 
-TEST(FrequencyIterators, Even2D)
+TEST_F(FrequencyIterators, Even2D)
 {
   constexpr unsigned int ImageDimension = 2;
   using PixelType = float;
@@ -215,7 +234,7 @@ TEST(FrequencyIterators, Even2D)
   compareAllTypesOfIterators<ImageType>(image, differenceHermitianThreshold);
 }
 
-TEST(FrequencyIterators, Odd3D)
+TEST_F(FrequencyIterators, Odd3D)
 {
   constexpr unsigned int ImageDimension = 3;
   using PixelType = float;
@@ -225,7 +244,7 @@ TEST(FrequencyIterators, Odd3D)
   compareAllTypesOfIterators<ImageType>(image, differenceHermitianThreshold);
 }
 
-TEST(FrequencyIterators, Odd2D)
+TEST_F(FrequencyIterators, Odd2D)
 {
   constexpr unsigned int ImageDimension = 2;
   using PixelType = float;

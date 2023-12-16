@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,14 +33,14 @@ itkSubsampleTest2(int, char *[])
 
   unsigned int sampleSize = 10;
 
-  SampleType::Pointer sample = SampleType::New();
+  auto sample = SampleType::New();
 
   sample->SetMeasurementVectorSize(measurementVectorSize);
 
   MeasurementVectorType mv(measurementVectorSize);
-  for (unsigned int i = 0; i < sampleSize; i++)
+  for (unsigned int i = 0; i < sampleSize; ++i)
   {
-    for (unsigned int j = 0; j < measurementVectorSize; j++)
+    for (unsigned int j = 0; j < measurementVectorSize; ++j)
     {
       mv[j] = j + i * measurementVectorSize;
     }
@@ -50,7 +50,7 @@ itkSubsampleTest2(int, char *[])
 
   // tests begin
   using SubsampleType = itk::Statistics::Subsample<SampleType>;
-  SubsampleType::Pointer subSample = SubsampleType::New();
+  auto subSample = SubsampleType::New();
   subSample->SetSample(sample);
 
   // Add measurement vectors in sample with even id number to subSample
@@ -66,7 +66,7 @@ itkSubsampleTest2(int, char *[])
     return EXIT_FAILURE;
   }
 
-  for (unsigned int i = 0; i < subSample->Size(); i++)
+  for (unsigned int i = 0; i < subSample->Size(); ++i)
   {
     std::cout << "Measurement Vector: " << i << "\t" << subSample->GetMeasurementVector(i) << std::endl;
 
@@ -78,7 +78,7 @@ itkSubsampleTest2(int, char *[])
   }
 
   using CascadedSubsampleType = itk::Statistics::Subsample<SubsampleType>;
-  CascadedSubsampleType::Pointer subSample2 = CascadedSubsampleType::New();
+  auto subSample2 = CascadedSubsampleType::New();
   subSample2->SetSample(subSample);
 
   // Add measurement vectors in subsample with even id number to subSample2
@@ -99,9 +99,9 @@ itkSubsampleTest2(int, char *[])
   // swap back
   subSample2->Swap(2, 0);
 
-  for (unsigned int i = 0; i < subSample2->Size(); i++)
+  for (unsigned int i = 0; i < subSample2->Size(); ++i)
   {
-    std::cout << "Measurment Vector: " << i << "\t" << subSample2->GetMeasurementVector(i) << std::endl;
+    std::cout << "Measurement Vector: " << i << "\t" << subSample2->GetMeasurementVector(i) << std::endl;
 
     if (subSample2->GetMeasurementVector(i) != sample->GetMeasurementVector(i * 4))
     {
@@ -219,7 +219,7 @@ itkSubsampleTest2(int, char *[])
 
     IteratorType iter6(subSample2);
     unsigned int targetEntry = 2;
-    for (unsigned int kk = 0; kk < targetEntry; kk++)
+    for (unsigned int kk = 0; kk < targetEntry; ++kk)
     {
       std::cout << "GetInstanceIdentifier() = " << iter6.GetInstanceIdentifier() << std::endl;
       ++iter6;
@@ -288,7 +288,7 @@ itkSubsampleTest2(int, char *[])
 
     ConstIteratorType iter9(subSample2);
     unsigned int      targetEntry = 2;
-    for (unsigned int kk = 0; kk < targetEntry; kk++)
+    for (unsigned int kk = 0; kk < targetEntry; ++kk)
     {
       std::cout << "Instance identifier = " << iter9.GetInstanceIdentifier() << std::endl;
       ++iter9;
@@ -297,7 +297,7 @@ itkSubsampleTest2(int, char *[])
     std::cout << "Instance identifier = " << iter9.GetInstanceIdentifier() << std::endl;
     MeasurementVectorType vector9a = iter9.GetMeasurementVector();
     MeasurementVectorType vector9b = subSample2->GetMeasurementVector(targetEntry);
-    for (unsigned int kitr = 0; kitr < measurementVectorSize; kitr++)
+    for (unsigned int kitr = 0; kitr < measurementVectorSize; ++kitr)
     {
       if (itk::Math::abs(vector9b[kitr] - vector9a[kitr]))
       {

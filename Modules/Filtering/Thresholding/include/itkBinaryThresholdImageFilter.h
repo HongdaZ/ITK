@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class BinaryThresholdImageFilter
+ * \class BinaryThresholdImageFilter
  *
  * \brief Binarize an input image by thresholding.
  *
@@ -98,23 +98,16 @@ public:
     m_OutsideValue = value;
   }
 
-  bool
-  operator!=(const BinaryThreshold & other) const
-  {
-    if (m_LowerThreshold != other.m_LowerThreshold || m_UpperThreshold != other.m_UpperThreshold ||
-        Math::NotExactlyEquals(m_InsideValue, other.m_InsideValue) ||
-        Math::NotExactlyEquals(m_OutsideValue, other.m_OutsideValue))
-    {
-      return true;
-    }
-    return false;
-  }
 
   bool
   operator==(const BinaryThreshold & other) const
   {
-    return !(*this != other);
+    return m_LowerThreshold == other.m_LowerThreshold && m_UpperThreshold == other.m_UpperThreshold &&
+           Math::ExactlyEquals(m_InsideValue, other.m_InsideValue) &&
+           Math::ExactlyEquals(m_OutsideValue, other.m_OutsideValue);
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(BinaryThreshold);
 
   inline TOutput
   operator()(const TInput & A) const
@@ -142,7 +135,7 @@ class ITK_TEMPLATE_EXPORT BinaryThresholdImageFilter
       Functor::BinaryThreshold<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryThresholdImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BinaryThresholdImageFilter);
 
   /** Standard class type aliases. */
   using Self = BinaryThresholdImageFilter;

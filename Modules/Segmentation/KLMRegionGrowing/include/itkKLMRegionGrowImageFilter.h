@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@
 namespace itk
 {
 /**
- *\class KLMRegionGrowImageFilter
+ * \class KLMRegionGrowImageFilter
  * \brief Base class for a region growing object that performs energy-based
  * region growing for multiband images.
  *
@@ -166,7 +166,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT KLMRegionGrowImageFilter : public RegionGrowImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(KLMRegionGrowImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(KLMRegionGrowImageFilter);
 
   /** Standard class type aliases. */
   using Self = KLMRegionGrowImageFilter;
@@ -206,7 +206,7 @@ public:
 
   /** Type definition for the input grid size type used to create
    * initial atomic regions. */
-  using GridSizeType = typename Superclass::GridSizeType;
+  using typename Superclass::GridSizeType;
 
   /** Type definition for the output image. */
   using OutputImageType = TOutputImage;

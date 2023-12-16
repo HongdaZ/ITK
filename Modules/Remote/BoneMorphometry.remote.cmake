@@ -27,12 +27,12 @@
 #--   - [X] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -47,9 +47,9 @@ itk_fetch_module(BoneMorphometry
   Vimort J., McCormick M., Paniagua B.
   Computing Bone Morphometric Feature Maps from 3-Dimensional Images
   The Insight Journal. January-December. 2017.
-  http://hdl.handle.net/10380/3588
+  https://www.insight-journal.org/browse/publication/988
   "
   MODULE_COMPLIANCE_LEVEL 3
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKBoneMorphometry.git
-  GIT_TAG 7d4314f12a4682b2d995a628610eb7986d2e55de
+  GIT_TAG e68bd5b9274d448f0888acef5abf5ccdeb27b3b8
 )

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkGradientImageFilter_hxx
 #define itkGradientImageFilter_hxx
-#include "itkGradientImageFilter.h"
 
 #include "itkConstNeighborhoodIterator.h"
 #include "itkNeighborhoodInnerProduct.h"
@@ -52,9 +51,9 @@ GradientImageFilter<TInputImage, TOperatorValueType, TOutputValueType, TOutputIm
   delete m_BoundaryCondition;
 }
 
-template <typename TInputImage, typename TOperatorValueType, typename TOuputValue, typename TOuputImage>
+template <typename TInputImage, typename TOperatorValueType, typename TOutputValue, typename TOutputImage>
 void
-GradientImageFilter<TInputImage, TOperatorValueType, TOuputValue, TOuputImage>::OverrideBoundaryCondition(
+GradientImageFilter<TInputImage, TOperatorValueType, TOutputValue, TOutputImage>::OverrideBoundaryCondition(
   ImageBoundaryCondition<TInputImage> * boundaryCondition)
 {
   delete m_BoundaryCondition;
@@ -122,7 +121,7 @@ GradientImageFilter<TInputImage, TOperatorValueType, TOutputValueType, TOutputIm
   // Set up operators
   DerivativeOperator<OperatorValueType, InputImageDimension> op[InputImageDimension];
 
-  for (unsigned int i = 0; i < InputImageDimension; i++)
+  for (unsigned int i = 0; i < InputImageDimension; ++i)
   {
     // The operator has default values for its direction (0) and its order (1).
     op[i].CreateDirectional();

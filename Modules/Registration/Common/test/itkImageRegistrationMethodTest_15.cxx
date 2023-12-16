@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -108,13 +108,13 @@ itkImageRegistrationMethodTest_15(int, char *[])
   using RegistrationType = itk::ImageRegistrationMethod<FixedImageType, MovingImageType>;
 
 
-  MetricType::Pointer       metric = MetricType::New();
-  TransformType::Pointer    transform = TransformType::New();
-  OptimizerType::Pointer    optimizer = OptimizerType::New();
-  FixedImageType::Pointer   fixedImage = FixedImageType::New();
-  MovingImageType::Pointer  movingImage = MovingImageType::New();
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
-  RegistrationType::Pointer registration = RegistrationType::New();
+  auto metric = MetricType::New();
+  auto transform = TransformType::New();
+  auto optimizer = OptimizerType::New();
+  auto fixedImage = FixedImageType::New();
+  auto movingImage = MovingImageType::New();
+  auto interpolator = InterpolatorType::New();
+  auto registration = RegistrationType::New();
 
   /*********************************************************
    * Set up the two input images.
@@ -129,14 +129,10 @@ itkImageRegistrationMethodTest_15(int, char *[])
   region.SetSize(size);
   region.SetIndex(index);
 
-  fixedImage->SetLargestPossibleRegion(region);
-  fixedImage->SetBufferedRegion(region);
-  fixedImage->SetRequestedRegion(region);
+  fixedImage->SetRegions(region);
   fixedImage->Allocate();
 
-  movingImage->SetLargestPossibleRegion(region);
-  movingImage->SetBufferedRegion(region);
-  movingImage->SetRequestedRegion(region);
+  movingImage->SetRegions(region);
   movingImage->Allocate();
 
 
@@ -144,9 +140,9 @@ itkImageRegistrationMethodTest_15(int, char *[])
   using FixedImageIterator = itk::ImageRegionIterator<FixedImageType>;
 
   itk::Point<double, dimension> center;
-  for (j = 0; j < dimension; j++)
+  for (j = 0; j < dimension; ++j)
   {
-    center[j] = 0.5 * (double)region.GetSize()[j];
+    center[j] = 0.5 * static_cast<double>(region.GetSize()[j]);
   }
 
   itk::Point<double, dimension>  p;
@@ -157,7 +153,7 @@ itkImageRegistrationMethodTest_15(int, char *[])
 
   while (!mIter.IsAtEnd())
   {
-    for (j = 0; j < dimension; j++)
+    for (j = 0; j < dimension; ++j)
     {
       p[j] = mIter.GetIndex()[j];
     }
@@ -166,7 +162,7 @@ itkImageRegistrationMethodTest_15(int, char *[])
 
     fIter.Set((PixelType)F(d));
 
-    for (j = 0; j < dimension; j++)
+    for (j = 0; j < dimension; ++j)
     {
       d[j] = d[j] * scale[j] + displacement[j];
     }
@@ -179,9 +175,9 @@ itkImageRegistrationMethodTest_15(int, char *[])
 
   // set the image origin to be center of the image
   double transCenter[dimension];
-  for (j = 0; j < dimension; j++)
+  for (j = 0; j < dimension; ++j)
   {
-    transCenter[j] = -0.5 * double(size[j]);
+    transCenter[j] = -0.5 * static_cast<double>(size[j]);
   }
 
   movingImage->SetOrigin(transCenter);
@@ -198,7 +194,7 @@ itkImageRegistrationMethodTest_15(int, char *[])
 
   parametersScales.Fill(1.0);
 
-  for (j = 9; j < 12; j++)
+  for (j = 9; j < 12; ++j)
   {
     parametersScales[j] = 0.0001;
   }
@@ -210,7 +206,7 @@ itkImageRegistrationMethodTest_15(int, char *[])
    * Set up the optimizer observer
    ******************************************************************/
   using CommandIterationType = itk::CommandIterationUpdate<OptimizerType>;
-  CommandIterationType::Pointer iterationCommand = CommandIterationType::New();
+  auto iterationCommand = CommandIterationType::New();
 
   iterationCommand->SetOptimizer(optimizer);
 
@@ -222,7 +218,7 @@ itkImageRegistrationMethodTest_15(int, char *[])
 
   metric->SetNumberOfHistogramBins(50);
 
-  for (unsigned int jj = 0; jj < dimension; jj++)
+  for (unsigned int jj = 0; jj < dimension; ++jj)
   {
     size[jj] -= 4;
     index[jj] += 2;
@@ -261,7 +257,7 @@ itkImageRegistrationMethodTest_15(int, char *[])
   double                 rates[numberOfLoops] = { 1e-3, 5e-4 };
 
 
-  for (j = 0; j < numberOfLoops; j++)
+  for (j = 0; j < numberOfLoops; ++j)
   {
 
     try
@@ -301,14 +297,14 @@ itkImageRegistrationMethodTest_15(int, char *[])
 
   std::cout << "True solution is: " << trueParameters << std::endl;
 
-  for (j = 0; j < 9; j++)
+  for (j = 0; j < 9; ++j)
   {
     if (itk::Math::abs(solution[j] - trueParameters[j]) > 0.025)
     {
       pass = false;
     }
   }
-  for (j = 9; j < 12; j++)
+  for (j = 9; j < 12; ++j)
   {
     if (itk::Math::abs(solution[j] - trueParameters[j]) > 1.0)
     {

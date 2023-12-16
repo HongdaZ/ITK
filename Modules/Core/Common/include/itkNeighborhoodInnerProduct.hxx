@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkNeighborhoodInnerProduct_hxx
 #define itkNeighborhoodInnerProduct_hxx
-#include "itkNeighborhoodInnerProduct.h"
 
 #include "itkNumericTraits.h"
 
@@ -27,8 +26,8 @@ template <typename TImage, typename TOperator, typename TComputation>
 typename NeighborhoodInnerProduct<TImage, TOperator, TComputation>::OutputPixelType
 NeighborhoodInnerProduct<TImage, TOperator, TComputation>::Compute(const ConstNeighborhoodIterator<TImage> & it,
                                                                    const OperatorType &                      op,
-                                                                   const unsigned                            start,
-                                                                   const unsigned                            stride)
+                                                                   const unsigned int                        start,
+                                                                   const unsigned int                        stride)
 {
   typename OperatorType::ConstIterator o_it;
 
@@ -58,8 +57,8 @@ NeighborhoodInnerProduct<TImage, TOperator, TComputation>::Compute(
   /*           const ImageBoundaryCondition<TImage> *,*/
   const NeighborhoodType & N,
   const OperatorType &     op,
-  const unsigned           start,
-  const unsigned           stride)
+  const unsigned int       start,
+  const unsigned int       stride)
 {
   typename OperatorType::ConstIterator o_it;
 

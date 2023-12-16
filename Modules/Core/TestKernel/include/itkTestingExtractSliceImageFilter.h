@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 {
 namespace Testing
 {
-/**\class ExtractSliceImageFilterEnums
+/** \class ExtractSliceImageFilterEnums
  * \brief Contains all enum classes used by the ExtractSliceImageFilterEnums class.
  * \ingroup ITKTestKernel
  */
@@ -34,7 +34,7 @@ class ExtractSliceImageFilterEnums
 {
 public:
   /**
-   *\class TestExtractSliceImageFilterCollapseStrategy
+   * \class TestExtractSliceImageFilterCollapseStrategy
    * \ingroup ITKTestKernel
    */
   enum class TestExtractSliceImageFilterCollapseStrategy : uint8_t
@@ -50,7 +50,7 @@ extern std::ostream &
 operator<<(std::ostream & out, const ExtractSliceImageFilterEnums::TestExtractSliceImageFilterCollapseStrategy value);
 
 /**
- *\class ExtractSliceImageFilter
+ * \class ExtractSliceImageFilter
  * \brief Decrease the image size by cropping the image to the selected
  * region bounds.
  *
@@ -107,7 +107,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT ExtractSliceImageFilter : public ImageSource<TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExtractSliceImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ExtractSliceImageFilter);
 
   /** Standard class type aliases. */
   using Self = ExtractSliceImageFilter;
@@ -251,7 +251,7 @@ public:
   /** Set/Get the image input of this process object.  */
   using Superclass::SetInput;
   virtual void
-  SetInput(const TInputImage * image);
+  SetInput(const TInputImage * input);
   const TInputImage *
   GetInput() const;
 

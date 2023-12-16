@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ static void
 itkXMLParserStartElement(void * parser, const char * name, const char ** atts)
 {
   // Begin element handler that is registered with the XML_Parser.
-  // This just casts the user data to a itkXMLParser and calls
+  // This just casts the user data to an itkXMLParser and calls
   // StartElement.
   static_cast<DOMNodeXMLReader *>(parser)->StartElement(name, atts);
 }
@@ -42,7 +42,7 @@ static void
 itkXMLParserEndElement(void * parser, const char * name)
 {
   // End element handler that is registered with the XML_Parser.  This
-  // just casts the user data to a itkXMLParser and calls EndElement.
+  // just casts the user data to an itkXMLParser and calls EndElement.
   static_cast<DOMNodeXMLReader *>(parser)->EndElement(name);
 }
 
@@ -50,7 +50,7 @@ static void
 itkXMLParserCharacterDataHandler(void * parser, const char * data, int length)
 {
   // Character data handler that is registered with the XML_Parser.
-  // This just casts the user data to a itkXMLParser and calls
+  // This just casts the user data to an itkXMLParser and calls
   // CharacterDataHandler.
   static_cast<DOMNodeXMLReader *>(parser)->CharacterDataHandler(data, length);
 }
@@ -66,7 +66,7 @@ DOMNodeXMLReader::Update(std::istream & is)
 {
   if (m_DOMNodeXML.IsNull())
   {
-    OutputType::Pointer temp = OutputType::New();
+    auto temp = OutputType::New();
     this->SetDOMNodeXML(temp);
   }
   m_DOMNodeXML->RemoveAllAttributesAndChildren();

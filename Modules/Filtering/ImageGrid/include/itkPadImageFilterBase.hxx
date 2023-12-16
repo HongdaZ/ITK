@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkPadImageFilterBase_hxx
 #define itkPadImageFilterBase_hxx
 
-#include "itkPadImageFilterBase.h"
 
 #include "itkImageAlgorithm.h"
 #include "itkImageRegionExclusionIteratorWithIndex.h"
@@ -42,13 +41,15 @@ void
 PadImageFilterBase<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
+
+  os << indent << "BoundaryCondition: ";
   if (m_BoundaryCondition)
   {
     m_BoundaryCondition->Print(os, indent);
   }
   else
   {
-    os << "nullptr" << std::endl;
+    os << indent << "nullptr" << std::endl;
   }
 }
 

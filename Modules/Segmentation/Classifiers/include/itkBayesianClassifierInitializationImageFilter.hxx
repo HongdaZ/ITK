@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@
 #ifndef itkBayesianClassifierInitializationImageFilter_hxx
 #define itkBayesianClassifierInitializationImageFilter_hxx
 
-#include "itkBayesianClassifierInitializationImageFilter.h"
 #include "itkScalarImageKmeansImageFilter.h"
 
 #include "itkGaussianMembershipFunction.h"
@@ -89,11 +88,11 @@ BayesianClassifierInitializationImageFilter<TInputImage, TProbabilityPrecisionTy
     VectorContainer<unsigned short, typename GaussianMembershipFunctionType::CovarianceMatrixType *>;
 
   // Run k means to get the means from the input image
-  typename KMeansFilterType::Pointer kmeansFilter = KMeansFilterType::New();
+  auto kmeansFilter = KMeansFilterType::New();
   kmeansFilter->SetInput(this->GetInput());
   kmeansFilter->SetUseNonContiguousLabels(false);
 
-  for (unsigned k = 0; k < m_NumberOfClasses; k++)
+  for (unsigned int k = 0; k < m_NumberOfClasses; ++k)
   {
     const double userProvidedInitialMean = k;
     // TODO: Choose more reasonable defaults for specifying the initial means
@@ -105,10 +104,10 @@ BayesianClassifierInitializationImageFilter<TInputImage, TProbabilityPrecisionTy
   {
     kmeansFilter->Update();
   }
-  catch (ExceptionObject & err)
+  catch (const ExceptionObject &)
   {
     // Pass exception to caller
-    throw err;
+    throw;
   }
 
   typename KMeansFilterType::ParametersType estimatedMeans = kmeansFilter->GetFinalMeans(); // mean of each class
@@ -149,10 +148,11 @@ BayesianClassifierInitializationImageFilter<TInputImage, TProbabilityPrecisionTy
   // output labelmap
   while (!itrInputImage.IsAtEnd())
   {
-    sumsOfSquares[(unsigned int)itrKMeansImage.Get()] =
-      sumsOfSquares[(unsigned int)itrKMeansImage.Get()] + itrInputImage.Get() * itrInputImage.Get();
-    sums[(unsigned int)itrKMeansImage.Get()] = sums[(unsigned int)itrKMeansImage.Get()] + itrInputImage.Get();
-    ++classCount[(unsigned int)itrKMeansImage.Get()];
+    sumsOfSquares[static_cast<unsigned int>(itrKMeansImage.Get())] =
+      sumsOfSquares[static_cast<unsigned int>(itrKMeansImage.Get())] + itrInputImage.Get() * itrInputImage.Get();
+    sums[static_cast<unsigned int>(itrKMeansImage.Get())] =
+      sums[static_cast<unsigned int>(itrKMeansImage.Get())] + itrInputImage.Get();
+    ++classCount[static_cast<unsigned int>(itrKMeansImage.Get())];
     ++itrInputImage;
     ++itrKMeansImage;
   }
@@ -175,7 +175,7 @@ BayesianClassifierInitializationImageFilter<TInputImage, TProbabilityPrecisionTy
   }
 
   // Create gaussian membership functions.
-  typename MeanEstimatorsContainerType::Pointer       meanEstimatorsContainer = MeanEstimatorsContainerType::New();
+  auto                                                meanEstimatorsContainer = MeanEstimatorsContainerType::New();
   typename CovarianceEstimatorsContainerType::Pointer covarianceEstimatorsContainer =
     CovarianceEstimatorsContainerType::New();
   meanEstimatorsContainer->Reserve(m_NumberOfClasses);
@@ -196,7 +196,7 @@ BayesianClassifierInitializationImageFilter<TInputImage, TProbabilityPrecisionTy
 
     meanEstimators->Fill(estimatedMeans[i]);
     covarianceEstimators->Fill(estimatedCovariances[i]);
-    typename GaussianMembershipFunctionType::Pointer gaussianDensityFunction = GaussianMembershipFunctionType::New();
+    auto gaussianDensityFunction = GaussianMembershipFunctionType::New();
     gaussianDensityFunction->SetMean(*(meanEstimatorsContainer->GetElement(i)));
     gaussianDensityFunction->SetCovariance(*(covarianceEstimatorsContainer->GetElement(i)));
 
@@ -254,7 +254,7 @@ BayesianClassifierInitializationImageFilter<TInputImage, TProbabilityPrecisionTy
   while (!itrMembershipImage.IsAtEnd())
   {
     mv[0] = itrInputImage.Get();
-    for (unsigned int i = 0; i < m_NumberOfClasses; i++)
+    for (unsigned int i = 0; i < m_NumberOfClasses; ++i)
     {
       membershipPixel[i] = (m_MembershipFunctionContainer->GetElement(i))->Evaluate(mv);
     }

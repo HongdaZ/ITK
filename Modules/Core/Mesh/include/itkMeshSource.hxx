@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMeshSource_hxx
 #define itkMeshSource_hxx
 
-#include "itkMeshSource.h"
 
 namespace itk
 {
@@ -52,8 +51,8 @@ typename MeshSource<TOutputMesh>::DataObjectPointer MeshSource<TOutputMesh>::Mak
  *
  */
 template <typename TOutputMesh>
-typename MeshSource<TOutputMesh>::OutputMeshType *
-MeshSource<TOutputMesh>::GetOutput()
+auto
+MeshSource<TOutputMesh>::GetOutput() -> OutputMeshType *
 {
   return itkDynamicCastInDebugMode<TOutputMesh *>(this->GetPrimaryOutput());
 }
@@ -62,8 +61,8 @@ MeshSource<TOutputMesh>::GetOutput()
  *
  */
 template <typename TOutputMesh>
-typename MeshSource<TOutputMesh>::OutputMeshType *
-MeshSource<TOutputMesh>::GetOutput(unsigned int idx)
+auto
+MeshSource<TOutputMesh>::GetOutput(unsigned int idx) -> OutputMeshType *
 {
   return itkDynamicCastInDebugMode<TOutputMesh *>(this->ProcessObject::GetOutput(idx));
 }

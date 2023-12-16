@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class RingBuffer
+ * \class RingBuffer
  *  \brief Templated ring buffer for holding anything
  *
  * This ring buffer can hold any type of itk class that supports smart
@@ -40,7 +40,7 @@ template <typename TElement>
 class ITK_TEMPLATE_EXPORT RingBuffer : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RingBuffer);
+  ITK_DISALLOW_COPY_AND_MOVE(RingBuffer);
 
   /**-TYPEDEFS---------------------------------------------------------------*/
 
@@ -54,8 +54,8 @@ public:
   using ElementType = TElement;
   using ElementPointer = typename ElementType::Pointer;
 
-  using SizeValueType = ::itk::SizeValueType;
-  using OffsetValueType = ::itk::OffsetValueType;
+  using SizeValueType = itk::SizeValueType;
+  using OffsetValueType = itk::OffsetValueType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -67,7 +67,7 @@ public:
    * WARNING: If the size is set smaller than the current buffer size, the tail
    * of the buffer will be chopped off */
   void
-  SetNumberOfBuffers(SizeValueType sz);
+  SetNumberOfBuffers(SizeValueType n);
 
   /** Get the buffer size */
   SizeValueType

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ itkHessianRecursiveGaussianFilterScaleSpaceTest(int, char *[])
   using PointType = ImageType::PointType;
   using SpacingType = ImageType::SpacingType;
 
-  ImageType::Pointer inputImage = ImageType::New();
+  auto inputImage = ImageType::New();
 
   SizeType size;
   size.Fill(21);
@@ -59,9 +59,7 @@ itkHessianRecursiveGaussianFilterScaleSpaceTest(int, char *[])
   inputImage->SetOrigin(origin);
   inputImage->SetSpacing(spacing);
 
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetRegions(region);
   inputImage->Allocate();
 
   using IteratorType = itk::ImageRegionIteratorWithIndex<ImageType>;
@@ -96,7 +94,7 @@ itkHessianRecursiveGaussianFilterScaleSpaceTest(int, char *[])
 
     using HessianImageType = FilterType::OutputImageType;
 
-    FilterType::Pointer filter = FilterType::New();
+    auto filter = FilterType::New();
     filter->SetInput(inputImage);
     filter->SetSigma(objectSize);
     filter->SetNormalizeAcrossScale(true);
@@ -108,9 +106,7 @@ itkHessianRecursiveGaussianFilterScaleSpaceTest(int, char *[])
     PointType center;
     center.Fill(0.0);
 
-    IndexType centerIndex;
-
-    outputImage->TransformPhysicalPointToIndex(center, centerIndex);
+    IndexType centerIndex = outputImage->TransformPhysicalPointToIndex(center);
 
     // Irrespective of the scale, the Hxx component should be the same
     double centerHxx = outputImage->GetPixel(centerIndex)[0];
@@ -153,7 +149,7 @@ itkHessianRecursiveGaussianFilterScaleSpaceTest(int, char *[])
 
     using HessianImageType = FilterType::OutputImageType;
 
-    FilterType::Pointer filter = FilterType::New();
+    auto filter = FilterType::New();
     filter->SetInput(inputImage);
     filter->SetSigma(objectSize);
     filter->SetNormalizeAcrossScale(true);
@@ -165,9 +161,7 @@ itkHessianRecursiveGaussianFilterScaleSpaceTest(int, char *[])
     PointType center;
     center.Fill(0.0);
 
-    IndexType centerIndex;
-
-    outputImage->TransformPhysicalPointToIndex(center, centerIndex);
+    IndexType centerIndex = outputImage->TransformPhysicalPointToIndex(center);
 
     // Irrespective of the scale, the Hxx component should be the same
     double centerHxx = outputImage->GetPixel(centerIndex)[0];

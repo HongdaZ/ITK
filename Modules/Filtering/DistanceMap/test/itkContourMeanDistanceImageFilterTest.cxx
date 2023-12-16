@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,10 +18,17 @@
 
 #include "itkContourMeanDistanceImageFilter.h"
 #include "itkSimpleFilterWatcher.h"
+#include "itkTestingMacros.h"
 
 int
-itkContourMeanDistanceImageFilterTest(int, char *[])
+itkContourMeanDistanceImageFilterTest(int argc, char * argv[])
 {
+  if (argc != 2)
+  {
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " useImageSpacing" << std::endl;
+    return EXIT_FAILURE;
+  }
 
   using Pixel1Type = unsigned int;
   using Pixel2Type = float;
@@ -33,8 +40,8 @@ itkContourMeanDistanceImageFilterTest(int, char *[])
   using Image1Type = itk::Image<Pixel1Type, ImageDimension>;
   using Image2Type = itk::Image<Pixel2Type, ImageDimension>;
 
-  Image1Type::Pointer image1 = Image1Type::New();
-  Image2Type::Pointer image2 = Image2Type::New();
+  auto image1 = Image1Type::New();
+  auto image2 = Image2Type::New();
 
   Image1Type::SizeType size;
   size.Fill(50);
@@ -84,13 +91,16 @@ itkContourMeanDistanceImageFilterTest(int, char *[])
   // compute the directed Mean distance h(image1,image2)
   {
     using FilterType = itk::ContourMeanDistanceImageFilter<Image1Type, Image2Type>;
-    FilterType::Pointer      filter = FilterType::New();
+    auto filter = FilterType::New();
+
+    ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, ContourMeanDistanceImageFilter, ImageToImageFilter);
+
+
     itk::SimpleFilterWatcher watcher(filter, "filter");
 
     filter->SetInput1(image1);
     filter->SetInput2(image2);
     filter->Update();
-    filter->Print(std::cout);
 
 
     // check results
@@ -112,7 +122,7 @@ itkContourMeanDistanceImageFilterTest(int, char *[])
   // compute the directed Mean distance h(image2,image1)
   {
     using FilterType = itk::ContourMeanDistanceImageFilter<Image2Type, Image1Type>;
-    FilterType::Pointer filter = FilterType::New();
+    auto filter = FilterType::New();
 
     filter->SetInput1(image2);
     filter->SetInput2(image1);
@@ -136,7 +146,11 @@ itkContourMeanDistanceImageFilterTest(int, char *[])
   // compute the directed Mean distance h(image2,image1) with different pixel sizes
   {
     using FilterType = itk::ContourMeanDistanceImageFilter<Image2Type, Image1Type>;
-    FilterType::Pointer     filter = FilterType::New();
+    auto filter = FilterType::New();
+
+    auto useImageSpacing = static_cast<bool>(std::stoi(argv[1]));
+    ITK_TEST_SET_GET_BOOLEAN(filter, UseImageSpacing, useImageSpacing);
+
     Image1Type::SpacingType spacing1 = image1->GetSpacing();
     spacing1[0] = spacing1[0] / 2;
     spacing1[1] = spacing1[1] / 2;
@@ -151,7 +165,6 @@ itkContourMeanDistanceImageFilterTest(int, char *[])
 
     filter->SetInput1(image2);
     filter->SetInput2(image1);
-    filter->SetUseImageSpacing(true);
     filter->Update();
 
     // check results

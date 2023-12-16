@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class ShapeOpeningLabelMapFilter
+ * \class ShapeOpeningLabelMapFilter
  * \brief Remove objects according to the value of their shape attribute.
  *
  * ShapeOpeningLabelMapFilter removes objects in a label collection image
@@ -33,8 +33,7 @@ namespace itk
  * The attributes are those of the ShapeLabelObject.
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/584  or
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
@@ -50,7 +49,7 @@ template <typename TImage>
 class ITK_TEMPLATE_EXPORT ShapeOpeningLabelMapFilter : public InPlaceLabelMapFilter<TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShapeOpeningLabelMapFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ShapeOpeningLabelMapFilter);
 
   /** Standard class type aliases. */
   using Self = ShapeOpeningLabelMapFilter;

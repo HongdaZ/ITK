@@ -15,6 +15,13 @@
 /* Define if dev_t is a scalar */
 #undef DEV_T_IS_SCALAR
 
+/* Define if your system is IBM ppc64le and cannot convert some long double
+   values correctly. */
+#undef DISABLE_SOME_LDOUBLE_CONV
+
+/* Define the examples directory */
+#undef EXAMPLESDIR
+
 /* Define to dummy `main' function (if any) required to link to the Fortran
    libraries. */
 #undef FC_DUMMY_MAIN
@@ -68,6 +75,9 @@
 /* Define to 1 if you have the `alarm' function. */
 #undef HAVE_ALARM
 
+/* Define to 1 if you have the <arpa/inet.h> header file. */
+#undef HAVE_ARPA_INET_H
+
 /* Define to 1 if you have the `asprintf' function. */
 #undef HAVE_ASPRINTF
 
@@ -86,6 +96,9 @@
 
 /* Define if the function stack tracing code is to be compiled in */
 #undef HAVE_CODESTACK
+
+/* Define to 1 if you have the <curl/curl.h> header file. */
+#undef HAVE_CURL_CURL_H
 
 /* Define if Darwin or Mac OS X */
 #undef HAVE_DARWIN
@@ -159,6 +172,9 @@
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
+/* Define to 1 if you have the <hdfs.h> header file. */
+#undef HAVE_HDFS_H
+
 /* Define if the compiler understands inline */
 #undef HAVE_INLINE
 
@@ -175,11 +191,23 @@
 /* Define to 1 if you have the <io.h> header file. */
 #undef HAVE_IO_H
 
+/* Define to 1 if you have the `crypto' library (-lcrypto). */
+#undef HAVE_LIBCRYPTO
+
+/* Define to 1 if you have the `curl' library (-lcurl). */
+#undef HAVE_LIBCURL
+
 /* Define to 1 if you have the `dl' library (-ldl). */
 #undef HAVE_LIBDL
 
 /* Define to 1 if you have the `dmalloc' library (-ldmalloc). */
 #undef HAVE_LIBDMALLOC
+
+/* Proceed to build with libhdfs */
+#undef HAVE_LIBHDFS
+
+/* Define to 1 if you have the `jvm' library (-ljvm). */
+#undef HAVE_LIBJVM
 
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
@@ -217,11 +245,14 @@
 /* Define to 1 if you have the `lstat' function. */
 #undef HAVE_LSTAT
 
-/* Define to 1 if you have the <mach/mach_time.h> header file. */
-#undef HAVE_MACH_MACH_TIME_H
+/* Define if the map API (H5M) should be compiled */
+#undef HAVE_MAP_API
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
+
+/* Define whether the Mirror virtual file driver (VFD) will be compiled */
+#undef HAVE_MIRROR_VFD
 
 /* Define if we have MPE support */
 #undef HAVE_MPE
@@ -235,8 +266,26 @@
 /* Define if MPI_Info_c2f and MPI_Info_f2c exist */
 #undef HAVE_MPI_MULTI_LANG_Info
 
+/* Define to 1 if you have the <netdb.h> header file. */
+#undef HAVE_NETDB_H
+
+/* Define to 1 if you have the <netinet/in.h> header file. */
+#undef HAVE_NETINET_IN_H
+
+/* Define to 1 if you have the <openssl/evp.h> header file. */
+#undef HAVE_OPENSSL_EVP_H
+
+/* Define to 1 if you have the <openssl/hmac.h> header file. */
+#undef HAVE_OPENSSL_HMAC_H
+
+/* Define to 1 if you have the <openssl/sha.h> header file. */
+#undef HAVE_OPENSSL_SHA_H
+
 /* Define if we have parallel support */
 #undef HAVE_PARALLEL
+
+/* Define if both pread and pwrite exist. */
+#undef HAVE_PREADWRITE
 
 /* Define to 1 if you have the <pthread.h> header file. */
 #undef HAVE_PTHREAD_H
@@ -249,6 +298,10 @@
 
 /* Define to 1 if you have the `rand_r' function. */
 #undef HAVE_RAND_R
+
+/* Define whether the Read-Only S3 virtual file driver (VFD) should be
+   compiled */
+#undef HAVE_ROS3_VFD
 
 /* Define to 1 if you have the `round' function. */
 #undef HAVE_ROUND
@@ -403,6 +456,9 @@
 /* Define if the compiler understands __inline__ */
 #undef HAVE___INLINE__
 
+/* Define if the library will ignore file locks when disabled */
+#undef IGNORE_DISABLED_FILE_LOCKS
+
 /* Define if the high-level library headers should be included in hdf5.h */
 #undef INCLUDE_HL
 
@@ -427,9 +483,6 @@
 
 /* Define to enable internal memory allocation sanity checking. */
 #undef MEMORY_ALLOC_SANITY_CHECK
-
-/* Define if the metadata trace file code is to be compiled in */
-#undef METADATA_TRACE_FILE
 
 /* Define if we can violate pointer alignment restrictions */
 #undef NO_ALIGNMENT_RESTRICTIONS
@@ -542,6 +595,9 @@
 /* The size of `ssize_t', as computed by sizeof. */
 #undef SIZEOF_SSIZE_T
 
+/* The size of `time_t', as computed by sizeof. */
+#undef SIZEOF_TIME_T
+
 /* The size of `uint16_t', as computed by sizeof. */
 #undef SIZEOF_UINT16_T
 
@@ -606,11 +662,20 @@
 /* Define using v1.10 public API symbols by default */
 #undef USE_110_API_DEFAULT
 
+/* Define using v1.12 public API symbols by default */
+#undef USE_112_API_DEFAULT
+
 /* Define using v1.6 public API symbols by default */
 #undef USE_16_API_DEFAULT
 
 /* Define using v1.8 public API symbols by default */
 #undef USE_18_API_DEFAULT
+
+/* Define if the library will use file locking */
+#undef USE_FILE_LOCKING
+
+/* Define if the library will use recursive RW locks for thread safety */
+#undef USE_RECURSIVE_RW_LOCKS
 
 /* Define if a memory checking tool will be used on the library, to cause
    library to be very picky about memory operations and also disable the

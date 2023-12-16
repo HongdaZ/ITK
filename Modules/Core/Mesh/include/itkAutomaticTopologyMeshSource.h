@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -90,7 +90,7 @@ namespace itk
  * triangles sharing an edge.
    \code
     using MeshSourceType = itk::AutomaticTopologyMeshSource< MeshType >;
-    MeshSourceType::Pointer meshSource = MeshSourceType::New();
+    auto meshSource = MeshSourceType::New();
     meshSource->AddTriangle(
       meshSource->AddPoint(0, 0, 0),
       meshSource->AddPoint(1, 0, 0),
@@ -111,7 +111,7 @@ template <typename TOutputMesh>
 class ITK_TEMPLATE_EXPORT AutomaticTopologyMeshSource : public MeshSource<TOutputMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AutomaticTopologyMeshSource);
+  ITK_DISALLOW_COPY_AND_MOVE(AutomaticTopologyMeshSource);
 
   /** Standard "Self" type alias. */
   using Self = AutomaticTopologyMeshSource;
@@ -129,16 +129,16 @@ public:
   using CellAutoPointer = typename CellType::CellAutoPointer;
 
   /** Different kinds of cells. */
-  using VertexCell = ::itk::VertexCell<CellType>;
-  using LineCell = ::itk::LineCell<CellType>;
-  using TriangleCell = ::itk::TriangleCell<CellType>;
-  using QuadrilateralCell = ::itk::QuadrilateralCell<CellType>;
-  using TetrahedronCell = ::itk::TetrahedronCell<CellType>;
-  using HexahedronCell = ::itk::HexahedronCell<CellType>;
+  using VertexCell = itk::VertexCell<CellType>;
+  using LineCell = itk::LineCell<CellType>;
+  using TriangleCell = itk::TriangleCell<CellType>;
+  using QuadrilateralCell = itk::QuadrilateralCell<CellType>;
+  using TetrahedronCell = itk::TetrahedronCell<CellType>;
+  using HexahedronCell = itk::HexahedronCell<CellType>;
 
-  /** This class requires that the mesh being built use ::itk::IdentifierType
+  /** This class requires that the mesh being built use itk::IdentifierType
    * as the identifier type for all its elements. */
-  using IdentifierType = ::itk::IdentifierType;
+  using IdentifierType = itk::IdentifierType;
 
   /** Array of IdentifierType objects used to specify cells. */
   using IdentifierArrayType = Array<IdentifierType>;
@@ -179,7 +179,7 @@ public:
 
   /** Add a vertex located at the given point, and return its ID. */
   IdentifierType
-  AddVertex(const IdentifierArrayType & pointIds);
+  AddVertex(const IdentifierArrayType & pointIDs);
 
   IdentifierType
   AddVertex(IdentifierType pointId0);
@@ -195,7 +195,7 @@ public:
    * line in the order that they are specified the first time the
    * function is called. */
   IdentifierType
-  AddLine(const IdentifierArrayType & pointIds);
+  AddLine(const IdentifierArrayType & pointIDs);
 
   IdentifierType
   AddLine(IdentifierType pointId0, IdentifierType pointId1);
@@ -217,7 +217,7 @@ public:
    * Lines: (p0, p1), (p1, p2), (p2, p0).
    * */
   IdentifierType
-  AddTriangle(const IdentifierArrayType & pointIds);
+  AddTriangle(const IdentifierArrayType & pointIDs);
 
   IdentifierType
   AddTriangle(IdentifierType pointId0, IdentifierType pointId1, IdentifierType pointId2);
@@ -249,7 +249,7 @@ public:
    * <tt>meshSource->AddQuadrilateral(p0, p1, p2, p3)</tt>.
    * */
   IdentifierType
-  AddQuadrilateral(const IdentifierArrayType & pointIds);
+  AddQuadrilateral(const IdentifierArrayType & pointIDs);
 
   IdentifierType
   AddQuadrilateral(IdentifierType pointId0, IdentifierType pointId1, IdentifierType pointId2, IdentifierType pointId3);
@@ -276,7 +276,7 @@ public:
    * Triangles: (p0, p1, p2), (p0, p1, p3), (p0, p2, p3), (p1, p2, * p3).
    * */
   IdentifierType
-  AddTetrahedron(const IdentifierArrayType & pointIds);
+  AddTetrahedron(const IdentifierArrayType & pointIDs);
 
   IdentifierType
   AddTetrahedron(IdentifierType pointId0, IdentifierType pointId1, IdentifierType pointId2, IdentifierType pointId3);
@@ -319,7 +319,7 @@ public:
    * <tt>meshSource->AddQuadrilateral(p0, p1, p2, p3, p4, p5, p6,
    * p7)</tt>. */
   IdentifierType
-  AddHexahedron(const IdentifierArrayType & pointIds);
+  AddHexahedron(const IdentifierArrayType & pointIDs);
 
   IdentifierType
   AddHexahedron(IdentifierType pointId0,

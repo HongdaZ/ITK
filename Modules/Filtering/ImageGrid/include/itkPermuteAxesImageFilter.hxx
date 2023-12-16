@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkPermuteAxesImageFilter_hxx
 #define itkPermuteAxesImageFilter_hxx
 
-#include "itkPermuteAxesImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkMacro.h"
 #include "itkTotalProgressReporter.h"
@@ -31,7 +30,7 @@ namespace itk
 template <typename TImage>
 PermuteAxesImageFilter<TImage>::PermuteAxesImageFilter()
 {
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     m_Order[j] = j;
     m_InverseOrder[m_Order[j]] = j;
@@ -52,14 +51,14 @@ PermuteAxesImageFilter<TImage>::PrintSelf(std::ostream & os, Indent indent) cons
   unsigned int j;
 
   os << indent << "Order: [";
-  for (j = 0; j < ImageDimension - 1; j++)
+  for (j = 0; j < ImageDimension - 1; ++j)
   {
     os << m_Order[j] << ", ";
   }
   os << m_Order[j] << "]" << std::endl;
 
   os << indent << "InverseOrder: [";
-  for (j = 0; j < ImageDimension - 1; j++)
+  for (j = 0; j < ImageDimension - 1; ++j)
   {
     os << m_InverseOrder[j] << ", ";
   }
@@ -86,7 +85,7 @@ PermuteAxesImageFilter<TImage>::SetOrder(const PermuteOrderArrayType & order)
   FixedArray<bool, ImageDimension> used;
   used.Fill(false);
 
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     if (order[j] > ImageDimension - 1)
     {
@@ -108,7 +107,7 @@ PermuteAxesImageFilter<TImage>::SetOrder(const PermuteOrderArrayType & order)
   // copy to member variable
   this->Modified();
   m_Order = order;
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     m_InverseOrder[m_Order[j]] = j;
   }
@@ -147,7 +146,7 @@ PermuteAxesImageFilter<TImage>::GenerateOutputInformation()
   typename TImage::IndexType     outputStartIndex;
 
   unsigned int i, j;
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     // origin does not change by a Permute.  But spacing, directions,
     // size and start index do.
@@ -156,7 +155,7 @@ PermuteAxesImageFilter<TImage>::GenerateOutputInformation()
     outputSpacing[j] = inputSpacing[m_Order[j]];
     outputSize[j] = inputSize[m_Order[j]];
     outputStartIndex[j] = inputStartIndex[m_Order[j]];
-    for (i = 0; i < ImageDimension; i++)
+    for (i = 0; i < ImageDimension; ++i)
     {
       outputDirection[i][j] = inputDirection[i][m_Order[j]];
     }
@@ -166,9 +165,7 @@ PermuteAxesImageFilter<TImage>::GenerateOutputInformation()
   outputPtr->SetOrigin(outputOrigin);
   outputPtr->SetDirection(outputDirection);
 
-  typename TImage::RegionType outputRegion;
-  outputRegion.SetSize(outputSize);
-  outputRegion.SetIndex(outputStartIndex);
+  const typename TImage::RegionType outputRegion(outputStartIndex, outputSize);
 
   outputPtr->SetLargestPossibleRegion(outputRegion);
 }
@@ -200,15 +197,13 @@ PermuteAxesImageFilter<TImage>::GenerateInputRequestedRegion()
   typename TImage::IndexType inputIndex;
 
   unsigned int j;
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     inputSize[j] = outputSize[m_InverseOrder[j]];
     inputIndex[j] = outputIndex[m_InverseOrder[j]];
   }
 
-  typename TImage::RegionType inputRegion;
-  inputRegion.SetSize(inputSize);
-  inputRegion.SetIndex(inputIndex);
+  const typename TImage::RegionType inputRegion(inputIndex, inputSize);
 
   inputPtr->SetRequestedRegion(inputRegion);
 }
@@ -242,7 +237,7 @@ PermuteAxesImageFilter<TImage>::DynamicThreadedGenerateData(const OutputImageReg
     outputIndex = outIt.GetIndex();
 
     // determine the input pixel location associated with this output pixel
-    for (j = 0; j < ImageDimension; j++)
+    for (j = 0; j < ImageDimension; ++j)
     {
       inputIndex[j] = outputIndex[m_InverseOrder[j]];
     }

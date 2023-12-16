@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ StreamingImageIOBase::PrintSelf(std::ostream & os, Indent indent) const
 }
 
 bool
-StreamingImageIOBase ::StreamReadBufferAsBinary(std::istream & file, void * _buffer)
+StreamingImageIOBase::StreamReadBufferAsBinary(std::istream & file, void * _buffer)
 {
   itkDebugMacro(<< "StreamingReadBufferAsBinary called");
 
@@ -42,7 +42,7 @@ StreamingImageIOBase ::StreamReadBufferAsBinary(std::istream & file, void * _buf
   std::streampos dataPos = this->GetDataPosition();
 
   itkDebugStatement(const std::streamsize sizeOfRegion =
-                      static_cast<std::streamsize>(m_IORegion.GetNumberOfPixels()) * this->GetPixelSize(););
+                      static_cast<std::streamsize>(m_IORegion.GetNumberOfPixels()) * this->GetPixelSize());
 
   // compute the number of continuous bytes to be read
   std::streamsize sizeOfChunk = 1;
@@ -387,7 +387,7 @@ StreamingImageIOBase::RequestedToStream() const
   ImageIORegion ioregion(maxNumberOfDimension);
   ImageIORegion largestRegion(maxNumberOfDimension);
 
-  for (unsigned int i = 0; i < maxNumberOfDimension; i++)
+  for (unsigned int i = 0; i < maxNumberOfDimension; ++i)
   {
     largestRegion.SetIndex(i, 0);
     if (i < this->GetNumberOfDimensions())

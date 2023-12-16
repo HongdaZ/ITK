@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkMultipleValuedNonLinearVnlOptimizer_hxx
-#define _itkMultipleValuedNonLinearVnlOptimizer_hxx
 
 #include "itkMultipleValuedNonLinearVnlOptimizer.h"
 
@@ -25,7 +23,7 @@ namespace itk
 /**
  * Constructor
  */
-MultipleValuedNonLinearVnlOptimizer ::MultipleValuedNonLinearVnlOptimizer()
+MultipleValuedNonLinearVnlOptimizer::MultipleValuedNonLinearVnlOptimizer()
 {
   m_CostFunctionAdaptor = nullptr;
   m_UseGradient = true;
@@ -39,14 +37,14 @@ MultipleValuedNonLinearVnlOptimizer ::MultipleValuedNonLinearVnlOptimizer()
 /**
  * Destructor
  */
-MultipleValuedNonLinearVnlOptimizer ::~MultipleValuedNonLinearVnlOptimizer()
+MultipleValuedNonLinearVnlOptimizer::~MultipleValuedNonLinearVnlOptimizer()
 {
   delete m_CostFunctionAdaptor;
   m_CostFunctionAdaptor = nullptr;
 }
 
 void
-MultipleValuedNonLinearVnlOptimizer ::SetCostFunctionAdaptor(CostFunctionAdaptorType * adaptor)
+MultipleValuedNonLinearVnlOptimizer::SetCostFunctionAdaptor(CostFunctionAdaptorType * adaptor)
 {
   if (m_CostFunctionAdaptor == adaptor)
   {
@@ -63,13 +61,13 @@ MultipleValuedNonLinearVnlOptimizer ::SetCostFunctionAdaptor(CostFunctionAdaptor
 }
 
 const MultipleValuedNonLinearVnlOptimizer::CostFunctionAdaptorType *
-MultipleValuedNonLinearVnlOptimizer ::GetCostFunctionAdaptor() const
+MultipleValuedNonLinearVnlOptimizer::GetCostFunctionAdaptor() const
 {
   return m_CostFunctionAdaptor;
 }
 
 MultipleValuedNonLinearVnlOptimizer::CostFunctionAdaptorType *
-MultipleValuedNonLinearVnlOptimizer ::GetCostFunctionAdaptor()
+MultipleValuedNonLinearVnlOptimizer::GetCostFunctionAdaptor()
 {
   return m_CostFunctionAdaptor;
 }
@@ -77,13 +75,13 @@ MultipleValuedNonLinearVnlOptimizer ::GetCostFunctionAdaptor()
 /** The purpose of this method is to get around the lack of const
  * correctness in vnl cost_functions and optimizers */
 MultipleValuedNonLinearVnlOptimizer::CostFunctionAdaptorType *
-MultipleValuedNonLinearVnlOptimizer ::GetNonConstCostFunctionAdaptor() const
+MultipleValuedNonLinearVnlOptimizer::GetNonConstCostFunctionAdaptor() const
 {
   return m_CostFunctionAdaptor;
 }
 
 void
-MultipleValuedNonLinearVnlOptimizer ::SetUseCostFunctionGradient(bool useGradient)
+MultipleValuedNonLinearVnlOptimizer::SetUseCostFunctionGradient(bool useGradient)
 {
   if (m_CostFunctionAdaptor)
   {
@@ -96,7 +94,7 @@ MultipleValuedNonLinearVnlOptimizer ::SetUseCostFunctionGradient(bool useGradien
 }
 
 bool
-MultipleValuedNonLinearVnlOptimizer ::GetUseCostFunctionGradient() const
+MultipleValuedNonLinearVnlOptimizer::GetUseCostFunctionGradient() const
 {
   if (m_CostFunctionAdaptor)
   {
@@ -115,7 +113,7 @@ MultipleValuedNonLinearVnlOptimizer ::GetUseCostFunctionGradient() const
  * vnl optimizer. Optimizers that evaluate the metric multiple times at each
  * iteration will generate a lot more of Iteration events here. */
 void
-MultipleValuedNonLinearVnlOptimizer ::IterationReport(const EventObject & event)
+MultipleValuedNonLinearVnlOptimizer::IterationReport(const EventObject & event)
 {
   const CostFunctionAdaptorType * adaptor = this->GetCostFunctionAdaptor();
 
@@ -129,7 +127,7 @@ MultipleValuedNonLinearVnlOptimizer ::IterationReport(const EventObject & event)
  * PrintSelf
  */
 void
-MultipleValuedNonLinearVnlOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
+MultipleValuedNonLinearVnlOptimizer::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Cached Value: " << m_CachedValue << std::endl;
@@ -139,5 +137,3 @@ MultipleValuedNonLinearVnlOptimizer ::PrintSelf(std::ostream & os, Indent indent
   os << "Cost Function adaptor" << m_CostFunctionAdaptor << std::endl;
 }
 } // end namespace itk
-
-#endif

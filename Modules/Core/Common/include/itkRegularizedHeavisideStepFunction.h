@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,20 +31,17 @@ namespace itk
  *  This code was taken from the Insight Journal paper:
  *
  *      "Cell Tracking using Coupled Active Surfaces for Nuclei and Membranes"
- *      http://www.insight-journal.org/browse/publication/642
- *      https://hdl.handle.net/10380/3055
+ *      https://www.insight-journal.org/browse/publication/642
  *
  *  That is based on the papers:
  *
  *      "Level Set Segmentation: Active Contours without edge"
- *      http://www.insight-journal.org/browse/publication/322
- *      https://hdl.handle.net/1926/1532
+ *      https://www.insight-journal.org/browse/publication/322
  *
  *      and
  *
  *      "Level set segmentation using coupled active surfaces"
- *      http://www.insight-journal.org/browse/publication/323
- *      https://hdl.handle.net/1926/1533
+ *      https://www.insight-journal.org/browse/publication/323
  *
  *
  * \ingroup ITKCommon
@@ -53,15 +50,15 @@ template <typename TInput = float, typename TOutput = double>
 class ITK_TEMPLATE_EXPORT RegularizedHeavisideStepFunction : public HeavisideStepFunctionBase<TInput, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegularizedHeavisideStepFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(RegularizedHeavisideStepFunction);
 
   using Self = RegularizedHeavisideStepFunction;
   using Superclass = HeavisideStepFunctionBase<TInput, TOutput>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
-  using InputType = typename Superclass::InputType;
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::InputType;
+  using typename Superclass::OutputType;
 
   using RealType = typename NumericTraits<InputType>::RealType;
 

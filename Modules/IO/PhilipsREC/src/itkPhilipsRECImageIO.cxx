@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@
  *         The Pennsylvania State University 2005
  *
  * This implementation was contributed as a paper to the Insight Journal
- * http://insight-journal.org/midas/handle.php?handle=1926/1381
+ * https://insight-journal.org/midas/handle.php?handle=1926/1381
  *
  */
 
@@ -193,7 +193,7 @@ PhilipsRECImageIOGetImageTypeOffset(int                                         
   int index = volumeIndex * parParam.num_slice_repetitions * numSlices + slice * parParam.num_slice_repetitions;
   int i;
 
-  for (i = 0; i < parParam.num_slice_repetitions; i++)
+  for (i = 0; i < parParam.num_slice_repetitions; ++i)
   {
     if ((sliceImageTypesIndex[index + i].second == imageType) &&
         (sliceScanSequenceIndex[index + i].second == scanSequence))
@@ -248,7 +248,7 @@ PhilipsRECImageIOSetupSliceIndex(PhilipsRECImageIO::SliceIndexType *         ind
   if ((sortBlock && parParam.slicessorted) || (!sortBlock && !parParam.slicessorted))
   {
     // No sorting necessary for these cases.
-    for (int i = 0; i < parParam.dim[2]; i++)
+    for (int i = 0; i < parParam.dim[2]; ++i)
     {
       (*indexMatrix)[i] = i;
     }
@@ -258,11 +258,11 @@ PhilipsRECImageIOSetupSliceIndex(PhilipsRECImageIO::SliceIndexType *         ind
   {
     // Ok, need to figure out where all of the images are located
     // using sliceImageTypesIndex and sliceScanSequenceIndex.
-    for (int i = 0; i < parParam.num_slice_repetitions; i++)
+    for (int i = 0; i < parParam.num_slice_repetitions; ++i)
     {
-      for (int j = 0; j < remainingVolumes; j++)
+      for (int j = 0; j < remainingVolumes; ++j)
       {
-        for (int k = 0; k < actualSlices; k++)
+        for (int k = 0; k < actualSlices; ++k)
         {
           (*indexMatrix)[index] = j * parParam.num_slice_repetitions * actualSlices +
                                   k * parParam.num_slice_repetitions +
@@ -274,7 +274,7 @@ PhilipsRECImageIOSetupSliceIndex(PhilipsRECImageIO::SliceIndexType *         ind
                                                                       parParam,
                                                                       sliceImageTypesIndex,
                                                                       sliceScanSequenceIndex);
-          index++;
+          ++index;
         }
       }
     }
@@ -282,12 +282,12 @@ PhilipsRECImageIOSetupSliceIndex(PhilipsRECImageIO::SliceIndexType *         ind
   else
   {
     // Unsort image block or sort by image block.
-    for (int i = 0; i < parParam.image_blocks; i++)
+    for (int i = 0; i < parParam.image_blocks; ++i)
     {
-      for (int j = 0; j < actualSlices; j++)
+      for (int j = 0; j < actualSlices; ++j)
       {
         (*indexMatrix)[index] = j * parParam.image_blocks + i;
-        index++;
+        ++index;
       }
     }
   }
@@ -428,7 +428,7 @@ PhilipsRECImageIO::Read(void * buffer)
   const unsigned int dimensions = this->GetNumberOfDimensions();
   unsigned int       numberOfPixels = 1;
 
-  for (dim = 0; dim < dimensions; dim++)
+  for (dim = 0; dim < dimensions; ++dim)
   {
     numberOfPixels *= this->m_Dimensions[dim];
   }
@@ -478,9 +478,9 @@ PhilipsRECImageIO::Read(void * buffer)
 
   SizeType imageSliceSizeInBytes = this->GetImageSizeInBytes() / numberOfSlices;
 
-  for (IndexValueType slice = 0; slice < numberOfSlices; slice++)
+  for (IndexValueType slice = 0; slice < numberOfSlices; ++slice)
   {
-    IndexValueType realIndex = this->GetSliceIndex((int)slice);
+    IndexValueType realIndex = this->GetSliceIndex(static_cast<int>(slice));
     if (realIndex < 0)
     {
       std::ostringstream message;
@@ -523,7 +523,7 @@ PhilipsRECImageIO::CanReadFile(const char * FileNameToRead)
   // Zero out par_parameter.
   memset(&par, 0, sizeof(struct par_parameter));
 
-  PhilipsPAR::Pointer philipsPAR = PhilipsPAR::New();
+  auto philipsPAR = PhilipsPAR::New();
   try
   {
     philipsPAR->ReadPAR(HeaderFileName, &par);
@@ -534,7 +534,7 @@ PhilipsRECImageIO::CanReadFile(const char * FileNameToRead)
       return false;
     }
   }
-  catch (ExceptionObject &)
+  catch (const ExceptionObject &)
   {
     return false;
   }
@@ -552,12 +552,12 @@ PhilipsRECImageIO::ReadImageInformation()
   memset(&par, 0, sizeof(struct par_parameter));
 
   // Read PAR file.
-  PhilipsPAR::Pointer philipsPAR = PhilipsPAR::New();
+  auto philipsPAR = PhilipsPAR::New();
   try
   {
     philipsPAR->ReadPAR(HeaderFileName, &par);
   }
-  catch (itk::ExceptionObject &)
+  catch (const itk::ExceptionObject &)
   {
     throw;
   }
@@ -568,8 +568,8 @@ PhilipsRECImageIO::ReadImageInformation()
   }
 
   // Get all the diffusion info, rescale, etc.
-  GradientBvalueContainerType::Pointer    diffusionBvalueVector = GradientBvalueContainerType::New();
-  GradientDirectionContainerType::Pointer diffusionGradientOrientationVector = GradientDirectionContainerType::New();
+  auto diffusionBvalueVector = GradientBvalueContainerType::New();
+  auto diffusionGradientOrientationVector = GradientDirectionContainerType::New();
   if (!philipsPAR->GetDiffusionGradientOrientationAndBValues(
         HeaderFileName, diffusionGradientOrientationVector, diffusionBvalueVector))
   {
@@ -579,7 +579,7 @@ PhilipsRECImageIO::ReadImageInformation()
   }
 
   // Get ASL label types.
-  LabelTypesASLContainerType::Pointer labelTypesASLVector = LabelTypesASLContainerType::New();
+  auto labelTypesASLVector = LabelTypesASLContainerType::New();
   if (!philipsPAR->GetLabelTypesASL(HeaderFileName, labelTypesASLVector))
   {
     ExceptionObject exception(__FILE__, __LINE__, "Problem reading ASL label types from PAR file", ITK_LOCATION);
@@ -592,7 +592,7 @@ PhilipsRECImageIO::ReadImageInformation()
   scanningSequenceImageTypeRescaleVector->clear();
   // Must match number of scanning sequences.
   scanningSequenceImageTypeRescaleVector->resize(par.num_scanning_sequences);
-  for (int scanIndex = 0; scanIndex < par.num_scanning_sequences; scanIndex++)
+  for (int scanIndex = 0; scanIndex < par.num_scanning_sequences; ++scanIndex)
   {
     ImageTypeRescaleValuesContainerType::Pointer imageTypeRescaleValuesVector =
       ImageTypeRescaleValuesContainerType::New();
@@ -691,7 +691,7 @@ PhilipsRECImageIO::ReadImageInformation()
 
   // Important dime fields
   EncapsulateMetaData<std::string>(thisDic, ITK_VoxelUnits, std::string("mm"));
-  EncapsulateMetaData<short int>(thisDic, ITK_OnDiskBitPerPixel, par.bit);
+  EncapsulateMetaData<short>(thisDic, ITK_OnDiskBitPerPixel, par.bit);
   EncapsulateMetaData<int>(thisDic, ITK_NumberOfDimensions, numberOfDimensions);
 
   switch (par.bit)
@@ -713,7 +713,7 @@ PhilipsRECImageIO::ReadImageInformation()
   AffineMatrix spacing;
   spacing.SetIdentity();
 
-  SpatialOrientation::ValidCoordinateOrientationFlags coord_orient;
+  SpatialOrientationEnums::ValidCoordinateOrientations coord_orient;
 
   switch (par.sliceorient)
   {
@@ -721,7 +721,7 @@ PhilipsRECImageIO::ReadImageInformation()
       // Transverse - the REC data appears to be stored as right-left,
       // anterior-posterior, and inferior-superior.
       // Verified using a marker on right side of brain.
-      coord_orient = SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI;
+      coord_orient = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RAI;
       spacing[0][0] = par.vox[0];
       spacing[1][1] = par.vox[1];
       spacing[2][2] = par.vox[2];
@@ -730,7 +730,7 @@ PhilipsRECImageIO::ReadImageInformation()
       // Sagittal - the REC data appears to be stored as anterior-posterior,
       // superior-inferior, and right-left.
       // Verified using marker on right side of brain.
-      coord_orient = SpatialOrientation::ITK_COORDINATE_ORIENTATION_ASL;
+      coord_orient = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_ASL;
       spacing[0][0] = par.vox[2];
       spacing[1][1] = par.vox[0];
       spacing[2][2] = par.vox[1];
@@ -741,21 +741,20 @@ PhilipsRECImageIO::ReadImageInformation()
     // Verified using marker on right side of brain.
     // fall thru
     default:
-      coord_orient = SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSA;
+      coord_orient = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RSA;
       spacing[0][0] = par.vox[0];
       spacing[1][1] = par.vox[2];
       spacing[2][2] = par.vox[1];
   }
 
-  using OrientAdapterType = SpatialOrientationAdapter;
-  SpatialOrientationAdapter::DirectionType dir = OrientAdapterType().ToDirectionCosines(coord_orient);
+  SpatialOrientationAdapter::DirectionType dir = SpatialOrientationAdapter().ToDirectionCosines(coord_orient);
 
   AffineMatrix direction;
   direction.SetIdentity();
   int rows, columns;
-  for (rows = 0; rows < 3; rows++)
+  for (rows = 0; rows < 3; ++rows)
   {
-    for (columns = 0; columns < 3; columns++)
+    for (columns = 0; columns < 3; ++columns)
     {
       direction[columns][rows] = dir[columns][rows];
     }
@@ -886,22 +885,22 @@ PhilipsRECImageIO::ReadImageInformation()
   EncapsulateMetaData<int>(thisDic, PAR_ReconstructionNr, par.recno);
   EncapsulateMetaData<int>(thisDic, PAR_ScanDuration, par.scan_duration);
   EncapsulateMetaData<int>(thisDic, PAR_MaxNumberOfCardiacPhases, par.cardiac_phases);
-  TriggerTimesContainerType::Pointer triggerTimes = TriggerTimesContainerType::New();
+  auto triggerTimes = TriggerTimesContainerType::New();
   triggerTimes->resize(par.cardiac_phases);
 
-  for (unsigned int ttime_index = 0; ttime_index < (unsigned int)par.cardiac_phases; ttime_index++)
+  for (unsigned int ttime_index = 0; ttime_index < static_cast<unsigned int>(par.cardiac_phases); ++ttime_index)
   {
-    triggerTimes->SetElement(ttime_index, (double)par.trigger_times[ttime_index]);
+    triggerTimes->SetElement(ttime_index, static_cast<double>(par.trigger_times[ttime_index]));
   }
 
   EncapsulateMetaData<TriggerTimesContainerType::Pointer>(thisDic, PAR_TriggerTimes, triggerTimes);
   EncapsulateMetaData<int>(thisDic, PAR_MaxNumberOfEchoes, par.echoes);
-  EchoTimesContainerType::Pointer echoTimes = EchoTimesContainerType::New();
+  auto echoTimes = EchoTimesContainerType::New();
   echoTimes->resize(par.echoes);
 
-  for (unsigned int echo_index = 0; echo_index < (unsigned int)par.echoes; echo_index++)
+  for (unsigned int echo_index = 0; echo_index < static_cast<unsigned int>(par.echoes); ++echo_index)
   {
-    echoTimes->SetElement(echo_index, (double)par.echo_times[echo_index]);
+    echoTimes->SetElement(echo_index, static_cast<double>(par.echo_times[echo_index]));
   }
 
   EncapsulateMetaData<EchoTimesContainerType::Pointer>(thisDic, PAR_EchoTimes, echoTimes);
@@ -913,13 +912,13 @@ PhilipsRECImageIO::ReadImageInformation()
   EncapsulateMetaData<std::string>(thisDic, PAR_ScanMode, std::string(par.scan_mode));
   EncapsulateMetaData<int>(thisDic, PAR_NumberOfAverages, par.num_averages);
   EncapsulateMetaData<ScanResolutionType>(thisDic, PAR_ScanResolution, ScanResolutionType(par.scan_resolution));
-  RepetitionTimesContainerType::Pointer repTimes = RepetitionTimesContainerType::New();
+  auto repTimes = RepetitionTimesContainerType::New();
   repTimes->resize(par.mixes); // This has only been verified using a
                                // Look-Locker sequence and may not be valid.
 
-  for (unsigned int rep_index = 0; rep_index < (unsigned int)par.mixes; rep_index++)
+  for (unsigned int rep_index = 0; rep_index < static_cast<unsigned int>(par.mixes); ++rep_index)
   {
-    repTimes->SetElement(rep_index, (double)par.repetition_time[rep_index]);
+    repTimes->SetElement(rep_index, static_cast<double>(par.repetition_time[rep_index]));
   }
 
   EncapsulateMetaData<RepetitionTimesContainerType::Pointer>(thisDic, PAR_RepetitionTimes, repTimes);
@@ -927,14 +926,14 @@ PhilipsRECImageIO::ReadImageInformation()
   EncapsulateMetaData<FOVType>(thisDic, PAR_FOV, FOVType(par.fov));
   EncapsulateMetaData<float>(thisDic, PAR_WaterFatShiftPixels, par.water_fat_shift);
   AngulationMidSliceType tempAngulation;
-  tempAngulation[0] = (double)par.angAP;
-  tempAngulation[1] = (double)par.angFH;
-  tempAngulation[2] = (double)par.angRL;
+  tempAngulation[0] = static_cast<double>(par.angAP);
+  tempAngulation[1] = static_cast<double>(par.angFH);
+  tempAngulation[2] = static_cast<double>(par.angRL);
   EncapsulateMetaData<AngulationMidSliceType>(thisDic, PAR_AngulationMidSlice, tempAngulation);
   OffCentreMidSliceType tempOffcentre;
-  tempOffcentre[0] = (double)par.offAP;
-  tempOffcentre[1] = (double)par.offFH;
-  tempOffcentre[2] = (double)par.offRL;
+  tempOffcentre[0] = static_cast<double>(par.offAP);
+  tempOffcentre[1] = static_cast<double>(par.offFH);
+  tempOffcentre[2] = static_cast<double>(par.offRL);
   EncapsulateMetaData<OffCentreMidSliceType>(thisDic, PAR_OffCentreMidSlice, tempOffcentre);
   EncapsulateMetaData<int>(thisDic, PAR_FlowCompensation, par.flow_comp);
   EncapsulateMetaData<int>(thisDic, PAR_Presaturation, par.presaturation);

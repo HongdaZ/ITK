@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,7 +55,7 @@ public:
 
     unsigned int maxIndex = 0;
     unsigned int i;
-    for (i = 1; i < scoreVector.size(); i++)
+    for (i = 1; i < scoreVector.size(); ++i)
     {
       if (scoreVector[i] > max)
       {
@@ -77,7 +77,7 @@ itkDecisionRuleTest(int, char *[])
 
   using MembershipVectorType = DecisionRuleType::MembershipVectorType;
 
-  DecisionRuleType::Pointer decisionRule = DecisionRuleType::New();
+  auto decisionRule = DecisionRuleType::New();
 
   std::cout << decisionRule->GetNameOfClass() << std::endl;
   std::cout << decisionRule->DecisionRuleType::Superclass::GetNameOfClass() << std::endl;

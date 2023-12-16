@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,13 +21,16 @@
 #include "itkImageFileWriter.h"
 #include "itkImageDuplicator.h"
 #include "itkAbsImageFilter.h"
+#include "itkTestingMacros.h"
 
 int
 itkImageDuplicatorTest2(int argc, char * argv[])
 {
   if (argc < 3)
   {
-    std::cerr << "Usage: " << argv[0] << " Input Output\n";
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " Input Output" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -35,25 +38,18 @@ itkImageDuplicatorTest2(int argc, char * argv[])
   constexpr unsigned int Dimension = 3;
   using ImageType = itk::Image<PixelType, Dimension>;
 
-  using ReaderType = itk::ImageFileReader<ImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
-  using WriterType = itk::ImageFileWriter<ImageType>;
-  WriterType::Pointer writer = WriterType::New();
   using DuplicatorType = itk::ImageDuplicator<ImageType>;
-  DuplicatorType::Pointer dup = DuplicatorType::New();
+  auto dup = DuplicatorType::New();
   using AbsType = itk::AbsImageFilter<ImageType, ImageType>;
-  AbsType::Pointer absF = AbsType::New();
-
-  reader->SetFileName(argv[1]);
+  auto absF = AbsType::New();
 
   try
   {
-    reader->Update();
-    ImageType::Pointer inImage = reader->GetOutput();
+    const auto inImage = itk::ReadImage<ImageType>(argv[1]);
 
     ImageType::RegionType lpr = inImage->GetLargestPossibleRegion();
     ImageType::RegionType region = lpr;
-    for (unsigned d = 0; d < Dimension; d++)
+    for (unsigned int d = 0; d < Dimension; ++d)
     {
       itk::IndexValueType size = region.GetSize(d);
       region.SetIndex(d, size / 4);
@@ -69,9 +65,7 @@ itkImageDuplicatorTest2(int argc, char * argv[])
     dup->Update();
     ImageType::ConstPointer dupImage = dup->GetOutput();
 
-    writer->SetInput(dupImage);
-    writer->SetFileName(argv[2]);
-    writer->Update();
+    itk::WriteImage(dupImage, argv[2]);
     std::cout << "Test SUCCESS" << std::endl;
   }
   catch (const itk::ExceptionObject & e)

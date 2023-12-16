@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,10 @@
 #include "itkMetaDataObject.h"
 #include "itkIOCommon.h"
 #include "itkByteSwapper.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 #include <fstream>
+#include <memory> // For unique_ptr.
 
 #include "itksys/SystemTools.hxx"
 
@@ -51,6 +53,8 @@ void
 MRCImageIO::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
+
+  itkPrintSelfObjectMacro(MRCHeader);
 }
 
 bool
@@ -70,7 +74,7 @@ MRCImageIO::CanReadFile(const char * filename)
     // this may throw an expection, but we just return false
     this->OpenFileForReading(file, fname);
   }
-  catch (ExceptionObject &)
+  catch (const ExceptionObject &)
   {
     return false;
   }
@@ -129,12 +133,19 @@ MRCImageIO::ReadImageInformation()
   // fixed types defined by header
   switch (header.mode)
   {
-    case MRCHeaderObject::MRCHEADER_MODE_UINT8:
+    case MRCHeaderObject::MRCHEADER_MODE_INT8:
     {
-      // todo: the format is unclear weather this is signed or
-      // unsigned, it would be best to check the min and max in the
-      // header to see what makes since
-      this->SetComponentType(IOComponentEnum::UCHAR);
+      // There has been some confusion and inconsistency whether this
+      // mode is signed or unsigned, but now MRC2014 clearly defines it
+      // as signed.
+      if (header.amin < 0 && header.amax >= header.amin)
+      {
+        this->SetComponentType(IOComponentEnum::CHAR);
+      }
+      else
+      {
+        this->SetComponentType(IOComponentEnum::UCHAR);
+      }
       this->SetNumberOfComponents(1);
       this->SetPixelType(IOPixelEnum::SCALAR);
       break;
@@ -199,9 +210,9 @@ MRCImageIO::ReadImageInformation()
   }
   else
   {
-    m_Spacing[0] = header.xlen / float(header.mx);
-    m_Spacing[1] = header.ylen / float(header.my);
-    m_Spacing[2] = header.zlen / float(header.mz);
+    m_Spacing[0] = header.xlen / static_cast<float>(header.mx);
+    m_Spacing[1] = header.ylen / static_cast<float>(header.my);
+    m_Spacing[2] = header.zlen / static_cast<float>(header.mz);
   }
 
   // copy the origin
@@ -228,52 +239,38 @@ MRCImageIO::ReadImageInformation()
 void
 MRCImageIO::InternalReadImageInformation(std::ifstream & file)
 {
-  char * buffer = nullptr;
+  std::unique_ptr<char[]> buffer;
 
-  try
+  m_MRCHeader = MRCHeaderObject::New();
+
+  itkDebugMacro(<< "Reading Information ");
+
+  this->OpenFileForReading(file, m_FileName);
+
+  buffer = make_unique_for_overwrite<char[]>(m_MRCHeader->GetHeaderSize());
+  if (!this->ReadBufferAsBinary(file, static_cast<void *>(buffer.get()), m_MRCHeader->GetHeaderSize()))
   {
-    m_MRCHeader = MRCHeaderObject::New();
-
-    itkDebugMacro(<< "Reading Information ");
-
-    this->OpenFileForReading(file, m_FileName);
-
-    buffer = new char[m_MRCHeader->GetHeaderSize()];
-    if (!this->ReadBufferAsBinary(file, static_cast<void *>(buffer), m_MRCHeader->GetHeaderSize()))
-    {
-      itkExceptionMacro(<< "Header Read failed: Wanted " << m_MRCHeader->GetHeaderSize() << " bytes, but read "
-                        << file.gcount() << " bytes.");
-    }
-
-    // convert the raw buffer into the header
-    if (!m_MRCHeader->SetHeader(reinterpret_cast<const MRCHeaderObject::Header *>(buffer)))
-    {
-      itkExceptionMacro(<< "Unrecognized header");
-    }
-
-    delete[] buffer;
-
-    buffer = new char[m_MRCHeader->GetExtendedHeaderSize()];
-    if (!this->ReadBufferAsBinary(file, static_cast<void *>(buffer), m_MRCHeader->GetExtendedHeaderSize()))
-    {
-      itkExceptionMacro(<< "Extended Header Read failed.");
-    }
-
-    m_MRCHeader->SetExtendedHeader(buffer);
-  }
-  catch (...)
-  {
-    // clean up dynamic allocation
-    delete[] buffer;
-    buffer = nullptr;
-    throw;
+    itkExceptionMacro(<< "Header Read failed: Wanted " << m_MRCHeader->GetHeaderSize() << " bytes, but read "
+                      << file.gcount() << " bytes.");
   }
 
-  delete[] buffer;
+  // convert the raw buffer into the header
+  if (!m_MRCHeader->SetHeader(reinterpret_cast<const MRCHeaderObject::Header *>(buffer.get())))
+  {
+    itkExceptionMacro(<< "Unrecognized header");
+  }
+
+  buffer = make_unique_for_overwrite<char[]>(m_MRCHeader->GetExtendedHeaderSize());
+  if (!this->ReadBufferAsBinary(file, static_cast<void *>(buffer.get()), m_MRCHeader->GetExtendedHeaderSize()))
+  {
+    itkExceptionMacro(<< "Extended Header Read failed.");
+  }
+
+  m_MRCHeader->SetExtendedHeader(buffer.get());
 }
 
 void
-MRCImageIO ::Read(void * buffer)
+MRCImageIO::Read(void * buffer)
 {
   std::ifstream file;
 
@@ -345,11 +342,11 @@ MRCImageIO::UpdateHeaderWithMinMaxMean(const TPixelType * bufferBegin)
   // std::max_element, but that is slightly less efficient
   std::pair<ConstPixelPointer, ConstPixelPointer> mm = itk::min_max_element(bufferBegin, bufferEnd);
 
-  double mean = std::accumulate(bufferBegin, bufferEnd, double(0.0)) / std::distance(bufferBegin, bufferEnd);
+  double mean = std::accumulate(bufferBegin, bufferEnd, 0.0) / std::distance(bufferBegin, bufferEnd);
 
-  m_MRCHeader->m_Header.amin = float(*mm.first);
-  m_MRCHeader->m_Header.amax = float(*mm.second);
-  m_MRCHeader->m_Header.amean = float(mean);
+  m_MRCHeader->m_Header.amin = static_cast<float>(*mm.first);
+  m_MRCHeader->m_Header.amax = static_cast<float>(*mm.second);
+  m_MRCHeader->m_Header.amean = static_cast<float>(mean);
 }
 
 void
@@ -431,7 +428,7 @@ MRCImageIO::UpdateHeaderFromImageIO()
   {
     itkExceptionMacro(<< "Unsupported pixel type: " << this->GetPixelTypeAsString(this->GetPixelType()) << " "
                       << this->GetComponentTypeAsString(this->GetComponentType()) << std::endl
-                      << "Supported pixel types include unsigned byte, unsigned short, signed short, float, rgb "
+                      << "Supported pixel types include unsigned byte, unsigned short, short, float, rgb "
                          "unsigned char, float complex");
   }
 
@@ -439,15 +436,15 @@ MRCImageIO::UpdateHeaderFromImageIO()
   header.nystart = 0;
   header.nzstart = 0;
 
-  header.xlen = m_Spacing[0] * float(header.mx);
-  header.ylen = (this->GetNumberOfDimensions() >= 2) ? m_Spacing[1] * float(header.my) : 1;
-  header.zlen = (this->GetNumberOfDimensions() >= 3) ? m_Spacing[2] * float(header.mz) : 1;
+  header.xlen = m_Spacing[0] * static_cast<float>(header.mx);
+  header.ylen = (this->GetNumberOfDimensions() >= 2) ? m_Spacing[1] * static_cast<float>(header.my) : 1;
+  header.zlen = (this->GetNumberOfDimensions() >= 3) ? m_Spacing[2] * static_cast<float>(header.mz) : 1;
 
   header.xorg = m_Origin[0];
   header.yorg = (this->GetNumberOfDimensions() >= 2) ? m_Origin[1] : 0;
   header.zorg = (this->GetNumberOfDimensions() >= 3) ? m_Origin[2] : 0;
 
-  // the SetHeader method is used to set the all the internal variable
+  // the SetHeader method is used to set all the internal variable
   // of the header object correctly, and the data is verified
   m_MRCHeader = MRCHeaderObject::New();
   if (!m_MRCHeader->SetHeader(&header))
@@ -473,7 +470,7 @@ MRCImageIO::WriteImageInformation(const void * buffer)
 }
 
 void
-MRCImageIO ::UpdateHeaderWithMinMaxMean(const void * bufferBegin)
+MRCImageIO::UpdateHeaderWithMinMaxMean(const void * bufferBegin)
 {
   // fixed types defined by header
   const MRCHeaderObject::Header & header = m_MRCHeader->GetHeader();
@@ -544,7 +541,7 @@ MRCImageIO ::UpdateHeaderWithMinMaxMean(const void * bufferBegin)
 }
 
 void
-MRCImageIO ::Write(const void * buffer)
+MRCImageIO::Write(const void * buffer)
 {
   if (this->RequestedToStream())
   {

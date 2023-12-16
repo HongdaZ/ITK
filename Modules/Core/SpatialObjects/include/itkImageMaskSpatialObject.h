@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class ImageMaskSpatialObject
+ * \class ImageMaskSpatialObject
  * \brief Implementation of an image mask as spatial object.
  *
  * This class derives from the ImageSpatialObject and overloads the
@@ -45,24 +45,24 @@ template <unsigned int TDimension = 3, typename TPixel = unsigned char>
 class ITK_TEMPLATE_EXPORT ImageMaskSpatialObject : public ImageSpatialObject<TDimension, TPixel>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageMaskSpatialObject);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageMaskSpatialObject);
 
   using Self = ImageMaskSpatialObject<TDimension, TPixel>;
   using Superclass = ImageSpatialObject<TDimension, TPixel>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
-  using ScalarType = typename Superclass::ScalarType;
-  using PixelType = typename Superclass::PixelType;
-  using ImageType = typename Superclass::ImageType;
-  using ImagePointer = typename Superclass::ImagePointer;
-  using IndexType = typename Superclass::IndexType;
-  using RegionType = typename Superclass::RegionType;
-  using SizeType = typename Superclass::SizeType;
-  using TransformType = typename Superclass::TransformType;
-  using PointType = typename Superclass::PointType;
-  using BoundingBoxType = typename Superclass::BoundingBoxType;
-  using InterpolatorType = typename Superclass::InterpolatorType;
+  using typename Superclass::ScalarType;
+  using typename Superclass::PixelType;
+  using typename Superclass::ImageType;
+  using typename Superclass::ImagePointer;
+  using typename Superclass::IndexType;
+  using typename Superclass::RegionType;
+  using typename Superclass::SizeType;
+  using typename Superclass::TransformType;
+  using typename Superclass::PointType;
+  using typename Superclass::BoundingBoxType;
+  using typename Superclass::InterpolatorType;
 
   using SliceIteratorType = itk::ImageSliceConstIteratorWithIndex<ImageType>;
 

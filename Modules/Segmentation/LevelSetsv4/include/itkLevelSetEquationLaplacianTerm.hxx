@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkLevelSetEquationLaplacianTerm_hxx
 #define itkLevelSetEquationLaplacianTerm_hxx
 
-#include "itkLevelSetEquationLaplacianTerm.h"
 
 namespace itk
 {
@@ -64,8 +63,9 @@ LevelSetEquationLaplacianTerm<TInput, TLevelSetContainer>::LaplacianSpeed(
 }
 
 template <typename TInput, typename TLevelSetContainer>
-typename LevelSetEquationLaplacianTerm<TInput, TLevelSetContainer>::LevelSetOutputRealType
+auto
 LevelSetEquationLaplacianTerm<TInput, TLevelSetContainer>::Value(const LevelSetInputIndexType & iP)
+  -> LevelSetOutputRealType
 {
   LevelSetOutputRealType laplacian = this->m_CurrentLevelSetPointer->EvaluateLaplacian(iP);
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,12 +19,12 @@
 #define itkRegularStepGradientDescentOptimizerv4_h
 
 #include "itkGradientDescentOptimizerv4.h"
-#include <itkCompensatedSummation.h>
+#include "itkCompensatedSummation.h"
 
 namespace itk
 {
 /**
- *\class RegularStepGradientDescentOptimizerv4
+ * \class RegularStepGradientDescentOptimizerv4
  *  \brief Regular Step Gradient descent optimizer.
  *
  *   This optimizer is a variant of gradient descent that attempts to prevent it
@@ -43,12 +43,12 @@ namespace itk
  *
  * \ingroup ITKOptimizersv4
  */
-template <typename TInternalComputationValueType>
+template <typename TInternalComputationValueType = double>
 class ITK_TEMPLATE_EXPORT RegularStepGradientDescentOptimizerv4
   : public GradientDescentOptimizerv4Template<TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegularStepGradientDescentOptimizerv4);
+  ITK_DISALLOW_COPY_AND_MOVE(RegularStepGradientDescentOptimizerv4);
 
   /** Standard class type aliases. */
   using Self = RegularStepGradientDescentOptimizerv4;
@@ -67,13 +67,13 @@ public:
   using InternalComputationValueType = TInternalComputationValueType;
 
   /** Derivative type. */
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeType;
 
   /** Metric type over which this class is templated. */
-  using MeasureType = typename Superclass::MeasureType;
-  using IndexRangeType = typename Superclass::IndexRangeType;
-  using ScalesType = typename Superclass::ScalesType;
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::IndexRangeType;
+  using typename Superclass::ScalesType;
+  using typename Superclass::ParametersType;
 
   /** Compensated summation type. */
   using CompensatedSummationType = CompensatedSummation<InternalComputationValueType>;

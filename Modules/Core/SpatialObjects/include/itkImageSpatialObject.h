@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class ImageSpatialObject
+ * \class ImageSpatialObject
  * \brief Implementation of an image as spatial object.
  *
  * This class combines functionalities from a spatial object,
@@ -40,7 +40,7 @@ template <unsigned int TDimension = 3, typename TPixelType = unsigned char>
 class ITK_TEMPLATE_EXPORT ImageSpatialObject : public SpatialObject<TDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageSpatialObject);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageSpatialObject);
 
   using ScalarType = double;
   using Self = ImageSpatialObject<TDimension, TPixelType>;
@@ -53,7 +53,7 @@ public:
   using ImageType = Image<PixelType, TDimension>;
   using ImagePointer = typename ImageType::ConstPointer;
   using IndexType = typename ImageType::IndexType;
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
   using InterpolatorType = InterpolateImageFunction<ImageType>;
 
   using NNInterpolatorType = NearestNeighborInterpolateImageFunction<ImageType>;

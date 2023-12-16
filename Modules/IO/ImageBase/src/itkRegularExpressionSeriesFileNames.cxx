@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,9 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkRegularExpressionSeriesFileNames_cxx
-#define _itkRegularExpressionSeriesFileNames_cxx
-
 
 #include <algorithm>
 
@@ -47,7 +44,7 @@ struct lt_pair_alphabetic_string_string
 namespace itk
 {
 const std::vector<std::string> &
-RegularExpressionSeriesFileNames ::GetFileNames()
+RegularExpressionSeriesFileNames::GetFileNames()
 {
   // Validate the ivars
   if (m_Directory.empty())
@@ -72,7 +69,7 @@ RegularExpressionSeriesFileNames ::GetFileNames()
 
   // Scan directory for files. Each file is checked to see if it
   // matches the m_RegularExpression.
-  for (unsigned long i = 0; i < fileDir.GetNumberOfFiles(); i++)
+  for (unsigned long i = 0; i < fileDir.GetNumberOfFiles(); ++i)
   {
     // Only read files
     if (itksys::SystemTools::FileIsDirectory((m_Directory + "/" + fileDir.GetFile(i)).c_str()))
@@ -106,14 +103,14 @@ RegularExpressionSeriesFileNames ::GetFileNames()
   std::vector<std::pair<std::string, std::string>>::iterator siter;
   for (siter = sortedBySubMatch.begin(); siter != sortedBySubMatch.end(); ++siter)
   {
-    m_FileNames.push_back((*siter).first);
+    m_FileNames.push_back(siter->first);
   }
 
   return m_FileNames;
 }
 
 void
-RegularExpressionSeriesFileNames ::PrintSelf(std::ostream & os, Indent indent) const
+RegularExpressionSeriesFileNames::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
@@ -122,11 +119,9 @@ RegularExpressionSeriesFileNames ::PrintSelf(std::ostream & os, Indent indent) c
   os << indent << "NumericSort: " << m_NumericSort << std::endl;
   os << indent << "RegularExpression: " << m_RegularExpression << std::endl;
 
-  for (unsigned int i = 0; i < m_FileNames.size(); i++)
+  for (unsigned int i = 0; i < m_FileNames.size(); ++i)
   {
     os << indent << "FileNames[" << i << "]: " << m_FileNames[i] << std::endl;
   }
 }
 } // namespace itk
-
-#endif

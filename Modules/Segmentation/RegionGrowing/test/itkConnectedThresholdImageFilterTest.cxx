@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ itkConnectedThresholdImageFilterTest(int argc, char * argv[])
               << "seed_x seed_y "
               << "LowerConnectedThreshold UpperConnectedThreshold "
               << "Connectivity[1=Full,0=Face]" << std::endl;
-    return -1;
+    return EXIT_FAILURE;
   }
 
 
@@ -56,7 +56,7 @@ itkConnectedThresholdImageFilterTest(int argc, char * argv[])
   // Create the filter
   using ConnectedThresholdImageFilterType = itk::ConnectedThresholdImageFilter<ImageType, ImageType>;
 
-  ConnectedThresholdImageFilterType::Pointer connectedThresholdFilter = ConnectedThresholdImageFilterType::New();
+  auto connectedThresholdFilter = ConnectedThresholdImageFilterType::New();
 
   itk::SimpleFilterWatcher watcher(connectedThresholdFilter);
 

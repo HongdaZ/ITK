@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -90,7 +90,7 @@ main(int argc, char * argv[])
   using CastingFilterType =
     itk::CastImageFilter<InternalImageType, OutputImageType>;
 
-  CastingFilterType::Pointer caster = CastingFilterType::New();
+  auto caster = CastingFilterType::New();
 
 
   // We instantiate reader and writer types
@@ -98,8 +98,8 @@ main(int argc, char * argv[])
   using ReaderType = itk::ImageFileReader<InternalImageType>;
   using WriterType = itk::ImageFileWriter<OutputImageType>;
 
-  ReaderType::Pointer reader = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
+  auto reader = ReaderType::New();
+  auto writer = WriterType::New();
 
   reader->SetFileName(argv[1]);
   writer->SetFileName(argv[2]);
@@ -107,8 +107,7 @@ main(int argc, char * argv[])
 
   using CurvatureFlowImageFilterType =
     itk::CurvatureFlowImageFilter<InternalImageType, InternalImageType>;
-  CurvatureFlowImageFilterType::Pointer smoothing =
-    CurvatureFlowImageFilterType::New();
+  auto smoothing = CurvatureFlowImageFilterType::New();
 
 
   //  Software Guide : BeginLatex
@@ -131,7 +130,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  ConnectedFilterType::Pointer isolatedConnected = ConnectedFilterType::New();
+  auto isolatedConnected = ConnectedFilterType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -265,8 +264,9 @@ main(int argc, char * argv[])
   //  \begin{center}
   //  \begin{tabular}{|l|c|c|c|c|}
   //  \hline
-  //  Adjacent Structures & Seed1 & Seed2 & Lower & Isolated value found \\
-  //  \hline Gray matter vs White matter & $(61,140)$ & $(63,43)$ & $150$ &
+  //  Adjacent Structures & Seed1 & Seed2 & Lower &
+  //  Isolated value found \\ \hline
+  //  Gray matter vs White matter & $(61,140)$ & $(63,43)$ & $150$ &
   //  $183.31$  \\ \hline \end{tabular} \end{center}
   //  \itkcaption[IsolatedConnectedImageFilter example parameters]{Parameters
   //  used for separating white matter from gray matter in
@@ -274,18 +274,16 @@ main(int argc, char * argv[])
   //  IsolatedConnectedImageFilter.\label{tab:IsolatedConnectedImageFilterOutput}}
   //  \end{table}
   //
-  // \begin{figure} \center
-  // \includegraphics[width=0.32\textwidth]{BrainProtonDensitySlice}
-  // \includegraphics[width=0.32\textwidth]{IsolatedConnectedImageFilterOutput0}
-  // \includegraphics[width=0.32\textwidth]{IsolatedConnectedImageFilterOutput1}
-  // \itkcaption[IsolatedConnected segmentation results]{Segmentation results
-  // of the IsolatedConnectedImageFilter.}
-  // \label{fig:IsolatedConnectedImageFilterOutput}
-  // \end{figure}
-  //
+  //  \begin{figure} \center
+  //  \includegraphics[width=0.32\textwidth]{BrainProtonDensitySlice}
+  //  \includegraphics[width=0.32\textwidth]{IsolatedConnectedImageFilterOutput0}
+  //  \includegraphics[width=0.32\textwidth]{IsolatedConnectedImageFilterOutput1}
+  //  \itkcaption[IsolatedConnected segmentation results]{Segmentation results
+  //  of the IsolatedConnectedImageFilter.}
+  //  \label{fig:IsolatedConnectedImageFilterOutput}
+  //  \end{figure}
   //
   //  Software Guide : EndLatex
-
 
   return EXIT_SUCCESS;
 }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,7 +50,7 @@ template <typename THistogram, typename TImage, typename TFunction>
 class ITK_TEMPLATE_EXPORT HistogramToImageFilter : public ImageSource<TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HistogramToImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(HistogramToImageFilter);
 
   /** Standard class type aliases. */
   using FunctorType = TFunction;
@@ -75,7 +75,7 @@ public:
   itkTypeMacro(HistogramToImageFilter, ImageSource);
 
   /** Superclass type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
 
   /** Some convenient type alias. */
   using HistogramType = THistogram;
@@ -89,7 +89,7 @@ public:
   /** Set/Get the input of this process object.  */
   using Superclass::SetInput;
   virtual void
-  SetInput(const HistogramType * histogram);
+  SetInput(const HistogramType * input);
 
   const HistogramType *
   GetInput();

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ itkHistogramToTextureFeaturesFilterTest(int, char *[])
   //------------------------------------------------------
   using MeasurementType = float;
   using HistogramType = itk::Statistics::Histogram<MeasurementType>;
-  HistogramType::Pointer histogram = HistogramType::New();
+  auto histogram = HistogramType::New();
 
   constexpr unsigned int measurementVectorSize = 2;
 
@@ -101,7 +101,7 @@ itkHistogramToTextureFeaturesFilterTest(int, char *[])
 
   using HistogramToTextureFeaturesFilterType = itk::Statistics::HistogramToTextureFeaturesFilter<HistogramType>;
 
-  HistogramToTextureFeaturesFilterType::Pointer filter = HistogramToTextureFeaturesFilterType::New();
+  auto filter = HistogramToTextureFeaturesFilterType::New();
 
   std::cout << filter->GetNameOfClass() << std::endl;
   filter->Print(std::cout);
@@ -304,7 +304,7 @@ itkHistogramToTextureFeaturesFilterTest(int, char *[])
   if (filter->GetFeature(itk::Statistics::HistogramToTextureFeaturesFilterEnums::TextureFeature::InvalidFeatureName))
   {
     std::cerr << "Error: " << std::endl;
-    std::cerr << "GetFeature() is returing non-zero feature value: "
+    std::cerr << "GetFeature() is returning non-zero feature value: "
               << "for invalid feature request" << std::endl;
     passed = false;
   }

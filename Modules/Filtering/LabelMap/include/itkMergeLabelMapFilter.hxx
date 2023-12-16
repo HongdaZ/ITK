@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMergeLabelMapFilter_hxx
 #define itkMergeLabelMapFilter_hxx
 
-#include "itkMergeLabelMapFilter.h"
 #include "itkProgressReporter.h"
 #include <deque>
 
@@ -77,7 +76,7 @@ MergeLabelMapFilter<TImage>::MergeWithKeep()
 
   ProgressReporter progress(this, 0, 1);
 
-  for (unsigned int i = 1; i < this->GetNumberOfIndexedInputs(); i++)
+  for (unsigned int i = 1; i < this->GetNumberOfIndexedInputs(); ++i)
   {
     typename ImageType::ConstIterator it2(this->GetInput(i));
     while (!it2.IsAtEnd())
@@ -120,7 +119,7 @@ MergeLabelMapFilter<TImage>::MergeWithStrict()
 
   ProgressReporter progress(this, 0, 1);
 
-  for (unsigned int i = 1; i < this->GetNumberOfIndexedInputs(); i++)
+  for (unsigned int i = 1; i < this->GetNumberOfIndexedInputs(); ++i)
   {
     typename ImageType::ConstIterator it2(this->GetInput(i));
     while (!it2.IsAtEnd())
@@ -165,7 +164,7 @@ MergeLabelMapFilter<TImage>::MergeWithAggregate()
 
   ProgressReporter progress(this, 0, 1);
 
-  for (unsigned int i = 1; i < this->GetNumberOfIndexedInputs(); i++)
+  for (unsigned int i = 1; i < this->GetNumberOfIndexedInputs(); ++i)
   {
     typename ImageType::ConstIterator it2(this->GetInput(i));
     while (!it2.IsAtEnd())
@@ -227,11 +226,11 @@ MergeLabelMapFilter<TImage>::MergeWithPack()
 
     // go to the next label
     progress.CompletedPixel();
-    it++;
+    ++it;
   }
 
   // now, the next images
-  for (unsigned int i = 1; i < this->GetNumberOfIndexedInputs(); i++)
+  for (unsigned int i = 1; i < this->GetNumberOfIndexedInputs(); ++i)
   {
     typename ImageType::ConstIterator it2(this->GetInput(i));
     while (!it2.IsAtEnd())

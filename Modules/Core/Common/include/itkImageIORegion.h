@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,9 +58,9 @@ public:
 
   /** these types correspond to those of itk::Size, itk::Offset and itk::Index
    */
-  using SizeValueType = ::itk::SizeValueType;
-  using IndexValueType = ::itk::IndexValueType;
-  using OffsetValueType = ::itk::OffsetValueType;
+  using SizeValueType = itk::SizeValueType;
+  using IndexValueType = itk::IndexValueType;
+  using OffsetValueType = itk::OffsetValueType;
 
   /** Index type alias support An index is used to access pixel values. */
   using IndexType = std::vector<IndexValueType>;
@@ -156,15 +156,13 @@ public:
   bool
   operator==(const Self & region) const;
 
-  /** Compare two regions. */
-  bool
-  operator!=(const Self & region) const;
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
 
   /** Test if an index is inside */
   bool
   IsInside(const IndexType & index) const;
 
-  /** Test if a region (the argument) is completly inside of this region */
+  /** Test if a region (the argument) is completely inside of this region */
   bool
   IsInside(const Self & region) const;
 

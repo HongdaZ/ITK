@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,7 +45,7 @@ template <unsigned int VDimension>
 class ITK_TEMPLATE_EXPORT ThreadedImageRegionPartitioner : public ThreadedDomainPartitioner<ImageRegion<VDimension>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ThreadedImageRegionPartitioner);
+  ITK_DISALLOW_COPY_AND_MOVE(ThreadedImageRegionPartitioner);
 
   /** Standard class type aliases. */
   using Self = ThreadedImageRegionPartitioner;
@@ -60,13 +60,13 @@ public:
   itkTypeMacro(ThreadedImageRegionPartitioner, ThreadedDomainPartitioner);
 
   /** Type of the object being threaded over */
-  using DomainType = typename Superclass::DomainType;
+  using typename Superclass::DomainType;
 
   /** Deprecated type alias. */
   static constexpr unsigned int ImageDimension = VDimension;
   using ImageRegionType = typename Self::DomainType;
-  using SizeType = typename Self::DomainType::SizeType;
-  using IndexType = typename Self::DomainType::IndexType;
+  using SizeType = typename ImageRegionType::SizeType;
+  using IndexType = typename ImageRegionType::IndexType;
 
   /** Split the ImageRegion \c completeRegion into up to \c requestedTotal
    * non-overlapping subregions, setting subregion number \c threadId as

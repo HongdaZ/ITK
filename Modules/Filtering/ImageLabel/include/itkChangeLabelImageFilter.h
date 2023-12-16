@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class ChangeLabelImageFilter
+ * \class ChangeLabelImageFilter
  *
  * \brief Change Sets of Labels
  *
@@ -59,21 +59,14 @@ public:
 
   using ChangeMapType = std::map<TInput, TOutput>;
 
-  bool
-  operator!=(const ChangeLabel & other) const
-  {
-    if (m_ChangeMap != other.m_ChangeMap)
-    {
-      return true;
-    }
-    return false;
-  }
 
   bool
   operator==(const ChangeLabel & other) const
   {
-    return !(*this != other);
+    return m_ChangeMap == other.m_ChangeMap;
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ChangeLabel);
 
   TOutput
   GetChange(const TInput & original)
@@ -123,7 +116,7 @@ class ITK_TEMPLATE_EXPORT ChangeLabelImageFilter
       Functor::ChangeLabel<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ChangeLabelImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ChangeLabelImageFilter);
 
   /** Standard class type aliases. */
   using Self = ChangeLabelImageFilter;

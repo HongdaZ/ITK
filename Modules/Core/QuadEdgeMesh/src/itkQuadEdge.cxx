@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,14 +20,14 @@
 namespace itk
 {
 // ---------------------------------------------------------------------
-QuadEdge ::QuadEdge()
+QuadEdge::QuadEdge()
 {
   this->m_Onext = this;
   this->m_Rot = nullptr;
 }
 
 // ---------------------------------------------------------------------
-QuadEdge ::~QuadEdge()
+QuadEdge::~QuadEdge()
 {
   this->m_Onext = nullptr;
   this->m_Rot = nullptr;
@@ -35,7 +35,7 @@ QuadEdge ::~QuadEdge()
 
 // ---------------------------------------------------------------------
 QuadEdge *
-QuadEdge ::GetLnext()
+QuadEdge::GetLnext()
 {
 #ifdef NDEBUG
   return this->GetInvRot()->GetOnext()->GetRot();
@@ -64,7 +64,7 @@ QuadEdge ::GetLnext()
 
 // ---------------------------------------------------------------------
 const QuadEdge *
-QuadEdge ::GetLnext() const
+QuadEdge::GetLnext() const
 {
 #ifdef NDEBUG
   return this->GetInvRot()->GetOnext()->GetRot();
@@ -93,7 +93,7 @@ QuadEdge ::GetLnext() const
 
 // ---------------------------------------------------------------------
 QuadEdge *
-QuadEdge ::GetRnext()
+QuadEdge::GetRnext()
 {
 #ifdef NDEBUG
   return this->GetRot()->GetOnext()->GetInvRot();
@@ -122,7 +122,7 @@ QuadEdge ::GetRnext()
 
 // ---------------------------------------------------------------------
 const QuadEdge *
-QuadEdge ::GetRnext() const
+QuadEdge::GetRnext() const
 {
 #ifdef NDEBUG
   return this->GetRot()->GetOnext()->GetInvRot();
@@ -151,7 +151,7 @@ QuadEdge ::GetRnext() const
 
 // ---------------------------------------------------------------------
 QuadEdge *
-QuadEdge ::GetDnext()
+QuadEdge::GetDnext()
 {
 #ifdef NDEBUG
   return this->GetSym()->GetOnext()->GetSym();
@@ -180,7 +180,7 @@ QuadEdge ::GetDnext()
 
 // ---------------------------------------------------------------------
 const QuadEdge *
-QuadEdge ::GetDnext() const
+QuadEdge::GetDnext() const
 {
 #ifdef NDEBUG
   return this->GetSym()->GetOnext()->GetSym();
@@ -209,7 +209,7 @@ QuadEdge ::GetDnext() const
 
 // ---------------------------------------------------------------------
 QuadEdge *
-QuadEdge ::GetOprev()
+QuadEdge::GetOprev()
 {
 #ifdef NDEBUG
   return this->GetRot()->GetOnext()->GetRot();
@@ -238,7 +238,7 @@ QuadEdge ::GetOprev()
 
 // ---------------------------------------------------------------------
 const QuadEdge *
-QuadEdge ::GetOprev() const
+QuadEdge::GetOprev() const
 {
 #ifdef NDEBUG
   return this->GetRot()->GetOnext()->GetRot();
@@ -267,7 +267,7 @@ QuadEdge ::GetOprev() const
 
 // ---------------------------------------------------------------------
 QuadEdge *
-QuadEdge ::GetLprev()
+QuadEdge::GetLprev()
 {
 #ifdef NDEBUG
   return this->GetOnext()->GetSym();
@@ -290,7 +290,7 @@ QuadEdge ::GetLprev()
 
 // ---------------------------------------------------------------------
 const QuadEdge *
-QuadEdge ::GetLprev() const
+QuadEdge::GetLprev() const
 {
 #ifdef NDEBUG
   return this->GetOnext()->GetSym();
@@ -313,7 +313,7 @@ QuadEdge ::GetLprev() const
 
 // ---------------------------------------------------------------------
 QuadEdge *
-QuadEdge ::GetRprev()
+QuadEdge::GetRprev()
 {
 #ifdef NDEBUG
   return this->GetSym()->GetOnext();
@@ -336,7 +336,7 @@ QuadEdge ::GetRprev()
 
 // ---------------------------------------------------------------------
 const QuadEdge *
-QuadEdge ::GetRprev() const
+QuadEdge::GetRprev() const
 {
 #ifdef NDEBUG
   return this->GetSym()->GetOnext();
@@ -359,7 +359,7 @@ QuadEdge ::GetRprev() const
 
 // ---------------------------------------------------------------------
 QuadEdge *
-QuadEdge ::GetDprev()
+QuadEdge::GetDprev()
 {
 #ifdef NDEBUG
   return this->GetInvRot()->GetOnext()->GetInvRot();
@@ -388,7 +388,7 @@ QuadEdge ::GetDprev()
 
 // ---------------------------------------------------------------------
 const QuadEdge *
-QuadEdge ::GetDprev() const
+QuadEdge::GetDprev() const
 {
 #ifdef NDEBUG
   return this->GetInvRot()->GetOnext()->GetInvRot();
@@ -416,7 +416,7 @@ QuadEdge ::GetDprev() const
 }
 
 bool
-QuadEdge ::IsEdgeInOnextRing(Self * testEdge) const
+QuadEdge::IsEdgeInOnextRing(Self * testEdge) const
 {
   if (!this->IsIsolated())
   {
@@ -431,18 +431,18 @@ QuadEdge ::IsEdgeInOnextRing(Self * testEdge) const
       {
         return true;
       }
-      it++;
+      ++it;
     }
   }
   return false;
 }
 
 bool
-QuadEdge ::IsLnextGivenSizeCyclic(const int size) const
+QuadEdge::IsLnextGivenSizeCyclic(const int size) const
 {
   const Self * iterated = this;
 
-  for (int i = 0; i < size; i++)
+  for (int i = 0; i < size; ++i)
   {
     iterated = iterated->GetLnext();
     if (!iterated)
@@ -454,7 +454,7 @@ QuadEdge ::IsLnextGivenSizeCyclic(const int size) const
 }
 
 unsigned int
-QuadEdge ::GetOrder() const
+QuadEdge::GetOrder() const
 {
   if (!(this->IsIsolated()))
   {
@@ -462,7 +462,7 @@ QuadEdge ::GetOrder() const
     const Self * it = this->GetOnext();
     while (it && it != this)
     {
-      order++;
+      ++order;
       it = it->GetOnext();
     }
     return order;

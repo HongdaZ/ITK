@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class SpatialNeighborSubsampler
+ * \class SpatialNeighborSubsampler
  * \brief A subsampler that selects all points
  * within the specified radius of the query point.
  *
@@ -51,7 +51,7 @@ template <typename TSample, typename TRegion>
 class ITK_TEMPLATE_EXPORT SpatialNeighborSubsampler : public RegionConstrainedSubsampler<TSample, TRegion>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SpatialNeighborSubsampler);
+  ITK_DISALLOW_COPY_AND_MOVE(SpatialNeighborSubsampler);
 
   /** Standard class type aliases */
   using Self = SpatialNeighborSubsampler<TSample, TRegion>;
@@ -67,21 +67,21 @@ public:
   itkNewMacro(Self);
 
   /** type alias alias for the source data container */
-  using SampleType = typename Superclass::SampleType;
-  using SampleConstPointer = typename Superclass::SampleConstPointer;
-  using MeasurementVectorType = typename Superclass::MeasurementVectorType;
-  using InstanceIdentifier = typename Superclass::InstanceIdentifier;
+  using typename Superclass::SampleType;
+  using typename Superclass::SampleConstPointer;
+  using typename Superclass::MeasurementVectorType;
+  using typename Superclass::InstanceIdentifier;
 
-  using SubsampleType = typename Superclass::SubsampleType;
-  using SubsamplePointer = typename Superclass::SubsamplePointer;
-  using SubsampleConstIterator = typename Superclass::SubsampleConstIterator;
-  using InstanceIdentifierHolder = typename Superclass::InstanceIdentifierHolder;
+  using typename Superclass::SubsampleType;
+  using typename Superclass::SubsamplePointer;
+  using typename Superclass::SubsampleConstIterator;
+  using typename Superclass::InstanceIdentifierHolder;
 
   /** type alias related to region */
-  using RegionType = typename Superclass::RegionType;
-  using IndexType = typename Superclass::IndexType;
-  using IndexValueType = typename Superclass::IndexValueType;
-  using SizeType = typename Superclass::SizeType;
+  using typename Superclass::RegionType;
+  using typename Superclass::IndexType;
+  using typename Superclass::IndexValueType;
+  using typename Superclass::SizeType;
   using RadiusType = typename RegionType::SizeType;
 
   static constexpr unsigned int ImageDimension = RegionType::ImageDimension;

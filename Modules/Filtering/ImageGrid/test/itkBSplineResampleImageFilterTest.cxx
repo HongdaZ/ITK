@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,7 +62,7 @@ PrintImageData(ImageTypePtr2D imgPtr)
   int dim = ImageType2D::ImageDimension;
 
   std::cout << "Spacing: " << std::endl;
-  for (int n = 0; n < dim; n++)
+  for (int n = 0; n < dim; ++n)
   {
     std::cout << imgPtr->GetSpacing()[n] << ", ";
   }
@@ -73,9 +73,9 @@ PrintImageData(ImageTypePtr2D imgPtr)
   SizeType2D size = imgPtr->GetLargestPossibleRegion().GetSize();
 
   std::cout << "Data: " << std::endl;
-  for (int n = 0; n < dim - 1; n++)
+  for (int n = 0; n < dim - 1; ++n)
   {
-    for (unsigned int jj = 0; jj < size[n + 1]; jj++)
+    for (unsigned int jj = 0; jj < size[n + 1]; ++jj)
     {
 
       while (!outIt.IsAtEndOfLine())
@@ -273,10 +273,10 @@ test2D_Standard_l2_NthOrderSpline_filter(unsigned int splineOrder)
   using DownsamplerType2D = itk::BSplineDownsampleImageFilter<ImageType2D, ImageType2D>;
   using UpsamplerType2D = itk::BSplineUpsampleImageFilter<ImageType2D, ImageType2D>;
 
-  DownsamplerType2D::Pointer downSampler = DownsamplerType2D::New();
-  itk::SimpleFilterWatcher   downWatcher(downSampler, "test2D_Standard_l2_filter");
+  auto                     downSampler = DownsamplerType2D::New();
+  itk::SimpleFilterWatcher downWatcher(downSampler, "test2D_Standard_l2_filter");
 
-  UpsamplerType2D::Pointer upSampler = UpsamplerType2D::New();
+  auto                     upSampler = UpsamplerType2D::New();
   itk::SimpleFilterWatcher upWatcher(upSampler, "test2D_Standard_l2_filter");
 
   downSampler->SetSplineOrder(splineOrder);
@@ -343,10 +343,10 @@ test2D_Standard_L2_NthOrderSpline_filter(unsigned int splineOrder)
   using DownsamplerType2D = itk::BSplineDownsampleImageFilter<ImageType2D, ImageType2D, ResamplerType>;
   using UpsamplerType2D = itk::BSplineUpsampleImageFilter<ImageType2D, ImageType2D, ResamplerType>;
 
-  DownsamplerType2D::Pointer downSampler = DownsamplerType2D::New();
-  itk::SimpleFilterWatcher   downWatcher(downSampler, "test2D_Standard_L2_filter");
+  auto                     downSampler = DownsamplerType2D::New();
+  itk::SimpleFilterWatcher downWatcher(downSampler, "test2D_Standard_L2_filter");
 
-  UpsamplerType2D::Pointer upSampler = UpsamplerType2D::New();
+  auto                     upSampler = UpsamplerType2D::New();
   itk::SimpleFilterWatcher upWatcher(upSampler, "test2D_Standard_L2_filter");
 
   downSampler->SetSplineOrder(splineOrder);
@@ -412,10 +412,10 @@ test2D_Centered_l2_NthOrderSpline_filter(unsigned int splineOrder)
   using DownsamplerType2D = itk::BSplineDownsampleImageFilter<ImageType2D, ImageType2D, ResamplerType>;
   using UpsamplerType2D = itk::BSplineUpsampleImageFilter<ImageType2D, ImageType2D, ResamplerType>;
 
-  DownsamplerType2D::Pointer downSampler = DownsamplerType2D::New();
-  itk::SimpleFilterWatcher   downWatcher(downSampler, "test2D_Centered_l2_filter");
-  UpsamplerType2D::Pointer   upSampler = UpsamplerType2D::New();
-  itk::SimpleFilterWatcher   upWatcher(upSampler, "test2D_Centered_l2_filter");
+  auto                     downSampler = DownsamplerType2D::New();
+  itk::SimpleFilterWatcher downWatcher(downSampler, "test2D_Centered_l2_filter");
+  auto                     upSampler = UpsamplerType2D::New();
+  itk::SimpleFilterWatcher upWatcher(upSampler, "test2D_Centered_l2_filter");
   downSampler->SetSplineOrder(splineOrder);
   upSampler->SetSplineOrder(splineOrder);
 
@@ -486,9 +486,9 @@ testIntInputDoubleOutput()
 
   using UpsamplerType2D = itk::BSplineUpsampleImageFilter<ImageType2D, ImageType2D, ResamplerType2>;
 
-  DownsamplerType2D::Pointer downSampler = DownsamplerType2D::New();
-  UpsamplerType2D::Pointer   upSampler = UpsamplerType2D::New();
-  int                        splineOrder = 3;
+  auto downSampler = DownsamplerType2D::New();
+  auto upSampler = UpsamplerType2D::New();
+  int  splineOrder = 3;
   downSampler->SetSplineOrder(splineOrder);
   upSampler->SetSplineOrder(splineOrder);
 
@@ -536,10 +536,10 @@ test2D_Centered_L2_NthOrderSpline_filter(unsigned int splineOrder)
   using DownsamplerType2D = itk::BSplineDownsampleImageFilter<ImageType2D, ImageType2D, ResamplerType>;
   using UpsamplerType2D = itk::BSplineUpsampleImageFilter<ImageType2D, ImageType2D, ResamplerType>;
 
-  DownsamplerType2D::Pointer downSampler = DownsamplerType2D::New();
-  itk::SimpleFilterWatcher   downWatcher(downSampler, "test2D_Centered_L2_filter");
-  UpsamplerType2D::Pointer   upSampler = UpsamplerType2D::New();
-  itk::SimpleFilterWatcher   upWatcher(upSampler, "test2D_Centered_L2_filter");
+  auto                     downSampler = DownsamplerType2D::New();
+  itk::SimpleFilterWatcher downWatcher(downSampler, "test2D_Centered_L2_filter");
+  auto                     upSampler = UpsamplerType2D::New();
+  itk::SimpleFilterWatcher upWatcher(upSampler, "test2D_Centered_L2_filter");
   // int splineOrder = 2;
   downSampler->SetSplineOrder(splineOrder);
   upSampler->SetSplineOrder(splineOrder);

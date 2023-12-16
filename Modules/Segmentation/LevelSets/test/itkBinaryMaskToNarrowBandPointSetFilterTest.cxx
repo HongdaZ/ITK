@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,10 +19,19 @@
 #include "itkBinaryMaskToNarrowBandPointSetFilter.h"
 #include "itkPointSet.h"
 #include "itkImageRegionIterator.h"
+#include "itkTestingMacros.h"
 
 int
-itkBinaryMaskToNarrowBandPointSetFilterTest(int, char *[])
+itkBinaryMaskToNarrowBandPointSetFilterTest(int argc, char * argv[])
 {
+  if (argc != 2)
+  {
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << itkNameOfTestExecutableMacro(argv) << " bandWidth" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   constexpr unsigned int Dimension = 2;
 
   using BinaryMaskPixelType = unsigned char;
@@ -33,7 +42,7 @@ itkBinaryMaskToNarrowBandPointSetFilterTest(int, char *[])
   //
   //  Initialize an image with a white square in a black background
   //
-  BinaryMaskImageType::Pointer binaryMask = BinaryMaskImageType::New();
+  auto binaryMask = BinaryMaskImageType::New();
 
   BinaryMaskImageType::SizeType   size;
   BinaryMaskImageType::IndexType  index;
@@ -76,7 +85,14 @@ itkBinaryMaskToNarrowBandPointSetFilterTest(int, char *[])
 
   using GeneratorType = itk::BinaryMaskToNarrowBandPointSetFilter<BinaryMaskImageType, PointSetType>;
 
-  GeneratorType::Pointer narrowBandGenerator = GeneratorType::New();
+  auto narrowBandGenerator = GeneratorType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(narrowBandGenerator, BinaryMaskToNarrowBandPointSetFilter, ImageToMeshFilter);
+
+
+  auto bandWidth = std::stod(argv[1]);
+  narrowBandGenerator->SetBandWidth(bandWidth);
+  ITK_TEST_SET_GET_VALUE(bandWidth, narrowBandGenerator->GetBandWidth());
 
   narrowBandGenerator->SetInput(binaryMask);
 
@@ -120,7 +136,7 @@ itkBinaryMaskToNarrowBandPointSetFilterTest(int, char *[])
 
     const PointType & p = point.Value();
 
-    binaryMask->TransformPhysicalPointToIndex(p, index);
+    index = binaryMask->TransformPhysicalPointToIndex(p);
 
     if ((!binaryMask->GetPixel(index) && data.Value() > 0) || (binaryMask->GetPixel(index) && data.Value() < 0))
     {

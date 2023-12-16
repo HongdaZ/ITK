@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -83,12 +83,12 @@ itkFixedArrayTest(int, char *[])
   // Test Get/Set element
   constexpr unsigned int           n = 20;
   itk::FixedArray<unsigned int, n> array20;
-  for (unsigned int i = 0; i < n; i++)
+  for (unsigned int i = 0; i < n; ++i)
   {
     array20.SetElement(i, i);
   }
 
-  for (unsigned int k = 0; k < n; k++)
+  for (unsigned int k = 0; k < n; ++k)
   {
     if (array20.GetElement(k) != k)
     {
@@ -137,15 +137,17 @@ itkFixedArrayTest(int, char *[])
   }
 
   // Try all index types
-#define TRY_INDEX_CONST(T)                                                                                             \
-  {                                                                                                                    \
-    T in = 10;                                                                                                         \
-    if (array20[in] != 10)                                                                                             \
-    {                                                                                                                  \
-      std::cerr << "index failed" << std::endl;                                                                        \
-      return EXIT_FAILURE;                                                                                             \
-    }                                                                                                                  \
-  }
+#define TRY_INDEX_CONST(T)                      \
+  {                                             \
+    T in = 10;                                  \
+    if (array20[in] != 10)                      \
+    {                                           \
+      std::cerr << "index failed" << std::endl; \
+      return EXIT_FAILURE;                      \
+    }                                           \
+  }                                             \
+  ITK_MACROEND_NOOP_STATEMENT
+
   TRY_INDEX_CONST(short);
   TRY_INDEX_CONST(unsigned short);
   TRY_INDEX_CONST(int);
@@ -154,11 +156,13 @@ itkFixedArrayTest(int, char *[])
   TRY_INDEX_CONST(unsigned long);
   TRY_INDEX_CONST(long long);
   TRY_INDEX_CONST(unsigned long long);
-#define TRY_INDEX(T)                                                                                                   \
-  {                                                                                                                    \
-    T in = 10;                                                                                                         \
-    array20[in] = 10;                                                                                                  \
-  }
+#define TRY_INDEX(T)  \
+  {                   \
+    T in = 10;        \
+    array20[in] = 10; \
+  }                   \
+  ITK_MACROEND_NOOP_STATEMENT
+
   TRY_INDEX(short);
   TRY_INDEX(unsigned short);
   TRY_INDEX(int);

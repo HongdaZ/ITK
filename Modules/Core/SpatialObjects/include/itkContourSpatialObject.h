@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 
 namespace itk
 {
-/***\class ContourSpatialObjectEnums
+/*** \class ContourSpatialObjectEnums
  *
  * \brief Enum classes for the ControuSpatialObject class.
  *
@@ -34,7 +34,7 @@ namespace itk
 class ContourSpatialObjectEnums
 {
 public:
-  /***\class InterpolationMethodEnum
+  /*** \class InterpolationMethodEnum
    * \ingroup ITKSpatialObjects
    * Hold interpolation method type
    */
@@ -61,7 +61,7 @@ extern ITKSpatialObjects_EXPORT std::ostream &
  * \ingroup ITKSpatialObjects
  *
  * \sphinx
- * \sphinxexample{Core/SpatialObjects/{{ContourSpatialObject,Contour Spacial Object}
+ * \sphinxexample{Core/SpatialObjects/ContourSpatialObject,Contour Spatial Object}
  * \endsphinx
  */
 
@@ -70,7 +70,7 @@ class ITK_TEMPLATE_EXPORT ContourSpatialObject
   : public PointBasedSpatialObject<TDimension, ContourSpatialObjectPoint<TDimension>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ContourSpatialObject);
+  ITK_DISALLOW_COPY_AND_MOVE(ContourSpatialObject);
 
   using Self = ContourSpatialObject;
   using Superclass = PointBasedSpatialObject<TDimension, ContourSpatialObjectPoint<TDimension>>;
@@ -84,9 +84,9 @@ public:
   using ControlPointType = ContourSpatialObjectPoint<TDimension>;
   using ControlPointListType = std::vector<ControlPointType>;
 
-  using PointType = typename Superclass::PointType;
-  using TransformType = typename Superclass::TransformType;
-  using BoundingBoxType = typename Superclass::BoundingBoxType;
+  using typename Superclass::PointType;
+  using typename Superclass::TransformType;
+  using typename Superclass::BoundingBoxType;
   using PointContainerType = VectorContainer<IdentifierType, PointType>;
   using PointContainerPointer = SmartPointer<PointContainerType>;
 
@@ -128,7 +128,7 @@ public:
 
   /** Set the list of control points. */
   void
-  SetControlPoints(const ControlPointListType & newPoints);
+  SetControlPoints(const ControlPointListType & points);
 
   /** Set the list of control points. */
   void
@@ -155,24 +155,26 @@ public:
     return static_cast<SizeValueType>(m_ControlPoints.size());
   }
 
-  /** Set the interpolation type */
-  itkSetEnumMacro(InterpolationMethod, InterpolationMethodEnum)
+  /** Set the interpolation type. */
+  itkSetEnumMacro(InterpolationMethod, InterpolationMethodEnum);
 
-    /** Get the interpolation type */
-    itkGetConstMacro(InterpolationMethod, InterpolationMethodEnum)
+  /** Get the interpolation type. */
+  itkGetConstMacro(InterpolationMethod, InterpolationMethodEnum);
 
-    /** Set the interpolation factor, e.g., factor of 2 means 2 interpolated
-     *    points created for every control point. */
-    itkSetMacro(InterpolationFactor, unsigned int)
+  /** Set the interpolation factor, e.g., factor of 2 means 2 interpolated
+   * points created for every control point. */
+  itkSetMacro(InterpolationFactor, unsigned int);
 
-    /** Get the interpolation factor */
-    itkGetConstMacro(InterpolationFactor, unsigned int)
+  /** Get the interpolation factor. */
+  itkGetConstMacro(InterpolationFactor, unsigned int);
 
-    /** Set if the contour is closed */
-    itkSetMacro(IsClosed, bool);
+  /** Set if the contour is closed. */
+  itkSetMacro(IsClosed, bool);
 
-  /** Get if the contour is closed */
+  /** Get if the contour is closed. */
   itkGetConstMacro(IsClosed, bool);
+
+  itkBooleanMacro(IsClosed);
 
   /** Get the axis-normal orientation of the contour */
   int

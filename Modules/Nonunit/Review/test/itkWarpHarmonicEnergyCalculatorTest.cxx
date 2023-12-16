@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,8 @@ itkWarpHarmonicEnergyCalculatorTest(int argc, char * argv[])
   if (argc != 4)
   {
     std::cerr << "Missing parameters." << std::endl;
-    std::cerr << "Usage: " << argv[0] << " useImageSpacing"
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " useImageSpacing"
               << " derivativeWeights"
               << " expectedEnergy" << std::endl;
     return EXIT_FAILURE;
@@ -52,7 +53,7 @@ itkWarpHarmonicEnergyCalculatorTest(int argc, char * argv[])
   using RegionType = itk::ImageRegion<ImageDimension>;
 
   // Create the input image
-  DisplacementFieldType ::Pointer inputDisplacementField = DisplacementFieldType ::New();
+  auto inputDisplacementField = DisplacementFieldType::New();
 
   // Define its size, and start index
   SizeType size;
@@ -70,9 +71,7 @@ itkWarpHarmonicEnergyCalculatorTest(int argc, char * argv[])
   region.SetSize(size);
 
   // Initialize the input image
-  inputDisplacementField->SetLargestPossibleRegion(region);
-  inputDisplacementField->SetBufferedRegion(region);
-  inputDisplacementField->SetRequestedRegion(region);
+  inputDisplacementField->SetRegions(region);
   inputDisplacementField->Allocate();
 
   // Initialize the content of the input image
@@ -85,7 +84,7 @@ itkWarpHarmonicEnergyCalculatorTest(int argc, char * argv[])
 
 
   // Create the calculator
-  CalculatorType::Pointer calculator = CalculatorType::New();
+  auto calculator = CalculatorType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(calculator, WarpHarmonicEnergyCalculator, Object);
 

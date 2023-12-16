@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,7 +60,7 @@ MakeChainCodeTracePath(TChainCodePath & chainPath, const TPathInput & inPath, bo
     }
     else
     {
-      for (int d = 0; d < dimension; d++)
+      for (int d = 0; d < dimension; ++d)
       {
         tempOffset.Fill(0);
         tempOffset[d] = offset[d];
@@ -111,19 +111,19 @@ MakeFourierSeriesPathTraceChainCode(TFourierSeriesPath &   FSPath,
     numHarmonics = numSteps / 2;
   }
 
-  for (unsigned n = 0; n < numHarmonics; n++)
+  for (unsigned int n = 0; n < numHarmonics; ++n)
   {
     index = chainPath.GetStart();
     cosCoefficient.Fill(0.0);
     sinCoefficient.Fill(0.0);
 
-    for (ChainInputType step = 0; step < numSteps; step++)
+    for (ChainInputType step = 0; step < numSteps; ++step)
     {
       index += chainPath.Evaluate(step);
-      theta = 2 * n * PI * (double(step + 1)) / numSteps;
+      theta = 2 * n * PI * (static_cast<double>(step + 1)) / numSteps;
 
       // turn the current index into a vector
-      for (int d = 0; d < dimension; d++)
+      for (int d = 0; d < dimension; ++d)
       {
         indexVector[d] = index[d];
       }

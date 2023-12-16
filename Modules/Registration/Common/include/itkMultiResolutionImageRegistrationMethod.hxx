@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMultiResolutionImageRegistrationMethod_hxx
 #define itkMultiResolutionImageRegistrationMethod_hxx
 
-#include "itkMultiResolutionImageRegistrationMethod.h"
 #include "itkRecursiveMultiResolutionPyramidImageFilter.h"
 
 namespace itk
@@ -255,11 +254,11 @@ MultiResolutionImageRegistrationMethod<TFixedImage, TMovingImage>::PreparePyrami
   // Compute the FixedImageRegion corresponding to each level of the
   // pyramid. This uses the same algorithm of the ShrinkImageFilter
   // since the regions should be compatible.
-  for (unsigned int level = 0; level < numberOfLevels; level++)
+  for (unsigned int level = 0; level < numberOfLevels; ++level)
   {
     SizeType  size;
     IndexType start;
-    for (unsigned int dim = 0; dim < TFixedImage::ImageDimension; dim++)
+    for (unsigned int dim = 0; dim < TFixedImage::ImageDimension; ++dim)
     {
       const auto scaleFactor = static_cast<float>(schedule[level][dim]);
 
@@ -311,7 +310,7 @@ MultiResolutionImageRegistrationMethod<TFixedImage, TMovingImage>::PrintSelf(std
   os << m_LastTransformParameters << std::endl;
   os << indent << "FixedImageRegion: ";
   os << m_FixedImageRegion << std::endl;
-  for (unsigned int level = 0; level < m_FixedImageRegionPyramid.size(); level++)
+  for (unsigned int level = 0; level < m_FixedImageRegionPyramid.size(); ++level)
   {
     os << indent << "FixedImageRegion at level " << level << ": ";
     os << m_FixedImageRegionPyramid[level] << std::endl;
@@ -333,7 +332,7 @@ MultiResolutionImageRegistrationMethod<TFixedImage, TMovingImage>::GenerateData(
 
   this->PreparePyramids();
 
-  for (m_CurrentLevel = 0; m_CurrentLevel < m_NumberOfLevels; m_CurrentLevel++)
+  for (m_CurrentLevel = 0; m_CurrentLevel < m_NumberOfLevels; ++m_CurrentLevel)
   {
     // Invoke an iteration event.
     // This allows a UI to reset any of the components between
@@ -351,13 +350,13 @@ MultiResolutionImageRegistrationMethod<TFixedImage, TMovingImage>::GenerateData(
       // initialize the interconnects between components
       this->Initialize();
     }
-    catch (ExceptionObject & err)
+    catch (const ExceptionObject &)
     {
       m_LastTransformParameters = ParametersType(1);
       m_LastTransformParameters.Fill(0.0f);
 
       // pass exception to caller
-      throw err;
+      throw;
     }
 
     try
@@ -365,14 +364,14 @@ MultiResolutionImageRegistrationMethod<TFixedImage, TMovingImage>::GenerateData(
       // do the optimization
       m_Optimizer->StartOptimization();
     }
-    catch (ExceptionObject & err)
+    catch (const ExceptionObject &)
     {
       // An error has occurred in the optimization.
       // Update the parameters
       m_LastTransformParameters = m_Optimizer->GetCurrentPosition();
 
       // Pass exception to caller
-      throw err;
+      throw;
     }
 
     // get the results
@@ -440,8 +439,8 @@ MultiResolutionImageRegistrationMethod<TFixedImage, TMovingImage>::GetMTime() co
  *  Get Output
  */
 template <typename TFixedImage, typename TMovingImage>
-const typename MultiResolutionImageRegistrationMethod<TFixedImage, TMovingImage>::TransformOutputType *
-MultiResolutionImageRegistrationMethod<TFixedImage, TMovingImage>::GetOutput() const
+auto
+MultiResolutionImageRegistrationMethod<TFixedImage, TMovingImage>::GetOutput() const -> const TransformOutputType *
 {
   return static_cast<const TransformOutputType *>(this->ProcessObject::GetOutput(0));
 }

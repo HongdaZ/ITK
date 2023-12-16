@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class CurvatureFlowImageFilter
+ * \class CurvatureFlowImageFilter
  * \brief Denoise an image using curvature driven flow.
  *
  * CurvatureFlowImageFilter implements a curvature driven image denoising
@@ -96,7 +96,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT CurvatureFlowImageFilter : public DenseFiniteDifferenceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CurvatureFlowImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(CurvatureFlowImageFilter);
 
   /** Standard class type aliases. */
   using Self = CurvatureFlowImageFilter;
@@ -111,14 +111,14 @@ public:
   itkTypeMacro(CurvatureFlowImageFilter, DenseFiniteDifferenceImageFilter);
 
   /** InputImage type. */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
 
   /** OutputImage type. */
-  using OutputImageType = typename Superclass::OutputImageType;
+  using typename Superclass::OutputImageType;
   using OutputImagePointer = typename OutputImageType::Pointer;
 
   /** FiniteDifferenceFunction type. */
-  using FiniteDifferenceFunctionType = typename Superclass::FiniteDifferenceFunctionType;
+  using typename Superclass::FiniteDifferenceFunctionType;
 
   /** CurvatureFlowFunction type. */
   using CurvatureFlowFunctionType = CurvatureFlowFunction<OutputImageType>;
@@ -129,10 +129,10 @@ public:
 
   /** The pixel type of the output image will be used in computations.
    * Inherited from the superclass. */
-  using PixelType = typename Superclass::PixelType;
+  using typename Superclass::PixelType;
 
   /** The time step type. Inherited from the superclass. */
-  using TimeStepType = typename Superclass::TimeStepType;
+  using typename Superclass::TimeStepType;
 
   /** Set the timestep parameter. */
   itkSetMacro(TimeStep, TimeStepType);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkFRPROptimizer_cxx
-#define _itkFRPROptimizer_cxx
 
 #include "itkFRPROptimizer.h"
 
@@ -24,22 +22,22 @@ namespace itk
 {
 const double FRPR_TINY = 1e-20;
 
-FRPROptimizer ::FRPROptimizer()
+FRPROptimizer::FRPROptimizer()
 {
   m_UseUnitLengthGradient = false;
   m_OptimizationType = OptimizationEnum::PolakRibiere;
 }
 
-FRPROptimizer ::~FRPROptimizer() = default;
+FRPROptimizer::~FRPROptimizer() = default;
 
 void
-FRPROptimizer ::GetValueAndDerivative(ParametersType & p, double * val, ParametersType * xi)
+FRPROptimizer::GetValueAndDerivative(ParametersType & p, double * val, ParametersType * xi)
 {
   this->m_CostFunction->GetValueAndDerivative(p, *val, *xi);
   if (this->GetMaximize())
   {
     (*val) = -(*val);
-    for (unsigned int i = 0; i < this->GetSpaceDimension(); i++)
+    for (unsigned int i = 0; i < this->GetSpaceDimension(); ++i)
     {
       (*xi)[i] = -(*xi)[i];
     }
@@ -47,12 +45,12 @@ FRPROptimizer ::GetValueAndDerivative(ParametersType & p, double * val, Paramete
   if (this->GetUseUnitLengthGradient())
   {
     double len = (*xi)[0] * (*xi)[0];
-    for (unsigned int i = 1; i < this->GetSpaceDimension(); i++)
+    for (unsigned int i = 1; i < this->GetSpaceDimension(); ++i)
     {
       len += (*xi)[i] * (*xi)[i];
     }
     len = std::sqrt(len / this->GetSpaceDimension());
-    for (unsigned int i = 0; i < this->GetSpaceDimension(); i++)
+    for (unsigned int i = 0; i < this->GetSpaceDimension(); ++i)
     {
       (*xi)[i] /= len;
     }
@@ -60,7 +58,7 @@ FRPROptimizer ::GetValueAndDerivative(ParametersType & p, double * val, Paramete
 }
 
 void
-FRPROptimizer ::LineOptimize(ParametersType * p, ParametersType & xi, double * val)
+FRPROptimizer::LineOptimize(ParametersType * p, ParametersType & xi, double * val)
 {
   ParametersType tempCoord(this->GetSpaceDimension());
 
@@ -68,7 +66,7 @@ FRPROptimizer ::LineOptimize(ParametersType * p, ParametersType & xi, double * v
 }
 
 void
-FRPROptimizer ::LineOptimize(ParametersType * p, ParametersType & xi, double * val, ParametersType & tempCoord)
+FRPROptimizer::LineOptimize(ParametersType * p, ParametersType & xi, double * val, ParametersType & tempCoord)
 {
   this->SetLine(*p, xi);
 
@@ -93,7 +91,7 @@ FRPROptimizer ::LineOptimize(ParametersType * p, ParametersType & xi, double * v
 }
 
 void
-FRPROptimizer ::StartOptimization()
+FRPROptimizer::StartOptimization()
 {
   unsigned int i;
 
@@ -121,7 +119,7 @@ FRPROptimizer ::StartOptimization()
   double fp;
   this->GetValueAndDerivative(p, &fp, &xi);
 
-  for (i = 0; i < this->GetSpaceDimension(); i++)
+  for (i = 0; i < this->GetSpaceDimension(); ++i)
   {
     g[i] = -xi[i];
     xi[i] = g[i];
@@ -130,7 +128,7 @@ FRPROptimizer ::StartOptimization()
 
   unsigned int limitCount = 0;
 
-  for (unsigned int currentIteration = 0; currentIteration <= this->GetMaximumIteration(); currentIteration++)
+  for (unsigned int currentIteration = 0; currentIteration <= this->GetMaximumIteration(); ++currentIteration)
   {
     this->SetCurrentIteration(currentIteration);
 
@@ -138,13 +136,14 @@ FRPROptimizer ::StartOptimization()
     fret = fp;
     this->LineOptimize(&p, xi, &fret, tempCoord);
 
-    if (2.0 * std::abs(fret - fp) <= this->GetValueTolerance() * (std::abs(fret) + std::abs(fp) + FRPR_TINY))
+    if (2.0 * itk::Math::abs(fret - fp) <=
+        this->GetValueTolerance() * (itk::Math::abs(fret) + itk::Math::abs(fp) + FRPR_TINY))
     {
       if (limitCount < this->GetSpaceDimension())
       {
         this->GetValueAndDerivative(p, &fp, &xi);
         xi[limitCount] = 1;
-        limitCount++;
+        ++limitCount;
       }
       else
       {
@@ -164,7 +163,7 @@ FRPROptimizer ::StartOptimization()
 
     if (m_OptimizationType == OptimizationEnum::PolakRibiere)
     {
-      for (i = 0; i < this->GetSpaceDimension(); i++)
+      for (i = 0; i < this->GetSpaceDimension(); ++i)
       {
         gg += g[i] * g[i];
         dgg += (xi[i] + g[i]) * xi[i];
@@ -172,7 +171,7 @@ FRPROptimizer ::StartOptimization()
     }
     if (m_OptimizationType == OptimizationEnum::FletchReeves)
     {
-      for (i = 0; i < this->GetSpaceDimension(); i++)
+      for (i = 0; i < this->GetSpaceDimension(); ++i)
       {
         gg += g[i] * g[i];
         dgg += xi[i] * xi[i];
@@ -187,7 +186,7 @@ FRPROptimizer ::StartOptimization()
     }
 
     gam = dgg / gg;
-    for (i = 0; i < this->GetSpaceDimension(); i++)
+    for (i = 0; i < this->GetSpaceDimension(); ++i)
     {
       g[i] = -xi[i];
       xi[i] = g[i] + gam * h[i];
@@ -205,7 +204,7 @@ FRPROptimizer ::StartOptimization()
  *
  */
 void
-FRPROptimizer ::SetToPolakRibiere()
+FRPROptimizer::SetToPolakRibiere()
 {
   m_OptimizationType = OptimizationEnum::PolakRibiere;
 }
@@ -214,7 +213,7 @@ FRPROptimizer ::SetToPolakRibiere()
  *
  */
 void
-FRPROptimizer ::SetToFletchReeves()
+FRPROptimizer::SetToFletchReeves()
 {
   m_OptimizationType = OptimizationEnum::FletchReeves;
 }
@@ -223,7 +222,7 @@ FRPROptimizer ::SetToFletchReeves()
  *
  */
 void
-FRPROptimizer ::PrintSelf(std::ostream & os, Indent indent) const
+FRPROptimizer::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Optimization Type = " << m_OptimizationType << std::endl;
@@ -249,4 +248,3 @@ operator<<(std::ostream & out, const FRPROptimizerEnums::Optimization value)
 }
 
 } // end of namespace itk
-#endif

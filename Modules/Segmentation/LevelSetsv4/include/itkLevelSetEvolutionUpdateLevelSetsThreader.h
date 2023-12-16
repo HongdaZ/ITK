@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ namespace itk
 {
 
 /**
- *\class LevelSetEvolutionUpdateLevelSetsThreader
+ * \class LevelSetEvolutionUpdateLevelSetsThreader
  * \brief Threade the UpdateLevelSets method.
  *
  * Thread the \c UpdateLevelSets method of the LevelSetEvolution class.
@@ -47,7 +47,7 @@ class ITK_TEMPLATE_EXPORT
   : public DomainThreader<ThreadedImageRegionPartitioner<TImage::ImageDimension>, TLevelSetEvolution>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolutionUpdateLevelSetsThreader);
+  ITK_DISALLOW_COPY_AND_MOVE(LevelSetEvolutionUpdateLevelSetsThreader);
 
   /** Standard class type aliases. */
   using Self = LevelSetEvolutionUpdateLevelSetsThreader;
@@ -62,8 +62,8 @@ public:
   itkNewMacro(Self);
 
   /** Superclass types. */
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  using typename Superclass::DomainType;
+  using typename Superclass::AssociateType;
 
   /** Types of the associate class. */
   using LevelSetEvolutionType = TLevelSetEvolution;

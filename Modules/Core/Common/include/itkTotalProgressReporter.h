@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,12 +40,13 @@ namespace itk
 class ITKCommon_EXPORT TotalProgressReporter
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TotalProgressReporter);
+  ITK_DISALLOW_COPY_AND_MOVE(TotalProgressReporter);
 
   /** \brief Construct a TotalProgressReporter
    *
    * @param filter - the ProcessObject which whose progress will be updated. If nullptr then no updates will occur.
-   * @param totalNumberOfPixels - the number of pixels between all threads and chunks that will be updated
+   * @param totalNumberOfPixels - the number of pixels between all threads and chunks that will be updated.
+   * If zero, any completed chunk will result in a progress event.
    * @param numberOfUpdates - controls how often the ProcessObject's progress will be incremented
    * @param progressWeight - A percentage of the filters progress, this total number of pixels will contribute
    */

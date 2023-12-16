@@ -27,12 +27,12 @@
 #--   - [ ] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -45,5 +45,5 @@ itk_fetch_module(SkullStrip
   "A class to perform automatic skull-stripping for neuroimage analysis."
   MODULE_COMPLIANCE_LEVEL 2
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKSkullStrip.git
-  GIT_TAG 286440c2c66a8a5bcb98db28b58224040ca0481e
+  GIT_TAG da5821af3e2fe8f4c2d881d4fd961b17d0684b3e
   )

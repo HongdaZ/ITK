@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkExpectationBasedPointSetToPointSetMetricv4_hxx
 #define itkExpectationBasedPointSetToPointSetMetricv4_hxx
 
-#include "itkExpectationBasedPointSetToPointSetMetricv4.h"
 #include "itkArray.h"
 #include "itkCompensatedSummation.h"
 
@@ -102,7 +101,7 @@ ExpectationBasedPointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInt
   }
 
   measure = measureSum.GetSum();
-  if (std::fabs(measure) <= NumericTraits<MeasureType>::epsilon())
+  if (itk::Math::abs(measure) <= NumericTraits<MeasureType>::epsilon())
   {
     return;
   }
@@ -120,7 +119,7 @@ ExpectationBasedPointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInt
 
   VectorType force = (weightedPoint - point) * weight;
 
-  for (unsigned int d = 0; d < localDerivative.Size(); d++)
+  for (unsigned int d = 0; d < localDerivative.Size(); ++d)
   {
     localDerivative[d] = force[d];
   }
@@ -131,7 +130,7 @@ typename LightObject::Pointer
 ExpectationBasedPointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInternalComputationValueType>::
   InternalClone() const
 {
-  typename Self::Pointer rval = Self::New();
+  auto rval = Self::New();
   rval->SetMovingPointSet(this->m_MovingPointSet);
   rval->SetFixedPointSet(this->m_FixedPointSet);
   rval->SetPointSetSigma(this->m_PointSetSigma);

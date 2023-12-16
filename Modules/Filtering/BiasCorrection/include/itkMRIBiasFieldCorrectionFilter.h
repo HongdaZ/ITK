@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@
 namespace itk
 {
 /**
- *\class MRIBiasEnergyFunction
+ * \class MRIBiasEnergyFunction
  * \brief Represents a cost function for MRI bias field correction optimization.
  *
  * This is a wrapping class which provides interfaces between images,
@@ -48,7 +48,7 @@ template <typename TImage, typename TImageMask, typename TBiasField>
 class ITK_TEMPLATE_EXPORT MRIBiasEnergyFunction : public SingleValuedCostFunction
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MRIBiasEnergyFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(MRIBiasEnergyFunction);
 
   /** Standard class type aliases. */
   using Self = MRIBiasEnergyFunction;
@@ -77,7 +77,7 @@ public:
 
   /** Parameters type for optimizer (coefficients type for bias
    * field estimate). */
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
 
   /** Not used, but expected by SingleValuedNonLinearOptimizer class. */
   using DerivativeType = Superclass::DerivativeType;
@@ -112,9 +112,9 @@ public:
   /** Sets the sampling factors of the energy function in each direction.
    *   Default is 1 in each dimension */
   void
-  SetSamplingFactors(SamplingFactorType factor)
+  SetSamplingFactors(const SamplingFactorType factor)
   {
-    for (unsigned int i = 0; i < SpaceDimension; i++)
+    for (unsigned int i = 0; i < SpaceDimension; ++i)
     {
       m_SamplingFactor[i] = factor[i];
     }
@@ -177,7 +177,7 @@ private:
 }; // end of class
 
 /**
- *\class MRIBiasFieldCorrectionFilter
+ * \class MRIBiasFieldCorrectionFilter
  * \brief Corrects 3D MRI bias field.
  *
  * This class is templated over the type of the input image (TInputImage)
@@ -220,18 +220,18 @@ private:
  * "Parametric estimate of intensity inhomogeneities applied to MRI"
  * Martin Styner, Guido Gerig, Christian Brechbuehler, Gabor Szekely,
  * IEEE TRANSACTIONS ON MEDICAL IMAGING; 19(3), pp. 153-165, 2000,
- * (http://www.cs.unc.edu/~styner/docs/tmi00.pdf)
+ * (https://www.cs.unc.edu/~styner/docs/tmi00.pdf)
  *
  * "Evaluation of 2D/3D bias correction with 1+1ES-optimization"
  * Martin Styner, Prof. Dr. G. Gerig (IKT, BIWI, ETH Zuerich), TR-197
- * (http://www.cs.unc.edu/~styner/docs/StynerTR97.pdf)
+ * (https://www.cs.unc.edu/~styner/docs/StynerTR97.pdf)
  * \ingroup ITKBiasCorrection
  */
 template <typename TInputImage, typename TOutputImage, typename TMaskImage>
 class ITK_TEMPLATE_EXPORT MRIBiasFieldCorrectionFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MRIBiasFieldCorrectionFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MRIBiasFieldCorrectionFilter);
 
   /** Standard class type aliases. */
   using Self = MRIBiasFieldCorrectionFilter;
@@ -552,7 +552,7 @@ protected:
    * the dimension of the resulting domain size will be one less than that of
    * he image region. */
   void
-  GetBiasFieldSize(InputImageRegionType region, BiasFieldType::DomainSizeType & domainSize);
+  GetBiasFieldSize(InputImageRegionType region, BiasFieldType::DomainSizeType & biasSize);
 
   /** Find overlapping regions between the slab regions and the output image's
    * requested region. And then replace the original slab regions with

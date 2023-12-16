@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 
 
 #include "itkScatterMatrixImageFunction.h"
+#include "itkTestingMacros.h"
 
 int
 itkScatterMatrixImageFunctionTest(int, char *[])
@@ -32,7 +33,7 @@ itkScatterMatrixImageFunctionTest(int, char *[])
   using FunctionType = itk::ScatterMatrixImageFunction<ImageType>;
 
   // Create and allocate the image
-  ImageType::Pointer    image = ImageType::New();
+  auto                  image = ImageType::New();
   ImageType::SizeType   size;
   ImageType::IndexType  start;
   ImageType::RegionType region;
@@ -58,11 +59,16 @@ itkScatterMatrixImageFunctionTest(int, char *[])
 
   image->FillBuffer(initialValue);
 
-  FunctionType::Pointer function = FunctionType::New();
+  auto function = FunctionType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(function, ScatterMatrixImageFunction, ImageFunction);
+
+
+  unsigned int neighborhoodRadius = 5;
+  function->SetNeighborhoodRadius(neighborhoodRadius);
+  ITK_TEST_SET_GET_VALUE(neighborhoodRadius, function->GetNeighborhoodRadius());
 
   function->SetInputImage(image);
-
-  function->SetNeighborhoodRadius(5);
 
   ImageType::IndexType index;
 
@@ -94,17 +100,17 @@ itkScatterMatrixImageFunctionTest(int, char *[])
   std::cout << "function->EvaluateAtContinuousIndex(cindex): " << covariance3 << std::endl;
 
   // Test GetConstReferenceMacro
-  const unsigned int & neighborhoodRadius = function->GetNeighborhoodRadius();
-  std::cout << "function->GetNeighborhoodRadius(): " << neighborhoodRadius << std::endl;
+  const unsigned int & neighborhoodRadiusConst = function->GetNeighborhoodRadius();
+  std::cout << "function->GetNeighborhoodRadius(): " << neighborhoodRadiusConst << std::endl;
 
   std::cout << "Scatter Matrix = " << std::endl;
   std::cout << scatterMatrix << std::endl;
 
   // since the input image is constant
   // the should be equal to the initial value
-  for (unsigned int ix = 0; ix < VectorDimension; ix++)
+  for (unsigned int ix = 0; ix < VectorDimension; ++ix)
   {
-    for (unsigned int iy = 0; iy < VectorDimension; iy++)
+    for (unsigned int iy = 0; iy < VectorDimension; ++iy)
     {
       if (itk::Math::abs(initialValue[ix] * initialValue[iy] - scatterMatrix[ix][iy]) > 10e-7)
       {

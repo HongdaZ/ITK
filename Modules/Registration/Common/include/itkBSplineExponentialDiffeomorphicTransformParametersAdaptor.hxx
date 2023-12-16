@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkBSplineExponentialDiffeomorphicTransformParametersAdaptor_hxx
 #define itkBSplineExponentialDiffeomorphicTransformParametersAdaptor_hxx
 
-#include "itkBSplineExponentialDiffeomorphicTransformParametersAdaptor.h"
 
 namespace itk
 {
@@ -43,7 +42,7 @@ BSplineExponentialDiffeomorphicTransformParametersAdaptor<TTransform>::SetMeshSi
 {
   ArrayType numberOfControlPoints;
   numberOfControlPoints.Fill(0);
-  for (unsigned int d = 0; d < SpaceDimension; d++)
+  for (unsigned int d = 0; d < SpaceDimension; ++d)
   {
     if (meshSize[d] > 0)
     {
@@ -63,7 +62,7 @@ BSplineExponentialDiffeomorphicTransformParametersAdaptor<TTransform>::SetMeshSi
 {
   ArrayType numberOfControlPoints;
   numberOfControlPoints.Fill(0);
-  for (unsigned int d = 0; d < SpaceDimension; d++)
+  for (unsigned int d = 0; d < SpaceDimension; ++d)
   {
     if (meshSize[d] > 0)
     {

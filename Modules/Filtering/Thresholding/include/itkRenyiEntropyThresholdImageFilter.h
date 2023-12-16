@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 {
 
 /**
- *\class RenyiEntropyThresholdImageFilter
+ * \class RenyiEntropyThresholdImageFilter
  * \brief Threshold an image using the RenyiEntropy Threshold
  *
  * This filter creates a binary thresholded image that separates an
@@ -40,8 +40,7 @@ namespace itk
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/10380/3279  or
- * http://www.insight-journal.org/browse/publication/811
+ * https://www.insight-journal.org/browse/publication/811
  *
  * \sa HistogramThresholdImageFilter
  *
@@ -50,10 +49,11 @@ namespace itk
  */
 
 template <typename TInputImage, typename TOutputImage, typename TMaskImage = TOutputImage>
-class RenyiEntropyThresholdImageFilter : public HistogramThresholdImageFilter<TInputImage, TOutputImage, TMaskImage>
+class ITK_TEMPLATE_EXPORT RenyiEntropyThresholdImageFilter
+  : public HistogramThresholdImageFilter<TInputImage, TOutputImage, TMaskImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RenyiEntropyThresholdImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(RenyiEntropyThresholdImageFilter);
 
   /** Standard Self type alias */
   using Self = RenyiEntropyThresholdImageFilter;
@@ -90,7 +90,7 @@ public:
   using MaskIndexType = typename MaskImageType::IndexType;
   using MaskImageRegionType = typename MaskImageType::RegionType;
 
-  using HistogramType = typename Superclass::HistogramType;
+  using typename Superclass::HistogramType;
   using CalculatorType = RenyiEntropyThresholdCalculator<HistogramType, InputPixelType>;
 
   /** Image related type alias. */

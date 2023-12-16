@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -119,7 +119,7 @@ protected:
   ProgressAccumulator();
   ~ProgressAccumulator() override;
   void
-  PrintSelf(std::ostream & s, Indent indent) const override;
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
   /**  Command for observing progress of pipeline filters */
@@ -138,11 +138,13 @@ private:
     // The tags for adding/removing observers to mini-pipeline filter
     unsigned long ProgressObserverTag;
     unsigned long StartObserverTag;
+
+    float AccumulatedProgress{ 0.0 };
   };
 
   /** A callback function that is called by the progressing filters */
   void
-  ReportProgress(Object * object, const EventObject & event);
+  ReportProgress(Object * who, const EventObject & event);
 
   /** The client mini-pipeline filter */
   GenericFilterPointer m_MiniPipelineFilter;

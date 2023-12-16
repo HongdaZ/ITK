@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@
 namespace itk
 {
 /**
- *\class BSplineUpsampleImageFilter
+ * \class BSplineUpsampleImageFilter
  * \brief Uses B-Spline interpolation to upsample an image by a factor of 2.
  * This class is the public interface for spline upsampling as defined by the
  * ResamplerType.
@@ -86,7 +86,7 @@ template <typename TInputImage,
 class ITK_TEMPLATE_EXPORT BSplineUpsampleImageFilter : public ResamplerType
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineUpsampleImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BSplineUpsampleImageFilter);
 
   /** Standard class type aliases. */
   using Self = BSplineUpsampleImageFilter;
@@ -101,16 +101,16 @@ public:
   itkNewMacro(Self);
 
   /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
 
   /** InputImagePointer type alias support */
-  using InputImagePointer = typename Superclass::InputImagePointer;
+  using typename Superclass::InputImagePointer;
 
   /** OutputImageIterator type alias support */
-  using OutputImageIterator = typename Superclass::OutputImageIterator;
+  using typename Superclass::OutputImageIterator;
 
   /** OutputImagePointer type alias support */
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
+  using typename Superclass::OutputImagePointer;
 
   /** Creates an image twice the size of the input image with spacing half the
    * input image. */

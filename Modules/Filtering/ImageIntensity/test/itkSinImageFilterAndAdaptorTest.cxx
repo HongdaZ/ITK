@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,7 +51,7 @@ itkSinImageFilterAndAdaptorTest(int, char *[])
   using RegionType = itk::ImageRegion<ImageDimension>;
 
   // Create the input image
-  InputImageType::Pointer inputImage = InputImageType::New();
+  auto inputImage = InputImageType::New();
 
   // Define their size, and start index
   SizeType size;
@@ -69,9 +69,7 @@ itkSinImageFilterAndAdaptorTest(int, char *[])
   region.SetSize(size);
 
   // Initialize Image A
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetRegions(region);
   inputImage->Allocate();
 
   // Create one iterator for the Input Image (this is a light object)
@@ -90,7 +88,7 @@ itkSinImageFilterAndAdaptorTest(int, char *[])
   using FilterType = itk::SinImageFilter<InputImageType, OutputImageType>;
 
   // Create the Filter
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, SinImageFilter, UnaryGeneratorImageFilter);
 
@@ -136,7 +134,7 @@ itkSinImageFilterAndAdaptorTest(int, char *[])
 
   using AdaptorType = itk::SinImageAdaptor<InputImageType, OutputImageType::PixelType>;
 
-  AdaptorType::Pointer sinAdaptor = AdaptorType::New();
+  auto sinAdaptor = AdaptorType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(sinAdaptor, SinImageAdaptor, ImageAdaptor);
 
@@ -144,7 +142,7 @@ itkSinImageFilterAndAdaptorTest(int, char *[])
 
   using DiffFilterType = itk::SubtractImageFilter<OutputImageType, AdaptorType, OutputImageType>;
 
-  DiffFilterType::Pointer diffFilter = DiffFilterType::New();
+  auto diffFilter = DiffFilterType::New();
 
   diffFilter->SetInput1(outputImage);
   diffFilter->SetInput2(sinAdaptor);
@@ -164,7 +162,7 @@ itkSinImageFilterAndAdaptorTest(int, char *[])
   while (!dt.IsAtEnd())
   {
     const OutputImageType::PixelType diff = dt.Get();
-    if (std::fabs(diff) > epsilon)
+    if (itk::Math::abs(diff) > epsilon)
     {
       std::cerr.precision(static_cast<int>(itk::Math::abs(std::log10(epsilon))));
       std::cerr << "Error comparing results with Adaptors" << std::endl;

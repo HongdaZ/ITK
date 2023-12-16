@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkWarpVectorImageFilter.h"
 #include "itkCastImageFilter.h"
 #include "itkStreamingImageFilter.h"
+#include "itkTestingMacros.h"
 
 // class to produce a linear image pattern
 template <int VDimension>
@@ -33,28 +34,28 @@ public:
   ImagePattern()
   {
     m_Offset = 0.0;
-    for (int j = 0; j < VDimension; j++)
+    for (int j = 0; j < VDimension; ++j)
     {
       m_Coeff[j] = 0.0;
     }
   }
 
   double
-  Evaluate(const IndexType & index, const SizeType & size, const SizeType & clampSize, const float & padValue)
+  Evaluate(const IndexType & index, const SizeType & size, const SizeType & clampSize, const float padValue)
   {
     double accum = m_Offset;
-    for (int j = 0; j < VDimension; j++)
+    for (int j = 0; j < VDimension; ++j)
     {
       if (static_cast<unsigned int>(index[j]) < size[j])
       {
         if (static_cast<unsigned int>(index[j]) >= clampSize[j])
         {
           // Interpolators behave this way in half-pixel band at image perimeter
-          accum += m_Coeff[j] * (double)(clampSize[j] - 1);
+          accum += m_Coeff[j] * static_cast<double>(clampSize[j] - 1);
         }
         else
         {
-          accum += m_Coeff[j] * (double)index[j];
+          accum += m_Coeff[j] * static_cast<double>(index[j]);
         }
       }
       else
@@ -109,7 +110,7 @@ itkWarpVectorImageFilterTest(int, char *[])
   ImageType::SizeType   size = { { 64, 64 } };
   region.SetSize(size);
 
-  ImageType::Pointer input = ImageType::New();
+  auto input = ImageType::New();
   input->SetLargestPossibleRegion(region);
   input->SetBufferedRegion(region);
   input->Allocate();
@@ -118,7 +119,7 @@ itkWarpVectorImageFilterTest(int, char *[])
   unsigned int                 j;
   ImagePattern<ImageDimension> pattern;
   pattern.m_Offset = 64;
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     pattern.m_Coeff[j] = 1.0;
   }
@@ -140,13 +141,13 @@ itkWarpVectorImageFilterTest(int, char *[])
 
   ImageType::RegionType fieldRegion;
   ImageType::SizeType   fieldSize;
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     fieldSize[j] = size[j] * factors[j] + 5;
   }
   fieldRegion.SetSize(fieldSize);
 
-  FieldType::Pointer field = FieldType::New();
+  auto field = FieldType::New();
   field->SetLargestPossibleRegion(fieldRegion);
   field->SetBufferedRegion(fieldRegion);
   field->Allocate();
@@ -157,9 +158,9 @@ itkWarpVectorImageFilterTest(int, char *[])
   {
     IndexType  index = fieldIter.GetIndex();
     VectorType displacement;
-    for (j = 0; j < ImageDimension; j++)
+    for (j = 0; j < ImageDimension; ++j)
     {
-      displacement[j] = (float)index[j] * ((1.0 / factors[j]) - 1.0);
+      displacement[j] = static_cast<float>(index[j]) * ((1.0 / factors[j]) - 1.0);
     }
     fieldIter.Set(displacement);
   }
@@ -169,11 +170,17 @@ itkWarpVectorImageFilterTest(int, char *[])
   std::cout << "Run WarpVectorImageFilter in standalone mode with progress.";
   std::cout << std::endl;
   using WarperType = itk::WarpVectorImageFilter<ImageType, ImageType, FieldType>;
-  WarperType::Pointer warper = WarperType::New();
+  auto warper = WarperType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(warper, WarpVectorImageFilter, ImageToImageFilter);
+
 
   warper->SetInput(input);
   warper->SetDisplacementField(field);
+  ITK_TEST_SET_GET_VALUE(field, warper->GetDisplacementField());
+
   warper->SetEdgePaddingValue(PixelType(padValue));
+  ITK_TEST_SET_GET_VALUE(PixelType(padValue), warper->GetEdgePaddingValue());
 
   ShowProgressObject                                    progressWatch(warper);
   itk::SimpleMemberCommand<ShowProgressObject>::Pointer command;
@@ -181,24 +188,28 @@ itkWarpVectorImageFilterTest(int, char *[])
   command->SetCallbackFunction(&progressWatch, &ShowProgressObject::ShowProgress);
   warper->AddObserver(itk::ProgressEvent(), command);
 
-  warper->Print(std::cout);
-
-  // exercise Get methods
-  std::cout << "Interpolator: " << warper->GetInterpolator() << std::endl;
-  std::cout << "DisplacementField: " << warper->GetDisplacementField() << std::endl;
-  std::cout << "EdgePaddingValue: " << warper->GetEdgePaddingValue() << std::endl;
-
-  // exercise Set methods
   itk::FixedArray<double, ImageDimension> array;
   array.Fill(2.0);
   warper->SetOutputSpacing(array.GetDataPointer());
+  ITK_TEST_SET_GET_VALUE(array, warper->GetOutputSpacing());
+
   array.Fill(1.0);
   warper->SetOutputSpacing(array.GetDataPointer());
+  ITK_TEST_SET_GET_VALUE(array, warper->GetOutputSpacing());
 
-  array.Fill(-10.0);
-  warper->SetOutputOrigin(array.GetDataPointer());
-  array.Fill(0.0);
-  warper->SetOutputOrigin(array.GetDataPointer());
+  WarperType::PointType ptarray;
+  ptarray.Fill(-10.0);
+  warper->SetOutputOrigin(ptarray.GetDataPointer());
+  ITK_TEST_SET_GET_VALUE(ptarray, warper->GetOutputOrigin());
+
+  ptarray.Fill(0.0);
+  warper->SetOutputOrigin(ptarray.GetDataPointer());
+  ITK_TEST_SET_GET_VALUE(ptarray, warper->GetOutputOrigin());
+
+  typename WarperType::DirectionType outputDirection;
+  outputDirection.SetIdentity();
+  warper->SetOutputDirection(outputDirection);
+  ITK_TEST_SET_GET_VALUE(outputDirection, warper->GetOutputDirection());
 
   // Update the filter
   warper->Update();
@@ -216,7 +227,7 @@ itkWarpVectorImageFilterTest(int, char *[])
   ImageType::SizeType decrementForScaling;
   ImageType::SizeType clampSizeDecrement;
   ImageType::SizeType clampSize;
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     validSize[j] = size[j] * factors[j];
 
@@ -249,9 +260,9 @@ itkWarpVectorImageFilterTest(int, char *[])
   validRegion.SetSize(validSize);
 
   // adjust the pattern coefficients to match
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
-    pattern.m_Coeff[j] /= (double)factors[j];
+    pattern.m_Coeff[j] /= static_cast<double>(factors[j]);
   }
 
   Iterator outIter(warper->GetOutput(), warper->GetOutput()->GetBufferedRegion());
@@ -264,7 +275,7 @@ itkWarpVectorImageFilterTest(int, char *[])
     {
 
       PixelType trueValue(pattern.Evaluate(outIter.GetIndex(), validSize, clampSize, padValue));
-      for (unsigned int k = 0; k < ImageDimension; k++)
+      for (unsigned int k = 0; k < ImageDimension; ++k)
       {
         if (itk::Math::abs(trueValue[k] - value[k]) > 1e-4)
         {
@@ -296,18 +307,18 @@ itkWarpVectorImageFilterTest(int, char *[])
   std::cout << std::endl;
 
   using VectorCasterType = itk::CastImageFilter<FieldType, FieldType>;
-  VectorCasterType::Pointer vcaster = VectorCasterType::New();
+  auto vcaster = VectorCasterType::New();
 
   vcaster->SetInput(warper->GetDisplacementField());
 
-  WarperType::Pointer warper2 = WarperType::New();
+  auto warper2 = WarperType::New();
 
   warper2->SetInput(warper->GetInput());
   warper2->SetDisplacementField(vcaster->GetOutput());
   warper2->SetEdgePaddingValue(warper->GetEdgePaddingValue());
 
   using StreamerType = itk::StreamingImageFilter<ImageType, ImageType>;
-  StreamerType::Pointer streamer = StreamerType::New();
+  auto streamer = StreamerType::New();
   streamer->SetInput(warper2->GetOutput());
   streamer->SetNumberOfStreamDivisions(3);
   streamer->Update();
@@ -355,6 +366,7 @@ itkWarpVectorImageFilterTest(int, char *[])
     testPassed = true;
     warper->ResetPipeline();
     warper->SetInterpolator(interp);
+    ITK_TEST_SET_GET_VALUE(interp, warper->GetInterpolator());
   }
 
   if (!testPassed)

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,14 +24,14 @@
 #include "ITKQuadEdgeMeshFilteringExport.h"
 namespace itk
 {
-/**\class NormalQuadEdgeMeshFilterEnums
+/** \class NormalQuadEdgeMeshFilterEnums
  * \brief Contains enum classes used by NormalQuadEdgeMeshFilter class
  * \ingroup ITKQuadEdgeMeshFiltering
  */
 class NormalQuadEdgeMeshFilterEnums
 {
 public:
-  /**\class WeightEnum
+  /** \class WeightEnum
    * \ingroup ITKQuadEdgeMeshFiltering
    */
   enum class Weight : uint8_t
@@ -93,7 +93,7 @@ template <typename TInputMesh, typename TOutputMesh>
 class ITK_TEMPLATE_EXPORT NormalQuadEdgeMeshFilter : public QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NormalQuadEdgeMeshFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(NormalQuadEdgeMeshFilter);
 
   using Self = NormalQuadEdgeMeshFilter;
   using Superclass = QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>;

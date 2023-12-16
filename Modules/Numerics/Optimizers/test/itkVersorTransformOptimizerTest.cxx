@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -90,7 +90,7 @@ public:
     B[2] = 0;
 
     VectorType rightPart;
-    for (unsigned int i = 0; i < 3; i++)
+    for (unsigned int i = 0; i < 3; ++i)
     {
       rightPart[i] = parameters[i];
     }
@@ -114,7 +114,7 @@ public:
   {
 
     VectorType rightPart;
-    for (unsigned int i = 0; i < 3; i++)
+    for (unsigned int i = 0; i < 3; ++i)
     {
       rightPart[i] = parameters[i];
     }
@@ -186,12 +186,12 @@ itkVersorTransformOptimizerTest(int, char *[])
   using ScalesType = OptimizerType::ScalesType;
 
 
-  // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  // Declaration of an itkOptimizer
+  auto itkOptimizer = OptimizerType::New();
 
 
   // Declaration of the CostFunction adaptor
-  versorCostFunction::Pointer costFunction = versorCostFunction::New();
+  auto costFunction = versorCostFunction::New();
 
 
   itkOptimizer->SetCostFunction(costFunction);
@@ -251,7 +251,7 @@ itkVersorTransformOptimizerTest(int, char *[])
 
   VersorType             finalRotation;
   VersorType::VectorType finalRightPart;
-  for (unsigned int i = 0; i < spaceDimensions; i++)
+  for (unsigned int i = 0; i < spaceDimensions; ++i)
   {
     finalRightPart[i] = finalPosition[i];
   }

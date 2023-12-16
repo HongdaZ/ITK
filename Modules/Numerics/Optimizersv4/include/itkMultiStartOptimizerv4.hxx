@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMultiStartOptimizerv4_hxx
 #define itkMultiStartOptimizerv4_hxx
 
-#include "itkMultiStartOptimizerv4.h"
 
 namespace itk
 {
@@ -50,8 +49,8 @@ MultiStartOptimizerv4Template<TInternalComputationValueType>::PrintSelf(std::ost
 
 //-------------------------------------------------------------------
 template <typename TInternalComputationValueType>
-typename MultiStartOptimizerv4Template<TInternalComputationValueType>::ParametersListType &
-MultiStartOptimizerv4Template<TInternalComputationValueType>::GetParametersList()
+auto
+MultiStartOptimizerv4Template<TInternalComputationValueType>::GetParametersList() -> ParametersListType &
 {
   return this->m_ParametersList;
 }
@@ -71,16 +70,17 @@ MultiStartOptimizerv4Template<TInternalComputationValueType>::SetParametersList(
 
 /** Get the list of metric values that we produced after the multi-start search.  */
 template <typename TInternalComputationValueType>
-const typename MultiStartOptimizerv4Template<TInternalComputationValueType>::MetricValuesListType &
+auto
 MultiStartOptimizerv4Template<TInternalComputationValueType>::GetMetricValuesList() const
+  -> const MetricValuesListType &
 {
   return this->m_MetricValuesList;
 }
 
 //-------------------------------------------------------------------
 template <typename TInternalComputationValueType>
-typename MultiStartOptimizerv4Template<TInternalComputationValueType>::ParametersType
-MultiStartOptimizerv4Template<TInternalComputationValueType>::GetBestParameters()
+auto
+MultiStartOptimizerv4Template<TInternalComputationValueType>::GetBestParameters() -> ParametersType
 {
   return this->m_ParametersList[m_BestParametersIndex];
 }
@@ -99,8 +99,9 @@ MultiStartOptimizerv4Template<TInternalComputationValueType>::InstantiateLocalOp
 
 //-------------------------------------------------------------------
 template <typename TInternalComputationValueType>
-const typename MultiStartOptimizerv4Template<TInternalComputationValueType>::StopConditionReturnStringType
+auto
 MultiStartOptimizerv4Template<TInternalComputationValueType>::GetStopConditionDescription() const
+  -> const StopConditionReturnStringType
 {
   return this->m_StopConditionDescription.str();
 }
@@ -176,7 +177,7 @@ MultiStartOptimizerv4Template<TInternalComputationValueType>::ResumeOptimization
       this->m_CurrentMetricValue = this->m_Metric->GetValue();
       this->m_MetricValuesList.push_back(this->m_CurrentMetricValue);
     }
-    catch (ExceptionObject &)
+    catch (const ExceptionObject &)
     {
       /** We simply ignore this exception because it may just be a bad starting point.
        *  We hope that other start points are better.

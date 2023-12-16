@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,9 +17,6 @@
  *=========================================================================*/
 #ifndef itkConfigure_h
 #define itkConfigure_h
-
-/* Define granular compiler features. */
-#include "itk_compiler_detection.h"
 
 /*
  * here is where system computed values get stored these values should only
@@ -51,7 +48,7 @@
 /* Test external applications to ensure that compatible compiler C++ standard API are used
  * by assuming that compiler standards are backwards (but not forwards) compatible with each
  * other. Strange behaviors may occur if external applications do not use the same compiler
- * and compiler language featues (i.e. compiler flags).
+ * and compiler language features (i.e. compiler flags).
  * The warning is disabled for NVCC (NVidia CUDA) for use of ITK macros with CUDA versions
  * prior to v7. */
 #if !defined(__CUDACC__)
@@ -59,10 +56,6 @@
     #warning "WARNING:  The current project is configured to use a C++ standard version older than the C++ standard used for this build of ITK"
   #endif
 #endif
-
-/* Atomic operations */
-#cmakedefine ITK_HAVE_SYNC_BUILTINS
-#cmakedefine ITK_HAS_INTERLOCKEDADD
 
 /* what threading system are we using */
 #cmakedefine ITK_USE_PTHREADS
@@ -87,8 +80,6 @@
 #cmakedefine ITK_USE_FFTWD
 #cmakedefine ITK_USE_CUFFTW
 #cmakedefine ITK_USE_64BITS_IDS
-#cmakedefine ITK_COMPILER_SUPPORTS_SSE2_32
-#cmakedefine ITK_COMPILER_SUPPORTS_SSE2_64
 #cmakedefine ITK_USE_GPU
 #cmakedefine ITK_TEMPLATE_VISIBILITY_DEFAULT
 #cmakedefine USE_COMPILER_HIDDEN_VISIBILITY
@@ -105,11 +96,13 @@
 # define ITK_HAS_CPP11_TYPETRAITS
 #endif
 
-// defined if the compiler support GNU's __attribute__(( algined(x) )) extension
+// defined if the compiler support GNU's __attribute__(( aligned(x) )) extension
 #cmakedefine ITK_HAS_GNU_ATTRIBUTE_ALIGNED
 
 // defined if the C library as the mallinfo struct
 #cmakedefine ITK_HAS_MALLINFO
+// defined if the C library as the mallinfo2 struct
+#cmakedefine ITK_HAS_MALLINFO2
 // defined if feenableexcept is available
 #cmakedefine ITK_HAS_FEENABLEEXCEPT
 
@@ -152,9 +145,6 @@
 #if ITK_CMAKEDEFINE_VAR_@HAVE_UNISTD_H@
 # define ITK_HAVE_UNISTD_H
 #endif /* HAVE_UNISTD_H */
-#if ITK_CMAKEDEFINE_VAR_@HAVE_EMMINTRIN_H@
-# define ITK_HAVE_EMMINTRIN_H
-#endif /* HAVE_EMMINTRIN_H */
 
 
 #undef ITK_CMAKEDEFINE_VAR_1
@@ -165,5 +155,40 @@
 #define ITK_VERSION_MINOR @ITK_VERSION_MINOR@
 #define ITK_VERSION_PATCH @ITK_VERSION_PATCH@
 #define ITK_VERSION_STRING "@ITK_VERSION_STRING@"
+
+#if defined(ITK_USE_PTHREADS) || defined(ITK_USE_WIN32_THREADS)
+#define ITK_USE_POOL_MULTI_THREADER 1
+#endif
+
+
+#define ITK_DEFAULT_THREADER @ITK_DEFAULT_THREADER@
+// A single define concatenated with the CMake value at configuration time.
+#define ITK_DEFAULT_THREADER_@ITK_DEFAULT_THREADER@
+
+#ifdef ITK_DEFAULT_THREADER_Auto
+#  undef ITK_DEFAULT_THREADER
+#  if defined(ITK_USE_TBB)
+#    define ITK_DEFAULT_THREADER TBB
+#  elif defined(ITK_USE_POOL_MULTI_THREADER)
+#    define ITK_DEFAULT_THREADER Pool
+#  else
+#    define ITK_DEFAULT_THREADER Platform
+#  endif
+#endif
+
+#define ITK_DEFAULT_THREADER_@ITK_DEFAULT_THREADER@
+
+// Most compilers define __SSEn__ macros, but not MSVC.
+// For 32 bit Intel with MSVC, check _M_IX86_FP.
+// 64 bit Intel x86 always supports both 32 and 64 bit SSE2.
+
+#if defined(__SSE2__) || defined(__x86_64__) || defined(_M_X64) || defined(__amd64)
+#  define ITK_COMPILER_SUPPORTS_SSE2_64
+#endif
+
+#if defined(ITK_COMPILER_SUPPORTS_SSE2_64) || \
+    (defined(_M_IX86_FP) && (_M_IX86_FP >= 2))
+#  define ITK_COMPILER_SUPPORTS_SSE2_32
+#endif
 
 #endif //itkConfigure_h

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,14 +26,14 @@
 
 namespace itk
 {
-/**\class ESMDemonsRegistrationFunctionEnums
+/** \class ESMDemonsRegistrationFunctionEnums
  * \brief Contains all enum classes used by ESMDemonsRegistrationFunction class.
  * \ingroup ITKPDEDeformableRegistration
  */
 class ESMDemonsRegistrationFunctionEnums
 {
 public:
-  /**\class GradientEnum
+  /** \class GradientEnum
    * \ingroup FiniteDifferenceFunctions
    * \ingroup ITKPDEDeformableRegistration
    * Type of available image forces */
@@ -70,7 +70,7 @@ extern ITKPDEDeformableRegistration_EXPORT std::ostream &
  * \author Tom Vercauteren, INRIA & Mauna Kea Technologies
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/510
+ * https://www.insight-journal.org/browse/publication/154
  *
  * \sa SymmetricForcesDemonsRegistrationFunction
  * \sa SymmetricForcesDemonsRegistrationFilter
@@ -85,7 +85,7 @@ class ITK_TEMPLATE_EXPORT ESMDemonsRegistrationFunction
   : public PDEDeformableRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ESMDemonsRegistrationFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(ESMDemonsRegistrationFunction);
 
   /** Standard class type aliases. */
   using Self = ESMDemonsRegistrationFunction;
@@ -101,31 +101,31 @@ public:
   itkTypeMacro(ESMDemonsRegistrationFunction, PDEDeformableRegistrationFunction);
 
   /** MovingImage image type. */
-  using MovingImageType = typename Superclass::MovingImageType;
-  using MovingImagePointer = typename Superclass::MovingImagePointer;
+  using typename Superclass::MovingImageType;
+  using typename Superclass::MovingImagePointer;
   using MovingPixelType = typename MovingImageType::PixelType;
 
   /** FixedImage image type. */
-  using FixedImageType = typename Superclass::FixedImageType;
-  using FixedImagePointer = typename Superclass::FixedImagePointer;
+  using typename Superclass::FixedImageType;
+  using typename Superclass::FixedImagePointer;
   using IndexType = typename FixedImageType::IndexType;
   using SizeType = typename FixedImageType::SizeType;
   using SpacingType = typename FixedImageType::SpacingType;
   using DirectionType = typename FixedImageType::DirectionType;
 
   /** Deformation field type. */
-  using DisplacementFieldType = typename Superclass::DisplacementFieldType;
-  using DisplacementFieldTypePointer = typename Superclass::DisplacementFieldTypePointer;
+  using typename Superclass::DisplacementFieldType;
+  using typename Superclass::DisplacementFieldTypePointer;
 
   /** Inherit some enums from the superclass. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Inherit some enums from the superclass. */
-  using PixelType = typename Superclass::PixelType;
-  using RadiusType = typename Superclass::RadiusType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
-  using FloatOffsetType = typename Superclass::FloatOffsetType;
-  using TimeStepType = typename Superclass::TimeStepType;
+  using typename Superclass::PixelType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::NeighborhoodType;
+  using typename Superclass::FloatOffsetType;
+  using typename Superclass::TimeStepType;
 
   /** Interpolator type. */
   using CoordRepType = double;
@@ -185,20 +185,18 @@ public:
     return global;
   }
 
-  /** Release memory for global data structure. */
+  /** Update the metric and release memory for the per-thread-global data structure. */
   void
-  ReleaseGlobalDataPointer(void * GlobalData) const override;
+  ReleaseGlobalDataPointer(void * gd) const override;
 
   /** Set the object's state before each iteration. */
   void
   InitializeIteration() override;
 
-  /** This method is called by a finite difference solver image filter at
-   * each pixel that does not lie on a data set boundary */
+  /** Compute update at a non-boundary neighbourhood. Called by a finite difference solver image filter at
+   * each pixel that does not lie on a data set boundary. */
   PixelType
-  ComputeUpdate(const NeighborhoodType & neighborhood,
-                void *                   globalData,
-                const FloatOffsetType &  offset = FloatOffsetType(0.0)) override;
+  ComputeUpdate(const NeighborhoodType & it, void * gd, const FloatOffsetType & offset = FloatOffsetType(0.0)) override;
 
   /** Get the metric value. The metric value is the mean square difference
    * in intensity between the fixed image and transforming moving image

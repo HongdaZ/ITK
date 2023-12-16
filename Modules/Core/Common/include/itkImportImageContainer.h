@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,7 +45,7 @@ template <typename TElementIdentifier, typename TElement>
 class ITK_TEMPLATE_EXPORT ImportImageContainer : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImportImageContainer);
+  ITK_DISALLOW_COPY_AND_MOVE(ImportImageContainer);
 
   /** Standard class type aliases. */
   using Self = ImportImageContainer;
@@ -123,7 +123,7 @@ public:
    *
    * \sa SetImportPointer() */
   void
-  Reserve(ElementIdentifier num, const bool UseDefaultConstructor = false);
+  Reserve(ElementIdentifier size, const bool UseDefaultConstructor = false);
 
   /** Tell the container to try to minimize its memory usage for
    * storage of the current number of elements.  If new memory is

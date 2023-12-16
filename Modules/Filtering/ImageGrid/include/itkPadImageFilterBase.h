@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class PadImageFilterBase
+ * \class PadImageFilterBase
  * \brief Increase the image size by padding. Superclass for filters that fill
  * in extra pixels.
  *
@@ -48,7 +48,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT PadImageFilterBase : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PadImageFilterBase);
+  ITK_DISALLOW_COPY_AND_MOVE(PadImageFilterBase);
 
   /** Standard class type aliases. */
   using Self = PadImageFilterBase;
@@ -115,6 +115,7 @@ protected:
 private:
   BoundaryConditionPointerType m_BoundaryCondition;
 };
+
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION

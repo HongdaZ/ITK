@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkConstNeighborhoodIteratorWithOnlyIndex_hxx
 #define itkConstNeighborhoodIteratorWithOnlyIndex_hxx
 
-#include "itkConstNeighborhoodIteratorWithOnlyIndex.h"
 
 namespace itk
 {
@@ -32,7 +31,7 @@ ConstNeighborhoodIteratorWithOnlyIndex<TImage>::InBounds() const
   }
 
   bool ans = true;
-  for (DimensionValueType i = 0; i < Dimension; i++)
+  for (DimensionValueType i = 0; i < Dimension; ++i)
   {
     if (m_Loop[i] < m_InnerBoundsLow[i] || m_Loop[i] >= m_InnerBoundsHigh[i])
     {
@@ -104,11 +103,11 @@ ConstNeighborhoodIteratorWithOnlyIndex<TImage>::IndexInBounds(const NeighborInde
 }
 
 template <typename TImage>
-typename ConstNeighborhoodIteratorWithOnlyIndex<TImage>::OffsetType
-ConstNeighborhoodIteratorWithOnlyIndex<TImage>::ComputeInternalIndex(NeighborIndexType n) const
+auto
+ConstNeighborhoodIteratorWithOnlyIndex<TImage>::ComputeInternalIndex(NeighborIndexType n) const -> OffsetType
 {
   OffsetType ans;
-  auto       r = (unsigned long)n;
+  auto       r = static_cast<unsigned long>(n);
   for (long i = static_cast<long>(Dimension) - 1; i >= 0; --i)
   {
     ans[i] = static_cast<OffsetValueType>(r / this->GetStride(i));
@@ -118,42 +117,15 @@ ConstNeighborhoodIteratorWithOnlyIndex<TImage>::ComputeInternalIndex(NeighborInd
 }
 
 template <typename TImage>
-typename ConstNeighborhoodIteratorWithOnlyIndex<TImage>::RegionType
-ConstNeighborhoodIteratorWithOnlyIndex<TImage>::GetBoundingBoxAsImageRegion() const
+auto
+ConstNeighborhoodIteratorWithOnlyIndex<TImage>::GetBoundingBoxAsImageRegion() const -> RegionType
 {
   const IndexValueType zero = NumericTraits<IndexValueType>::ZeroValue();
-  RegionType           ans;
-  ans.SetIndex(this->GetIndex(zero));
-  ans.SetSize(this->GetSize());
+  const RegionType     ans(this->GetIndex(zero), this->GetSize());
 
   return ans;
 }
 
-template <typename TImage>
-ConstNeighborhoodIteratorWithOnlyIndex<TImage>::ConstNeighborhoodIteratorWithOnlyIndex()
-{
-  IndexType zeroIndex;
-  zeroIndex.Fill(0);
-
-  SizeType zeroSize;
-  zeroSize.Fill(0);
-
-  m_Bound.Fill(0);
-  m_BeginIndex.Fill(0);
-  m_EndIndex.Fill(0);
-  m_Loop.Fill(0);
-  m_Region.SetIndex(zeroIndex);
-  m_Region.SetSize(zeroSize);
-
-  for (DimensionValueType i = 0; i < Dimension; i++)
-  {
-    m_InBounds[i] = false;
-  }
-
-  m_IsInBounds = false;
-  m_IsInBoundsValid = false;
-  m_NeedToUseBoundaryCondition = false;
-}
 
 template <typename TImage>
 ConstNeighborhoodIteratorWithOnlyIndex<TImage>::ConstNeighborhoodIteratorWithOnlyIndex(const Self & orig)
@@ -184,10 +156,6 @@ ConstNeighborhoodIteratorWithOnlyIndex<TImage>::ConstNeighborhoodIteratorWithOnl
                                                                                        const RegionType & region)
 {
   this->Initialize(radius, ptr, region);
-  for (unsigned int i = 0; i < Dimension; i++)
-  {
-    m_InBounds[i] = false;
-  }
 }
 
 template <typename TImage>
@@ -301,7 +269,7 @@ template <typename TImage>
 bool
 ConstNeighborhoodIteratorWithOnlyIndex<TImage>::operator<(const Self & it) const
 {
-  for (DimensionValueType i = 1; i <= Dimension; i++)
+  for (DimensionValueType i = 1; i <= Dimension; ++i)
   {
     if (this->GetIndex()[Dimension - i] < it.GetIndex()[Dimension - i])
     {
@@ -330,7 +298,7 @@ template <typename TImage>
 bool
 ConstNeighborhoodIteratorWithOnlyIndex<TImage>::operator>(const Self & it) const
 {
-  for (DimensionValueType i = 1; i <= Dimension; i++)
+  for (DimensionValueType i = 1; i <= Dimension; ++i)
   {
     if (this->GetIndex()[Dimension - i] > it.GetIndex()[Dimension - i])
     {
@@ -470,12 +438,12 @@ ConstNeighborhoodIteratorWithOnlyIndex<TImage>::PrintSelf(std::ostream & os, Ind
   os << "}, m_IsInBoundsValid = {" << m_IsInBoundsValid;
 
   os << indent << ",  m_InnerBoundsLow = { ";
-  for (i = 0; i < Dimension; i++)
+  for (i = 0; i < Dimension; ++i)
   {
     os << m_InnerBoundsLow[i] << " ";
   }
   os << "}, m_InnerBoundsHigh = { ";
-  for (i = 0; i < Dimension; i++)
+  for (i = 0; i < Dimension; ++i)
   {
     os << m_InnerBoundsHigh[i] << " ";
   }

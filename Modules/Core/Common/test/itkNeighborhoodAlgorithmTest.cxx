@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ ImageBoundaryFaceCalculatorTest(TImage *                          image,
   {
     std::cout << "Number of pixels : " << fit->GetNumberOfPixels() << std::endl;
     std::cout << *fit << std::endl;
-    if (!region.IsInside(*fit) && (*fit).GetNumberOfPixels() > 0)
+    if (!region.IsInside(*fit) && fit->GetNumberOfPixels() > 0)
     {
       std::cerr << "face region is outside of requestToProcessRegion " << std::endl;
       return false;
@@ -106,7 +106,7 @@ NeighborhoodAlgorithmTest()
 
   RegionType region(ind, size);
 
-  typename ImageType::Pointer image = ImageType::New();
+  auto image = ImageType::New();
   image->SetRegions(region);
   image->Allocate();
 

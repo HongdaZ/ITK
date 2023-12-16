@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMeanImageFunction_hxx
 #define itkMeanImageFunction_hxx
 
-#include "itkMeanImageFunction.h"
 
 #include "itkImage.h"
 #include "itkShapedImageNeighborhoodRange.h"
@@ -32,8 +31,8 @@ MeanImageFunction<TInputImage, TCoordRep>::MeanImageFunction()
   = default;
 
 template <typename TInputImage, typename TCoordRep>
-typename MeanImageFunction<TInputImage, TCoordRep>::RealType
-MeanImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType & index) const
+auto
+MeanImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType & index) const -> RealType
 {
   RealType sum;
 
@@ -51,8 +50,7 @@ MeanImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType & ind
     return (NumericTraits<RealType>::max());
   }
 
-  const Experimental::ShapedImageNeighborhoodRange<const InputImageType> neighborhoodRange(
-    *image, index, m_NeighborhoodOffsets);
+  const ShapedImageNeighborhoodRange<const InputImageType> neighborhoodRange(*image, index, m_NeighborhoodOffsets);
 
   // Walk the neighborhood
   for (const InputPixelType pixelValue : neighborhoodRange)
@@ -70,7 +68,7 @@ MeanImageFunction<TInputImage, TCoordRep>::SetNeighborhoodRadius(const unsigned 
 {
   if (m_NeighborhoodRadius != radius)
   {
-    m_NeighborhoodOffsets = Experimental::GenerateRectangularImageNeighborhoodOffsets(ImageSizeType::Filled(radius));
+    m_NeighborhoodOffsets = GenerateRectangularImageNeighborhoodOffsets(ImageSizeType::Filled(radius));
     m_NeighborhoodRadius = radius;
     this->Modified();
   }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@
 
 namespace itk
 {
-SimpleFilterWatcher ::SimpleFilterWatcher(ProcessObject * o, const char * comment)
+SimpleFilterWatcher::SimpleFilterWatcher(ProcessObject * o, const char * comment)
 {
   // Initialize state
   m_Process = o;
@@ -46,26 +46,26 @@ SimpleFilterWatcher ::SimpleFilterWatcher(ProcessObject * o, const char * commen
   this->CreateCommands();
 }
 
-SimpleFilterWatcher ::SimpleFilterWatcher()
+SimpleFilterWatcher::SimpleFilterWatcher()
   : m_Comment("Not watching an object")
   , m_Process(nullptr)
 
 {}
 
-SimpleFilterWatcher ::SimpleFilterWatcher(const SimpleFilterWatcher & watch)
+SimpleFilterWatcher::SimpleFilterWatcher(const SimpleFilterWatcher & watch)
 {
   this->DeepCopy(watch);
 }
 
 SimpleFilterWatcher &
-SimpleFilterWatcher ::operator=(const SimpleFilterWatcher & watch)
+SimpleFilterWatcher::operator=(const SimpleFilterWatcher & watch)
 {
   this->DeepCopy(watch);
   return *this;
 }
 
 void
-SimpleFilterWatcher ::CreateCommands()
+SimpleFilterWatcher::CreateCommands()
 {
   // Create a series of commands
   m_StartFilterCommand = CommandType::New();
@@ -90,7 +90,7 @@ SimpleFilterWatcher ::CreateCommands()
 }
 
 void
-SimpleFilterWatcher ::DeepCopy(const SimpleFilterWatcher & watch)
+SimpleFilterWatcher::DeepCopy(const SimpleFilterWatcher & watch)
 {
   if (this != &watch)
   {
@@ -123,7 +123,7 @@ SimpleFilterWatcher ::DeepCopy(const SimpleFilterWatcher & watch)
 }
 
 void
-SimpleFilterWatcher ::RemoveObservers()
+SimpleFilterWatcher::RemoveObservers()
 {
   if (m_StartFilterCommand)
   {
@@ -147,7 +147,7 @@ SimpleFilterWatcher ::RemoveObservers()
   }
 }
 
-SimpleFilterWatcher ::~SimpleFilterWatcher()
+SimpleFilterWatcher::~SimpleFilterWatcher()
 {
   if (m_Process)
   {

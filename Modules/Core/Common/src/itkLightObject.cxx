@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 #include "itkLightObject.h"
-#include "itkObjectFactory.h"
+#include "itkObjectFactoryBase.h"
 #include <mutex>
 
 // Better name demanging for gcc
@@ -47,7 +47,7 @@ LightObject::Pointer
 LightObject::New()
 {
   Pointer       smartPtr;
-  LightObject * rawPtr = ::itk::ObjectFactory<LightObject>::Create();
+  LightObject * rawPtr = ObjectFactoryBase::CreateInstance(typeid(LightObject).name());
 
   if (rawPtr == nullptr)
   {
@@ -73,12 +73,12 @@ LightObject::InternalClone() const
 }
 
 /**
- * Delete a itk object. This method should always be used to delete an object
+ * Delete an itk object. This method should always be used to delete an object
  * when the new operator was used to create it. Using the C++ delete method
  * will not work with reference counting.
  */
 void
-LightObject ::Delete()
+LightObject::Delete()
 {
   this->UnRegister();
 }
@@ -88,25 +88,25 @@ LightObject ::Delete()
  */
 #ifdef _WIN32
 void *
-LightObject ::operator new(size_t n)
+LightObject::operator new(size_t n)
 {
   return new char[n];
 }
 
 void *
-LightObject ::operator new[](size_t n)
+LightObject::operator new[](size_t n)
 {
   return new char[n];
 }
 
 void
-LightObject ::operator delete(void * m)
+LightObject::operator delete(void * m)
 {
   delete[](char *) m;
 }
 
 void
-LightObject ::operator delete[](void * m, size_t)
+LightObject::operator delete[](void * m, size_t)
 {
   delete[](char *) m;
 }
@@ -115,11 +115,11 @@ LightObject ::operator delete[](void * m, size_t)
 
 /**
  * This function will be common to all itk objects.  It just calls the
- * header/self/trailer virtual print methods, which can be overriden by
+ * header/self/trailer virtual print methods, which can be overridden by
  * subclasses (any itk object).
  */
 void
-LightObject ::Print(std::ostream & os, Indent indent) const
+LightObject::Print(std::ostream & os, Indent indent) const
 {
   this->PrintHeader(os, indent);
   this->PrintSelf(os, indent.GetNextIndent());
@@ -131,14 +131,14 @@ LightObject ::Print(std::ostream & os, Indent indent) const
  * the debugger to break on error.
  */
 void
-LightObject ::BreakOnError()
+LightObject::BreakOnError()
 {}
 
 /**
  * Increase the reference count (mark as used by another object).
  */
 void
-LightObject ::Register() const
+LightObject::Register() const
 {
   ++m_ReferenceCount;
 }
@@ -147,7 +147,7 @@ LightObject ::Register() const
  * Decrease the reference count (release by another object).
  */
 void
-LightObject ::UnRegister() const noexcept
+LightObject::UnRegister() const noexcept
 {
   // As ReferenceCount gets unlocked, we may have a race condition
   // to delete the object.
@@ -162,7 +162,7 @@ LightObject ::UnRegister() const noexcept
  * Sets the reference count (use with care)
  */
 void
-LightObject ::SetReferenceCount(int ref)
+LightObject::SetReferenceCount(int ref)
 {
   m_ReferenceCount = ref;
 
@@ -172,27 +172,19 @@ LightObject ::SetReferenceCount(int ref)
   }
 }
 
-LightObject ::~LightObject()
+LightObject::~LightObject()
 {
   /**
    * warn user if reference counting is on and the object is being referenced
    * by another object.
-   * a call to uncaught_exception is necessary here to avoid throwing an
-   * exception if one has been thrown already. This is likely to
-   * happen when a subclass constructor (say B) is throwing an exception: at
-   * that point, the stack unwinds by calling all superclass destructors back
-   * to this method (~LightObject): since the ref count is still 1, an
-   * exception would be thrown again, causing the system to abort()!
    */
-  if (m_ReferenceCount > 0 && !std::uncaught_exception())
+  if (m_ReferenceCount > 0)
   {
     // A general exception safety rule is that destructors should
     // never throw.  Something is wrong with a program that reaches
     // this point anyway.  Also this is the least-derived class so the
     // whole object has been destroyed by this point anyway.  Just
-    // issue a warning.
-    // itkExceptionMacro(<< "Trying to delete object with non-zero reference
-    // count.");
+    // issue a warning, do not call `itkExceptionMacro`.
     itkWarningMacro("Trying to delete object with non-zero reference count.");
   }
 }
@@ -202,7 +194,7 @@ LightObject ::~LightObject()
  * its superclasses.
  */
 void
-LightObject ::PrintSelf(std::ostream & os, Indent indent) const
+LightObject::PrintSelf(std::ostream & os, Indent indent) const
 {
 #ifdef GCC_USEDEMANGLE
   char const * mangledName = typeid(*this).name();
@@ -232,7 +224,7 @@ LightObject ::PrintSelf(std::ostream & os, Indent indent) const
  * Define a default print header for all objects.
  */
 void
-LightObject ::PrintHeader(std::ostream & os, Indent indent) const
+LightObject::PrintHeader(std::ostream & os, Indent indent) const
 {
   os << indent << this->GetNameOfClass() << " (" << this << ")\n";
 }
@@ -241,7 +233,7 @@ LightObject ::PrintHeader(std::ostream & os, Indent indent) const
  * Define a default print trailer for all objects.
  */
 void
-LightObject ::PrintTrailer(std::ostream & itkNotUsed(os), Indent itkNotUsed(indent)) const
+LightObject::PrintTrailer(std::ostream & itkNotUsed(os), Indent itkNotUsed(indent)) const
 {}
 
 std::ostream &

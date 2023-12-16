@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,6 @@
 #include "itkImageRegion.h"
 #include "itkImageRegionConstIterator.h"
 #include "itkImageRegionReverseIterator.h"
-#include "itkBinomialBlurImageFilter.h"
 
 namespace itk
 {
@@ -110,14 +109,12 @@ BinomialBlurImageFilter<TInputImage, TOutputImage>::GenerateData()
   // Processing with doubles eliminates possible rounding artifacts which may
   // accumulate over repeated integer division
   using TTempImage = Image<double, NDimensions>;
-  typename TTempImage::Pointer tempPtr = TTempImage::New();
+  auto tempPtr = TTempImage::New();
 
   typename TTempImage::RegionType tempRegion;
   tempRegion = inputPtr->GetRequestedRegion();
 
-  tempPtr->SetLargestPossibleRegion(tempRegion);
-  tempPtr->SetBufferedRegion(tempRegion);
-  tempPtr->SetRequestedRegion(tempRegion);
+  tempPtr->SetRegions(tempRegion);
   tempPtr->Allocate();
 
   // How big is the input image?
@@ -155,14 +152,14 @@ BinomialBlurImageFilter<TInputImage, TOutputImage>::GenerateData()
   double pixelA, pixelB;
 
   // walk the output image forwards and compute blur
-  for (unsigned int rep = 0; rep < m_Repetitions; rep++)
+  for (unsigned int rep = 0; rep < m_Repetitions; ++rep)
   {
-    num_reps++;
+    ++num_reps;
 
     itkDebugMacro(<< "Repetition #" << rep);
 
     // blur each dimension
-    for (unsigned int dim = 0; dim < NDimensions; dim++)
+    for (unsigned int dim = 0; dim < NDimensions; ++dim)
     {
       TempIterator tempItDir = TempIterator(tempPtr, tempPtr->GetRequestedRegion());
       tempItDir.GoToBegin();
@@ -174,7 +171,7 @@ BinomialBlurImageFilter<TInputImage, TOutputImage>::GenerateData()
         if (index[dim] < (startIndex[dim] + static_cast<typename TTempImage::OffsetValueType>(size[dim]) - 1))
         {
           // Figure out the location of the "neighbor" pixel
-          for (unsigned int i = 0; i < NDimensions; i++)
+          for (unsigned int i = 0; i < NDimensions; ++i)
           {
             if (i == dim)
             {
@@ -215,7 +212,7 @@ BinomialBlurImageFilter<TInputImage, TOutputImage>::GenerateData()
         if (index[dim] > startIndex[dim])
         {
           // Figure out the location of the "neighbor" pixel
-          for (unsigned int i = 0; i < NDimensions; i++)
+          for (unsigned int i = 0; i < NDimensions; ++i)
           {
             if (i == dim)
             {

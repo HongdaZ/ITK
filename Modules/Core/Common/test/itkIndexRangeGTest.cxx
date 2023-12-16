@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,16 +24,16 @@
 #include <gtest/gtest.h>
 
 // Test template instantiations for various template arguments:
-template class itk::Experimental::IndexRange<1, true>;
-template class itk::Experimental::IndexRange<1, false>;
-template class itk::Experimental::IndexRange<2, true>;
-template class itk::Experimental::IndexRange<2, false>;
+template class itk::IndexRange<1, true>;
+template class itk::IndexRange<1, false>;
+template class itk::IndexRange<2, true>;
+template class itk::IndexRange<2, false>;
 
 
-using itk::Experimental::IndexRange;
-using itk::Experimental::ImageRegionIndexRange;
-using itk::Experimental::ZeroBasedIndexRange;
-using itk::Experimental::RangeGTestUtilities;
+using itk::IndexRange;
+using itk::ImageRegionIndexRange;
+using itk::ZeroBasedIndexRange;
+using itk::RangeGTestUtilities;
 
 
 static_assert(sizeof(ZeroBasedIndexRange<3>) < sizeof(ImageRegionIndexRange<3>),
@@ -41,7 +41,7 @@ static_assert(sizeof(ZeroBasedIndexRange<3>) < sizeof(ImageRegionIndexRange<3>),
 
 namespace
 {
-template <unsigned VDimension>
+template <unsigned int VDimension>
 itk::Index<VDimension>
 GenerateRandomIndex()
 {
@@ -87,7 +87,7 @@ ExpectRangeIsEmptyWhenDefaultConstructed()
   RangeGTestUtilities::ExpectRangeIsEmptyWhenDefaultConstructed<IndexRange<3, VBeginAtZero>>();
 }
 
-template <unsigned VDimension>
+template <unsigned int VDimension>
 void
 ExpectRangeIsEmptyWhenRegionSizeIsZero()
 {
@@ -113,13 +113,13 @@ ExpectRangeBeginIsEnd(const TRange & range)
 }
 
 
-template <unsigned VDimension>
+template <unsigned int VDimension>
 void
 ExpectRangeBeginIsEndWhenSizeHasZeroValue()
 {
   const itk::Index<VDimension> randomIndex = GenerateRandomIndex<VDimension>();
 
-  for (unsigned i{}; i < VDimension; ++i)
+  for (unsigned int i{}; i < VDimension; ++i)
   {
     auto size = itk::Size<VDimension>::Filled(2);
 
@@ -208,7 +208,7 @@ TEST(IndexRange, IteratorsCanBePassedToStdReverseCopy)
   using IndexType = RangeType::IndexType;
   RangeType range(RangeType::SizeType{ { 2, 3 } });
 
-  const unsigned numberOfIndices = range.size();
+  const unsigned int numberOfIndices = range.size();
 
   const std::vector<IndexType> stdVector(range.begin(), range.end());
   std::vector<IndexType>       reversedStdVector1(numberOfIndices);
@@ -260,7 +260,7 @@ TEST(IndexRange, CanBeUsedAsExpressionOfRangeBasedForLoop)
 
 TEST(IndexRange, SupportsImageRegion)
 {
-  constexpr unsigned Dimension = 2;
+  constexpr unsigned int Dimension = 2;
 
   using ImageRegionIndexRangeType = ImageRegionIndexRange<Dimension>;
   using IndexType = ImageRegionIndexRangeType::IndexType;

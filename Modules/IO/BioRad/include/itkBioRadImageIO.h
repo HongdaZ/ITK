@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,14 +35,14 @@
 namespace itk
 {
 /**
- *\class BioRadImageIO
+ * \class BioRadImageIO
  *
  *  \brief ImageIO class for reading Bio-Rad images.
  *  Bio-Rad file format are used by confocal microscopes like MRC 1024, MRC 600
- *  http://www.bio-rad.com/
+ *  https://www.bio-rad.com/
  *
  * The reader/writer was based on a scanned copy of the MRC-600 documentation
- * http://forums.ni.com/attachments/ni/200/7567/1/file%20format.pdf
+ * https://forums.ni.com/attachments/ni/200/7567/1/file%20format.pdf
  *
  * \ingroup IOFilters
  *
@@ -51,7 +51,7 @@ namespace itk
 class ITKIOBioRad_EXPORT BioRadImageIO : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BioRadImageIO);
+  ITK_DISALLOW_COPY_AND_MOVE(BioRadImageIO);
 
   /** Standard class type aliases. */
   using Self = BioRadImageIO;
@@ -62,7 +62,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(BioRadImageIO, Superclass);
+  itkTypeMacro(BioRadImageIO, ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
 

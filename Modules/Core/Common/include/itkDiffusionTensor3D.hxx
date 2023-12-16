@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkDiffusionTensor3D_hxx
 #define itkDiffusionTensor3D_hxx
 
-#include "itkDiffusionTensor3D.h"
 #include "itkNumericTraits.h"
 
 namespace itk
@@ -96,8 +95,8 @@ DiffusionTensor3D<T>::operator=(const Superclass & r)
  *
  */
 template <typename T>
-typename DiffusionTensor3D<T>::AccumulateValueType
-DiffusionTensor3D<T>::GetTrace() const
+auto
+DiffusionTensor3D<T>::GetTrace() const -> AccumulateValueType
 {
   AccumulateValueType trace = (*this)[0];
 
@@ -110,8 +109,8 @@ DiffusionTensor3D<T>::GetTrace() const
  *  Compute the value of fractional anisotropy
  */
 template <typename T>
-typename DiffusionTensor3D<T>::RealValueType
-DiffusionTensor3D<T>::GetFractionalAnisotropy() const
+auto
+DiffusionTensor3D<T>::GetFractionalAnisotropy() const -> RealValueType
 {
   // Computed as
   // FA = std::sqrt(1.5*sum(sum(N.*N))/sum((sum(D.*D))))
@@ -144,8 +143,8 @@ DiffusionTensor3D<T>::GetFractionalAnisotropy() const
  *  Compute the value of relative anisotropy
  */
 template <typename T>
-typename DiffusionTensor3D<T>::RealValueType
-DiffusionTensor3D<T>::GetRelativeAnisotropy() const
+auto
+DiffusionTensor3D<T>::GetRelativeAnisotropy() const -> RealValueType
 {
   const RealValueType trace = this->GetTrace();
   const RealValueType isp = this->GetInnerScalarProduct();
@@ -175,8 +174,8 @@ DiffusionTensor3D<T>::GetRelativeAnisotropy() const
  *  Compute the inner scalar product
  */
 template <typename T>
-typename DiffusionTensor3D<T>::RealValueType
-DiffusionTensor3D<T>::GetInnerScalarProduct() const
+auto
+DiffusionTensor3D<T>::GetInnerScalarProduct() const -> RealValueType
 {
   const RealValueType xx = (*this)[0];
   const RealValueType xy = (*this)[1];

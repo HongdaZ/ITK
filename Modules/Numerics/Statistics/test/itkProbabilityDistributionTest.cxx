@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -109,7 +109,7 @@ itkProbabilityDistributionTest(int, char *[])
 
   using DistributionType = itk::Statistics::ProbabilityDistributionTestingHelper;
 
-  DistributionType::Pointer distributionFunction = DistributionType::New();
+  auto distributionFunction = DistributionType::New();
 
   std::cout << "GetNameOfClass() = " << distributionFunction->GetNameOfClass() << std::endl;
   std::cout << "HasMean()        = " << distributionFunction->HasMean() << std::endl;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,9 +29,8 @@ itkSaltAndPepperNoiseImageFilterTest(int argc, char * argv[])
 
   if (argc < 3)
   {
-    std::cerr << "usage: " << itkNameOfTestExecutableMacro(argv) << " intput output Probability" << std::endl;
-    std::cerr << " input: the input image" << std::endl;
-    std::cerr << " output: the output image" << std::endl;
+    std::cerr << "Missing Parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " inputImage outputImage Probability" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -41,11 +40,11 @@ itkSaltAndPepperNoiseImageFilterTest(int argc, char * argv[])
   using ImageType = itk::Image<PixelType, Dimension>;
 
   using ReaderType = itk::ImageFileReader<ImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
   using SaltAndPepperNoiseImageFilterType = itk::SaltAndPepperNoiseImageFilter<ImageType, ImageType>;
-  SaltAndPepperNoiseImageFilterType::Pointer saltAndPepperNoiseImageFilter = SaltAndPepperNoiseImageFilterType::New();
+  auto saltAndPepperNoiseImageFilter = SaltAndPepperNoiseImageFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(saltAndPepperNoiseImageFilter, SaltAndPepperNoiseImageFilter, NoiseBaseImageFilter);
 
@@ -73,11 +72,13 @@ itkSaltAndPepperNoiseImageFilterTest(int argc, char * argv[])
   itk::SimpleFilterWatcher watcher(saltAndPepperNoiseImageFilter, "SaltAndPepperNoiseImageFilter");
 
   using WriterType = itk::ImageFileWriter<ImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(saltAndPepperNoiseImageFilter->GetOutput());
   writer->SetFileName(argv[2]);
 
   ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
 
+
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

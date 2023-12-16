@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ class ITK_TEMPLATE_EXPORT ExpectationBasedPointSetToPointSetMetricv4
   : public PointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExpectationBasedPointSetToPointSetMetricv4);
+  ITK_DISALLOW_COPY_AND_MOVE(ExpectationBasedPointSetToPointSetMetricv4);
 
   /** Standard class type aliases. */
   using Self = ExpectationBasedPointSetToPointSetMetricv4;
@@ -62,14 +62,14 @@ public:
   itkTypeMacro(ExpectationBasedPointSetToPointSetMetricv4, PointSetToPointSetMetricv4);
 
   /** Types transferred from the base class */
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using LocalDerivativeType = typename Superclass::LocalDerivativeType;
-  using PointType = typename Superclass::PointType;
-  using PixelType = typename Superclass::PixelType;
-  using CoordRepType = typename Superclass::CoordRepType;
-  using PointIdentifier = typename Superclass::PointIdentifier;
-  using NeighborsIdentifierType = typename Superclass::NeighborsIdentifierType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::LocalDerivativeType;
+  using typename Superclass::PointType;
+  using typename Superclass::PixelType;
+  using typename Superclass::CoordRepType;
+  using typename Superclass::PointIdentifier;
+  using typename Superclass::NeighborsIdentifierType;
 
   /**
    * Calculates the local metric value for a single point.

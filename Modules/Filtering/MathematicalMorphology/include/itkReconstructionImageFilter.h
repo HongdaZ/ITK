@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,7 +55,7 @@ template <typename TInputImage, typename TOutputImage, typename TCompare>
 class ITK_TEMPLATE_EXPORT ReconstructionImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ReconstructionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ReconstructionImageFilter);
 
   /** Standard class type aliases. */
   using Self = ReconstructionImageFilter;
@@ -103,20 +103,14 @@ public:
    * however this filter implicitly applies a mask to force the
    * constraint to hold. The marker image the
    * image that is dilated by this filter. */
-  void
-  SetMarkerImage(const MarkerImageType *);
-
-  const MarkerImageType *
-  GetMarkerImage();
+  itkSetInputMacro(MarkerImage, MarkerImageType);
+  itkGetInputMacro(MarkerImage, MarkerImageType);
 
   /** Set/Get the mask image. The mask image is used to "mask" the
    * dilated marker image. The mask operation is a pixelwise
    * minimum. */
-  void
-  SetMaskImage(const MaskImageType *);
-
-  const MaskImageType *
-  GetMaskImage();
+  itkSetInputMacro(MaskImage, MaskImageType);
+  itkGetInputMacro(MaskImage, MaskImageType);
 
   /**
    * Set/Get whether the connected components are defined strictly by

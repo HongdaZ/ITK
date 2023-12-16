@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -119,13 +119,6 @@ PlatformMultiThreader::SingleMethodExecute()
   // obey the global maximum number of threads limit
   m_NumberOfWorkUnits = std::min(MultiThreaderBase::GetGlobalMaximumNumberOfThreads(), m_NumberOfWorkUnits);
 
-  // Init process_id table because a valid process_id (i.e., non-zero), is
-  // checked in the WaitForSingleMethodThread loops
-  for (thread_loop = 1; thread_loop < m_NumberOfWorkUnits; ++thread_loop)
-  {
-    process_id[thread_loop] = ITK_DEFAULT_THREAD_ID;
-  }
-
   // Spawn a set of threads through the SingleMethodProxy. Exceptions
   // thrown from a thread will be caught by the SingleMethodProxy. A
   // naive mechanism is in place for determining whether a thread
@@ -146,7 +139,7 @@ PlatformMultiThreader::SingleMethodExecute()
       process_id[thread_loop] = this->SpawnDispatchSingleMethodThread(&m_ThreadInfoArray[thread_loop]);
     }
   }
-  catch (std::exception & e)
+  catch (const std::exception & e)
   {
     // get the details of the exception to rethrow them
     exceptionDetails = e.what();
@@ -170,7 +163,7 @@ PlatformMultiThreader::SingleMethodExecute()
     m_ThreadInfoArray[0].NumberOfWorkUnits = m_NumberOfWorkUnits;
     m_SingleMethod((void *)(&m_ThreadInfoArray[0]));
   }
-  catch (ProcessAborted &)
+  catch (const ProcessAborted &)
   {
     // Need cleanup and rethrow ProcessAborted
     // close down other threads
@@ -187,7 +180,7 @@ PlatformMultiThreader::SingleMethodExecute()
     // rethrow
     throw;
   }
-  catch (std::exception & e)
+  catch (const std::exception & e)
   {
     // get the details of the exception to rethrow them
     exceptionDetails = e.what();
@@ -215,7 +208,7 @@ PlatformMultiThreader::SingleMethodExecute()
         exceptionOccurred = true;
       }
     }
-    catch (std::exception & e)
+    catch (const std::exception & e)
     {
       // get the details of the exception to rethrow them
       exceptionDetails = e.what();

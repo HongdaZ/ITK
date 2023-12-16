@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageToParametricSpaceFilter_hxx
 #define itkImageToParametricSpaceFilter_hxx
 
-#include "itkImageToParametricSpaceFilter.h"
 #include "itkNumericTraits.h"
 #include "itkImageIterator.h"
 #include "itkImageRegionConstIterator.h"
@@ -102,7 +101,7 @@ ImageToParametricSpaceFilter<TInputImage, TOutputMesh>::GenerateData()
   // support progress methods/callbacks
   ProgressReporter progress(this, 0, numberOfPixels);
 
-  for (unsigned int component = 0; component < PointDimension; component++)
+  for (unsigned int component = 0; component < PointDimension; ++component)
   {
     image = this->GetInput(component);
     ImageRegionConstIterator<InputImageType> itr(image, image->GetRequestedRegion());

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class CurvatureFlowFunction
+ * \class CurvatureFlowFunction
  *
  * \brief
  * This class encapsulate the finite difference equation which drives a
@@ -44,7 +44,7 @@ template <typename TImage>
 class ITK_TEMPLATE_EXPORT CurvatureFlowFunction : public FiniteDifferenceFunction<TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CurvatureFlowFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(CurvatureFlowFunction);
 
   /**  Standard class type aliases. */
   using Self = CurvatureFlowFunction;
@@ -59,15 +59,15 @@ public:
   itkTypeMacro(CurvatureFlowFunction, FiniteDifferenceFunction);
 
   /** Inherit some parameters from the superclass type. */
-  using ImageType = typename Superclass::ImageType;
-  using PixelType = typename Superclass::PixelType;
-  using RadiusType = typename Superclass::RadiusType;
+  using typename Superclass::ImageType;
+  using typename Superclass::PixelType;
+  using typename Superclass::RadiusType;
   using ScalarValueType = PixelType;
-  using PixelRealType = typename Superclass::PixelRealType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
-  using NeighborhoodScalesType = typename Superclass::NeighborhoodScalesType;
-  using FloatOffsetType = typename Superclass::FloatOffsetType;
-  using TimeStepType = typename Superclass::TimeStepType;
+  using typename Superclass::PixelRealType;
+  using typename Superclass::NeighborhoodType;
+  using typename Superclass::NeighborhoodScalesType;
+  using typename Superclass::FloatOffsetType;
+  using typename Superclass::TimeStepType;
 
   /** Extract superclass dimension. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
@@ -126,7 +126,7 @@ public:
   /** This method computes the solution update for each pixel that does not
    * lie on a the data set boundary. */
   PixelType
-  ComputeUpdate(const NeighborhoodType & neighborhood,
+  ComputeUpdate(const NeighborhoodType & it,
                 void *                   globalData,
                 const FloatOffsetType &  offset = FloatOffsetType(0.0)) override;
 

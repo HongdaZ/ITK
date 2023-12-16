@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  *=========================================================================*/
 
 #include "itkNiftiImageIOTest.h"
+#include "itkTestingMacros.h"
 
 // Specific ImageIO test
 
@@ -97,24 +98,24 @@ Equal(const double a, const double b)
 }
 
 int
-itkNiftiImageIOTest(int ac, char * av[])
+itkNiftiImageIOTest(int argc, char * argv[])
 {
   itk::ObjectFactoryBase::UnRegisterAllFactories();
   itk::NiftiImageIOFactory::RegisterOneFactory();
   int rval = 0;
   //
   // first argument is passing in the writable directory to do all testing
-  if (ac > 1)
+  if (argc > 1)
   {
-    char * testdir = *++av;
-    --ac;
+    char * testdir = *++argv;
+    --argc;
     itksys::SystemTools::ChangeDirectory(testdir);
   }
   std::string prefix = "";
-  if (ac > 1)
+  if (argc > 1)
   {
-    prefix = *++av;
-    --ac;
+    prefix = *++argv;
+    --argc;
   }
   static bool firstTime = true;
   if (firstTime)
@@ -122,18 +123,30 @@ itkNiftiImageIOTest(int ac, char * av[])
     itk::ObjectFactoryBase::RegisterFactory(itk::NiftiImageIOFactory::New());
     firstTime = false;
   }
-  if (ac > 1) // This is a mechanism for reading unsigned char images for testing.
+  if (argc > 1) // This is a mechanism for reading unsigned char images for testing.
   {
     using ImageType = itk::Image<unsigned char, 3>;
     ImageType::Pointer         input;
     itk::NiftiImageIO::Pointer imageIO = itk::NiftiImageIO::New();
-    // enable old behavior of NIFTI reader
-    imageIO->SetLegacyAnalyze75Mode(itk::Analyze75Flavor::AnalyzeITK4);
-    for (int imagenameindex = 1; imagenameindex < ac; imagenameindex++)
+
+    ITK_EXERCISE_BASIC_OBJECT_METHODS(imageIO, NiftiImageIO, ImageIOBase);
+
+
+    // Enable old behavior of NIFTI reader
+    imageIO->SetLegacyAnalyze75Mode(itk::NiftiImageIOEnums::Analyze75Flavor::AnalyzeITK4);
+
+    for (int imagenameindex = 1; imagenameindex < argc; ++imagenameindex)
     {
+      auto fileName = std::string(argv[imagenameindex]);
+
+      // The way the test is structured, we cannot know the expected file
+      // type, so just print it
+      typename itk::NiftiImageIOEnums::NiftiFileEnum fileType = imageIO->DetermineFileType(fileName.c_str());
+      std::cout << "File type: " << fileType << std::endl;
+
       try
       {
-        input = itk::IOTestHelper::ReadImage<ImageType>(std::string(av[imagenameindex]), false, imageIO);
+        input = itk::IOTestHelper::ReadImage<ImageType>(fileName, false, imageIO);
       }
       catch (const itk::ExceptionObject & e)
       {
@@ -230,5 +243,8 @@ itkNiftiImageIOTest(int ac, char * av[])
     }
     // This was made a protected function.  MyFactoryTest->PrintSelf(std::cout,0);
   }
+
+  TestEnumStreaming();
+
   return rval;
 }

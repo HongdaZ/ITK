@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,7 +62,7 @@ template <typename TParametersValueType = double>
 class ITK_TEMPLATE_EXPORT Similarity2DTransform : public Rigid2DTransform<TParametersValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Similarity2DTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(Similarity2DTransform);
 
   /** Standard class type aliases. */
   using Self = Similarity2DTransform;
@@ -82,43 +82,43 @@ public:
   static constexpr unsigned int OutputSpaceDimension = 2;
   static constexpr unsigned int ParametersDimension = 4;
 
-  using ScalarType = typename Superclass::ScalarType;
+  using typename Superclass::ScalarType;
   using ScaleType = TParametersValueType;
 
   /** Parameters type. */
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename Superclass::FixedParametersValueType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::ParametersValueType;
+  using typename Superclass::FixedParametersType;
+  using typename Superclass::FixedParametersValueType;
 
   /** Jacobian type. */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  using typename Superclass::JacobianType;
+  using typename Superclass::JacobianPositionType;
+  using typename Superclass::InverseJacobianPositionType;
 
   /** Offset type. */
-  using OffsetType = typename Superclass::OffsetType;
-  using OffsetValueType = typename Superclass::OffsetValueType;
+  using typename Superclass::OffsetType;
+  using typename Superclass::OffsetValueType;
 
   /** Matrix type. */
-  using MatrixType = typename Superclass::MatrixType;
-  using MatrixValueType = typename Superclass::MatrixValueType;
+  using typename Superclass::MatrixType;
+  using typename Superclass::MatrixValueType;
 
   /** Point type. */
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
+  using typename Superclass::InputPointType;
+  using typename Superclass::OutputPointType;
 
   /** Vector type. */
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
+  using typename Superclass::InputVectorType;
+  using typename Superclass::OutputVectorType;
 
   /** CovariantVector type. */
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
+  using typename Superclass::InputCovariantVectorType;
+  using typename Superclass::OutputCovariantVectorType;
 
   /** VnlVector type. */
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
+  using typename Superclass::InputVnlVectorType;
+  using typename Superclass::OutputVnlVectorType;
 
   /** Base inverse transform type. This type should not be changed to the
    * concrete inverse transform type or inheritance would be lost. */
@@ -170,7 +170,7 @@ public:
    * which is the inverse of self.
    */
   void
-  CloneInverseTo(Pointer & newinverse) const;
+  CloneInverseTo(Pointer & result) const;
 
   /** Get an inverse of this transform. */
   bool
@@ -185,7 +185,7 @@ public:
    * which has the same parameters.
    */
   void
-  CloneTo(Pointer & clone) const;
+  CloneTo(Pointer & result) const;
 
   /**
    * Set the rotation Matrix of a Similarity 2D Transform

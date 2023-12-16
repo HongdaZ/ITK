@@ -3,6 +3,8 @@ set(ITKDistanceMapTests
 itkDanielssonDistanceMapImageFilterTest.cxx
 itkDanielssonDistanceMapImageFilterTest1.cxx
 itkDanielssonDistanceMapImageFilterTest2.cxx
+itkDirectedHausdorffDistanceImageFilterTest1.cxx
+itkDirectedHausdorffDistanceImageFilterTest2.cxx
 itkSignedDanielssonDistanceMapImageFilterTest.cxx
 itkSignedDanielssonDistanceMapImageFilterTest1.cxx
 itkSignedDanielssonDistanceMapImageFilterTest2.cxx
@@ -32,12 +34,19 @@ itk_add_test(NAME itkDanielssonDistanceMapImageFilterTest1
       COMMAND ITKDistanceMapTestDriver
     --compare DATA{${ITK_DATA_ROOT}/Baseline/BasicFilters/itkDanielssonDistanceMapImageFilterTest1.mhd,itkDanielssonDistanceMapImageFilterTest1.zraw}
               ${ITK_TEST_OUTPUT_DIR}/itkDanielssonDistanceMapImageFilterTest1.mhd
-    itkDanielssonDistanceMapImageFilterTest1 DATA{${ITK_DATA_ROOT}/Input/BinaryImageWithVariousShapes01.png} ${ITK_TEST_OUTPUT_DIR}/itkDanielssonDistanceMapImageFilterTest1.mhd)
+    itkDanielssonDistanceMapImageFilterTest1 DATA{${ITK_DATA_ROOT}/Input/BinaryImageWithVariousShapes01.png} ${ITK_TEST_OUTPUT_DIR}/itkDanielssonDistanceMapImageFilterTest1.mhd 0 0 1)
 itk_add_test(NAME itkDanielssonDistanceMapImageFilterTest2
       COMMAND ITKDistanceMapTestDriver
     --compare DATA{${ITK_DATA_ROOT}/Baseline/BasicFilters/itkDanielssonDistanceMapImageFilterTest2.png}
               ${ITK_TEST_OUTPUT_DIR}/itkDanielssonDistanceMapImageFilterTest2.png
     itkDanielssonDistanceMapImageFilterTest2 DATA{${ITK_DATA_ROOT}/Input/BinaryImageWithVariousShapes01.png} ${ITK_TEST_OUTPUT_DIR}/itkDanielssonDistanceMapImageFilterTest2.png)
+itk_add_test(NAME itkDirectedHausdorffDistanceImageFilterTest1
+      COMMAND ITKDistanceMapTestDriver itkDirectedHausdorffDistanceImageFilterTest1)
+itk_add_test(NAME itkDirectedHausdorffDistanceImageFilterTest2
+      COMMAND ITKDistanceMapTestDriver
+      itkDirectedHausdorffDistanceImageFilterTest2
+      DATA{${ITK_DATA_ROOT}/Input/BinaryImageWithVariousShapes01.png}
+      ${ITK_TEST_OUTPUT_DIR}/itkDirectedHausdorffDistanceImageFilterTest2.png)
 itk_add_test(NAME itkSignedDanielssonDistanceMapImageFilterTest
       COMMAND ITKDistanceMapTestDriver itkSignedDanielssonDistanceMapImageFilterTest)
 itk_add_test(NAME itkSignedDanielssonDistanceMapImageFilterTest1
@@ -47,9 +56,9 @@ itk_add_test(NAME itkSignedDanielssonDistanceMapImageFilterTest1
     itkSignedDanielssonDistanceMapImageFilterTest1 DATA{${ITK_DATA_ROOT}/Input/BinaryImageWithVariousShapes01.png} ${ITK_TEST_OUTPUT_DIR}/itkSignedDanielssonDistanceMapImageFilterTest1.mhd 2)
 itk_add_test(NAME itkSignedDanielssonDistanceMapImageFilterTest2
       COMMAND ITKDistanceMapTestDriver
-    --compare DATA{${ITK_DATA_ROOT}/Baseline/BasicFilters/itkSignedDanielssonDistanceMapImageFilterTest2.png}
-              ${ITK_TEST_OUTPUT_DIR}/itkSignedDanielssonDistanceMapImageFilterTest2.png
-    itkSignedDanielssonDistanceMapImageFilterTest2 DATA{${ITK_DATA_ROOT}/Input/BinaryImageWithVariousShapes01.png} ${ITK_TEST_OUTPUT_DIR}/itkSignedDanielssonDistanceMapImageFilterTest2.png)
+    --compare DATA{${ITK_DATA_ROOT}/Baseline/BasicFilters/itkSignedDanielssonDistanceMapImageFilterTest2.mha}
+              ${ITK_TEST_OUTPUT_DIR}/itkSignedDanielssonDistanceMapImageFilterTest2.mha
+    itkSignedDanielssonDistanceMapImageFilterTest2 DATA{${ITK_DATA_ROOT}/Input/BinaryImageWithVariousShapes01.png} ${ITK_TEST_OUTPUT_DIR}/itkSignedDanielssonDistanceMapImageFilterTest2.mha)
 # Test the distance filter on a 3D volume.
 # The output should be the same as the output of the Maurer distance map filter.
 itk_add_test(NAME itkSignedDanielssonDistanceMapImageFilterTest3D
@@ -70,7 +79,7 @@ itk_add_test(NAME itkSignedDanielssonDistanceMapImageFilterTest4D
       ${ITK_TEST_OUTPUT_DIR}/itkSignedDanielssonDistanceMapImageFilterTest4D.mhd 4)
 
 itk_add_test(NAME itkContourMeanDistanceImageFilterTest
-      COMMAND ITKDistanceMapTestDriver itkContourMeanDistanceImageFilterTest)
+      COMMAND ITKDistanceMapTestDriver itkContourMeanDistanceImageFilterTest 1)
 itk_add_test(NAME itkContourDirectedMeanDistanceImageFilterTest
       COMMAND ITKDistanceMapTestDriver itkContourDirectedMeanDistanceImageFilterTest)
 itk_add_test(NAME itkFastChamferDistanceImageFilterTest1
@@ -82,7 +91,7 @@ itk_add_test(NAME itkFastChamferDistanceImageFilterTest3
 itk_add_test(NAME itkFastChamferDistanceImageFilterTest4
       COMMAND ITKDistanceMapTestDriver itkFastChamferDistanceImageFilterTest 4)
 itk_add_test(NAME itkHausdorffDistanceImageFilterTest
-      COMMAND ITKDistanceMapTestDriver itkHausdorffDistanceImageFilterTest)
+      COMMAND ITKDistanceMapTestDriver itkHausdorffDistanceImageFilterTest 1)
 itk_add_test(NAME itkReflectiveImageRegionIteratorTest
       COMMAND ITKDistanceMapTestDriver itkReflectiveImageRegionIteratorTest)
 itk_add_test(NAME itkSignedMaurerDistanceMapImageFilterTest1

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkExpNegativeImageFilter_h
 
 #include "itkUnaryFunctorImageFilter.h"
-#include "itkMath.h"
 #include "itkMath.h"
 
 namespace itk
@@ -38,21 +37,14 @@ public:
   ExpNegative() { m_Factor = 1.0; }
   ~ExpNegative() = default;
 
-  bool
-  operator!=(const ExpNegative & other) const
-  {
-    if (Math::NotExactlyEquals(m_Factor, other.m_Factor))
-    {
-      return true;
-    }
-    return false;
-  }
 
   bool
   operator==(const ExpNegative & other) const
   {
-    return !(*this != other);
+    return Math::ExactlyEquals(m_Factor, other.m_Factor);
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ExpNegative);
 
   inline TOutput
   operator()(const TInput & A) const
@@ -79,7 +71,7 @@ private:
 } // namespace Functor
 
 /**
- *\class ExpNegativeImageFilter
+ * \class ExpNegativeImageFilter
  * \brief Computes the function exp(-K.x) for each input pixel.
  *
  * Every output pixel is equal to std::exp(-K.x ). where x is the
@@ -99,7 +91,7 @@ class ExpNegativeImageFilter
       Functor::ExpNegative<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExpNegativeImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ExpNegativeImageFilter);
 
   /** Standard class type aliases. */
   using Self = ExpNegativeImageFilter;

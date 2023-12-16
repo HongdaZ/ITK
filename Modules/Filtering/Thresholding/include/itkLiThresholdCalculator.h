@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ namespace itk
 {
 
 /**
- *\class LiThresholdCalculator
+ * \class LiThresholdCalculator
  * \brief Computes the Li threshold for an image. Aka intermeans
  *
  * Implements Li's Minimum Cross Entropy thresholding method
@@ -37,7 +37,7 @@ namespace itk
  * 3) Sezgin M. and Sankur B. (2004) "Survey over Image Thresholding
  *    Techniques and Quantitative Performance Evaluation" Journal of
  *    Electronic Imaging, 13(1): 146-165
- *    http://citeseer.ist.psu.edu/sezgin04survey.html
+ *    https://citeseer.ist.psu.edu/sezgin04survey.html
  *
  * This class is templated over the input histogram type.
  * \warning This calculator assumes that the input histogram has only one dimension.
@@ -47,8 +47,7 @@ namespace itk
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/10380/3279  or
- * http://www.insight-journal.org/browse/publication/811
+ * https://www.insight-journal.org/browse/publication/811
  *
  * \ingroup Operators
  * \ingroup ITKThresholding
@@ -57,7 +56,7 @@ template <typename THistogram, typename TOutput = double>
 class ITK_TEMPLATE_EXPORT LiThresholdCalculator : public HistogramThresholdCalculator<THistogram, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LiThresholdCalculator);
+  ITK_DISALLOW_COPY_AND_MOVE(LiThresholdCalculator);
 
   /** Standard class type aliases. */
   using Self = LiThresholdCalculator;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,8 +42,8 @@ namespace itk
  * a file.
  * \sa StreamReadBufferAsBinary StreamWriteBufferAsBinary
  *
- * This implementation was taken fron the Insight Joural:
- * https://hdl.handle.net/10380/3171
+ * This implementation was taken fron the Insight Journal:
+ * https://www.insight-journal.org/browse/publication/729
  *
  * \sa itk::ImageFileReader itk::ImageFileWriter
  * \ingroup IOFilters
@@ -52,7 +52,7 @@ namespace itk
 class ITKIOImageBase_EXPORT StreamingImageIOBase : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(StreamingImageIOBase);
+  ITK_DISALLOW_COPY_AND_MOVE(StreamingImageIOBase);
 
   /** Standard class type aliases. */
   using Self = StreamingImageIOBase;
@@ -79,7 +79,7 @@ public:
   // If UseStreamedReading is true, then returned region is the
   // requested region parameter.
   ImageIORegion
-  GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegion & requested) const override;
+  GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegion & requestedRegion) const override;
 
   // see super class for documentation
   //
@@ -96,8 +96,8 @@ protected:
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 
-  /** \brief Returns true if GetIORegion is not the same size as the
-   * largest region give by GetNumberOfDimensions.
+  /** \brief Returns true if GetIORegion() is not the same size as the
+   * largest region give by GetNumberOfDimensions().
    *
    * This compares the IORegion to the size of the image in the
    * file. With out regaurd to the dimensions of either, if the
@@ -120,40 +120,40 @@ protected:
    * \todo Move this methods to itk::ImageIOBase
    */
   virtual bool
-  WriteBufferAsBinary(std::ostream & is, const void * buffer, SizeType num);
+  WriteBufferAsBinary(std::ostream & os, const void * buffer, SizeType num);
 
   /** \brief Reads the set IORegion from os into buffer
    *
-   * \param os is an istream presumed to be opened for reading in binary
+   * \param file is an istream presumed to be opened for reading in binary
    * mode
-   * \param buffer is pointer to an allocated block of memory
+   * \param _buffer is pointer to an allocated block of memory
    * suitable to hold the IORegion of the pixel type
    *
-   * This methods relies on GetDataPosition to determin where the
-   * data is located in the file. It uses m_IORegion to determin the
+   * This methods relies on GetDataPosition() to determine where the
+   * data is located in the file. It uses ImageIOBase#m_IORegion to determine the
    * requested region to read.
    *
    * The files data is assumed to be unpadded and continuous in the
    * file for the size of the image in the dimensions of the
-   * m_IORegion. This means that the image file could be broken into
+   * ImageIOBase#m_IORegion. This means that the image file could be broken into
    * slices, but not blocks for this methods to be used.
    */
   virtual bool
-  StreamReadBufferAsBinary(std::istream & os, void * buffer);
+  StreamReadBufferAsBinary(std::istream & file, void * _buffer);
 
   /** \brief Writes the set IORegion from buffer into os
    *
-   * \param os is an ostream presumed to be opened for writing and
+   * \param file is an ostream presumed to be opened for writing and
    * reading
-   * \param buffer is a pointer to the data in a continuous block
+   * \param _buffer is a pointer to the data in a continuous block
    * for the region
    *
-   * This methods relies on GetDataPosition to determin where the data
-   * is located in the file. It usesy m_IORegion determin the requested
+   * This methods relies on GetDataPosition() to determine where the data
+   * is located in the file. It uses ImageIOBase#m_IORegion determine the requested
    * region to written.
    */
   virtual bool
-  StreamWriteBufferAsBinary(std::ostream & os, const void * buffer);
+  StreamWriteBufferAsBinary(std::ostream & file, const void * _buffer);
 
   /** \brief Returns the size of the header in the file */
   virtual SizeType

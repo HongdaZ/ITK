@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,14 +25,14 @@ namespace itk
 {
 
 /**
- *\class VideoSource
+ * \class VideoSource
  * \brief A TemporalProcessObject that produces a VideoStream
  *
  * VideoSource acts as the base class for all TemporalProcess objects that
  * produce a VideoStream as their output. This class defines GetOutput() which
  * returns a pointer to the VideoStream object on output port 0.
  *
- * The other roll that VideoSource plays is to implement the framework for
+ * The other role that VideoSource plays is to implement the framework for
  * spatial streaming to complement the temporal streaming implemented in
  * TemporalProcessObject. This implementation mirrors the implementation in
  * ImageSource except that each thread will be able to operate on a spatial
@@ -44,7 +44,7 @@ template <typename TOutputVideoStream>
 class ITK_TEMPLATE_EXPORT VideoSource : public TemporalProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VideoSource);
+  ITK_DISALLOW_COPY_AND_MOVE(VideoSource);
 
   /*-TYPEDEFS----------------------------------------------------------------*/
 
@@ -93,13 +93,13 @@ public:
   /** Graft the provided VideoStream onto the TemporalProcessObject's idx'th
    * output using VideoStream's Graft implementation */
   virtual void
-  GraftNthOutput(unsigned int idx, OutputVideoStreamType * output);
+  GraftNthOutput(unsigned int idx, OutputVideoStreamType * graft);
 
   /** Graft the provided VideoStream onto the 0th output. This is useful for
    * ImageSources that use a mini-pipeline internally. See comment in
    * ImageSource for more information. */
   virtual void
-  GraftOutput(OutputVideoStreamType * output);
+  GraftOutput(OutputVideoStreamType * graft);
 
   /** Make a DataObject of the correct type for the specified output port. The
    * default always creates an OutputVideoStreamType object, so subclasses with

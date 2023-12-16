@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@
 namespace itk
 {
 /**
- *\class ZeroCrossingImageFilter
+ * \class ZeroCrossingImageFilter
  * \brief This filter finds the closest pixel to the zero-crossings
  * (sign changes) in a signed itk::Image.
  *
@@ -34,7 +34,7 @@ namespace itk
  *  \par Inputs and Outputs
  *  The input to this filter is an itk::Image of arbitrary dimension.  The
  *  algorithm assumes a signed data type (zero-crossings are not defined for
- *  unsigned data types), and requires that operator>, operator<, operator==,
+ *  unsigned int data types), and requires that operator>, operator<, operator==,
  *  and operator!= are defined.
  *
  *  \par
@@ -64,7 +64,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT ZeroCrossingImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ZeroCrossingImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ZeroCrossingImageFilter);
 
   /** Standard "Self" & Superclass type alias. */
   using Self = ZeroCrossingImageFilter;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -178,7 +178,7 @@ class ITK_TEMPLATE_EXPORT ImageToImageMetricv4
                                 TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToImageMetricv4);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageToImageMetricv4);
 
   /** Standard class type aliases. */
   using Self = ImageToImageMetricv4;
@@ -197,35 +197,35 @@ public:
   using InternalComputationValueType = TInternalComputationValueType;
 
   /** Type used for representing parameter values  */
-  using CoordinateRepresentationType = typename Superclass::CoordinateRepresentationType;
+  using typename Superclass::CoordinateRepresentationType;
 
   /**  Type of the parameters. */
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::ParametersValueType;
 
   /** Gradient source type */
-  using GradientSourceEnum = typename Superclass::GradientSourceEnum;
+  using typename Superclass::GradientSourceEnum;
 
   /** Dimension type */
-  using DimensionType = typename Superclass::DimensionType;
+  using typename Superclass::DimensionType;
   using ImageDimensionType = typename Superclass::DimensionType;
 
   /** Transform types from Superclass*/
-  using FixedTransformType = typename Superclass::FixedTransformType;
-  using FixedTransformPointer = typename Superclass::FixedTransformPointer;
-  using FixedInputPointType = typename Superclass::FixedInputPointType;
-  using FixedOutputPointType = typename Superclass::FixedOutputPointType;
-  using FixedTransformParametersType = typename Superclass::FixedTransformParametersType;
+  using typename Superclass::FixedTransformType;
+  using typename Superclass::FixedTransformPointer;
+  using typename Superclass::FixedInputPointType;
+  using typename Superclass::FixedOutputPointType;
+  using typename Superclass::FixedTransformParametersType;
 
-  using MovingTransformType = typename Superclass::MovingTransformType;
-  using MovingTransformPointer = typename Superclass::MovingTransformPointer;
-  using MovingInputPointType = typename Superclass::MovingInputPointType;
-  using MovingOutputPointType = typename Superclass::MovingOutputPointType;
-  using MovingTransformParametersType = typename Superclass::MovingTransformParametersType;
+  using typename Superclass::MovingTransformType;
+  using typename Superclass::MovingTransformPointer;
+  using typename Superclass::MovingInputPointType;
+  using typename Superclass::MovingOutputPointType;
+  using typename Superclass::MovingTransformParametersType;
 
-  using JacobianType = typename Superclass::JacobianType;
-  using FixedTransformJacobianType = typename Superclass::FixedTransformJacobianType;
-  using MovingTransformJacobianType = typename Superclass::MovingTransformJacobianType;
+  using typename Superclass::JacobianType;
+  using typename Superclass::FixedTransformJacobianType;
+  using typename Superclass::MovingTransformJacobianType;
 
   using ObjectType = typename Superclass::ObjectType;
 
@@ -248,18 +248,18 @@ public:
 
   /** Types for the virtual domain */
   using VirtualImageType = typename Superclass::VirtualImageType;
-  using VirtualImagePointer = typename Superclass::VirtualImagePointer;
-  using VirtualPixelType = typename Superclass::VirtualPixelType;
-  using VirtualRegionType = typename Superclass::VirtualRegionType;
-  using VirtualSizeType = typename Superclass::VirtualSizeType;
-  using VirtualSpacingType = typename Superclass::VirtualSpacingType;
+  using typename Superclass::VirtualImagePointer;
+  using typename Superclass::VirtualPixelType;
+  using typename Superclass::VirtualRegionType;
+  using typename Superclass::VirtualSizeType;
+  using typename Superclass::VirtualSpacingType;
   using VirtualOriginType = typename Superclass::VirtualPointType;
-  using VirtualPointType = typename Superclass::VirtualPointType;
-  using VirtualDirectionType = typename Superclass::VirtualDirectionType;
+  using typename Superclass::VirtualPointType;
+  using typename Superclass::VirtualDirectionType;
   using VirtualRadiusType = typename Superclass::VirtualSizeType;
-  using VirtualIndexType = typename Superclass::VirtualIndexType;
-  using VirtualPointSetType = typename Superclass::VirtualPointSetType;
-  using VirtualPointSetPointer = typename Superclass::VirtualPointSetPointer;
+  using typename Superclass::VirtualIndexType;
+  using typename Superclass::VirtualPointSetType;
+  using typename Superclass::VirtualPointSetPointer;
 
   /** Typedef for traits class */
   using MetricTraits = TMetricTraits;
@@ -348,15 +348,15 @@ public:
   using DefaultMovingImageGradientCalculator = typename MetricTraits::DefaultMovingImageGradientCalculator;
 
   /**  Type of the measure. */
-  using MeasureType = typename Superclass::MeasureType;
+  using typename Superclass::MeasureType;
 
   /**  Type of the metric derivative. */
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeType;
   using DerivativeValueType = typename DerivativeType::ValueType;
 
   /** Type to represent the number of parameters that are being optimized at
    * any given iteration of the optimizer. */
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
+  using typename Superclass::NumberOfParametersType;
 
   /** Set fixed image*/
   void
@@ -369,7 +369,7 @@ public:
     }
     else
     {
-      itkExceptionMacro("Incorrect object type.  Should be an image.")
+      itkExceptionMacro("Incorrect object type.  Should be an image.");
     }
   }
 
@@ -384,7 +384,7 @@ public:
     }
     else
     {
-      itkExceptionMacro("Incorrect object type.  Should be an image.")
+      itkExceptionMacro("Incorrect object type.  Should be an image.");
     }
   }
 
@@ -481,7 +481,7 @@ public:
    * when multithreaded.  The actual number of work units used (may be less than
    * this value) can be obtained with \c GetNumberOfWorkUnitsUsed. */
   virtual void
-  SetMaximumNumberOfWorkUnits(const ThreadIdType workUnits);
+  SetMaximumNumberOfWorkUnits(const ThreadIdType number);
   virtual ThreadIdType
   GetMaximumNumberOfWorkUnits() const;
 
@@ -524,13 +524,6 @@ public:
 
   /** Get Moving Gradient Image. */
   itkGetModifiableObjectMacro(MovingImageGradientImage, MovingImageGradientImageType);
-
-  /** Get number of valid points from most recent update */
-  SizeValueType
-  GetNumberOfValidPoints() const override
-  {
-    return this->m_NumberOfValidPoints;
-  }
 
   /** Get the number of points in the domain used to evaluate
    * the metric. This will differ depending on whether a sampled
@@ -599,7 +592,7 @@ public:
     return true;
   }
 
-  using MetricCategoryType = typename Superclass::MetricCategoryType;
+  using typename Superclass::MetricCategoryType;
 
   /** Get metric category */
   MetricCategoryType

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -107,7 +107,7 @@ ITKCommon_EXPORT std::istream &
       lastPos = in.tellg();
     }
   }
-  catch (ExceptionObject & excp)
+  catch (const ExceptionObject & excp)
   {
     record.Reset();
     // propagate the exception
@@ -162,7 +162,7 @@ ITKCommon_EXPORT std::istream &
       itkGenericExceptionMacro(<< "For record: " << record.m_RecordName << ", bad right bracket: " << bracket);
     }
   }
-  catch (ExceptionObject & excp)
+  catch (const ExceptionObject & excp)
   {
     record.Reset();
     // propagate the exception
@@ -227,7 +227,7 @@ ITKCommon_EXPORT std::istream &
       }
       else
       {
-        // the name is folowed by an address
+        // the name is followed by an address
         in >> address;
 
         if (!in.good())
@@ -283,7 +283,7 @@ ITKCommon_EXPORT std::istream &
       itkGenericExceptionMacro(<< "For record: " << record.m_RecordName << ", bad end of line: " << line);
     }
   }
-  catch (ExceptionObject & excp)
+  catch (const ExceptionObject & excp)
   {
     record.Reset();
     // propagate the exception
@@ -300,7 +300,7 @@ ITKCommon_EXPORT std::istream &
 template <typename TFirstType>
 struct MapRecordPlusor
 {
-  MapRecordPlusor<TFirstType>(const char * token = "Size")
+  MapRecordPlusor(const char * token = "Size")
     : m_Token(token)
   {}
 
@@ -320,7 +320,7 @@ struct MapRecordPlusor
 template <typename TFirstType>
 struct MapRecordConditionalPlusor
 {
-  MapRecordConditionalPlusor<TFirstType>(const char * filter, const char * token = "Size")
+  MapRecordConditionalPlusor(const char * filter, const char * token = "Size")
     : m_Filter(filter)
     , m_Token(token)
   {}
@@ -352,7 +352,7 @@ MapData::MemoryLoadType
 MapData::GetTotalMemoryUsage()
 {
   return std::accumulate(
-    this->m_Records.begin(), this->m_Records.end(), MapData::MemoryLoadType(0), MapRecordPlusor<MemoryLoadType>());
+    this->m_Records.begin(), this->m_Records.end(), MapData::MemoryLoadType{ 0 }, MapRecordPlusor<MemoryLoadType>());
 }
 
 MapData::MemoryLoadType
@@ -360,7 +360,7 @@ MapData::GetMemoryUsage(const char * filter, const char * token)
 {
   return std::accumulate(this->m_Records.begin(),
                          this->m_Records.end(),
-                         MapData::MemoryLoadType(0),
+                         MapData::MemoryLoadType{ 0 },
                          MapRecordConditionalPlusor<MemoryLoadType>(filter, token));
 }
 
@@ -405,7 +405,7 @@ operator>>(std::istream & smapsStream, SmapsData_2_6 & data)
       record = new SmapsRecord;
     }
   }
-  catch (ExceptionObject & excp)
+  catch (const ExceptionObject & excp)
   {
     // in case of error, erase the records.
     data.Reset();
@@ -438,9 +438,9 @@ SmapsData_2_6::GetStackUsage()
 
 /**              ---            VMMapData               ---              **/
 
-VMMapData_10_2 ::VMMapData_10_2() = default;
+VMMapData_10_2::VMMapData_10_2() = default;
 
-VMMapData_10_2 ::~VMMapData_10_2() = default;
+VMMapData_10_2::~VMMapData_10_2() = default;
 
 std::istream &
 operator>>(std::istream & stream, VMMapData_10_2 & data)
@@ -524,7 +524,7 @@ operator>>(std::istream & stream, VMMapData_10_2 & data)
       }
     }
   }
-  catch (ExceptionObject & excp)
+  catch (const ExceptionObject & excp)
   {
     // in case of error, erase the records.
     data.Reset();

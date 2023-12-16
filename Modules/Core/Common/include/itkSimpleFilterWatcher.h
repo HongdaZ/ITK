@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkCommand.h"
 #include "itkProcessObject.h"
 #include "itkTimeProbe.h"
+#include <mutex>
 
 namespace itk
 {
@@ -47,7 +48,7 @@ namespace itk
  * Example of use:
  *
  * using FilterType = itk::BinaryThresholdImageFilter<ImageType>;
- * FilterType::Pointer thresholdFilter = FilterType::New();
+ * auto thresholdFilter = FilterType::New();
  *
  * SimpleFilterWatcher watcher(thresholdFilter, "Threshold");
  *
@@ -186,7 +187,8 @@ protected:
   {
     if (m_Process)
     {
-      m_Steps++;
+      std::lock_guard<std::mutex> outputSerializer(m_ProgressOutput);
+      ++m_Steps;
       if (!m_Quiet)
       {
         std::cout << " | " << m_Process->GetProgress() << std::flush;
@@ -229,7 +231,7 @@ protected:
   ShowIteration()
   {
     std::cout << " #" << std::flush;
-    m_Iterations++;
+    ++m_Iterations;
   }
 
   /** Callback method to show the StartEvent */
@@ -290,6 +292,7 @@ private:
   bool                        m_TestAbort{ false };
   std::string                 m_Comment;
   itk::ProcessObject::Pointer m_Process;
+  std::mutex                  m_ProgressOutput;
 
   using CommandType = SimpleMemberCommand<SimpleFilterWatcher>;
   CommandType::Pointer m_StartFilterCommand;

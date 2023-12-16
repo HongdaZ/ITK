@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ itkDiscreteHessianGaussianImageFunctionTestND(int argc, char * argv[])
 
   // Read input
   using ReaderType = itk::ImageFileReader<ImageType>;
-  typename ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
   ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
@@ -46,7 +46,7 @@ itkDiscreteHessianGaussianImageFunctionTestND(int argc, char * argv[])
   typename HessianGaussianImageFunctionType::TensorType                       hessian;
   typename HessianGaussianImageFunctionType::TensorType::EigenValuesArrayType eigenValues;
 
-  typename HessianGaussianImageFunctionType::Pointer function = HessianGaussianImageFunctionType::New();
+  auto function = HessianGaussianImageFunctionType::New();
 
 
   function->SetInputImage(reader->GetOutput());
@@ -79,7 +79,7 @@ itkDiscreteHessianGaussianImageFunctionTestND(int argc, char * argv[])
 
   // Test itkSetVectorMacro
   double varianceVector[HessianGaussianImageFunctionType::VarianceArrayType::Length];
-  for (unsigned int i = 0; i < HessianGaussianImageFunctionType::VarianceArrayType::Length; i++)
+  for (unsigned int i = 0; i < HessianGaussianImageFunctionType::VarianceArrayType::Length; ++i)
   {
     varianceVector[i] = varianceValue;
   }
@@ -172,7 +172,7 @@ itkDiscreteHessianGaussianImageFunctionTestND(int argc, char * argv[])
 
   // Write the output image
   using WriterType = itk::ImageFileWriter<ImageType>;
-  typename WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(argv[2]);
   writer->SetInput(output);
 
@@ -258,8 +258,8 @@ itkDiscreteHessianGaussianImageFunctionTest(int argc, char * argv[])
   if (argc < 4)
   {
     std::cerr << "Missing parameters." << std::endl;
-    std::cerr << "Usage: " << argv[0]
-              << "inputFileName"
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << "inputFileName"
                  " outputFileName"
                  " sigma"
                  " [maximumError]"
@@ -279,7 +279,7 @@ itkDiscreteHessianGaussianImageFunctionTest(int argc, char * argv[])
 
 
   using HessianGaussianImageFunctionType = itk::DiscreteHessianGaussianImageFunction<ImageType, PixelType>;
-  HessianGaussianImageFunctionType::Pointer function = HessianGaussianImageFunctionType::New();
+  auto function = HessianGaussianImageFunctionType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(function, DiscreteHessianGaussianImageFunction, ImageFunction);
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkNarrowBandImageFilterBase_hxx
 #define itkNarrowBandImageFilterBase_hxx
 
-#include "itkNarrowBandImageFilterBase.h"
 #include "itkShiftScaleImageFilter.h"
 
 namespace itk
@@ -36,7 +35,7 @@ NarrowBandImageFilterBase<TInputImage, TOutputImage>::CopyInputToOutput()
 {
   //   First need to subtract the iso-surface value from the input image.
   using ShiftScaleFilterType = ShiftScaleImageFilter<InputImageType, OutputImageType>;
-  typename ShiftScaleFilterType::Pointer shiftScaleFilter = ShiftScaleFilterType::New();
+  auto shiftScaleFilter = ShiftScaleFilterType::New();
   shiftScaleFilter->SetInput(this->GetInput());
   shiftScaleFilter->SetShift(-m_IsoSurfaceValue);
   shiftScaleFilter->Update();
@@ -87,7 +86,7 @@ NarrowBandImageFilterBase<TInputImage, TOutputImage>::GenerateData()
 
   TimeStepType              timeStep;
   std::vector<TimeStepType> timeStepList(numberOfWorkUnits, NumericTraits<TimeStepType>::ZeroValue());
-  std::vector<bool>         validTimeStepList(numberOfWorkUnits, true);
+  BooleanStdVectorType      validTimeStepList(numberOfWorkUnits, true);
 
   // Implement iterative loop in thread function
   // ThreadedApplyUpdate and ThreadedCalculateChanged
@@ -198,7 +197,7 @@ void
 NarrowBandImageFilterBase<TInputImage, TOutputImage>::InitializeIteration()
 {
   // Set m_Touched flag from threads information
-  for (ThreadIdType i = 0; i < this->GetNumberOfWorkUnits(); i++)
+  for (ThreadIdType i = 0; i < this->GetNumberOfWorkUnits(); ++i)
   {
     m_Touched = (m_Touched || m_TouchedForThread[i]);
     m_TouchedForThread[i] = false;
@@ -242,8 +241,9 @@ NarrowBandImageFilterBase<TInputImage, TOutputImage>::ThreadedApplyUpdate(const 
 }
 
 template <typename TInputImage, typename TOutputImage>
-typename NarrowBandImageFilterBase<TInputImage, TOutputImage>::TimeStepType
+auto
 NarrowBandImageFilterBase<TInputImage, TOutputImage>::ThreadedCalculateChange(const ThreadRegionType & regionToProcess)
+  -> TimeStepType
 {
   using OutputSizeType = typename OutputImageType::SizeType;
 

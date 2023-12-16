@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ class SerieHelper;
 namespace itk
 {
 /**
- *\class GDCMSeriesFileNames
+ * \class GDCMSeriesFileNames
  * \brief Generate a sequence of filenames from a DICOM series.
  *
  * This class generates a sequence of files whose filenames point to
@@ -62,7 +62,7 @@ using SerieUIDContainer = std::vector<std::string>;
 class ITKIOGDCM_EXPORT GDCMSeriesFileNames : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GDCMSeriesFileNames);
+  ITK_DISALLOW_COPY_AND_MOVE(GDCMSeriesFileNames);
 
   /** Standard class type aliases. */
   using Self = GDCMSeriesFileNames;
@@ -160,11 +160,11 @@ public:
     return m_UseSeriesDetails;
   }
 
-  /** Add more restriction on the selection of a Series. This follow the same
-   * approach as SetUseSeriesDetails, but allow a user to add even more DICOM
+  /** Add more restriction on the selection of a Series. This follows the same
+   * approach as SetUseSeriesDetails, but allows a user to add even more DICOM
    * tags to take into account for subrefining a set of DICOM files into multiple
-   * series. Format for tag is "group|element" of a DICOM tag.
-   * \warning User need to set SetUseSeriesDetails(true)
+   * series. The tag format is "group|element" of a DICOM tag.
+   * \warning UseSeriesDetails needs to be set to true.
    */
   void
   AddSeriesRestriction(const std::string & tag);

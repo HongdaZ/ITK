@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -85,7 +85,7 @@ InternalTest(int argc, char * argv[])
 
   // Read the input image
   using ReaderType = itk::ImageFileReader<ImageType>;
-  typename ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
   try
@@ -102,7 +102,7 @@ InternalTest(int argc, char * argv[])
   // Store the input image for convenience
   typename ImageType::Pointer image = reader->GetOutput();
 
-  typename InputMeshType::Pointer mesh = InputMeshType::New();
+  auto mesh = InputMeshType::New();
 
   // Get the input image indexes for the mesh filter
   itk::ImageRegionConstIterator<ImageType> imageIterator(image, image->GetBufferedRegion());
@@ -128,7 +128,7 @@ InternalTest(int argc, char * argv[])
     // Convert the pixel position into a Point
     ImagePointType p = helper<ImagePointType>::GetPosition(image.GetPointer(), imageIterator);
 
-    for (unsigned int dim = 0; dim < ImageDimension; dim++)
+    for (unsigned int dim = 0; dim < ImageDimension; ++dim)
     {
       point[dim] = p[dim];
     }
@@ -145,12 +145,15 @@ InternalTest(int argc, char * argv[])
 
   using ParametricFilterType = itk::ParametricSpaceToImageSpaceMeshFilter<InputMeshType, OutputMeshType>;
 
-  typename ParametricFilterType::Pointer parametricFilter = ParametricFilterType::New();
+  auto parametricFilter = ParametricFilterType::New();
 
   if (parametricFilter.IsNull())
   {
     return EXIT_FAILURE;
   }
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(parametricFilter, ParametricSpaceToImageSpaceMeshFilter, MeshToMeshFilter);
+
 
   // Set the input mesh for the parametric filter
   parametricFilter->SetInput(mesh);
@@ -188,7 +191,7 @@ InternalTest(int argc, char * argv[])
     typename OutputMeshType::PointType position = parametricFilter->GetOutput()->GetPoints()->ElementAt(pointId);
     PositionType                       refPoint = helper<PositionType>::GetPosition(image.GetPointer(), imageIterator);
 
-    for (unsigned int dim = 0; dim < ImageDimension; dim++)
+    for (unsigned int dim = 0; dim < ImageDimension; ++dim)
     {
       if (static_cast<double>(position[dim]) != static_cast<double>(refPoint[dim]))
       {

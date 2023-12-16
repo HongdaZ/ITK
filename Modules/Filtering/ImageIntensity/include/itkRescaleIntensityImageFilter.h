@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -68,22 +68,15 @@ public:
   {
     m_Maximum = max;
   }
-  bool
-  operator!=(const IntensityLinearTransform & other) const
-  {
-    if (Math::NotExactlyEquals(m_Factor, other.m_Factor) || Math::NotExactlyEquals(m_Offset, other.m_Offset) ||
-        Math::NotExactlyEquals(m_Maximum, other.m_Maximum) || Math::NotExactlyEquals(m_Minimum, other.m_Minimum))
-    {
-      return true;
-    }
-    return false;
-  }
 
   bool
   operator==(const IntensityLinearTransform & other) const
   {
-    return !(*this != other);
+    return Math::ExactlyEquals(m_Factor, other.m_Factor) && Math::ExactlyEquals(m_Offset, other.m_Offset) &&
+           Math::ExactlyEquals(m_Maximum, other.m_Maximum) && Math::ExactlyEquals(m_Minimum, other.m_Minimum);
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(IntensityLinearTransform);
 
   inline TOutput
   operator()(const TInput & x) const
@@ -112,7 +105,7 @@ private:
 } // end namespace Functor
 
 /**
- *\class RescaleIntensityImageFilter
+ * \class RescaleIntensityImageFilter
  * \brief Applies a linear transformation to the intensity levels of the
  * input Image.
  *
@@ -158,7 +151,7 @@ class ITK_TEMPLATE_EXPORT RescaleIntensityImageFilter
       Functor::IntensityLinearTransform<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RescaleIntensityImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(RescaleIntensityImageFilter);
 
   /** Standard class type aliases. */
   using Self = RescaleIntensityImageFilter;

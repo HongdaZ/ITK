@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ namespace itk
 class ITK_FORWARD_EXPORT TemporalDataObject;
 
 /**
- *\class TemporalProcessObject
+ * \class TemporalProcessObject
  * \brief TemporalProcessObject implements a ProcessObject for the itk pipeline
  *        with the notion of a temporal region
  *
@@ -66,7 +66,7 @@ class ITK_FORWARD_EXPORT TemporalDataObject;
 class ITKVideoCore_EXPORT TemporalProcessObject : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TemporalProcessObject);
+  ITK_DISALLOW_COPY_AND_MOVE(TemporalProcessObject);
 
   /*-TYPEDEFS----------------------------------------------------------------*/
 

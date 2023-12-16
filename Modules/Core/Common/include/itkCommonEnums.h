@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -147,6 +147,7 @@ public:
     QUADRATIC_EDGE_CELL = 7,
     QUADRATIC_TRIANGLE_CELL = 8,
     LAST_ITK_CELL = 9,
+    POLYLINE_CELL = 10,
     MAX_ITK_CELLS = 255
   };
 
@@ -203,7 +204,7 @@ public:
 };
 extern ITKCommon_EXPORT std::ostream &
                         operator<<(std::ostream & out, MeshEnums::MeshClassCellsAllocationMethod value);
-/**\class OctreeEnums
+/** \class OctreeEnums
  * \brief
  * \ingroup ITKCommon
  */
@@ -244,13 +245,13 @@ extern ITKCommon_EXPORT std::ostream &
                         operator<<(std::ostream & out, const OctreeEnums::Octree value);
 extern ITKCommon_EXPORT std::ostream &
                         operator<<(std::ostream & out, const OctreeEnums::LeafIdentifier value);
-/**\class ObjectEnums
+/** \class ObjectEnums
  * \ingroup ITKCommon
  */
 class ObjectEnums
 {
 public:
-  /**\class RegionEnum
+  /** \class RegionEnum
    * \ingroup ITKCommon
    * Enums used to describe the extent types. */
   enum class RegionEnum : uint8_t
@@ -263,7 +264,7 @@ public:
 extern ITKCommon_EXPORT std::ostream &
                         operator<<(std::ostream & out, const ObjectEnums::RegionEnum value);
 
-/**\class ObjectFactoryEnums
+/** \class ObjectFactoryEnums
  * \ingroup ITKCommon
  */
 class ObjectFactoryEnums

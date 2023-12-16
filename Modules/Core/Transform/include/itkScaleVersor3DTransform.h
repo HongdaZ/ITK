@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,8 +40,7 @@ namespace itk
  * College of Medicine, Department of Psychiatry NeuroImaging Center
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/1291  or
- * http://www.insight-journal.org/browse/publication/180
+ * https://www.insight-journal.org/browse/publication/180
  *
  * \ingroup ITKTransform
  */
@@ -49,7 +48,7 @@ template <typename TParametersValueType = double>
 class ITK_TEMPLATE_EXPORT ScaleVersor3DTransform : public VersorRigid3DTransform<TParametersValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ScaleVersor3DTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(ScaleVersor3DTransform);
 
   /** Standard class type aliases. */
   using Self = ScaleVersor3DTransform;
@@ -69,29 +68,29 @@ public:
   static constexpr unsigned int ParametersDimension = 9;
 
   /** Parameters Type   */
-  using ParametersType = typename Superclass::ParametersType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
-  using ScalarType = typename Superclass::ScalarType;
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
-  using MatrixType = typename Superclass::MatrixType;
-  using InverseMatrixType = typename Superclass::InverseMatrixType;
-  using CenterType = typename Superclass::CenterType;
-  using OffsetType = typename Superclass::OffsetType;
-  using TranslationType = typename Superclass::TranslationType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::FixedParametersType;
+  using typename Superclass::JacobianType;
+  using typename Superclass::JacobianPositionType;
+  using typename Superclass::InverseJacobianPositionType;
+  using typename Superclass::ScalarType;
+  using typename Superclass::InputPointType;
+  using typename Superclass::OutputPointType;
+  using typename Superclass::InputVectorType;
+  using typename Superclass::OutputVectorType;
+  using typename Superclass::InputVnlVectorType;
+  using typename Superclass::OutputVnlVectorType;
+  using typename Superclass::InputCovariantVectorType;
+  using typename Superclass::OutputCovariantVectorType;
+  using typename Superclass::MatrixType;
+  using typename Superclass::InverseMatrixType;
+  using typename Superclass::CenterType;
+  using typename Superclass::OffsetType;
+  using typename Superclass::TranslationType;
 
-  using VersorType = typename Superclass::VersorType;
-  using AxisType = typename Superclass::AxisType;
-  using AngleType = typename Superclass::AngleType;
+  using typename Superclass::VersorType;
+  using typename Superclass::AxisType;
+  using typename Superclass::AngleType;
 
   /** Scale Vector Type. */
   using ScaleVectorType = Vector<TParametersValueType, 3>;
@@ -141,7 +140,7 @@ public:
 protected:
   ScaleVersor3DTransform();
   ScaleVersor3DTransform(const MatrixType & matrix, const OutputVectorType & offset);
-  ScaleVersor3DTransform(unsigned int paramDims);
+  ScaleVersor3DTransform(unsigned int parametersDimension);
   ~ScaleVersor3DTransform() override = default;
 
   void

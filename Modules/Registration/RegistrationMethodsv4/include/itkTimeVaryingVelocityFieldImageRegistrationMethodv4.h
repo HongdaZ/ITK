@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -90,7 +90,7 @@ class ITK_TEMPLATE_EXPORT TimeVaryingVelocityFieldImageRegistrationMethodv4
   : public ImageRegistrationMethodv4<TFixedImage, TMovingImage, TOutputTransform, TVirtualImage, TPointSet>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TimeVaryingVelocityFieldImageRegistrationMethodv4);
+  ITK_DISALLOW_COPY_AND_MOVE(TimeVaryingVelocityFieldImageRegistrationMethodv4);
 
   /** Standard class type aliases. */
   using Self = TimeVaryingVelocityFieldImageRegistrationMethodv4;
@@ -116,11 +116,11 @@ public:
   using RegionType = typename MovingImageType::RegionType;
 
   /** Metric and transform type alias */
-  using ImageMetricType = typename Superclass::ImageMetricType;
+  using typename Superclass::ImageMetricType;
   using ImageMetricPointer = typename ImageMetricType::Pointer;
   using VirtualImageType = typename ImageMetricType::VirtualImageType;
   using MeasureType = typename ImageMetricType::MeasureType;
-  using MultiMetricType = typename Superclass::MultiMetricType;
+  using typename Superclass::MultiMetricType;
 
   using OutputTransformType = TOutputTransform;
   using OutputTransformPointer = typename OutputTransformType::Pointer;
@@ -133,9 +133,9 @@ public:
   using DisplacementFieldPointer = typename DisplacementFieldType::Pointer;
   using DisplacementVectorType = typename TimeVaryingVelocityFieldType::PixelType;
 
-  using CompositeTransformType = typename Superclass::CompositeTransformType;
+  using typename Superclass::CompositeTransformType;
 
-  using DecoratedOutputTransformType = typename Superclass::DecoratedOutputTransformType;
+  using typename Superclass::DecoratedOutputTransformType;
   using DecoratedOutputTransformPointer = typename DecoratedOutputTransformType::Pointer;
 
   using NumberOfIterationsArrayType = Array<SizeValueType>;

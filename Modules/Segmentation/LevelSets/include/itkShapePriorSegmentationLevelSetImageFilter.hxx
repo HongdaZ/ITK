@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkShapePriorSegmentationLevelSetImageFilter_hxx
 #define itkShapePriorSegmentationLevelSetImageFilter_hxx
 
-#include "itkShapePriorSegmentationLevelSetImageFilter.h"
 
 namespace itk
 {
@@ -158,7 +157,7 @@ ShapePriorSegmentationLevelSetImageFilter<TInputImage, TFeatureImage, TOutputPix
     df->GetRadius(), this->GetOutput(), this->GetOutput()->GetRequestedRegion());
 
   unsigned int counter = 0;
-  for (unsigned int k = 0; k < this->GetNumberOfLayers(); k++)
+  for (unsigned int k = 0; k < this->GetNumberOfLayers(); ++k)
   {
     for (layerIt = this->m_Layers[k]->Begin(); layerIt != this->m_Layers[k]->End(); ++layerIt)
     {

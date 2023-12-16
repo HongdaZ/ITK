@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -93,7 +93,7 @@ namespace itk
  *
  * ImageBase also provides helper routines for the ImageIterators
  * which convert an Index to an offset in memory from the first pixel
- * address as well as covert an offset in memory from the first pixel
+ * address as well as convert an offset in memory from the first pixel
  * address to an Index.
  *
  * \ingroup ImageObjects
@@ -105,7 +105,7 @@ template <unsigned int VImageDimension = 2>
 class ITK_TEMPLATE_EXPORT ImageBase : public DataObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageBase);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageBase);
 
   /** Standard type alias. */
   using Self = ImageBase;
@@ -146,7 +146,7 @@ public:
 
   /** Spacing type alias support.  Spacing holds the size of a pixel.
    * The spacing is the geometric distance between image samples along
-   * each dimension. ITK only supports positive spacing value:
+   * each dimension. ITK only supports positive spacing values:
    * negative values may cause undesirable results.  */
   using SpacingValueType = SpacePrecisionType;
   using SpacingType = Vector<SpacingValueType, VImageDimension>;
@@ -156,7 +156,7 @@ public:
   using PointValueType = SpacePrecisionType;
   using PointType = Point<PointValueType, VImageDimension>;
 
-  /** Direction type alias support.  The Direction is a matix of
+  /** Direction type alias support.  The Direction is a matrix of
    * direction cosines that specify the direction in physical space
    * between samples along each dimension. */
   using DirectionType = Matrix<SpacePrecisionType, VImageDimension, VImageDimension>;
@@ -199,7 +199,7 @@ public:
    * (0.5, 0.866)
    *
    * The columns of the Direction matrix are expected to form an
-   * orthogonal right handed coordinate syste.  But this is not
+   * orthogonal right handed coordinate system.  But this is not
    * checked nor enforced in itk::ImageBase.
    *
    * For details, please see:
@@ -325,9 +325,7 @@ public:
     RegionType region;
     region.SetSize(size);
 
-    this->SetLargestPossibleRegion(region);
-    this->SetBufferedRegion(region);
-    this->SetRequestedRegion(region);
+    this->Self::SetRegions(region);
   }
 
   /** Get the offset table.  The offset table gives increments for
@@ -446,10 +444,10 @@ public:
   {
     IndexType index;
 
-    for (unsigned int i = 0; i < VImageDimension; i++)
+    for (unsigned int i = 0; i < VImageDimension; ++i)
     {
       TCoordRep sum = NumericTraits<TCoordRep>::ZeroValue();
-      for (unsigned int j = 0; j < VImageDimension; j++)
+      for (unsigned int j = 0; j < VImageDimension; ++j)
       {
         sum += this->m_PhysicalPointToIndex[i][j] * (point[j] - this->m_Origin[j]);
       }
@@ -711,7 +709,7 @@ public:
    * Subclasses of ImageBase are responsible for copying the pixel
    * container. */
   virtual void
-  Graft(const Self * data);
+  Graft(const Self * image);
 
   /** Update the information for this DataObject so that it can be used
    * as an output of a ProcessObject.  This method is used the pipeline
@@ -725,7 +723,7 @@ public:
 
   /** UpdateOutputData() is part of the pipeline infrastructure to
    * communicate between ProcessObjects and DataObjects. The method of
-   * the superclass is overriden to check if the requested image
+   * the superclass is overridden to check if the requested image
    * region has zero pixels. This is needed so that filters can set an
    * input's requested region to zero, to indicate that it does not
    * need to be updated or executed.
@@ -786,7 +784,7 @@ public:
   SetNumberOfComponentsPerPixel(unsigned int);
 
 protected:
-  ImageBase();
+  ImageBase() = default;
   ~ImageBase() override = default;
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
@@ -810,17 +808,17 @@ protected:
   /** Origin, spacing, and direction in physical coordinates. This variables are
    * protected for efficiency.  They are referenced frequently by
    * inner loop calculations. */
-  SpacingType   m_Spacing;
-  PointType     m_Origin;
-  DirectionType m_Direction;
-  DirectionType m_InverseDirection;
+  SpacingType   m_Spacing{ MakeFilled<SpacingType>(1.0) };
+  PointType     m_Origin{};
+  DirectionType m_Direction{ DirectionType::GetIdentity() };
+  DirectionType m_InverseDirection{ DirectionType::GetIdentity() };
 
   /** Matrices intended to help with the conversion of Index coordinates
    *  to PhysicalPoint coordinates */
-  DirectionType m_IndexToPhysicalPoint;
-  DirectionType m_PhysicalPointToIndex;
+  DirectionType m_IndexToPhysicalPoint{ DirectionType::GetIdentity() };
+  DirectionType m_PhysicalPointToIndex{ DirectionType::GetIdentity() };
 
-  /** Restores the buffered region to it's default state
+  /** Restores the buffered region to its default state
    *  This method does not call Modify because Initialization is
    *  called by ReleaseData and can not modify the MTime
    * \sa  ReleaseData, Initialize, SetBufferedRegion */

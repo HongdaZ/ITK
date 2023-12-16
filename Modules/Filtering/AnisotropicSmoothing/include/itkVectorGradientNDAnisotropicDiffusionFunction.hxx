@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkVectorGradientNDAnisotropicDiffusionFunction_hxx
 #define itkVectorGradientNDAnisotropicDiffusionFunction_hxx
 
-#include "itkVectorGradientNDAnisotropicDiffusionFunction.h"
 
 namespace itk
 {
@@ -95,7 +94,7 @@ VectorGradientNDAnisotropicDiffusionFunction<TImage>::ComputeUpdate(const Neighb
   PixelType dx_dim;
 
   // Calculate the directional and centralized derivatives.
-  for (i = 0; i < ImageDimension; i++)
+  for (i = 0; i < ImageDimension; ++i)
   {
     // "Half" derivatives
     dx_forward[i] = it.GetPixel(m_Center + m_Stride[i]) - it.GetPixel(m_Center);
@@ -109,18 +108,18 @@ VectorGradientNDAnisotropicDiffusionFunction<TImage>::ComputeUpdate(const Neighb
   }
 
   // Calculate the conductance term for each dimension.
-  for (i = 0; i < ImageDimension; i++)
+  for (i = 0; i < ImageDimension; ++i)
   {
     // Calculate gradient magnitude approximation in this
     // dimension linked (summed) across the vector components.
     GradMag = 0.0;
     GradMag_d = 0.0;
-    for (k = 0; k < VectorDimension; k++)
+    for (k = 0; k < VectorDimension; ++k)
     {
       GradMag += itk::Math::sqr(dx_forward[i][k]);
       GradMag_d += itk::Math::sqr(dx_backward[i][k]);
 
-      for (j = 0; j < ImageDimension; j++)
+      for (j = 0; j < ImageDimension; ++j)
       {
         if (j != i)
         {
@@ -147,7 +146,7 @@ VectorGradientNDAnisotropicDiffusionFunction<TImage>::ComputeUpdate(const Neighb
   }
 
   // Compute update value
-  for (k = 0; k < VectorDimension; k++)
+  for (k = 0; k < VectorDimension; ++k)
   {
     delta[k] = NumericTraits<ScalarValueType>::ZeroValue();
 

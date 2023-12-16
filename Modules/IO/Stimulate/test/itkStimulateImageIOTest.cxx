@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,8 +55,13 @@ itkStimulateImageIOTest(int argc, char * argv[])
   // Create a mapper (in this case a writer). A mapper
   // is templated on the input type.
   //
-  itk::StimulateImageIO::Pointer sprIO;
-  sprIO = itk::StimulateImageIO::New();
+  itk::StimulateImageIO::Pointer sprIO = itk::StimulateImageIO::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(sprIO, StimulateImageIO, ImageIOBase);
+
+
+  // Not used; empty method body; called for coverage purposes
+  sprIO->WriteImageInformation();
 
   // Write out the image
   itk::ImageFileWriter<FloatImageType>::Pointer writer;

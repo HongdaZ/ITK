@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,15 +25,14 @@
 namespace itk
 {
 /**
- *\class ShapeKeepNObjectsLabelMapFilter
+ * \class ShapeKeepNObjectsLabelMapFilter
  * \brief Keep N objects according to their shape attributes.
  *
  * The ShapeKeepNObjectsLabelMapFilter keeps N objects in a label collection image with the
  * highest (or lowest) attribute value. The attributes values are those of the ShapeLabelObject.
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/584  or
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
@@ -45,7 +44,7 @@ template <typename TImage>
 class ITK_TEMPLATE_EXPORT ShapeKeepNObjectsLabelMapFilter : public InPlaceLabelMapFilter<TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShapeKeepNObjectsLabelMapFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ShapeKeepNObjectsLabelMapFilter);
 
   /** Standard class type aliases. */
   using Self = ShapeKeepNObjectsLabelMapFilter;
@@ -165,7 +164,7 @@ protected:
       progress.CompletedPixel();
 
       // and remove the last objects of the map
-      for (typename VectorType::const_iterator it2 = end; it2 != labelObjects.end(); it2++)
+      for (typename VectorType::const_iterator it2 = end; it2 != labelObjects.end(); ++it2)
       {
         output2->AddLabelObject(*it2);
         output->RemoveLabelObject(*it2);

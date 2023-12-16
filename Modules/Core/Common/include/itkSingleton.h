@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,8 +47,7 @@ class ITKCommon_EXPORT SingletonIndex
 public:
   /** Standard class types. */
   using Self = SingletonIndex;
-  using SingletonData =
-    std::map<std::string, std::tuple<void *, std::function<void(void *)>, std::function<void(void)>>>;
+  using SingletonData = std::map<std::string, std::tuple<void *, std::function<void(void *)>, std::function<void()>>>;
 
   // obtain a global registered in the singleton index under the
   // globalName, if unknown then nullptr will be returned.
@@ -69,7 +68,7 @@ public:
   SetGlobalInstance(const char *                globalName,
                     T *                         global,
                     std::function<void(void *)> func,
-                    std::function<void(void)>   deleteFunc)
+                    std::function<void()>       deleteFunc)
   {
     return this->SetGlobalInstancePrivate(globalName, global, func, deleteFunc);
   }
@@ -79,7 +78,7 @@ public:
   static Self *
   GetInstance();
   static void
-  SetInstance(Self * SingletonIndex);
+  SetInstance(Self * instance);
   ~SingletonIndex();
 
 private:
@@ -97,7 +96,7 @@ private:
   SetGlobalInstancePrivate(const char *                globalName,
                            void *                      global,
                            std::function<void(void *)> func,
-                           std::function<void(void)>   deleteFunc);
+                           std::function<void()>       deleteFunc);
 
   /** The static GlobalSingleton. This is initialized to nullptr as the first
    * stage of static initialization. It is then populated on the first call to
@@ -112,7 +111,7 @@ private:
 // A wrapper for a global variable registered in the singleton index.
 template <typename T>
 T *
-Singleton(const char * globalName, std::function<void(void *)> func, std::function<void(void)> deleteFunc)
+Singleton(const char * globalName, std::function<void(void *)> func, std::function<void()> deleteFunc)
 {
   static SingletonIndex * singletonIndex = SingletonIndex::GetInstance();
   Unused(singletonIndex);

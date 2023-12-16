@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ namespace itk
 {
 
 /**
- *\class FFTPadImageFilter
+ * \class FFTPadImageFilter
  * \brief Pad an image to make it suitable for an FFT transformation
  *
  * FFT filters usually requires a specific image size. The size is decomposed
@@ -40,7 +40,7 @@ namespace itk
  *
  * "FFT Based Convolution"
  * by Gaetan Lehmann
- * https://hdl.handle.net/10380/3154
+ * https://www.insight-journal.org/browse/publication/717
  *
  * \author Gaetan Lehmann
  *
@@ -52,7 +52,7 @@ template <typename TInputImage, typename TOutputImage = TInputImage>
 class ITK_TEMPLATE_EXPORT FFTPadImageFilter : public PadImageFilterBase<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FFTPadImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(FFTPadImageFilter);
 
   /** Standard class type aliases. */
   using Self = FFTPadImageFilter;

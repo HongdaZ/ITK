@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,27 +20,27 @@
 namespace itk
 {
 
-MetaArrayReader ::MetaArrayReader()
+MetaArrayReader::MetaArrayReader()
   : m_FileName("")
 
 {}
 
-MetaArrayReader ::~MetaArrayReader() = default;
+MetaArrayReader::~MetaArrayReader() = default;
 
 void
-MetaArrayReader ::SetBuffer(void * _buffer)
+MetaArrayReader::SetBuffer(void * _buffer)
 {
   m_Buffer = _buffer;
 }
 
 MetaArray *
-MetaArrayReader ::GetMetaArrayPointer()
+MetaArrayReader::GetMetaArrayPointer()
 {
   return &m_MetaArray;
 }
 
 void
-MetaArrayReader ::Update()
+MetaArrayReader::Update()
 {
   m_MetaArray.Read(m_FileName.c_str(), true, m_Buffer);
 }

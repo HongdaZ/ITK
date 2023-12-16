@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,16 +23,10 @@
  * derived using the Cox-DeBoor recursion algorithm
  */
 int
-itkCoxDeBoorBSplineKernelFunctionTest(int argc, char * argv[])
+itkCoxDeBoorBSplineKernelFunctionTest(int, char *[])
 {
-  if (argc < 1)
-  {
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << std::endl;
-    return EXIT_FAILURE;
-  }
-
   using KernelType = itk::CoxDeBoorBSplineKernelFunction<3>;
-  KernelType::Pointer    kernel = KernelType::New();
+  auto                   kernel = KernelType::New();
   KernelType::MatrixType coefficients;
 
   /**

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,15 +18,14 @@
 #ifndef itkCompensatedSummation_hxx
 #define itkCompensatedSummation_hxx
 
-#include "itkCompensatedSummation.h"
 
 namespace itk
 {
 
 void ITKCommon_EXPORT
-     CompensatedSummationAddElement(float & compensation, float & sum, const float & element);
+     CompensatedSummationAddElement(float & compensation, float & sum, const float element);
 void ITKCommon_EXPORT
-     CompensatedSummationAddElement(double & compensation, double & sum, const double & element);
+     CompensatedSummationAddElement(double & compensation, double & sum, const double element);
 
 #ifndef itkCompensatedSummation_cxx
 // We try the looser pragma guards if we don't have an explicit instantiation.
@@ -80,8 +79,8 @@ CompensatedSummation<TFloat>::CompensatedSummation(const Self & rhs)
 }
 
 template <typename TFloat>
-typename CompensatedSummation<TFloat>::Self &
-CompensatedSummation<TFloat>::operator=(const Self & rhs)
+auto
+CompensatedSummation<TFloat>::operator=(const Self & rhs) -> Self &
 {
   if (this != &rhs)
   {
@@ -161,8 +160,8 @@ CompensatedSummation<TFloat>::operator=(const FloatType & rhs)
 }
 
 template <typename TFloat>
-const typename CompensatedSummation<TFloat>::AccumulateType &
-CompensatedSummation<TFloat>::GetSum() const
+auto
+CompensatedSummation<TFloat>::GetSum() const -> const AccumulateType &
 {
   return this->m_Sum;
 }

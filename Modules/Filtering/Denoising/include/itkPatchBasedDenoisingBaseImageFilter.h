@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,14 +32,14 @@
 
 namespace itk
 {
-/**\class PatchBasedDenoisingBaseImageFilterEnums
+/** \class PatchBasedDenoisingBaseImageFilterEnums
  * \brief Contains all enum classes used by the PatchBasedDenoisingBaseImageFilter class.
  * \ingroup ITKDenoising
  */
 class PatchBasedDenoisingBaseImageFilterEnums
 {
 public:
-  /**\class NoiseModel
+  /** \class NoiseModel
    * \ingroup Filtering
    * \ingroup ITKDenoising
    * Type definition for selecting the noise model. */
@@ -51,7 +51,7 @@ public:
     POISSON = 3
   };
 
-  /**\class ComponentState
+  /** \class ComponentState
    * \ingroup Filtering
    * \ingroup ITKDenoising
    * Type definition to determine which space to do calculations in.
@@ -63,7 +63,7 @@ public:
     RIEMANNIAN = 1
   };
 
-  /**\class FilterState
+  /** \class FilterState
    * \ingroup Filtering
    * \ingroup ITKDenoising
    * State that the filter is in, i.e. UNINITIALIZED or INITIALIZED. */
@@ -82,7 +82,7 @@ extern ITKDenoising_EXPORT std::ostream &
 extern ITKDenoising_EXPORT std::ostream &
                            operator<<(std::ostream & out, const PatchBasedDenoisingBaseImageFilterEnums::FilterState value);
 /**
- *\class PatchBasedDenoisingBaseImageFilter
+ * \class PatchBasedDenoisingBaseImageFilter
  * \brief Base class for patch-based denoising algorithms.
  *
  * Implementation of a denoising filter that uses iterative non-local, or semi-local, weighted
@@ -144,7 +144,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT PatchBasedDenoisingBaseImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PatchBasedDenoisingBaseImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(PatchBasedDenoisingBaseImageFilter);
 
   /** Standard class type aliases. */
   using Self = PatchBasedDenoisingBaseImageFilter;
@@ -199,7 +199,7 @@ public:
    */
   using BoundaryConditionType = ZeroFluxNeumannBoundaryCondition<OutputImageType>;
   using ListAdaptorType =
-    typename ::itk::Statistics::ImageToNeighborhoodSampleAdaptor<OutputImageType, BoundaryConditionType>;
+    typename itk::Statistics::ImageToNeighborhoodSampleAdaptor<OutputImageType, BoundaryConditionType>;
   using PatchRadiusType = typename ListAdaptorType::NeighborhoodRadiusType;
   using InputImagePatchIterator = ConstNeighborhoodIterator<InputImageType, BoundaryConditionType>;
 

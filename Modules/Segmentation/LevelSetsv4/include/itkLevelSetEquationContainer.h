@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,7 +58,7 @@ template <typename TTermContainer>
 class ITK_TEMPLATE_EXPORT LevelSetEquationContainer : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEquationContainer);
+  ITK_DISALLOW_COPY_AND_MOVE(LevelSetEquationContainer);
 
   using Self = LevelSetEquationContainer;
   using Pointer = SmartPointer<Self>;
@@ -171,21 +171,17 @@ public:
     {
       return (m_Iterator == it.m_Iterator);
     }
-    bool
-    operator!=(const Iterator & it) const
-    {
-      return (m_Iterator != it.m_Iterator);
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Iterator);
+
     bool
     operator==(const ConstIterator & it) const
     {
       return (m_Iterator == it.m_Iterator);
     }
-    bool
-    operator!=(const ConstIterator & it) const
-    {
-      return (m_Iterator != it.m_Iterator);
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
+
     LevelSetIdentifierType
     GetIdentifier() const
     {
@@ -250,21 +246,17 @@ public:
     {
       return (m_Iterator == it.m_Iterator);
     }
-    bool
-    operator!=(const Iterator & it) const
-    {
-      return (m_Iterator != it.m_Iterator);
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Iterator);
+
     bool
     operator==(const ConstIterator & it) const
     {
       return (m_Iterator == it.m_Iterator);
     }
-    bool
-    operator!=(const ConstIterator & it) const
-    {
-      return (m_Iterator != it.m_Iterator);
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
+
     LevelSetIdentifierType
     GetIdentifier() const
     {

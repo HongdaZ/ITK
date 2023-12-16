@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@
 namespace itk
 {
 /**
- *\class GradientMagnitudeRecursiveGaussianImageFilter
+ * \class GradientMagnitudeRecursiveGaussianImageFilter
  * \brief Computes the Magnitude of the Gradient of an image by convolution
  *        with the first derivative of a Gaussian.
  *
@@ -51,7 +51,7 @@ class ITK_TEMPLATE_EXPORT GradientMagnitudeRecursiveGaussianImageFilter
   : public InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GradientMagnitudeRecursiveGaussianImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(GradientMagnitudeRecursiveGaussianImageFilter);
 
   /** Standard class type aliases. */
   using Self = GradientMagnitudeRecursiveGaussianImageFilter;
@@ -120,8 +120,9 @@ public:
    *  \sa  RecursiveGaussianImageFilter::SetNormalizeAcrossScale
    */
   void
-  SetNormalizeAcrossScale(bool normalizeInScaleSpace);
+  SetNormalizeAcrossScale(bool normalize);
   itkGetConstMacro(NormalizeAcrossScale, bool);
+  itkBooleanMacro(NormalizeAcrossScale);
 
   void
   SetNumberOfWorkUnits(ThreadIdType nb) override;

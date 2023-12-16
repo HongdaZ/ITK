@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class LabelObject
+ * \class LabelObject
  *  \brief The base class for the representation of an labeled binary object in an image.
  *
  * LabelObject is the base class to represent a labeled object in an image.
@@ -54,7 +54,7 @@ namespace itk
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
  * This implementation was taken from the Insight Journal paper:
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  * \sa LabelMapFilter, AttributeLabelObject
  * \ingroup DataRepresentation
@@ -65,7 +65,7 @@ template <typename TLabel, unsigned int VImageDimension>
 class ITK_TEMPLATE_EXPORT LabelObject : public LightObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LabelObject);
+  ITK_DISALLOW_COPY_AND_MOVE(LabelObject);
 
   /** Standard class type aliases */
   using Self = LabelObject;
@@ -176,7 +176,7 @@ public:
    * Valid indices are from 0 to LabelObject->GetSize() - 1.
    */
   IndexType
-  GetIndex(SizeValueType i) const;
+  GetIndex(SizeValueType offset) const;
 
   /** Copy the lines of another node to this one */
   template <typename TSourceLabelObject>
@@ -204,7 +204,7 @@ public:
   Shift(OffsetType offset);
 
   /**
-   *\class ConstLineIterator
+   * \class ConstLineIterator
    * \brief A forward iterator over the lines of a LabelObject
    * \ingroup ITKLabelMap
    */
@@ -263,11 +263,7 @@ public:
       return m_Iterator == iter.m_Iterator && m_Begin == iter.m_Begin && m_End == iter.m_End;
     }
 
-    bool
-    operator!=(const ConstLineIterator & iter) const
-    {
-      return !(*this == iter);
-    }
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstLineIterator);
 
     void
     GoToBegin()
@@ -290,7 +286,7 @@ public:
   };
 
   /**
-   *\class ConstLineIterator
+   * \class ConstLineIterator
    * \brief A forward iterator over the indexes of a LabelObject
    * \ingroup ITKLabelMap
    */
@@ -363,11 +359,7 @@ public:
       return m_Index == iter.m_Index && m_Iterator == iter.m_Iterator && m_Begin == iter.m_Begin && m_End == iter.m_End;
     }
 
-    bool
-    operator!=(const ConstIndexIterator & iter) const
-    {
-      return !(*this == iter);
-    }
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIndexIterator);
 
     void
     GoToBegin()

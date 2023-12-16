@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkGaussianExponentialDiffeomorphicTransform_hxx
 #define itkGaussianExponentialDiffeomorphicTransform_hxx
 
-#include "itkGaussianExponentialDiffeomorphicTransform.h"
 
 #include "itkAddImageFilter.h"
 #include "itkImageDuplicator.h"
@@ -28,16 +27,15 @@
 namespace itk
 {
 
-template <typename TParametersValueType, unsigned int NDimensions>
-GaussianExponentialDiffeomorphicTransform<TParametersValueType,
-                                          NDimensions>::GaussianExponentialDiffeomorphicTransform()
+template <typename TParametersValueType, unsigned int VDimension>
+GaussianExponentialDiffeomorphicTransform<TParametersValueType, VDimension>::GaussianExponentialDiffeomorphicTransform()
   : m_GaussianSmoothingVarianceForTheUpdateField(0.5)
   , m_GaussianSmoothingVarianceForTheConstantVelocityField(0.5)
 {}
 
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 void
-GaussianExponentialDiffeomorphicTransform<TParametersValueType, NDimensions>::UpdateTransformParameters(
+GaussianExponentialDiffeomorphicTransform<TParametersValueType, VDimension>::UpdateTransformParameters(
   const DerivativeType & update,
   ScalarType             factor)
 {
@@ -63,10 +61,10 @@ GaussianExponentialDiffeomorphicTransform<TParametersValueType, NDimensions>::Up
   auto * updateFieldPointer =
     reinterpret_cast<DisplacementVectorType *>(const_cast<DerivativeType &>(update).data_block());
 
-  using ImporterType = ImportImageFilter<DisplacementVectorType, NDimensions>;
+  using ImporterType = ImportImageFilter<DisplacementVectorType, VDimension>;
   const bool importFilterWillReleaseMemory = false;
 
-  typename ImporterType::Pointer importer = ImporterType::New();
+  auto importer = ImporterType::New();
   importer->SetImportPointer(updateFieldPointer, numberOfPixels, importFilterWillReleaseMemory);
   importer->SetRegion(velocityField->GetBufferedRegion());
   importer->SetOrigin(velocityField->GetOrigin());
@@ -87,16 +85,16 @@ GaussianExponentialDiffeomorphicTransform<TParametersValueType, NDimensions>::Up
     updateField = updateSmoothField;
   }
 
-  using RealImageType = Image<ScalarType, NDimensions>;
+  using RealImageType = Image<ScalarType, VDimension>;
 
   using MultiplierType = MultiplyImageFilter<ConstantVelocityFieldType, RealImageType, ConstantVelocityFieldType>;
-  typename MultiplierType::Pointer multiplier = MultiplierType::New();
+  auto multiplier = MultiplierType::New();
   multiplier->SetInput(updateField);
   multiplier->SetConstant(factor);
   multiplier->Update();
 
   using AdderType = AddImageFilter<ConstantVelocityFieldType, ConstantVelocityFieldType, ConstantVelocityFieldType>;
-  typename AdderType::Pointer adder = AdderType::New();
+  auto adder = AdderType::New();
   adder->SetInput1(velocityField);
   adder->SetInput2(multiplier->GetOutput());
 
@@ -134,9 +132,9 @@ GaussianExponentialDiffeomorphicTransform<TParametersValueType, NDimensions>::Up
   this->IntegrateVelocityField();
 }
 
-template <typename TParametersValueType, unsigned int NDimensions>
-typename GaussianExponentialDiffeomorphicTransform<TParametersValueType, NDimensions>::ConstantVelocityFieldPointer
-GaussianExponentialDiffeomorphicTransform<TParametersValueType, NDimensions>::GaussianSmoothConstantVelocityField(
+template <typename TParametersValueType, unsigned int VDimension>
+typename GaussianExponentialDiffeomorphicTransform<TParametersValueType, VDimension>::ConstantVelocityFieldPointer
+GaussianExponentialDiffeomorphicTransform<TParametersValueType, VDimension>::GaussianSmoothConstantVelocityField(
   ConstantVelocityFieldType * field,
   ScalarType                  variance)
 {
@@ -146,13 +144,13 @@ GaussianExponentialDiffeomorphicTransform<TParametersValueType, NDimensions>::Ga
   }
 
   using DuplicatorType = ImageDuplicator<ConstantVelocityFieldType>;
-  typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
+  auto duplicator = DuplicatorType::New();
   duplicator->SetInputImage(field);
   duplicator->Update();
 
   ConstantVelocityFieldPointer smoothField = duplicator->GetOutput();
 
-  typename GaussianSmoothingSmootherType::Pointer smoother = GaussianSmoothingSmootherType::New();
+  auto smoother = GaussianSmoothingSmootherType::New();
 
   for (unsigned int dimension = 0; dimension < Superclass::Dimension; ++dimension)
   {
@@ -170,7 +168,7 @@ GaussianExponentialDiffeomorphicTransform<TParametersValueType, NDimensions>::Ga
     {
       smoother->Update();
     }
-    catch (ExceptionObject & exc)
+    catch (const ExceptionObject & exc)
     {
       std::string msg("Caught exception: ");
       msg += exc.what();
@@ -182,7 +180,7 @@ GaussianExponentialDiffeomorphicTransform<TParametersValueType, NDimensions>::Ga
     smoothField->DisconnectPipeline();
   }
 
-  const DisplacementVectorType zeroVector(0.0);
+  constexpr DisplacementVectorType zeroVector{};
 
   // make sure boundary does not move
   ScalarType weight1 = 1.0;
@@ -228,10 +226,10 @@ GaussianExponentialDiffeomorphicTransform<TParametersValueType, NDimensions>::Ga
 /**
  * Standard "PrintSelf" method
  */
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 void
-GaussianExponentialDiffeomorphicTransform<TParametersValueType, NDimensions>::PrintSelf(std::ostream & os,
-                                                                                        Indent         indent) const
+GaussianExponentialDiffeomorphicTransform<TParametersValueType, VDimension>::PrintSelf(std::ostream & os,
+                                                                                       Indent         indent) const
 {
   Superclass::PrintSelf(os, indent);
 

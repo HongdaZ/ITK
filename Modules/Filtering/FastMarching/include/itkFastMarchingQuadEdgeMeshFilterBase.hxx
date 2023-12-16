@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkFastMarchingQuadEdgeMeshFilterBase_hxx
 #define itkFastMarchingQuadEdgeMeshFilterBase_hxx
 
-#include "itkFastMarchingQuadEdgeMeshFilterBase.h"
 
 #include "itkMath.h"
 #include "itkVector.h"
@@ -224,11 +223,11 @@ FastMarchingQuadEdgeMeshFilterBase<TInput, TOutput>::Solve(OutputMeshType *     
                                                            const OutputVectorRealType & iF,
                                                            const NodeType &             iId1,
                                                            const OutputPointType &      iP1,
-                                                           const bool &                 iIsFar1,
+                                                           const bool                   iIsFar1,
                                                            const OutputVectorRealType   iVal1,
                                                            const NodeType &             iId2,
                                                            const OutputPointType &      iP2,
-                                                           const bool &                 iIsFar2,
+                                                           const bool                   iIsFar2,
                                                            const OutputVectorRealType & iVal2) const
 {
   OutputVectorType Edge1 = iP1 - iCurrentPoint;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,7 +45,7 @@ ConditionVariableTestIncCount(void * ptr)
 
   double v = 400.0;
 
-  for (unsigned i = 0; i < 10; i++)
+  for (unsigned int i = 0; i < 10; ++i)
   {
     data->m_Mutex.Lock();
     data->m_Counter++;
@@ -61,7 +61,7 @@ ConditionVariableTestIncCount(void * ptr)
     data->m_Mutex.Unlock();
 
     // Do some work here.
-    for (unsigned j = 0; j < 1000; j++)
+    for (unsigned int j = 0; j < 1000; ++j)
     {
       v = v / 2.4;
       v = v * 2.4;
@@ -114,7 +114,7 @@ itkConditionVariableTest(int, char *[])
     multithreader->SetNumberOfWorkUnits(3);
     multithreader->SetSingleMethod(ConditionVariableTestCallback, &cond);
 
-    for (unsigned int i = 0; i < 1000; i++)
+    for (unsigned int i = 0; i < 1000; ++i)
     {
       cond.m_Counter = 0;
       multithreader->SingleMethodExecute();

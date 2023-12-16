@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,7 +59,7 @@ class ITK_TEMPLATE_EXPORT BSplineControlPointImageFunction
   : public ImageFunction<TInputImage, typename TInputImage::PixelType, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineControlPointImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(BSplineControlPointImageFunction);
 
   using Self = BSplineControlPointImageFunction;
   using Superclass = ImageFunction<TInputImage, typename TInputImage::PixelType, TCoordRep>;
@@ -82,7 +82,7 @@ public:
   using PixelType = typename InputImageType::PixelType;
   using RegionType = typename InputImageType::RegionType;
   using IndexType = typename InputImageType::IndexType;
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
   using InputImageRegionType = typename InputImageType::RegionType;
 
   using SpacingType = typename InputImageType::SpacingType;
@@ -95,10 +95,10 @@ public:
   using HessianComponentType = VariableSizeMatrix<CoordRepType>;
 
   /** Other type alias */
-  using ArrayType = FixedArray<unsigned, ImageDimension>;
+  using ArrayType = FixedArray<unsigned int, ImageDimension>;
   using RealImageType = Image<CoordRepType, ImageDimension>;
   using RealImagePointer = typename RealImageType::Pointer;
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
   using RealType = float;
 
   /** Interpolation kernel type (default spline order = 3) */

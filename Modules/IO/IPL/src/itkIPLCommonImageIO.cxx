@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -67,25 +67,24 @@ IPLCommonImageIO::CanWriteFile(const char *)
 unsigned int
 IPLCommonImageIO::GetComponentSize() const
 {
-  return sizeof(short int);
+  return sizeof(short);
 }
 
 void
 IPLCommonImageIO::Read(void * buffer)
 {
-  auto * img_buffer = (short int *)buffer;
+  auto * img_buffer = (short *)buffer;
   auto   it = m_FilenameList->begin();
   auto   itend = m_FilenameList->end();
 
-  for (; it != itend; it++)
+  for (; it != itend; ++it)
   {
     std::string   curfilename = (*it)->GetImageFileName();
     std::ifstream f;
     this->OpenFileForReading(f, curfilename);
 
     f.seekg((*it)->GetSliceOffset(), std::ios::beg);
-    if (!this->ReadBufferAsBinary(
-          f, img_buffer, m_FilenameList->GetXDim() * m_FilenameList->GetYDim() * sizeof(short int)))
+    if (!this->ReadBufferAsBinary(f, img_buffer, m_FilenameList->GetXDim() * m_FilenameList->GetYDim() * sizeof(short)))
     {
       f.close();
       RAISE_EXCEPTION();
@@ -95,8 +94,8 @@ IPLCommonImageIO::Read(void * buffer)
     // the FILE endian-ness, not as the name would lead you to believe.
     // So, on LittleEndian systems, SwapFromSystemToBigEndian will swap.
     // On BigEndian systems, SwapFromSystemToBigEndian will do nothing.
-    itk::ByteSwapper<short int>::SwapRangeFromSystemToBigEndian(img_buffer,
-                                                                m_FilenameList->GetXDim() * m_FilenameList->GetYDim());
+    itk::ByteSwapper<short>::SwapRangeFromSystemToBigEndian(img_buffer,
+                                                            m_FilenameList->GetXDim() * m_FilenameList->GetYDim());
     img_buffer += m_FilenameList->GetXDim() * m_FilenameList->GetYDim();
   }
 }
@@ -162,7 +161,7 @@ IPLCommonImageIO::ReadImageInformation()
   std::string               classname(this->GetNameOfClass());
   itk::EncapsulateMetaData<std::string>(thisDic, ITK_InputFilterName, classname);
   itk::EncapsulateMetaData<std::string>(thisDic, ITK_OnDiskStorageTypeName, std::string("SHORT"));
-  itk::EncapsulateMetaData<short int>(thisDic, ITK_OnDiskBitPerPixel, (short int)16);
+  itk::EncapsulateMetaData<short>(thisDic, ITK_OnDiskBitPerPixel, static_cast<short>(16));
 
   //
   // has to be set before setting dir cosines,
@@ -200,7 +199,7 @@ IPLCommonImageIO::ReadImageInformation()
 
   GEImageHeader * curImageHeader;
 
-  for (i = 0, numfiles = Dir->GetNumberOfFiles(); i < numfiles; i++)
+  for (i = 0, numfiles = Dir->GetNumberOfFiles(); i < numfiles; ++i)
   {
     const char * curFname = Dir->GetFile(static_cast<unsigned int>(i));
 
@@ -218,7 +217,7 @@ IPLCommonImageIO::ReadImageInformation()
     {
       curImageHeader = this->ReadHeader(fullPath.c_str());
     }
-    catch (itk::ExceptionObject &)
+    catch (const itk::ExceptionObject &)
     {
       // ReadGE4XHeader throws an exception on any error.
       // So if, for example we run into a subdirectory, it would
@@ -294,7 +293,7 @@ IPLCommonImageIO::SortImageListByNameDescend()
  *
  */
 void
-IPLCommonImageIO ::WriteImageInformation()
+IPLCommonImageIO::WriteImageInformation()
 {
   RAISE_EXCEPTION();
 }
@@ -303,17 +302,13 @@ IPLCommonImageIO ::WriteImageInformation()
  *
  */
 void
-IPLCommonImageIO ::Write(const void *)
+IPLCommonImageIO::Write(const void *)
 {
   RAISE_EXCEPTION();
 }
 
 int
-IPLCommonImageIO ::GetStringAt(std::ifstream & f,
-                               std::streamoff  Offset,
-                               char *          buf,
-                               size_t          amount,
-                               bool            throw_exception)
+IPLCommonImageIO::GetStringAt(std::ifstream & f, std::streamoff Offset, char * buf, size_t amount, bool throw_exception)
 {
   f.seekg(Offset, std::ios::beg);
   if (f.fail())
@@ -342,7 +337,7 @@ IPLCommonImageIO ::GetStringAt(std::ifstream & f,
 }
 
 int
-IPLCommonImageIO ::GetIntAt(std::ifstream & f, std::streamoff Offset, int * ip, bool throw_exception)
+IPLCommonImageIO::GetIntAt(std::ifstream & f, std::streamoff Offset, int * ip, bool throw_exception)
 {
   int tmp;
 
@@ -358,7 +353,7 @@ IPLCommonImageIO ::GetIntAt(std::ifstream & f, std::streamoff Offset, int * ip, 
 }
 
 int
-IPLCommonImageIO ::GetShortAt(std::ifstream & f, std::streamoff Offset, short * ip, bool throw_exception)
+IPLCommonImageIO::GetShortAt(std::ifstream & f, std::streamoff Offset, short * ip, bool throw_exception)
 {
   short tmp;
 
@@ -374,7 +369,7 @@ IPLCommonImageIO ::GetShortAt(std::ifstream & f, std::streamoff Offset, short * 
 }
 
 int
-IPLCommonImageIO ::GetFloatAt(std::ifstream & f, std::streamoff Offset, float * ip, bool throw_exception)
+IPLCommonImageIO::GetFloatAt(std::ifstream & f, std::streamoff Offset, float * ip, bool throw_exception)
 {
   float tmp;
 
@@ -390,7 +385,7 @@ IPLCommonImageIO ::GetFloatAt(std::ifstream & f, std::streamoff Offset, float * 
 }
 
 int
-IPLCommonImageIO ::GetDoubleAt(std::ifstream & f, std::streamoff Offset, double * ip, bool throw_exception)
+IPLCommonImageIO::GetDoubleAt(std::ifstream & f, std::streamoff Offset, double * ip, bool throw_exception)
 {
   double tmp;
 
@@ -411,12 +406,12 @@ IPLCommonImageIO::hdr2Short(char * hdr)
   short shortValue;
 
   memcpy(&shortValue, hdr, sizeof(short));
-  ByteSwapper<short int>::SwapFromSystemToBigEndian(&shortValue);
+  ByteSwapper<short>::SwapFromSystemToBigEndian(&shortValue);
   return (shortValue);
 }
 
 int
-IPLCommonImageIO ::hdr2Int(char * hdr)
+IPLCommonImageIO::hdr2Int(char * hdr)
 {
   int intValue;
 
@@ -426,7 +421,7 @@ IPLCommonImageIO ::hdr2Int(char * hdr)
 }
 
 float
-IPLCommonImageIO ::hdr2Float(char * hdr)
+IPLCommonImageIO::hdr2Float(char * hdr)
 {
   float floatValue;
 
@@ -437,7 +432,7 @@ IPLCommonImageIO ::hdr2Float(char * hdr)
 }
 
 double
-IPLCommonImageIO ::hdr2Double(char * hdr)
+IPLCommonImageIO::hdr2Double(char * hdr)
 {
   double doubleValue;
 
@@ -448,15 +443,15 @@ IPLCommonImageIO ::hdr2Double(char * hdr)
 }
 
 int
-IPLCommonImageIO ::AddElementToList(char const * const filename,
-                                    const float        sliceLocation,
-                                    const int          offset,
-                                    const int          XDim,
-                                    const int          YDim,
-                                    const float        XRes,
-                                    const float        YRes,
-                                    const int          Key1,
-                                    const int          Key2)
+IPLCommonImageIO::AddElementToList(char const * const filename,
+                                   const float        sliceLocation,
+                                   const int          offset,
+                                   const int          XDim,
+                                   const int          YDim,
+                                   const float        XRes,
+                                   const float        YRes,
+                                   const int          Key1,
+                                   const int          Key2)
 {
   if (m_FilenameList->NumFiles() == 0)
   {
@@ -485,19 +480,19 @@ IPLCommonImageIO ::AddElementToList(char const * const filename,
 }
 
 void
-IPLCommonImageIO ::sortImageListAscend()
+IPLCommonImageIO::sortImageListAscend()
 {
   m_FilenameList->sortImageListAscend();
 }
 
 void
-IPLCommonImageIO ::sortImageListDescend()
+IPLCommonImageIO::sortImageListDescend()
 {
   m_FilenameList->sortImageListDescend();
 }
 
 int
-IPLCommonImageIO ::statTimeToAscii(void * clock, char * timeString, int len)
+IPLCommonImageIO::statTimeToAscii(void * clock, char * timeString, int len)
 {
 
   auto               tclock = (time_t) * ((int *)clock);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include "itkShowDistanceMap.h"
 #include "itkDanielssonDistanceMapImageFilter.h"
 #include "itkStdStreamStateSave.h"
+#include "itkTestingMacros.h"
 
 int
 itkDanielssonDistanceMapImageFilterTest(int, char *[])
@@ -43,17 +44,14 @@ itkDanielssonDistanceMapImageFilterTest(int, char *[])
   region2D.SetSize(size2D);
   region2D.SetIndex(index2D);
 
-  myImageType2D1::Pointer inputImage2D = myImageType2D1::New();
-  inputImage2D->SetLargestPossibleRegion(region2D);
-  inputImage2D->SetBufferedRegion(region2D);
-  inputImage2D->SetRequestedRegion(region2D);
+  auto inputImage2D = myImageType2D1::New();
+  inputImage2D->SetRegions(region2D);
   inputImage2D->Allocate(true);
 
-  /* Set pixel (4,4) with the value 1
-   * and pixel (1,6) with the value 2
-   * The Danielsson Distance is performed for each pixel with a value > 0
-   * The ClosestPoints computation is based on the value of the pixel.
-   */
+  // Set pixel (4,4) with the value 1
+  // and pixel (1,6) with the value 2
+  // The Danielsson Distance is performed for each pixel with a value > 0
+  // The ClosestPoints computation is based on the value of the pixel.
 
   index2D[0] = 4;
   index2D[1] = 4;
@@ -62,10 +60,13 @@ itkDanielssonDistanceMapImageFilterTest(int, char *[])
   index2D[1] = 6;
   inputImage2D->SetPixel(index2D, 2);
 
-  /* Create Danielsson Distance Map filter */
+  // Create Danielsson Distance Map filter
   using myFilterType2D = itk::DanielssonDistanceMapImageFilter<myImageType2D1, myImageType2D2>;
 
-  myFilterType2D::Pointer filter2D = myFilterType2D::New();
+  auto filter2D = myFilterType2D::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter2D, DanielssonDistanceMapImageFilter, ImageToImageFilter);
+
 
   filter2D->SetInput(inputImage2D);
 
@@ -77,13 +78,14 @@ itkDanielssonDistanceMapImageFilterTest(int, char *[])
 
   myFilterType2D::VectorImagePointer outputComponents = filter2D->GetVectorDistanceMap();
 
-  filter2D->Update();
+  ITK_TRY_EXPECT_NO_EXCEPTION(filter2D->Update());
+
 
   ShowDistanceMap(outputDistance2D);
   std::cout << "Voronoi Map Image 2D" << std::endl << std::endl;
   ShowDistanceMap(outputVoronoi2D);
 
-  /* Show VectorsComponents Points map */
+  // Show VectorsComponents Points map
   std::cout << std::endl << std::endl;
   std::cout << "Components Map Image 2D" << std::endl << std::endl;
 
@@ -100,7 +102,7 @@ itkDanielssonDistanceMapImageFilterTest(int, char *[])
       while (!it2D4.IsAtEndOfLine())
       {
         std::cout << "[";
-        for (unsigned int i = 0; i < 2; i++)
+        for (unsigned int i = 0; i < 2; ++i)
         {
           std::cout << it2D4.Get()[i];
           if (i == 0)
@@ -119,26 +121,21 @@ itkDanielssonDistanceMapImageFilterTest(int, char *[])
   }
 
 
-  /* Test Squared Distance functionality */
+  // Test Squared Distance functionality
   myImageType2D2::IndexType index;
   index[0] = 0;
   index[1] = 0;
   const double distance1 = outputDistance2D->GetPixel(index);
 
-  filter2D->SquaredDistanceOn();
+  bool squaredDistance = true;
+  ITK_TEST_SET_GET_BOOLEAN(filter2D, SquaredDistance, squaredDistance);
 
-  if (filter2D->GetSquaredDistance() != true)
-  {
-    std::cerr << "filter2D->GetSquaredDistance() != true" << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(filter2D->Update());
 
-  filter2D->SetSquaredDistance(true);
-  filter2D->Update();
 
   const double                    distance2 = outputDistance2D->GetPixel(index);
   const myImageType2D2::PixelType epsilon = 1e-5;
-  if (std::fabs(distance2 - distance1 * distance1) > epsilon)
+  if (itk::Math::abs(distance2 - distance1 * distance1) > epsilon)
   {
     std::cerr << "Error in use of the SetSquaredDistance() method" << std::endl;
     return EXIT_FAILURE;
@@ -148,7 +145,7 @@ itkDanielssonDistanceMapImageFilterTest(int, char *[])
   ShowDistanceMap(outputDistance2D);
 
 
-  /* Test for images with anisotropic spacing */
+  // Test for images with anisotropic spacing
   myImageType2D1::SpacingType anisotropicSpacing;
 
   anisotropicSpacing[0] = 1.0;
@@ -163,31 +160,20 @@ itkDanielssonDistanceMapImageFilterTest(int, char *[])
   inputImage2D->SetPixel(index2D, 1);
 
   filter2D->SetInput(inputImage2D);
-  filter2D->SetInputIsBinary(true);
 
-  if (filter2D->GetInputIsBinary() != true)
-  {
-    std::cerr << "filter2D->GetInputIsBinary() != true" << std::endl;
-    return EXIT_FAILURE;
-  }
+  bool inputIsBinary = true;
+  ITK_TEST_SET_GET_BOOLEAN(filter2D, InputIsBinary, inputIsBinary);
 
+  bool useImageSpacing = true;
+  ITK_TEST_SET_GET_BOOLEAN(filter2D, UseImageSpacing, useImageSpacing);
 
-  filter2D->UseImageSpacingOn();
-
-  if (filter2D->GetUseImageSpacing() != true)
-  {
-    std::cerr << "filter2D->GetUseImageSpacing() != true" << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  filter2D->SetUseImageSpacing(true);
-  filter2D->Update();
+  ITK_TRY_EXPECT_NO_EXCEPTION(filter2D->Update());
 
   index2D[1] = 5;
   auto expectedValue = static_cast<myImageType2D2::PixelType>(anisotropicSpacing[1]);
   expectedValue *= expectedValue;
   myImageType2D2::PixelType pixelValue = filter2D->GetOutput()->GetPixel(index2D);
-  if (std::fabs(expectedValue - pixelValue) > epsilon)
+  if (itk::Math::abs(expectedValue - pixelValue) > epsilon)
   {
     std::cerr << "Error when image spacing is anisotropic." << std::endl;
     std::cerr << "Pixel value was " << pixelValue << ", expected " << expectedValue << std::endl;
@@ -207,7 +193,7 @@ itkDanielssonDistanceMapImageFilterTest(int, char *[])
   ImageType3D::RegionType region3D;
   region3D.SetSize(size3D);
   region3D.SetIndex(index3D);
-  ImageType3D::Pointer inputImage3D = ImageType3D::New();
+  auto inputImage3D = ImageType3D::New();
   inputImage3D->SetRegions(region3D);
   inputImage3D->Allocate();
   inputImage3D->FillBuffer(1);
@@ -216,7 +202,7 @@ itkDanielssonDistanceMapImageFilterTest(int, char *[])
   // solved.
   ImageType3D::IndexType foregroundIndex;
   ImageType3D::SizeType  foregroundSize;
-  for (unsigned int i = 0; i < 3; i++)
+  for (unsigned int i = 0; i < 3; ++i)
   {
     foregroundSize[i] = 5;
     foregroundIndex[i] = (size3D[i] / 2) - foregroundSize[i] / 2;
@@ -234,10 +220,13 @@ itkDanielssonDistanceMapImageFilterTest(int, char *[])
   // Create Danielsson Distance Map filter
   using myFilterType3D = itk::DanielssonDistanceMapImageFilter<ImageType3D, ImageType3D>;
 
-  myFilterType3D::Pointer filter3D = myFilterType3D::New();
+  auto filter3D = myFilterType3D::New();
 
   filter3D->SetInput(inputImage3D);
-  filter3D->Update();
 
+  ITK_TRY_EXPECT_NO_EXCEPTION(filter3D->Update());
+
+
+  std::cout << "Test finished." << std::endl;
   return EXIT_SUCCESS;
 }

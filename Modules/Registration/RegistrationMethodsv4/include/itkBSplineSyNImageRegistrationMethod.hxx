@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkBSplineSyNImageRegistrationMethod_hxx
 #define itkBSplineSyNImageRegistrationMethod_hxx
 
-#include "itkBSplineSyNImageRegistrationMethod.h"
 
 #include "itkBSplineSmoothingOnUpdateDisplacementFieldTransformParametersAdaptor.h"
 #include "itkComposeDisplacementFieldsImageFilter.h"
@@ -93,14 +92,14 @@ BSplineSyNImageRegistrationMethod<TFixedImage, TMovingImage, TOutputTransform, T
 
   // Monitor the convergence
   using ConvergenceMonitoringType = itk::Function::WindowConvergenceMonitoringFunction<RealType>;
-  typename ConvergenceMonitoringType::Pointer convergenceMonitoring = ConvergenceMonitoringType::New();
+  auto convergenceMonitoring = ConvergenceMonitoringType::New();
   convergenceMonitoring->SetWindowSize(this->m_ConvergenceWindowSize);
 
   IterationReporter reporter(this, 0, 1);
 
   while (this->m_CurrentIteration++ < this->m_NumberOfIterationsPerLevel[this->m_CurrentLevel] && !this->m_IsConverged)
   {
-    typename CompositeTransformType::Pointer fixedComposite = CompositeTransformType::New();
+    auto fixedComposite = CompositeTransformType::New();
     if (fixedInitialTransform != nullptr)
     {
       fixedComposite->AddTransform(fixedInitialTransform);
@@ -110,7 +109,7 @@ BSplineSyNImageRegistrationMethod<TFixedImage, TMovingImage, TOutputTransform, T
     fixedComposite->FlattenTransformQueue();
     fixedComposite->SetOnlyMostRecentTransformToOptimizeOn();
 
-    typename CompositeTransformType::Pointer movingComposite = CompositeTransformType::New();
+    auto movingComposite = CompositeTransformType::New();
     movingComposite->AddTransform(this->m_CompositeTransform);
     movingComposite->AddTransform(this->m_MovingToMiddleTransform->GetInverseTransform());
     movingComposite->FlattenTransformQueue();
@@ -156,7 +155,7 @@ BSplineSyNImageRegistrationMethod<TFixedImage, TMovingImage, TOutputTransform, T
 
     using ComposerType = ComposeDisplacementFieldsImageFilter<DisplacementFieldType>;
 
-    typename ComposerType::Pointer fixedComposer = ComposerType::New();
+    auto fixedComposer = ComposerType::New();
     fixedComposer->SetDisplacementField(fixedToMiddleSmoothUpdateField);
     fixedComposer->SetWarpingField(this->m_FixedToMiddleTransform->GetDisplacementField());
     fixedComposer->Update();
@@ -167,7 +166,7 @@ BSplineSyNImageRegistrationMethod<TFixedImage, TMovingImage, TOutputTransform, T
                                            nullptr,
                                            nullptr);
 
-    typename ComposerType::Pointer movingComposer = ComposerType::New();
+    auto movingComposer = ComposerType::New();
     movingComposer->SetDisplacementField(movingToMiddleSmoothUpdateField);
     movingComposer->SetWarpingField(this->m_MovingToMiddleTransform->GetDisplacementField());
     movingComposer->Update();
@@ -244,7 +243,7 @@ typename BSplineSyNImageRegistrationMethod<TFixedImage, TMovingImage, TOutputTra
 
   if (this->m_Metric->GetMetricCategory() == ObjectToObjectMetricBaseTemplateEnums::MetricCategory::POINT_SET_METRIC)
   {
-    const DisplacementVectorType zeroVector(0.0);
+    constexpr DisplacementVectorType zeroVector{};
 
     VirtualImageBaseConstPointer virtualDomainImage = this->GetCurrentLevelVirtualDomainImage();
 
@@ -275,14 +274,14 @@ typename BSplineSyNImageRegistrationMethod<TFixedImage, TMovingImage, TOutputTra
       typename DerivativeType::iterator it;
       for (it = metricDerivative.begin(); it != metricDerivative.end(); it += ImageDimension)
       {
-        for (unsigned int d = 0; d < ImageDimension; d++)
+        for (unsigned int d = 0; d < ImageDimension; ++d)
         {
           *(it + d) *= this->m_OptimizerWeights[d];
         }
       }
     }
 
-    typename BSplinePointSetType::Pointer gradientPointSet = BSplinePointSetType::New();
+    auto gradientPointSet = BSplinePointSetType::New();
     gradientPointSet->Initialize();
 
     if (fixedPointSets[0]->GetNumberOfPoints() > 0)
@@ -296,7 +295,7 @@ typename BSplineSyNImageRegistrationMethod<TFixedImage, TMovingImage, TOutputTra
       while (It != transformedPointSet->GetPoints()->End())
       {
         typename BSplinePointSetType::PixelType displacement;
-        for (unsigned int d = 0; d < ImageDimension; d++)
+        for (unsigned int d = 0; d < ImageDimension; ++d)
         {
           displacement[d] = metricDerivative[count * ImageDimension + d];
         }
@@ -334,7 +333,7 @@ typename BSplineSyNImageRegistrationMethod<TFixedImage, TMovingImage, TOutputTra
 
       using MaskResamplerType =
         ResampleImageFilter<MaskImageType, WeightedMaskImageType, typename TOutputTransform::ScalarType>;
-      typename MaskResamplerType::Pointer fixedMaskResampler = MaskResamplerType::New();
+      auto fixedMaskResampler = MaskResamplerType::New();
       fixedMaskResampler->SetTransform(fixedTransform);
       fixedMaskResampler->SetInput(
         dynamic_cast<ImageMaskSpatialObjectType *>(const_cast<FixedImageMaskType *>(fixedImageMasks[0].GetPointer()))
@@ -373,13 +372,13 @@ typename BSplineSyNImageRegistrationMethod<TFixedImage, TMovingImage, TOutputTra
                                    const BSplinePointSetType *   gradientPointSet)
 {
   using DuplicatorType = ImageDuplicator<DisplacementFieldType>;
-  typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
+  auto duplicator = DuplicatorType::New();
   duplicator->SetInputImage(field);
   duplicator->Update();
 
   DisplacementFieldPointer smoothField = duplicator->GetOutput();
 
-  for (unsigned int d = 0; d < numberOfControlPoints.Size(); d++)
+  for (unsigned int d = 0; d < numberOfControlPoints.Size(); ++d)
   {
     if (numberOfControlPoints[d] <= 0)
     {
@@ -387,7 +386,7 @@ typename BSplineSyNImageRegistrationMethod<TFixedImage, TMovingImage, TOutputTra
     }
   }
 
-  typename BSplineFilterType::Pointer bspliner = BSplineFilterType::New();
+  auto bspliner = BSplineFilterType::New();
 
   if (gradientPointSet && gradientPointSet->GetNumberOfPoints() > 0)
   {

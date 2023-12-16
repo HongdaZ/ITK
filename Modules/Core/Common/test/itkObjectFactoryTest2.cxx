@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,8 @@
 #include "itkImage.h"
 #include "itkRGBPixel.h"
 #include "itkTextOutput.h" // Needed to see warnings
+#include "itkTestingMacros.h"
+#include "itksys/SystemTools.hxx"
 
 using myPointer = itk::ImportImageContainer<unsigned long, short>::Pointer;
 bool
@@ -45,7 +47,7 @@ MakeImage(const int count, T pixel)
   using RegionType = typename ImageType::RegionType;
   using SizeType = typename ImageType::SizeType;
 
-  typename ImageType::Pointer testImage = ImageType::New();
+  auto testImage = ImageType::New();
 
   IndexType index;
   index[0] = 0;
@@ -71,7 +73,7 @@ ReallocateImage()
   using ImageType = itk::Image<double, 2>;
   using SizeType = ImageType::SizeType;
 
-  ImageType::Pointer testImage = ImageType::New();
+  auto testImage = ImageType::New();
 
   SizeType size = { { 5, 3 } };
 
@@ -89,7 +91,9 @@ itkObjectFactoryTest2(int argc, char * argv[])
   itk::ObjectFactoryBase::UnRegisterAllFactories();
   if (argc < 2)
   {
-    std::cout << "Usage: " << argv[0] << " FactoryPath [FactoryPath [FactoryPath ..." << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " FactoryPath [FactoryPath [FactoryPath ..." << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -103,7 +107,7 @@ itkObjectFactoryTest2(int argc, char * argv[])
   std::string pathSeparator = ":";
 #endif
   std::string path = "";
-  for (int ac = 1; ac < argc - 1; ac++)
+  for (int ac = 1; ac < argc - 1; ++ac)
   {
     path += argv[ac];
 #ifdef CMAKE_INTDIR
@@ -115,10 +119,18 @@ itkObjectFactoryTest2(int argc, char * argv[])
 #ifdef CMAKE_INTDIR
   path += std::string("/") + std::string(CMAKE_INTDIR);
 #endif
+  const std::string itk_autoload_env{ "ITK_AUTOLOAD_PATH" };
+  const std::string myenv{ itk_autoload_env + "=" + path };
+  itksys::SystemTools::PutEnv(myenv);
+  std::cout << "SetValue => " << myenv << std::endl;
+  std::string getmyenv;
+  if (!itksys::SystemTools::GetEnv(itk_autoload_env, getmyenv))
+  {
+    std::cerr << "ERROR: Environmental variable not set as requested : " << itk_autoload_env << "!=" << path
+              << std::endl;
+  }
+  std::cout << "GetValue => " << itk_autoload_env + "=" + getmyenv << std::endl;
 
-  std::string myenv = std::string("ITK_AUTOLOAD_PATH=") + path;
-  std::cout << myenv << std::endl;
-  putenv(const_cast<char *>(myenv.c_str()));
   itk::ObjectFactoryBase::ReHash();
 
   // List all registered factories
@@ -139,7 +151,7 @@ itkObjectFactoryTest2(int argc, char * argv[])
       std::list<std::string>::const_iterator n = names.begin();
       std::list<std::string>::const_iterator d = descriptions.begin();
       std::list<bool>::const_iterator        e = enableflags.begin();
-      for (std::list<std::string>::const_iterator o = overrides.begin(); o != overrides.end(); ++o, ++n, ++d, e++)
+      for (std::list<std::string>::const_iterator o = overrides.begin(); o != overrides.end(); ++o, ++n, ++d, ++e)
       {
         std::cout << "    Override " << *o << " with " << *n << std::endl
                   << "      described as \"" << *d << "\"" << std::endl

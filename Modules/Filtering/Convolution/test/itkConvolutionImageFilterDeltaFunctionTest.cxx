@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,13 +37,13 @@ itkConvolutionImageFilterDeltaFunctionTest(int argc, char * argv[])
   using ReaderType = itk::ImageFileReader<ImageType>;
 
   // Read kernel image.
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
   reader->Update();
 
   // Set up delta function image.
   ImageType::RegionType region = reader->GetOutput()->GetLargestPossibleRegion();
-  ImageType::Pointer    deltaFunctionImage = ImageType::New();
+  auto                  deltaFunctionImage = ImageType::New();
   deltaFunctionImage->SetRegions(region);
   deltaFunctionImage->Allocate(true); // initialize
                                       // buffer
@@ -59,12 +59,12 @@ itkConvolutionImageFilterDeltaFunctionTest(int argc, char * argv[])
   deltaFunctionImage->SetPixel(middleIndex, 1);
 
   using ConvolutionFilterType = itk::ConvolutionImageFilter<ImageType>;
-  ConvolutionFilterType::Pointer convolver = ConvolutionFilterType::New();
+  auto convolver = ConvolutionFilterType::New();
   convolver->SetInput(deltaFunctionImage);
   convolver->SetKernelImage(reader->GetOutput());
 
   using WriterType = itk::ImageFileWriter<ImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(argv[2]);
   writer->SetInput(convolver->GetOutput());
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ class ITK_TEMPLATE_EXPORT VoronoiDiagram2D
   : public Mesh<TCoordType, 2, DefaultDynamicMeshTraits<TCoordType, 2, 2, TCoordType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VoronoiDiagram2D);
+  ITK_DISALLOW_COPY_AND_MOVE(VoronoiDiagram2D);
 
   /** Standard class type aliases. */
   using Self = VoronoiDiagram2D;
@@ -106,8 +106,8 @@ public:
   using PointCellLinksContainerIterator = typename PointCellLinksContainer::const_iterator;
 
   using CellFeatureCount = CellFeatureIdentifier;
-  using CellType = typename Superclass::CellType;
-  using CellAutoPointer = typename Superclass::CellAutoPointer;
+  using typename Superclass::CellType;
+  using typename Superclass::CellAutoPointer;
   using PolygonCellType = PolygonCell<CellType>;
   using EdgeInfo = Point<int, 2>;
   using EdgeInfoDQ = std::deque<EdgeInfo>;

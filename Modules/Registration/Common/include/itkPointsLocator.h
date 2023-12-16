@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ template <typename TPointsContainer = VectorContainer<IdentifierType, Point<floa
 class ITK_TEMPLATE_EXPORT PointsLocator : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PointsLocator);
+  ITK_DISALLOW_COPY_AND_MOVE(PointsLocator);
 
   /** Standard class type aliases. */
   using Self = PointsLocator;
@@ -95,17 +95,13 @@ public:
   PointIdentifier
   FindClosestPoint(const PointType & query) const;
 
-  /** Find the k-nearest neighbors.  Returns the point ids. */
-  void
-  Search(const PointType &, unsigned int, NeighborsIdentifierType &) const;
-
   /** Find the closest N points.  Returns the point ids. */
   void
   FindClosestNPoints(const PointType &, unsigned int, NeighborsIdentifierType &) const;
 
-  /** Find all the points within a specified radius.  Returns the point ids. */
+  /** Find the closest N points.  Returns the point ids and save the distances */
   void
-  Search(const PointType &, double, NeighborsIdentifierType &) const;
+  FindClosestNPoints(const PointType &, unsigned int, NeighborsIdentifierType &, std::vector<double> &) const;
 
   /** Find all the points within a specified radius.  Returns the point ids. */
   void

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,6 @@
  *=========================================================================*/
 #ifndef itkVectorImage_hxx
 #define itkVectorImage_hxx
-#include "itkVectorImage.h"
 #include "itkProcessObject.h"
 
 namespace itk
@@ -85,9 +84,9 @@ VectorImage<TPixel, VImageDimension>::FillBuffer(const PixelType & value)
 
   SizeValueType ctr = 0;
 
-  for (SizeValueType i = 0; i < numberOfPixels; i++)
+  for (SizeValueType i = 0; i < numberOfPixels; ++i)
   {
-    for (VectorLengthType j = 0; j < m_VectorLength; j++)
+    for (VectorLengthType j = 0; j < m_VectorLength; ++j)
     {
       (*m_Buffer)[ctr++] = value[j];
     }

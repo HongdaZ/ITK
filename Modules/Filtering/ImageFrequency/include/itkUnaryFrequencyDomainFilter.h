@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,13 +18,13 @@
 #ifndef itkUnaryFrequencyDomainFilter_h
 #define itkUnaryFrequencyDomainFilter_h
 
-#include <itkInPlaceImageFilter.h>
-#include <itkFrequencyFFTLayoutImageRegionIteratorWithIndex.h>
+#include "itkInPlaceImageFilter.h"
+#include "itkFrequencyFFTLayoutImageRegionIteratorWithIndex.h"
 
 namespace itk
 {
 /**
- *\class UnaryFrequencyDomainFilter
+ * \class UnaryFrequencyDomainFilter
  * \brief Performs a unary operation on a frequency domain image
  *
  * A frequency filtering functor needs to be supplied via one of SetFunctor() overloads.
@@ -58,10 +58,10 @@ namespace itk
  * \ingroup ITKImageFrequency
  */
 template <typename TImageType, typename TFrequencyIterator = FrequencyFFTLayoutImageRegionIteratorWithIndex<TImageType>>
-class UnaryFrequencyDomainFilter : public InPlaceImageFilter<TImageType, TImageType>
+class ITK_TEMPLATE_EXPORT UnaryFrequencyDomainFilter : public InPlaceImageFilter<TImageType, TImageType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(UnaryFrequencyDomainFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(UnaryFrequencyDomainFilter);
 
   /** Standard class type alias. */
   using Self = UnaryFrequencyDomainFilter;

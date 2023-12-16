@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,15 +32,15 @@ LinearSystemWrapper::Clean()
 
   // FIXME: Does not work properly for all derived classes
   // clear all data
-  for (i = 0; i < m_NumberOfMatrices; i++)
+  for (i = 0; i < m_NumberOfMatrices; ++i)
   {
     this->DestroyMatrix(i);
   }
-  for (i = 0; i < m_NumberOfVectors; i++)
+  for (i = 0; i < m_NumberOfVectors; ++i)
   {
     this->DestroyVector(i);
   }
-  for (i = 0; i < m_NumberOfSolutions; i++)
+  for (i = 0; i < m_NumberOfSolutions; ++i)
   {
     this->DestroySolution(i);
   }
@@ -59,9 +59,9 @@ LinearSystemWrapper::ScaleMatrix(Float scale, unsigned int matrixIndex)
 
   unsigned int i;
   unsigned int j;
-  for (i = 0; i < m_Order; i++)
+  for (i = 0; i < m_Order; ++i)
   {
-    for (j = 0; j < m_Order; j++)
+    for (j = 0; j < m_Order; ++j)
     {
       this->SetMatrixValue(i, j, scale * GetMatrixValue(i, j, matrixIndex), matrixIndex);
     }
@@ -79,7 +79,7 @@ LinearSystemWrapper::ScaleVector(Float scale, unsigned int vectorIndex)
   }
 
   unsigned int i;
-  for (i = 0; i < m_Order; i++)
+  for (i = 0; i < m_Order; ++i)
   {
     this->SetVectorValue(i, scale * GetVectorValue(i, vectorIndex), vectorIndex);
   }
@@ -95,7 +95,7 @@ LinearSystemWrapper::ScaleSolution(Float scale, unsigned int solutionIndex)
   }
 
   unsigned int i;
-  for (i = 0; i < m_Order; i++)
+  for (i = 0; i < m_Order; ++i)
   {
     this->SetSolutionValue(i, scale * GetSolutionValue(i, solutionIndex), solutionIndex);
   }
@@ -128,9 +128,9 @@ LinearSystemWrapper::MultiplyMatrixVector(unsigned int resultVector, unsigned in
 
   this->InitializeVector(resultVector);
   /* perform multiply */
-  for (i = 0; i < m_Order; i++)
+  for (i = 0; i < m_Order; ++i)
   {
-    for (j = 0; j < m_Order; j++)
+    for (j = 0; j < m_Order; ++j)
     {
       this->AddVectorValue(
         i, this->GetMatrixValue(i, j, matrixIndex) * this->GetVectorValue(j, vectorIndex), resultVector);
@@ -150,9 +150,9 @@ LinearSystemWrapper::MultiplyMatrixSolution(unsigned int resultVector,
 
   this->InitializeVector(resultVector);
   /* perform multiply */
-  for (i = 0; i < m_Order; i++)
+  for (i = 0; i < m_Order; ++i)
   {
-    for (j = 0; j < m_Order; j++)
+    for (j = 0; j < m_Order; ++j)
     {
       this->AddVectorValue(
         i, this->GetMatrixValue(i, j, matrixIndex) * this->GetSolutionValue(j, solutionIndex), resultVector);
@@ -165,7 +165,7 @@ LinearSystemWrapper::GetColumnsOfNonZeroMatrixElementsInRow(unsigned int, Column
 {
   // By default we assume full matrices and return indices of all columns
   cols = ColumnArray(m_Order);
-  for (unsigned int i = 0; i < m_Order; i++)
+  for (unsigned int i = 0; i < m_Order; ++i)
   {
     cols[i] = i;
   }
@@ -184,10 +184,10 @@ LinearSystemWrapper::OptimizeMatrixStorage(unsigned int matrixIndex, unsigned in
   ColumnArray  currentRow;
   unsigned int i;
   unsigned int j;
-  for (i = 0; i < this->m_Order; i++)
+  for (i = 0; i < this->m_Order; ++i)
   {
     this->GetColumnsOfNonZeroMatrixElementsInRow(i, currentRow, tempMatrixIndex);
-    for (j = 0; j < currentRow.size(); j++)
+    for (j = 0; j < currentRow.size(); ++j)
     {
       this->SetMatrixValue(i, currentRow[j], this->GetMatrixValue(i, currentRow[j], tempMatrixIndex), matrixIndex);
     }
@@ -198,13 +198,13 @@ LinearSystemWrapper::OptimizeMatrixStorage(unsigned int matrixIndex, unsigned in
 }
 
 void
-LinearSystemWrapper ::CopyMatrix(unsigned int matrixIndex1, unsigned int matrixIndex2)
+LinearSystemWrapper::CopyMatrix(unsigned int matrixIndex1, unsigned int matrixIndex2)
 {
   ColumnArray  cols;
   unsigned int r;
 
   this->InitializeMatrix(matrixIndex2);
-  for (r = 0; r < this->m_Order; r++)
+  for (r = 0; r < this->m_Order; ++r)
   {
     this->GetColumnsOfNonZeroMatrixElementsInRow(r, cols, matrixIndex1);
     for (const auto & col : cols)
@@ -215,11 +215,11 @@ LinearSystemWrapper ::CopyMatrix(unsigned int matrixIndex1, unsigned int matrixI
 }
 
 void
-LinearSystemWrapper ::AddMatrixMatrix(unsigned int matrixIndex1, unsigned int matrixIndex2)
+LinearSystemWrapper::AddMatrixMatrix(unsigned int matrixIndex1, unsigned int matrixIndex2)
 {
   ColumnArray  cols;
   unsigned int r;
-  for (r = 0; r < this->m_Order; r++)
+  for (r = 0; r < this->m_Order; ++r)
   {
     this->GetColumnsOfNonZeroMatrixElementsInRow(r, cols, matrixIndex2);
     for (const auto & col : cols)
@@ -230,20 +230,20 @@ LinearSystemWrapper ::AddMatrixMatrix(unsigned int matrixIndex1, unsigned int ma
 }
 
 void
-LinearSystemWrapper ::CopyVector(unsigned int vectorSource, unsigned int vectorDestination)
+LinearSystemWrapper::CopyVector(unsigned int vectorSource, unsigned int vectorDestination)
 {
   unsigned int r;
-  for (r = 0; r < this->m_Order; r++)
+  for (r = 0; r < this->m_Order; ++r)
   {
     this->SetVectorValue(r, this->GetVectorValue(r, vectorSource), vectorDestination);
   }
 }
 
 void
-LinearSystemWrapper ::AddVectorVector(unsigned int vectorIndex1, unsigned int vectorIndex2)
+LinearSystemWrapper::AddVectorVector(unsigned int vectorIndex1, unsigned int vectorIndex2)
 {
   unsigned int r;
-  for (r = 0; r < this->m_Order; r++)
+  for (r = 0; r < this->m_Order; ++r)
   {
     this->AddVectorValue(r, this->GetVectorValue(r, vectorIndex2), vectorIndex1);
   }
@@ -272,7 +272,7 @@ LinearSystemWrapper::CuthillMckeeOrdering(ColumnArray & newNumbering, int starti
                                           current row */
   ColumnArray rowDegree(this->m_Order); /* degrees in each row */
   /* initialize variables */
-  for (i = 0; i < this->m_Order; i++)
+  for (i = 0; i < this->m_Order; ++i)
   {
     this->GetColumnsOfNonZeroMatrixElementsInRow(i, currentRow, matrixIndex);
     rowDegree[i] = static_cast<unsigned int>(currentRow.size() - 1); /*
@@ -292,7 +292,7 @@ LinearSystemWrapper::CuthillMckeeOrdering(ColumnArray & newNumbering, int starti
   {
     unsigned int lowestDegree = rowDegree[0];
     startingRow = 0;
-    for (i = 1; i < this->m_Order; i++)
+    for (i = 1; i < this->m_Order; ++i)
     {
       if (rowDegree[i] < lowestDegree)
       {
@@ -308,7 +308,7 @@ LinearSystemWrapper::CuthillMckeeOrdering(ColumnArray & newNumbering, int starti
 
   /* follow connections and assign new row numbering */
   this->FollowConnectionsCuthillMckeeOrdering(startingRow, rowDegree, reverseMapping, nextRowNumber, matrixIndex);
-  for (i = 0; i < this->m_Order; i++)
+  for (i = 0; i < this->m_Order; ++i)
   {
     newNumbering[reverseMapping[i]] = i;
   }
@@ -351,9 +351,9 @@ LinearSystemWrapper::FollowConnectionsCuthillMckeeOrdering(unsigned int  rowNumb
   /* order by degree */
   if (nextRows.size() > 1)
   {
-    for (i = 0; i < (int)(nextRows.size()) - 1; i++)
+    for (i = 0; i < static_cast<int>(nextRows.size()) - 1; ++i)
     {
-      for (j = 0; j < (int)(nextRows.size()) - 1 - i; j++)
+      for (j = 0; j < static_cast<int>(nextRows.size()) - 1 - i; ++j)
       {
         if (rowDegree[nextRows[j + 1]] < rowDegree[nextRows[j]])
         {
@@ -369,12 +369,12 @@ LinearSystemWrapper::FollowConnectionsCuthillMckeeOrdering(unsigned int  rowNumb
   while ((!nextRows.empty()) && (nextRowNumber < this->m_Order))
   {
     bufferArray.clear();
-    for (i = 0; i < (int)(nextRows.size()); i++)
+    for (i = 0; i < static_cast<int>(nextRows.size()); ++i)
     {
       reverseMapping[nextRows[i]] = nextRowNumber++;
     }
     /* renumber rows in nextRows */
-    for (i = 0; i < (int)(nextRows.size()); i++)
+    for (i = 0; i < static_cast<int>(nextRows.size()); ++i)
     {
       /* connections of current row */
       this->GetColumnsOfNonZeroMatrixElementsInRow(nextRows[i], rowBuffer, matrixIndex);
@@ -390,9 +390,9 @@ LinearSystemWrapper::FollowConnectionsCuthillMckeeOrdering(unsigned int  rowNumb
       /* order by degree */
       if (rowBuffer.size() > 1)
       {
-        for (k = 0; k < (int)(rowBuffer.size()) - 1; k++)
+        for (k = 0; k < static_cast<int>(rowBuffer.size()) - 1; ++k)
         {
-          for (j = 0; j < (int)(rowBuffer.size()) - 1 - k; j++)
+          for (j = 0; j < static_cast<int>(rowBuffer.size()) - 1 - k; ++j)
           {
             if (rowDegree[rowBuffer[j + 1]] < rowDegree[rowBuffer[j]])
             {
@@ -406,10 +406,10 @@ LinearSystemWrapper::FollowConnectionsCuthillMckeeOrdering(unsigned int  rowNumb
 
       /* add rows in rowBuffer to bufferArray (don't add repeats) */
       unsigned int repeatFlag;
-      for (k = 0; k < (int)(rowBuffer.size()); k++)
+      for (k = 0; k < static_cast<int>(rowBuffer.size()); ++k)
       {
         repeatFlag = 0;
-        for (j = 0; j < (int)(bufferArray.size()); j++)
+        for (j = 0; j < static_cast<int>(bufferArray.size()); ++j)
         {
           if (bufferArray[j] == rowBuffer[k])
           {

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class PointSetToImageFilter
+ * \class PointSetToImageFilter
  * \brief Base class for filters that take a PointSet
  *        as input and produce an image as output.
  *  By default, if the user does not specify the size of the output image,
@@ -35,7 +35,7 @@ template <typename TInputPointSet, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT PointSetToImageFilter : public ImageSource<TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PointSetToImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(PointSetToImageFilter);
 
   /** Standard class type aliases. */
   using Self = PointSetToImageFilter;
@@ -54,7 +54,7 @@ public:
   itkTypeMacro(PointSetToImageFilter, ImageSource);
 
   /** Superclass type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
 
   /** Some convenient type alias. */
   using InputPointSetType = TInputPointSet;
@@ -73,7 +73,7 @@ public:
   /** Set/Get the input point-set of this process object.  */
   using Superclass::SetInput;
   virtual void
-  SetInput(const InputPointSetType * pointset);
+  SetInput(const InputPointSetType * input);
 
   virtual void
   SetInput(unsigned int, const InputPointSetType * pointset);
@@ -90,10 +90,10 @@ public:
    * float. \sa GetSpacing() */
   itkSetMacro(Spacing, SpacingType);
   virtual void
-  SetSpacing(const double * spacing);
+  SetSpacing(const double * v);
 
   virtual void
-  SetSpacing(const float * spacing);
+  SetSpacing(const float * v);
 
   /** Get the spacing (size of a pixel) of the image. The
    * spacing is the geometric distance between image samples.
@@ -113,10 +113,10 @@ public:
    * \sa GetOrigin() */
   itkSetMacro(Origin, PointType);
   virtual void
-  SetOrigin(const double * origin);
+  SetOrigin(const double * v);
 
   virtual void
-  SetOrigin(const float * origin);
+  SetOrigin(const float * v);
 
   /** Get the origin of the image. The origin is the geometric
    * coordinates of the index (0,0).  The value returned is a pointer

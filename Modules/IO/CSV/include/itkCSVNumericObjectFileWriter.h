@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@
 namespace itk
 {
 /**
- *\class CSVNumericObjectFileWriter
+ * \class CSVNumericObjectFileWriter
  * \brief Writes out numeric itk data objects to a csv file.
  *
  * CSVNumericObjectFileWriter writes numeric data from an itk object into a
@@ -58,11 +58,11 @@ namespace itk
  *
  * \ingroup ITKIOCSV
  */
-template <typename TValue, unsigned int NRows = 0, unsigned int NColumns = 0>
+template <typename TValue, unsigned int VRows = 0, unsigned int VColumns = 0>
 class ITK_TEMPLATE_EXPORT CSVNumericObjectFileWriter : public LightProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CSVNumericObjectFileWriter);
+  ITK_DISALLOW_COPY_AND_MOVE(CSVNumericObjectFileWriter);
 
   /** Standard class type aliases */
   using Self = CSVNumericObjectFileWriter;
@@ -78,8 +78,8 @@ public:
 
   // Matrix types
   using vnlMatrixType = vnl_matrix<TValue>;
-  using vnlFixedMatrixType = vnl_matrix_fixed<TValue, NRows, NColumns>;
-  using itkMatrixType = itk::Matrix<TValue, NRows, NColumns>;
+  using vnlFixedMatrixType = vnl_matrix_fixed<TValue, VRows, VColumns>;
+  using itkMatrixType = itk::Matrix<TValue, VRows, VColumns>;
 
   using StringVectorType = std::vector<std::string>;
 

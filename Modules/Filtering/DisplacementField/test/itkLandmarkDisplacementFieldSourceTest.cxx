@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include "itkLandmarkDisplacementFieldSource.h"
 #include "itkImageFileWriter.h"
 #include "itkSimpleFilterWatcher.h"
+#include "itkThinPlateSplineKernelTransform.h"
 
 #include <fstream>
 #include "itkTestingMacros.h"
@@ -45,7 +46,10 @@ itkLandmarkDisplacementFieldSourceTest(int argc, char * argv[])
 
   using FilterType = itk::LandmarkDisplacementFieldSource<DisplacementFieldType>;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, LandmarkDisplacementFieldSource, ImageSource);
+
 
   itk::SimpleFilterWatcher watcher(filter);
 
@@ -71,19 +75,29 @@ itkLandmarkDisplacementFieldSourceTest(int argc, char * argv[])
   DisplacementFieldType::DirectionType direction;
   direction.SetIdentity();
 
+  auto kernelTransform = itk::ThinPlateSplineKernelTransform<double, FilterType::ImageDimension>::New();
+  filter->SetKernelTransform(kernelTransform);
+  ITK_TEST_SET_GET_VALUE(kernelTransform, filter->GetKernelTransform());
 
   filter->SetOutputSpacing(spacing);
+  ITK_TEST_SET_GET_VALUE(spacing, filter->GetOutputSpacing());
+
   filter->SetOutputOrigin(origin);
+  ITK_TEST_SET_GET_VALUE(origin, filter->GetOutputOrigin());
+
   filter->SetOutputRegion(region);
+  ITK_TEST_SET_GET_VALUE(region, filter->GetOutputRegion());
+
   filter->SetOutputDirection(direction);
+  ITK_TEST_SET_GET_VALUE(direction, filter->GetOutputDirection());
 
   //  Create source and target landmarks.
   //
   using LandmarkContainerType = FilterType::LandmarkContainer;
   using LandmarkPointType = FilterType::LandmarkPointType;
 
-  LandmarkContainerType::Pointer sourceLandmarks = LandmarkContainerType::New();
-  LandmarkContainerType::Pointer targetLandmarks = LandmarkContainerType::New();
+  auto sourceLandmarks = LandmarkContainerType::New();
+  auto targetLandmarks = LandmarkContainerType::New();
 
   LandmarkPointType sourcePoint;
   LandmarkPointType targetPoint;
@@ -127,7 +141,7 @@ itkLandmarkDisplacementFieldSourceTest(int argc, char * argv[])
   // Write an image for regression testing
   using WriterType = itk::ImageFileWriter<DisplacementFieldType>;
 
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   writer->SetInput(filter->GetOutput());
   writer->SetFileName(argv[2]);

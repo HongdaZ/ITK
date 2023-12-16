@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ namespace itk
 namespace VideoSourceTest
 {
 /**
- *\class DummyVideoSource
+ * \class DummyVideoSource
  * Provide dummy implementation of VideoSource that just sets all pixels to 1
  */
 template <typename TOutputVideoStream>
@@ -110,7 +110,7 @@ protected:
 FrameType::Pointer
 CreateEmptyFrame()
 {
-  FrameType::Pointer out = FrameType::New();
+  auto out = FrameType::New();
 
   FrameType::RegionType largestRegion;
   FrameType::SizeType   sizeLR;
@@ -152,14 +152,14 @@ itkVideoSourceTest(int, char *[])
   // Test Instantiation
   //////
   using VideoSourceType = itk::VideoSourceTest::DummyVideoSource<VideoType>;
-  VideoSourceType::Pointer videoSource = VideoSourceType::New();
+  auto videoSource = VideoSourceType::New();
 
   //////
   // Test Graft
   //////
 
   // Create a VideoStream
-  VideoType::Pointer  video = VideoType::New();
+  auto                video = VideoType::New();
   itk::TemporalRegion largestRegion;
   itk::TemporalRegion requestedRegion;
   itk::TemporalRegion bufferedRegion;

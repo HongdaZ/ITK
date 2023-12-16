@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class AddImageAdaptor
+ * \class AddImageAdaptor
  * \brief Presents an image as being the addition of a constant value to all pixels
  *
  * Additional casting is performed according to the input and output image
@@ -34,10 +34,11 @@ namespace itk
  * \ingroup ITKImageAdaptors
  */
 template <typename TImage>
-class AddImageAdaptor : public ImageAdaptor<TImage, Accessor::AddPixelAccessor<typename TImage::PixelType>>
+class ITK_TEMPLATE_EXPORT AddImageAdaptor
+  : public ImageAdaptor<TImage, Accessor::AddPixelAccessor<typename TImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AddImageAdaptor);
+  ITK_DISALLOW_COPY_AND_MOVE(AddImageAdaptor);
 
   /** Standard class type aliases. */
   using Self = AddImageAdaptor;

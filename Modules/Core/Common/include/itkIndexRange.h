@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,8 +30,6 @@
 
 namespace itk
 {
-namespace Experimental
-{
 
 /**
   * \class IndexRange
@@ -41,7 +39,7 @@ namespace Experimental
   *
   * The following example prints all indices of an 2-D grid space of size 2x3.
     \code
-    constexpr unsigned Dimension = 2;
+    constexpr unsigned int Dimension = 2;
     const Size<Dimension> size = { {2, 3} };
     const ZeroBasedIndexRange<Dimension> indexRange{ size };
 
@@ -76,11 +74,11 @@ namespace Experimental
   * \ingroup ImageIterators
   * \ingroup ITKCommon
   */
-template <unsigned VDimension, bool VBeginAtZero>
+template <unsigned int VDimension, bool VBeginAtZero>
 class IndexRange final
 {
 public:
-  constexpr static unsigned Dimension = VDimension;
+  static constexpr unsigned int Dimension = VDimension;
   using SizeType = Size<VDimension>;
   using IndexType = Index<VDimension>;
 
@@ -88,7 +86,7 @@ public:
   {
   public:
     // Types conforming the iterator requirements of the C++ standard library:
-    using difference_type = std::ptrdiff_t;
+    using difference_type = ptrdiff_t;
     using value_type = IndexType;
     using reference = const IndexType &;
     using pointer = const IndexType *;
@@ -103,18 +101,18 @@ public:
 
 
     /**  Returns a reference to the current index. */
-    reference operator*() const ITK_NOEXCEPT { return m_Index; }
+    reference operator*() const noexcept { return m_Index; }
 
 
     /**  Returns a pointer to the current index. */
-    pointer operator->() const ITK_NOEXCEPT { return &(**this); }
+    pointer operator->() const noexcept { return &(**this); }
 
 
     /** Prefix increment ('++it'). */
     const_iterator &
-    operator++() ITK_NOEXCEPT
+    operator++() noexcept
     {
-      for (unsigned i = 0; i < (VDimension - 1); ++i)
+      for (unsigned int i = 0; i < (VDimension - 1); ++i)
       {
         auto & indexValue = m_Index[i];
 
@@ -135,7 +133,7 @@ public:
     /** Postfix increment ('it++').
      * \note Usually prefix increment ('++it') is preferable. */
     const_iterator
-    operator++(int) ITK_NOEXCEPT
+    operator++(int) noexcept
     {
       auto result = *this;
       ++(*this);
@@ -145,9 +143,9 @@ public:
 
     /** Prefix decrement ('--it'). */
     const_iterator &
-    operator--() ITK_NOEXCEPT
+    operator--() noexcept
     {
-      for (unsigned i = 0; i < (VDimension - 1); ++i)
+      for (unsigned int i = 0; i < (VDimension - 1); ++i)
       {
         auto & indexValue = m_Index[i];
 
@@ -167,7 +165,7 @@ public:
     /** Postfix increment ('it--').
      * \note  Usually prefix increment ('--it') is preferable. */
     const_iterator
-    operator--(int) ITK_NOEXCEPT
+    operator--(int) noexcept
     {
       auto result = *this;
       --(*this);
@@ -179,7 +177,7 @@ public:
      * should be from the same range. This operator does not support comparing iterators
      * from different ranges. */
     friend bool
-    operator==(const const_iterator & lhs, const const_iterator & rhs) ITK_NOEXCEPT
+    operator==(const const_iterator & lhs, const const_iterator & rhs) noexcept
     {
       assert(lhs.m_MaxIndex == rhs.m_MaxIndex);
 
@@ -189,7 +187,7 @@ public:
 
     /** Returns (it1 != it2) for iterators it1 and it2. */
     friend bool
-    operator!=(const const_iterator & lhs, const const_iterator & rhs) ITK_NOEXCEPT
+    operator!=(const const_iterator & lhs, const const_iterator & rhs) noexcept
     {
       // Implemented just like the corresponding std::rel_ops operator.
       return !(lhs == rhs);
@@ -198,9 +196,9 @@ public:
 
     /** Returns (it1 < it2) for iterators it1 and it2. */
     friend bool
-    operator<(const const_iterator & lhs, const const_iterator & rhs) ITK_NOEXCEPT
+    operator<(const const_iterator & lhs, const const_iterator & rhs) noexcept
     {
-      for (unsigned i = VDimension; i > 0; --i)
+      for (unsigned int i = VDimension; i > 0; --i)
       {
         const auto difference = lhs.m_Index[i - 1] - rhs.m_Index[i - 1];
 
@@ -219,7 +217,7 @@ public:
 
     /** Returns (it1 > it2) for iterators it1 and it2. */
     friend bool
-    operator>(const const_iterator & lhs, const const_iterator & rhs) ITK_NOEXCEPT
+    operator>(const const_iterator & lhs, const const_iterator & rhs) noexcept
     {
       // Implemented just like the corresponding std::rel_ops operator.
       return rhs < lhs;
@@ -228,7 +226,7 @@ public:
 
     /** Returns (it1 <= it2) for iterators it1 and it2. */
     friend bool
-    operator<=(const const_iterator & lhs, const const_iterator & rhs) ITK_NOEXCEPT
+    operator<=(const const_iterator & lhs, const const_iterator & rhs) noexcept
     {
       // Implemented just like the corresponding std::rel_ops operator.
       return !(rhs < lhs);
@@ -237,7 +235,7 @@ public:
 
     /** Returns (it1 >= it2) for iterators it1 and it2. */
     friend bool
-    operator>=(const const_iterator & lhs, const const_iterator & rhs) ITK_NOEXCEPT
+    operator>=(const const_iterator & lhs, const const_iterator & rhs) noexcept
     {
       // Implemented just like the corresponding std::rel_ops operator.
       return !(lhs < rhs);
@@ -252,7 +250,7 @@ public:
     struct ZeroIndex
     {
       // The "index" operator.
-      constexpr IndexValueType operator[](unsigned) const { return 0; }
+      constexpr IndexValueType operator[](unsigned int) const { return 0; }
 
       // Implicitly converts to a default-initialized itk::Index<N>.
       constexpr operator IndexType() const { return IndexType(); }
@@ -260,13 +258,12 @@ public:
 
 
     // When BeginAtZero is true, use zero as minimum index, otherwise use itk::Index<N>.
-    using MinIndexType = typename std::conditional<VBeginAtZero, ZeroIndex, IndexType>::type;
+    using MinIndexType = std::conditional_t<VBeginAtZero, ZeroIndex, IndexType>;
 
     // Private constructor, only used by friend class IndexRange.
-    const_iterator(const IndexType & index, const MinIndexType & minIndex, const IndexType & maxIndex) ITK_NOEXCEPT
-      :
-      // Note: Use parentheses instead of curly braces to initialize data members,
-      // to avoid AppleClang 6.0.0.6000056 compilation error, "no viable conversion..."
+    const_iterator(const IndexType & index, const MinIndexType & minIndex, const IndexType & maxIndex) noexcept
+      : // Note: Use parentheses instead of curly braces to initialize data members,
+        // to avoid AppleClang 6.0.0.6000056 compilation error, "no viable conversion..."
       m_Index(index)
       , m_MinIndex(minIndex)
       , m_MaxIndex(maxIndex)
@@ -312,7 +309,7 @@ public:
    * case there is a substitution failure, and C++ "SFINAE" kicks in).
    */
   template <bool VIsSubstitutionFailure = VBeginAtZero,
-            typename TVoid = typename std::enable_if<!VIsSubstitutionFailure>::type>
+            typename TVoid = std::enable_if_t<!VIsSubstitutionFailure>>
   explicit IndexRange(const ImageRegion<VDimension> & imageRegion)
     : // Note: Use parentheses instead of curly braces to initialize data members,
       // to avoid AppleClang 6.0.0.6000056 compile errors, "no viable conversion..."
@@ -330,14 +327,14 @@ public:
 
   /** Returns an iterator to the first index. */
   iterator
-  begin() const ITK_NOEXCEPT
+  begin() const noexcept
   {
     return iterator(m_MinIndex, m_MinIndex, m_MaxIndex);
   }
 
   /** Returns an 'end iterator' for this range. */
   iterator
-  end() const ITK_NOEXCEPT
+  end() const noexcept
   {
     IndexType index = m_MinIndex;
     index.back() = m_MaxIndex.back() + 1;
@@ -347,54 +344,54 @@ public:
   /** Returns a const iterator to the first index.
    * Provides only read-only access to the index data. */
   const_iterator
-  cbegin() const ITK_NOEXCEPT
+  cbegin() const noexcept
   {
     return this->begin();
   }
 
   /** Returns a const 'end iterator' for this range. */
   const_iterator
-  cend() const ITK_NOEXCEPT
+  cend() const noexcept
   {
     return this->end();
   }
 
   /** Returns a reverse 'begin iterator' for this range. */
   reverse_iterator
-  rbegin() const ITK_NOEXCEPT
+  rbegin() const noexcept
   {
     return reverse_iterator(this->end());
   }
 
   /** Returns a reverse 'end iterator' for this range. */
   reverse_iterator
-  rend() const ITK_NOEXCEPT
+  rend() const noexcept
   {
     return reverse_iterator(this->begin());
   }
 
   /** Returns a const reverse 'begin iterator' for this range. */
   const_reverse_iterator
-  crbegin() const ITK_NOEXCEPT
+  crbegin() const noexcept
   {
     return this->rbegin();
   }
 
   /** Returns a const reverse 'end iterator' for this range. */
   const_reverse_iterator
-  crend() const ITK_NOEXCEPT
+  crend() const noexcept
   {
     return this->rend();
   }
 
 
   /** Returns the size of the range, that is the number of indices. */
-  std::size_t
-  size() const ITK_NOEXCEPT
+  size_t
+  size() const noexcept
   {
-    std::size_t result = 1;
+    size_t result = 1;
 
-    for (unsigned i = 0; i < VDimension; ++i)
+    for (unsigned int i = 0; i < VDimension; ++i)
     {
       result *= ((m_MaxIndex[i] + 1) - m_MinIndex[i]);
     }
@@ -404,10 +401,10 @@ public:
 
   /** Tells whether the range is empty. */
   bool
-  empty() const ITK_NOEXCEPT
+  empty() const noexcept
   {
     // When an IndexRange is empty, each index value of m_MaxIndex is less than the corresponding
-    // index value of m_MinIndex. And vise versa: when an IndexRange is non-empty, each index value
+    // index value of m_MinIndex. And vice versa: when an IndexRange is non-empty, each index value
     // of m_MaxIndex is greater than or equal to the corresponding index value of m_MinIndex.
     // Note that the range contains one element when m_MaxIndex == m_MinIndex.
     return m_MaxIndex[0] < m_MinIndex[0];
@@ -436,7 +433,7 @@ private:
 
     IndexType index;
 
-    for (unsigned i = 0; i < VDimension; ++i)
+    for (unsigned int i = 0; i < VDimension; ++i)
     {
       index[i] = minIndex[i] + static_cast<IndexValueType>(normalizedSize[i]) - 1;
     }
@@ -453,13 +450,12 @@ private:
   IndexType m_MaxIndex = IndexType::Filled(-1);
 };
 
-template <unsigned VDimension>
+template <unsigned int VDimension>
 using ImageRegionIndexRange = IndexRange<VDimension, false>;
 
-template <unsigned VDimension>
+template <unsigned int VDimension>
 using ZeroBasedIndexRange = IndexRange<VDimension, true>;
 
-} // namespace Experimental
 } // namespace itk
 
 #endif

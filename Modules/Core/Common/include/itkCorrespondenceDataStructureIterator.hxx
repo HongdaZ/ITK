@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkCorrespondenceDataStructureIterator_hxx
 #define itkCorrespondenceDataStructureIterator_hxx
 
-#include "itkCorrespondenceDataStructureIterator.h"
 
 namespace itk
 {
@@ -51,7 +50,7 @@ template <typename TStructureType>
 void
 CorrespondenceDataStructureIterator<TStructureType>::GoToNext()
 {
-  m_CorrespondingListIterator++;
+  ++m_CorrespondingListIterator;
 
   if (m_CorrespondingListIterator == m_CorrespondingListPointer->end())
   {
@@ -64,7 +63,7 @@ template <typename TStructureType>
 void
 CorrespondenceDataStructureIterator<TStructureType>::GoToNextBaseGroup()
 {
-  m_SecondaryListIterator++;
+  ++m_SecondaryListIterator;
   if (m_SecondaryListIterator != m_SecondaryListPointer->end())
   {
     m_CorrespondingListPointer = &(*m_SecondaryListIterator);
@@ -72,7 +71,7 @@ CorrespondenceDataStructureIterator<TStructureType>::GoToNextBaseGroup()
   }
   else if (m_SecondaryListIterator == m_SecondaryListPointer->end())
   {
-    m_NodeListIterator++;
+    ++m_NodeListIterator;
 
     if (m_NodeListIterator != m_NodeListPointer->end())
     {

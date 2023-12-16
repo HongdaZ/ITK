@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,14 +18,15 @@
 
 #include "itkImageFileReader.h"
 #include "itkCentralDifferenceImageFunction.h"
+#include "itkTestingMacros.h"
 
 int
-itkOrientedImage3DTest(int ac, char * av[])
+itkOrientedImage3DTest(int argc, char * argv[])
 {
 
-  if (ac < 20)
+  if (argc < 20)
   {
-    std::cerr << "Usage: " << av[0] << " InputImage  "
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " InputImage  "
               << "corner1x corner1y corner1z "
               << "corner2x corner2y corner2z "
               << "corner3x corner3y corner3z "
@@ -44,9 +45,9 @@ itkOrientedImage3DTest(int ac, char * av[])
   using IndexType = ImageType::IndexType;
   using IndexValueType = IndexType::IndexValueType;
 
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
 
-  reader->SetFileName(av[1]);
+  reader->SetFileName(argv[1]);
 
   try
   {
@@ -105,7 +106,7 @@ itkOrientedImage3DTest(int ac, char * av[])
 
     for (unsigned int dim = 0; dim < Dimension; ++dim)
     {
-      const double expectedValue = std::stod(av[element++]);
+      const double expectedValue = std::stod(argv[element++]);
       const double currentValue = physicalPoint[dim];
       const double difference = currentValue - expectedValue;
       if (itk::Math::abs(difference) > tolerance)
@@ -131,7 +132,7 @@ itkOrientedImage3DTest(int ac, char * av[])
 
   using CentralDifferenceImageFunctionType = itk::CentralDifferenceImageFunction<ImageType, double>;
 
-  CentralDifferenceImageFunctionType::Pointer gradientHelper1 = CentralDifferenceImageFunctionType::New();
+  auto gradientHelper1 = CentralDifferenceImageFunctionType::New();
   gradientHelper1->SetInputImage(image);
 
   std::cout << std::endl;
@@ -148,7 +149,7 @@ itkOrientedImage3DTest(int ac, char * av[])
 
     for (unsigned int dim = 0; dim < Dimension; ++dim)
     {
-      const double expectedValue = std::stod(av[element++]);
+      const double expectedValue = std::stod(argv[element++]);
       const double currentValue = gradient1a[dim];
       const double difference = currentValue - expectedValue;
       if (itk::Math::abs(difference) > tolerance)
@@ -173,7 +174,7 @@ itkOrientedImage3DTest(int ac, char * av[])
 
     for (unsigned int dim = 0; dim < Dimension; ++dim)
     {
-      const double expectedValue = std::stod(av[element++]);
+      const double expectedValue = std::stod(argv[element++]);
       const double currentValue = gradient1b[dim];
       const double difference = currentValue - expectedValue;
       if (itk::Math::abs(difference) > tolerance)

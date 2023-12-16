@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,6 +38,18 @@
 #include "ITKMeshExport.h"
 #include <vector>
 #include <set>
+#include "itkVectorContainer.h"
+#include "itkVertexCell.h"
+#include "itkLineCell.h"
+#include "itkPolyLineCell.h"
+#include "itkTriangleCell.h"
+#include "itkQuadrilateralCell.h"
+#include "itkPolygonCell.h"
+#include "itkTetrahedronCell.h"
+#include "itkHexahedronCell.h"
+#include "itkQuadraticEdgeCell.h"
+#include "itkQuadraticTriangleCell.h"
+
 
 namespace itk
 {
@@ -114,7 +126,7 @@ template <typename TPixelType,
 class ITK_TEMPLATE_EXPORT Mesh : public PointSet<TPixelType, VDimension, TMeshTraits>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Mesh);
+  ITK_DISALLOW_COPY_AND_MOVE(Mesh);
 
   /** Standard type alias. */
   using Self = Mesh;
@@ -122,7 +134,7 @@ public:
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
-  using RegionType = typename Superclass::RegionType;
+  using typename Superclass::RegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -171,6 +183,10 @@ public:
   using PointDataContainer = typename MeshTraits::PointDataContainer;
   using CellDataContainer = typename MeshTraits::CellDataContainer;
 
+  /** For improving Python support for Triangle Meshes **/
+  using CellsVectorContainer = typename itk::VectorContainer<IdentifierType, IdentifierType>;
+  using CellsVectorContainerPointer = typename CellsVectorContainer::Pointer;
+
   /** Used to support geometric operations on the toolkit. */
   using BoundingBoxType = BoundingBox<PointIdentifier, Self::PointDimension, CoordRepType, PointsContainer>;
 
@@ -200,6 +216,16 @@ public:
 
   /** The base cell type for cells in this mesh. */
   using CellType = CellInterface<CellPixelType, CellTraits>;
+  using OutputVertexCellType = itk::VertexCell<CellType>;
+  using OutputLineCellType = itk::LineCell<CellType>;
+  using OutputPolyLineCellType = itk::PolyLineCell<CellType>;
+  using OutputTriangleCellType = itk::TriangleCell<CellType>;
+  using OutputQuadrilateralCellType = itk::QuadrilateralCell<CellType>;
+  using OutputPolygonCellType = itk::PolygonCell<CellType>;
+  using OutputTetrahedronCellType = itk::TetrahedronCell<CellType>;
+  using OutputHexahedronCellType = itk::HexahedronCell<CellType>;
+  using OutputQuadraticEdgeCellType = itk::QuadraticEdgeCell<CellType>;
+  using OutputQuadraticTriangleCellType = itk::QuadraticTriangleCell<CellType>;
   using CellAutoPointer = typename CellType::CellAutoPointer;
 
   /** Visiting cells. */
@@ -268,6 +294,7 @@ protected:
    *  through cell identifiers.  */
   CellsContainerPointer m_CellsContainer;
 
+  CellsVectorContainerPointer cellOutputVectorContainer;
   /** An object containing data associated with the mesh's cells.
    *  Optionally, this can be nullptr, indicating that no data are associated
    *  with the cells.  The data for a cell can be accessed through its cell
@@ -291,13 +318,19 @@ protected:
   BoundaryAssignmentsContainerVector m_BoundaryAssignmentsContainers;
 
 public:
-  /** Mesh-level operation interface. */
+  /** Get the number of cells in the cells container. */
   CellIdentifier
   GetNumberOfCells() const;
 
+  /** Copy the geometric and topological structure of the given input mesh.
+   * The copying is done via reference counting.
+   */
   void
   PassStructure(Self * inputMesh);
 
+  /** Restore the Mesh to its initial state.  Useful for data pipeline updates
+   * without memory re-allocation.
+   */
   void
   Initialize() override;
 
@@ -313,40 +346,67 @@ public:
   const BoundingBoxType *
   GetBoundingBox() const;
 
-  /** Access m_CellsLinksContainer, which contains parent cell links
+  /** Set the cell links container, which contains parent cell links
    * for each point.  Since a point can be used by multiple cells,
    * each point identifier accesses another container which holds the
    * cell identifiers */
   void
   SetCellLinks(CellLinksContainer *);
 
+  /** Get the cell links container. */
   CellLinksContainer *
   GetCellLinks();
 
+  /** Get the cell links container. */
   const CellLinksContainer *
   GetCellLinks() const;
 
-  /** Access m_CellsContainer, which holds cells used by the mesh.
+  /** Set the cells container, which holds cells used by the mesh.
    *  Individual cells are accessed through cell identifiers.  */
   void
   SetCells(CellsContainer *);
 
+  /** Set the cells container using a 1D vector. The first element of the vector
+   * is the cell type and next is number of points in the cell followed by the
+   * point ids in that cell.
+   * Can cause exception if input cell array isn't of right dimension.
+   */
+  virtual void
+  SetCellsArray(CellsVectorContainer *);
+
+  /** Set the cells container using a 1D vector.
+   * To be used when all the cells are of same type.
+   * Takes as argument the cell point ids and the cell type.
+   */
+  virtual void
+  SetCellsArray(CellsVectorContainer *, int cellType);
+
+  /** Get the cells container as a vector. The first element of the vector is
+   *  the cell type and next elements are the point ids for that cell.
+   */
+  virtual CellsVectorContainer *
+  GetCellsArray();
+
+  /** Get the cells container. */
   CellsContainer *
   GetCells();
 
+  /** Get the cells container. */
   const CellsContainer *
   GetCells() const;
 
-  /** Access m_CellDataContainer, which contains data associated with
+  /** Set the cell data container, which contains data associated with
    *  the mesh's cells.  Optionally, this can be nullptr, indicating that
    *  no data are associated with the cells.  The data for a cell can
    *  be accessed through its cell identifier.  */
   void
   SetCellData(CellDataContainer *);
 
+  /** Get the cell data container. */
   CellDataContainer *
   GetCellData();
 
+  /** Get the cell data container. */
   const CellDataContainer *
   GetCellData() const;
 
@@ -358,7 +418,7 @@ public:
 
 #if !defined(ITK_WRAPPING_PARSER)
   /**
-   * Set/get the BoundaryAssignmentsContainer for a given dimension.
+   * Set/get the boundary assignment container for a given dimension.
    * The BoundaryAssignmentsContainer is a MapContainer indexed by a
    * BoundaryAssignmentIdentifier, which encapsulates a cell
    * identifier and a boundary feature identifier.  The boundary
@@ -368,26 +428,44 @@ public:
   void
   SetBoundaryAssignments(int dimension, BoundaryAssignmentsContainer *);
 
-
+  /** Get the boundary assignment container for a given dimension. */
   BoundaryAssignmentsContainerPointer
   GetBoundaryAssignments(int dimension);
 
+  /** Get the boundary assignment container for a given dimension. */
   const BoundaryAssignmentsContainerPointer
   GetBoundaryAssignments(int dimension) const;
 #endif
 
-  /** Access routines to fill the Cells container (m_CellsContainer),
-   *  and get information from it.  If SetCell is used to overwrite a
-   *  cell currently in the mesh, it is the caller's responsibility to
-   *  release the memory for the cell currently at the CellIdentifier
-   *  position prior to calling SetCell. */
+  /** Assign a cell to a cell identifier. If a spot for the cell identifier
+   *  does not exist, it will be created automatically. If used to overwrite a
+   *  cell currently in the mesh, it is the caller's responsibility to release
+   *  the memory for the cell currently at the CellIdentifier position prior to
+   *  calling this method. */
   void
   SetCell(CellIdentifier, CellAutoPointer &);
+
+  /** Check if a cell exists for a given cell identifier.  If a spot for
+   * the cell identifier exists, the cell is set, and true is returned.
+   * Otherwise, false is returned, and the cell is not modified.
+   * If the cell is nullptr, then it is never set, but the existence of the cell
+   * is still returned.
+   */
   bool
   GetCell(CellIdentifier, CellAutoPointer &) const;
-  /** Access routines to fill the CellData container, and get information
-   *  from it.  */
+
+  /** Assign data to a cell identifier.  If a spot for the cell identifier
+   *  does not exist, it will be created automatically.  There is no check if
+   * a cell with the same identifier exists.
+   */
   void SetCellData(CellIdentifier, CellPixelType);
+
+  /** Check if cell data exists for a given cell identifier.  If a spot for
+   * the cell identifier exists, the data is set, and true is returned.
+   * Otherwise, false is returned, and the data is not modified.
+   * If the data is nullptr, then it is never set, but the existence of the cell
+   * data is still returned.
+   */
   bool
   GetCellData(CellIdentifier, CellPixelType *) const;
 
@@ -423,17 +501,29 @@ public:
                         CellFeatureIdentifier featureId,
                         CellIdentifier *      boundaryId) const;
 
+  /** Remove an explicit boundary assignment if it exists. Returns whether the
+   * assignment was found at all.
+   */
   bool
   RemoveBoundaryAssignment(int dimension, CellIdentifier cellId, CellFeatureIdentifier featureId);
 
-  /** Interface to cells. */
+  /** Get the number of cell boundary features of the given topological dimension
+   * on the cell with the given identifier.
+   */
   CellFeatureCount
   GetNumberOfCellBoundaryFeatures(int dimension, CellIdentifier) const;
 
   /** Get the boundary feature of the given dimension of the given cell
-   * corresponding to the given feature identifier. */
+   * corresponding to the given feature identifier.  If the boundary
+   * feature has been explicitly assigned, then \a boundary will be left
+   * pointing to the appropriate cell in the mesh.  If the boundary has
+   * not been explicitly assigned, then a boundary cell will be
+   * constructed and placed in \a boundary.  The constructed cell will
+   * not be added to the mesh or somehow cached.
+   */
   bool
   GetCellBoundaryFeature(int dimension, CellIdentifier, CellFeatureIdentifier, CellAutoPointer &) const;
+
   /** Get the set of cells neighboring the given cell across the given boundary
    * feature.  Returns the number of neighbors found.  If cellSet is not nullptr,
    * the set of cell pointers is filled in with identifiers of the neighboring
@@ -465,9 +555,11 @@ public:
   void
   BuildCellLinks() const;
 
-  /** This method iterates over all the cells in the mesh and has
-   *  each cell Accept the MultiVisitor. See MultiVisitor for more
-   *  information.  (Note, this follows the Visitor Design Pattern.) */
+  /** Iterate over all the cells in the mesh and has each cell Accept the
+   *  MultiVisitor.
+   *  See MultiVisitor for more information.
+   * (Note, this follows the Visitor Design Pattern.)
+   */
   virtual void
   Accept(CellMultiVisitorType * mv) const;
 
@@ -486,8 +578,9 @@ protected:
   PrintSelf(std::ostream & os, Indent indent) const override;
 
   /** Release the memory allocated for the cells pointers. This is done
-      based on information provided by the user through the method
-      SetCellsAllocationMethod()   */
+   *  based on information provided by the user through the method
+   *  SetCellsAllocationMethod().
+   */
   void
   ReleaseCellsMemory();
 
@@ -497,6 +590,10 @@ protected:
 
 private:
   MeshClassCellsAllocationMethodEnum m_CellsAllocationMethod;
+
+  /** Create a new cell of a given type. */
+  void
+  CreateCell(int cellType, CellAutoPointer &);
 }; // End Class: Mesh
 
 /** Define how to print enumeration */

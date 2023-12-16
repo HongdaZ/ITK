@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkArray_hxx
 #define itkArray_hxx
 
-#include "itkArray.h"
 #include "itkNumericTraitsArrayPixel.h"
 
 namespace itk
@@ -27,37 +26,35 @@ namespace itk
 template <typename TValue>
 Array<TValue>::Array()
   : vnl_vector<TValue>()
-{
-  m_LetArrayManageMemory = true;
-}
+{}
 
 /** Copy constructor */
 template <typename TValue>
 Array<TValue>::Array(const Self & rhs)
   : vnl_vector<TValue>(rhs)
-  ,
-  // The vnl vector copy constructor creates new memory
-  // no matter the setting of let array manage memory of rhs
-  m_LetArrayManageMemory(true)
+// The copy constructor creates new memory, no matter
+// the setting of let array manage memory of rhs
 {}
 
 template <typename TValue>
 Array<TValue>::Array(const VnlVectorType & rhs)
   : vnl_vector<TValue>(rhs)
-  ,
-  // The vnl vector copy constructor creates new memory
-  // no matter the setting of let array manage memory of rhs
-  m_LetArrayManageMemory(true)
+// The vnl vector copy constructor creates new memory
+// no matter the setting of let array manage memory of rhs
 {}
 
 /** Constructor with size */
 template <typename TValue>
 Array<TValue>::Array(SizeValueType dimension)
   : vnl_vector<TValue>(dimension)
-  ,
-  // The vnl vector copy constructor creates new memory
-  // no matter the setting of let array manage memory of rhs
-  m_LetArrayManageMemory(true)
+// The vnl vector copy constructor creates new memory
+// no matter the setting of let array manage memory of rhs
+{}
+
+/** Constructor with size and initial value for each element. */
+template <typename TValue>
+Array<TValue>::Array(const SizeValueType dimension, const TValue & value)
+  : vnl_vector<TValue>(dimension, value)
 {}
 
 /** Constructor with user specified data */
@@ -74,10 +71,8 @@ Array<TValue>::Array(ValueType * datain, SizeValueType sz, bool LetArrayManageMe
 template <typename TValue>
 Array<TValue>::Array(const ValueType * datain, SizeValueType sz)
   : vnl_vector<TValue>(datain, sz)
-  ,
-  // The vnl vector copy constructor creates new memory
-  // no matter the setting of let array manage memory of rhs
-  m_LetArrayManageMemory(true)
+// The vnl vector copy constructor creates new memory
+// no matter the setting of let array manage memory of rhs
 {}
 
 #else // defined ( ITK_LEGACY_REMOVE )
@@ -87,10 +82,8 @@ Array<TValue>::Array(const ValueType * datain, SizeValueType sz, bool /* LetArra
   : /* NOTE: The 3rd argument "LetArrayManageMemory, was never valid to use, but is
      * preserved to maintain backwards compatibility*/
   vnl_vector<TValue>(datain, sz)
-  ,
-  // The vnl vector copy constructor creates new memory
-  // no matter the setting of let array manage memory of rhs
-  m_LetArrayManageMemory(true)
+// The vnl vector copy constructor creates new memory
+// no matter the setting of let array manage memory of rhs
 {}
 #endif
 
@@ -154,8 +147,8 @@ Array<TValue>::SetSize(SizeValueType sz)
 }
 
 template <typename TValue>
-const typename Array<TValue>::Self &
-Array<TValue>::operator=(const Self & rhs)
+auto
+Array<TValue>::operator=(const Self & rhs) -> Self &
 {
   if (this != &rhs)
   {
@@ -173,8 +166,8 @@ Array<TValue>::operator=(const Self & rhs)
 }
 
 template <typename TValue>
-const typename Array<TValue>::Self &
-Array<TValue>::operator=(const VnlVectorType & rhs)
+auto
+Array<TValue>::operator=(const VnlVectorType & rhs) -> Self &
 {
   if (this != &rhs)
   {

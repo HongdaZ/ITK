@@ -1,7 +1,7 @@
 ###############################################################################
 # Swig and PCRE do not support blank spaces in install directory namespaces
 # This means that ITK cannot be built in a path that contains spaces
-# See http://www.swig.org/Doc1.3/Windows.html
+# See https://www.swig.org/Doc1.3/Windows.html
 if("${CMAKE_BINARY_DIR}" MATCHES "^.* .*$")
   message(FATAL_ERROR "Swig and PCRE do not support paths with space characters. Please change build directory name.")
 endif()
@@ -14,13 +14,13 @@ mark_as_advanced(ITK_USE_SYSTEM_SWIG)
 
 # Minimal swig version
 if(WIN32)
-  set(swig_version_min 4.0.1)
-  set(ITK_SWIG_VERSION 4.0.1)
-  set(swigwin_hash  "2da147231164466c0dee91beca6a4f7b10e6f727062338ea6d70f44f4e4163ad6616b72c2de767539a69977ba96d3ee920ed3c182124c45569ca946750fd4495")
+  set(swig_version_min 4.0.2)
+  set(ITK_SWIG_VERSION 4.0.2)
+  set(swigwin_hash  "b8f105f9b9db6acc1f6e3741990915b533cd1bc206eb9645fd6836457fd30789b7229d2e3219d8e35f2390605ade0fbca493ae162ec3b4bc4e428b57155db03d")
 else()
-  set(ITK_SWIG_VERSION 4.0.1)
-  set(swig_version_min 4.0.1)
-  set(swig_hash     "595ef01cb83adfa960ceed9c325a9429192549e8d1e9aa3ab35a4301512a61d82e2e89a8c7939c2a5a0811254ea1832a443bd387e11459eb2b0bafc563ad1308")
+  set(ITK_SWIG_VERSION 4.0.2)
+  set(swig_version_min 4.0.2)
+  set(swig_hash     "05e7da70ce6d9a733b96c0bcfa3c1b82765bd859f48c74759bbf4bb1467acb1809caa310cba5e2b3280cd704fca249eaa0624821dffae1d2a75097c7f55d14ed")
 endif()
 
 if(WIN32)
@@ -28,9 +28,9 @@ if(WIN32)
 else()
 
     # follow the standard EP_PREFIX locations
-    set ( swig_binary_dir ${CMAKE_CURRENT_BINARY_DIR}/swig-prefix/src/swig-build )
-    set ( swig_source_dir ${CMAKE_CURRENT_BINARY_DIR}/swig-prefix/src/swig )
-    set ( swig_install_dir ${CMAKE_CURRENT_BINARY_DIR}/swig )
+    set(swig_binary_dir ${CMAKE_CURRENT_BINARY_DIR}/swig-prefix/src/swig-build)
+    set(swig_source_dir ${CMAKE_CURRENT_BINARY_DIR}/swig-prefix/src/swig)
+    set(swig_install_dir ${CMAKE_CURRENT_BINARY_DIR}/swig)
 
   set(swig_ep "${swig_install_dir}/bin/swig")
 endif()
@@ -58,6 +58,16 @@ else()
     set(SWIG_VERSION ${ITK_SWIG_VERSION})
 
     include(ExternalProject)
+
+    # Set the timestamps of the extracted files to their archived
+    # timestamps. Necessary to build configure/autoconf-based
+    # projects such as SWIG and PCRE robustly.
+    if(${CMAKE_VERSION} VERSION_LESS 3.24)
+      set(download_extract_timestamp_flag)
+    else()
+      set(download_extract_timestamp_flag DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+    endif()
+
     if(WIN32)
       # If we are building ITK
       if(ITK_BINARY_DIR)
@@ -70,6 +80,7 @@ else()
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
         INSTALL_COMMAND ""
+        ${download_extract_timestamp_flag}
         )
       set(SWIG_DIR ${CMAKE_CURRENT_BINARY_DIR}/swigwin-${SWIG_VERSION})
     else()
@@ -138,7 +149,7 @@ else()
               install
         )
       endif()
-      set(pcre_hash f919957ce6e1f52b5579faa7fccfe192944884dc56ad831ebb3e3787f752fe2f14567fe302d884fa86900018e92b758e4589406f7e8d7af1baa2a1d6add40865)
+      set(pcre_hash "abac4c4f9df9e61d7d7761a9c50843882611752e1df0842a54318f358c28f5953025eba2d78997d21ee690756b56cc9f1c04a5ed591dd60654cc78ba16d9ecfb")
       ExternalProject_Add(PCRE
         URL "https://data.kitware.com/api/v1/file/hashsum/sha512/${pcre_hash}/download"
         URL_HASH SHA512=${pcre_hash}
@@ -148,12 +159,13 @@ else()
           --prefix=${CMAKE_CURRENT_BINARY_DIR}/PCRE
           --enable-shared=no
         ${extra_external_project_commands}
+        ${download_extract_timestamp_flag}
         )
 
       # swig uses bison find it by cmake and pass it down
-      find_package ( BISON )
-      set ( BISON_FLAGS "" CACHE STRING "Flags used by bison" )
-      mark_as_advanced ( BISON_FLAGS )
+      find_package(BISON)
+      set(BISON_FLAGS "" CACHE STRING "Flags used by bison")
+      mark_as_advanced(BISON_FLAGS)
 
 
       # From SWIG configure
@@ -247,6 +259,7 @@ message(STATUS \"Swig configure successfully completed.\")
           ${extra_swig_configure_env} ${CMAKE_COMMAND} -P "${_swig_configure_script}"
         ${extra_external_project_commands}
         DEPENDS PCRE
+        ${download_extract_timestamp_flag}
         )
     endif()
 
@@ -270,228 +283,9 @@ set(ITK_WRAP_SWIGINTERFACE_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERN
 set(WRAPPER_MASTER_INDEX_OUTPUT_DIR "${ITK_DIR}/Wrapping/Typedefs" CACHE INTERNAL "typedefs dir")
 set(IGENERATOR  "${CMAKE_CURRENT_SOURCE_DIR}/igenerator.py" CACHE INTERNAL "igenerator.py path" FORCE)
 
-macro(itk_wrap_module_swig_interface library_name)
-  # store the content of the mdx file
-  set(SWIG_INTERFACE_MDX_CONTENT )
-  # store the content of the .i file for the module - a set of import of all the .i files generated for the module
-  set(SWIG_INTERFACE_MODULE_CONTENT )
-  # build a list of modules to create the igenerator custom command in
-  # itk_end_wrap_module_swig_interface
-  set(SWIG_INTERFACE_MODULES )
-endmacro()
-
-
-macro(itk_end_wrap_module_swig_interface)
-  # Loop over the extra swig input files and copy them to the Typedefs directory
-  foreach(source ${WRAPPER_LIBRARY_SWIG_INPUTS})
-    file(COPY "${source}"
-         DESTINATION "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}")
-    get_filename_component(basename ${source} NAME)
-    set(dest "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${basename}")
-  endforeach()
-
-  # prepare dependencies
-  set(DEPS )
-  foreach(dep ${WRAPPER_LIBRARY_DEPENDS})
-    set(SWIG_INTERFACE_MDX_CONTENT "${dep}.mdx\n${SWIG_INTERFACE_MDX_CONTENT}")
-  endforeach()
-
-  # add some libs required by this module
-  set(swig_libs )
-  foreach(swig_lib ${WRAPPER_SWIG_LIBRARY_FILES})
-    get_filename_component(basename ${swig_lib} NAME)
-    list(APPEND swig_libs --swig-include ${basename})
-    file(COPY "${swig_lib}"
-      DESTINATION "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}")
-    set(dest "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${basename}")
-  endforeach()
-
-  # the list of files generated for the module
-  set(i_files )
-  set(xml_files )
-  set(idx_files )
-  set(typedef_in_files )
-  set(typedef_files )
-  set(mdx_file "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${WRAPPER_LIBRARY_NAME}.mdx")
-  set(module_interface_file "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${WRAPPER_LIBRARY_NAME}.i")
-  set(module_interface_ext_file "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${WRAPPER_LIBRARY_NAME}_ext.i")
-
-  foreach(module ${SWIG_INTERFACE_MODULES})
-    # create the swig interface
-    list(APPEND i_files "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${module}.i")
-    list(APPEND xml_files "${WRAPPER_LIBRARY_OUTPUT_DIR}/${module}.xml")
-    list(APPEND idx_files "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${module}.idx")
-    list(APPEND typedef_in_files "${WRAPPER_LIBRARY_OUTPUT_DIR}/${module}SwigInterface.h.in")
-    list(APPEND typedef_files "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${module}SwigInterface.h")
-
-    if(${module_prefix}_WRAP_EXPLICIT)
-      list(APPEND opts --include "${WRAPPER_LIBRARY_NAME}Explicit.h")
-    endif()
-  endforeach()
-
-  # the master idx file (mdx file)
-  set(mdx_opts )
-  set(deps_imports )
-
-  list(APPEND mdx_opts --mdx "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/${WRAPPER_LIBRARY_NAME}.mdx")
-  foreach(dep ${WRAPPER_LIBRARY_DEPENDS})
-    list(APPEND mdx_opts --mdx "${WRAP_ITK_TYPEDEFS_DIRECTORY}/${dep}.mdx")
-    list(APPEND deps_imports "%import ${dep}.i\n")
-  endforeach()
-  set(CONFIG_INDEX_FILE_CONTENT "${SWIG_INTERFACE_MDX_CONTENT}")
-  configure_file("${ITK_WRAP_SWIGINTERFACE_SOURCE_DIR}/Master.mdx.in" "${mdx_file}"
-     @ONLY)
-
-  set(CONFIG_MODULE_INTERFACE_CONTENT ) #"${deps_imports}${SWIG_INTERFACE_MODULE_CONTENT}")
-  configure_file("${ITK_WRAP_SWIGINTERFACE_SOURCE_DIR}/module.i.in" "${module_interface_file}"
-    @ONLY)
-
-  list(LENGTH i_files number_interface_files)
-  if(number_interface_files GREATER 0)
-    add_custom_command(
-      OUTPUT ${i_files} ${typedef_files} ${idx_files}
-      COMMAND ${Python3_EXECUTABLE} ${IGENERATOR}
-        ${mdx_opts}
-        ${swig_libs}
-        -w1 -w3 -w51 -w52 -w53 -w54
-        -A protected -A private
-        -p ${PYGCCXML_DIR}
-        -g ${CASTXML_EXECUTABLE}
-        --interface-output-dir "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}"
-        --library-output-dir "${WRAPPER_LIBRARY_OUTPUT_DIR}"
-        --submodule-order "${WRAPPER_SUBMODULE_ORDER}"
-        DEPENDS ${ITK_WRAP_DOC_DOCSTRING_FILES} ${xml_files} ${IGENERATOR} ${typedef_in_files}
-      VERBATIM
-    )
-  endif()
-
-  # the ${WRAPPER_LIBRARY_NAME}Swig target
-  if(NOT TARGET ${WRAPPER_LIBRARY_NAME}Swig)
-    add_custom_target(${WRAPPER_LIBRARY_NAME}Swig DEPENDS ${mdx_file} ${i_files} ${typedef_files} ${idx_files})
-    add_dependencies(${WRAPPER_LIBRARY_NAME}Swig ${WRAPPER_LIBRARY_NAME}CastXML)
-  endif()
-
-  if(NOT EXTERNAL_WRAP_ITK_PROJECT)
-    # don't depend on the targets from wrapitk in external projects
-    foreach(dep ${WRAPPER_LIBRARY_DEPENDS})
-      add_dependencies(${WRAPPER_LIBRARY_NAME}Swig ${dep}Swig)
-    endforeach()
-  endif()
-
-  set(${WRAPPER_LIBRARY_NAME}IdxFiles ${idx_files} CACHE INTERNAL "Internal ${WRAPPER_LIBRARY_NAME}Idx file list.")
-  set(${WRAPPER_LIBRARY_NAME}SwigFiles ${i_files} CACHE INTERNAL "Internal ${WRAPPER_LIBRARY_NAME}Swig file list.")
-
-endmacro()
-
-
-macro(itk_wrap_include_swig_interface include_file)
-  list(APPEND SWIG_INTERFACE_INCLUDES ${include_file})
-endmacro()
-
-
-macro(itk_wrap_submodule_swig_interface module)
-  # store the content of the SwigInterface.h files - a set of #includes for that module
-  set(SWIG_INTERFACE_INCLUDES )
-  # typedefs for swig
-  set(SWIG_INTERFACE_TYPEDEFS )
-endmacro()
-
-macro(itk_end_wrap_submodule_swig_interface module)
-  # variables used:
-  # WRAPPER_LIBRARY_NAME
-  # WRAPPER_LIBRARY_OUTPUT_DIR
-  # WRAPPER_LIBRARY_DEPENDS
-  # WRAPPER_MASTER_INDEX_OUTPUT_DIR
-  # MODULE_INCLUDES
-
-  set(SWIG_INTERFACE_INCLUDES_CONTENT )
-  if(SWIG_INTERFACE_INCLUDES)
-    list(REMOVE_DUPLICATES SWIG_INTERFACE_INCLUDES)
-    foreach(include_file ${SWIG_INTERFACE_INCLUDES})
-      if("${include_file}" MATCHES "<.*>")
-        set(SWIG_INTERFACE_INCLUDES_CONTENT "${SWIG_INTERFACE_INCLUDES_CONTENT}#include ${include_file}\n")
-      else()
-        set(SWIG_INTERFACE_INCLUDES_CONTENT "${SWIG_INTERFACE_INCLUDES_CONTENT}#include \"${include_file}\"\n")
-      endif()
-    endforeach()
-  endif()
-  # create the file which store all the includes
-  set(includes_file "${WRAPPER_LIBRARY_OUTPUT_DIR}/${module}SwigInterface.h.in")
-  configure_file("${ITK_WRAP_SWIGINTERFACE_SOURCE_DIR}/module.includes.in"
-     ${includes_file}
-     @ONLY)
-
-  # store the path of the idx file to store it in the mdx file
-  set(SWIG_INTERFACE_MDX_CONTENT "${SWIG_INTERFACE_MDX_CONTENT}${module}.idx\n")
-
-  set(SWIG_INTERFACE_MODULE_CONTENT "${SWIG_INTERFACE_MODULE_CONTENT}%import ${module}.i\n")
-
-  list(APPEND SWIG_INTERFACE_MODULES ${module})
-endmacro()
-
-
-macro(itk_wrap_one_type_swig_interface wrap_method wrap_class swig_name)
-  # Add one  typedef to WRAPPER_TYPEDEFS
-  # 'wrap_method' is the one of the valid WRAPPER_WRAP_METHODS from itk_wrap_class,
-  # 'wrap_class' is the fully-qualified C++ name of the class
-  # 'swig_name' is what the swigged class should be called
-  # The optional last argument is the template parameters that should go between
-  # the < > brackets in the C++ template definition.
-  # Only pass 3 parameters to wrap a non-templated class
-  #
-  # Global vars used: none
-  # Global vars modified: WRAPPER_TYPEDEFS
-
-  # get the base C++ class name (no namespaces) from wrap_class:
-  string(REGEX REPLACE "(.*::)" "" base_name "${wrap_class}")
-
-  set(wrap_pointer 0)
-  set(template_parameters "${ARGV3}")
-  if(template_parameters)
-    set(full_class_name "${wrap_class}< ${template_parameters} >")
-  else()
-    set(full_class_name "${wrap_class}")
-  endif()
-
-  # itk_wrap_one_type_all_generators("${wrap_method}" "${wrap_class}" "${swig_name}" "${ARGV3}")
-
-  # Add a typedef for the class. We have this funny looking full_name::base_name
-  # thing (it expands to, for example "typedef itk::Foo<baz, 2>::Foo") used
-  # for gccxml typedefs
-
-  if("${wrap_method}" MATCHES "2_SUPERCLASSES")
-    itk_wrap_simple_type_swig_interface("${full_class_name}::Superclass::Superclass" "${swig_name}_Superclass_Superclass")
-    itk_wrap_simple_type_swig_interface("${full_class_name}::Superclass::Superclass::Pointer" "${swig_name}_Superclass_Superclass_Pointer")
-  endif()
-
-  if("${wrap_method}" MATCHES "SUPERCLASS")
-    itk_wrap_simple_type_swig_interface("${full_class_name}::Superclass" "${swig_name}_Superclass")
-    itk_wrap_simple_type_swig_interface("${full_class_name}::Superclass::Pointer" "${swig_name}_Superclass_Pointer")
-  endif()
-
-  if("${wrap_method}" MATCHES "CONST_POINTER")
-    # add a const pointer typedef if we are so asked
-    itk_wrap_simple_type_swig_interface("${full_class_name}::ConstPointer" "${swig_name}_ConstPointer")
-  endif()
-
-  # the same output with or without FORCE_INSTANTIATE
-  itk_wrap_simple_type_swig_interface("${full_class_name}" "${swig_name}")
-
-  if("${wrap_method}" MATCHES "POINTER")
-    if("${wrap_method}" STREQUAL "AUTOPOINTER")
-      # add a pointer typedef if we are so asked
-      itk_wrap_simple_type_swig_interface("${full_class_name}::SelfAutoPointer" "${swig_name}_AutoPointer")
-    else()
-      # add a pointer typedef if we are so asked
-      itk_wrap_simple_type_swig_interface("${full_class_name}::Pointer" "${swig_name}_Pointer")
-    endif()
-  endif()
-
-endmacro()
-
 
 macro(itk_wrap_simple_type_swig_interface wrap_class swig_name)
-  set(SWIG_INTERFACE_TYPEDEFS "${SWIG_INTERFACE_TYPEDEFS}typedef ${wrap_class} ${swig_name};\n")
+  string(APPEND SWIG_INTERFACE_TYPEDEFS "using ${swig_name} = ${wrap_class};\n")
 endmacro()
 
 include_directories("${WRAPPER_MASTER_INDEX_OUTPUT_DIR}")

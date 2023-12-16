@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,12 +19,10 @@
 #ifndef itkLevelSetDenseImage_hxx
 #define itkLevelSetDenseImage_hxx
 
-#include "itkLevelSetDenseImage.h"
 
 namespace itk
 {
 
-// ----------------------------------------------------------------------------
 template <typename TImage>
 void
 LevelSetDenseImage<TImage>::SetImage(ImageType * inputImage)
@@ -32,7 +30,7 @@ LevelSetDenseImage<TImage>::SetImage(ImageType * inputImage)
   this->m_Image = inputImage;
   typename ImageType::SpacingType spacing = m_Image->GetSpacing();
 
-  for (unsigned int dim = 0; dim < Dimension; dim++)
+  for (unsigned int dim = 0; dim < Dimension; ++dim)
   {
     this->m_NeighborhoodScales[dim] =
       NumericTraits<OutputRealType>::OneValue() / static_cast<OutputRealType>(spacing[dim]);
@@ -40,16 +38,14 @@ LevelSetDenseImage<TImage>::SetImage(ImageType * inputImage)
   this->Modified();
 }
 
-// ----------------------------------------------------------------------------
 template <typename TImage>
-typename LevelSetDenseImage<TImage>::OutputType
-LevelSetDenseImage<TImage>::Evaluate(const InputType & inputIndex) const
+auto
+LevelSetDenseImage<TImage>::Evaluate(const InputType & inputIndex) const -> OutputType
 {
   InputType mapIndex = inputIndex - this->m_DomainOffset;
   return this->m_Image->GetPixel(mapIndex);
 }
 
-// ----------------------------------------------------------------------------
 template <typename TImage>
 void
 LevelSetDenseImage<TImage>::Evaluate(const InputType & inputIndex, LevelSetDataType & data) const
@@ -57,7 +53,6 @@ LevelSetDenseImage<TImage>::Evaluate(const InputType & inputIndex, LevelSetDataT
   Superclass::Evaluate(inputIndex, data);
 }
 
-// ----------------------------------------------------------------------------
 template <typename TImage>
 void
 LevelSetDenseImage<TImage>::Initialize()
@@ -67,7 +62,6 @@ LevelSetDenseImage<TImage>::Initialize()
   this->m_Image = nullptr;
 }
 
-// ----------------------------------------------------------------------------
 template <typename TImage>
 void
 LevelSetDenseImage<TImage>::CopyInformation(const DataObject * data)
@@ -84,7 +78,6 @@ LevelSetDenseImage<TImage>::CopyInformation(const DataObject * data)
   }
 }
 
-// ----------------------------------------------------------------------------
 template <typename TImage>
 void
 LevelSetDenseImage<TImage>::Graft(const DataObject * data)
@@ -103,7 +96,6 @@ LevelSetDenseImage<TImage>::Graft(const DataObject * data)
   this->m_NeighborhoodScales = LevelSet->m_NeighborhoodScales;
 }
 
-// ----------------------------------------------------------------------------
 template <typename TImage>
 bool
 LevelSetDenseImage<TImage>::IsInsideDomain(const InputType & inputIndex) const

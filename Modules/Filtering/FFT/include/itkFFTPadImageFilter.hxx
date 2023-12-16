@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkFFTPadImageFilter_hxx
 #define itkFFTPadImageFilter_hxx
 
-#include "itkFFTPadImageFilter.h"
 #include "itkProgressAccumulator.h"
 #include "itkNumericTraits.h"
 #include "itkPadImageFilter.h"
@@ -83,6 +82,8 @@ FFTPadImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Inden
   Superclass::PrintSelf(os, indent);
 
   os << indent << "SizeGreatestPrimeFactor: " << m_SizeGreatestPrimeFactor << std::endl;
+  os << indent << "DefaultBoundaryCondition: ";
+  m_DefaultBoundaryCondition.Print(os, indent);
 }
 
 } // end namespace itk

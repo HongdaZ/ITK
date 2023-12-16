@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -85,7 +85,7 @@ public:
 
   /**  Delegate computation of value and gradient to the costFunction.     */
   void
-  compute(const InternalParametersType & x, InternalMeasureType * f, InternalDerivativeType * g) override;
+  compute(const InternalParametersType & x, InternalMeasureType * fun, InternalDerivativeType * g) override;
 
   /**  Convert external derivative measures into internal type   */
   void
@@ -104,7 +104,7 @@ public:
    * boolean flag is set to false, then the values returned by the ITK cost
    * function will be passed unchanged to the VNL optimizers. */
   void
-  SetNegateCostFunction(bool value);
+  SetNegateCostFunction(bool flag);
 
   bool
   GetNegateCostFunction() const;

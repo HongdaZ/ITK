@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ namespace itk
 {
 
 /**
- *\class RegistrationParameterScalesFromPhysicalShift
+ * \class RegistrationParameterScalesFromPhysicalShift
  *  \brief Registration helper class for estimating scales of
  * transform parameters a step sizes, from the maximum voxel shift
  * in physical space caused by a parameter change.
@@ -36,7 +36,7 @@ class ITK_TEMPLATE_EXPORT RegistrationParameterScalesFromPhysicalShift
   : public RegistrationParameterScalesFromShiftBase<TMetric>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegistrationParameterScalesFromPhysicalShift);
+  ITK_DISALLOW_COPY_AND_MOVE(RegistrationParameterScalesFromPhysicalShift);
 
   /** Standard class type aliases. */
   using Self = RegistrationParameterScalesFromPhysicalShift;
@@ -51,18 +51,18 @@ public:
   itkTypeMacro(RegistrationParameterScalesFromPhysicalShift, RegistrationParameterScalesFromShiftBase);
 
   /** Type of scales */
-  using ScalesType = typename Superclass::ScalesType;
+  using typename Superclass::ScalesType;
   /** Type of parameters of the optimizer */
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
   /** Type of float */
-  using FloatType = typename Superclass::FloatType;
+  using typename Superclass::FloatType;
 
-  using VirtualPointType = typename Superclass::VirtualPointType;
-  using VirtualIndexType = typename Superclass::VirtualIndexType;
-  using MovingTransformType = typename Superclass::MovingTransformType;
-  using FixedTransformType = typename Superclass::FixedTransformType;
-  using JacobianType = typename Superclass::JacobianType;
-  using VirtualImageConstPointer = typename Superclass::VirtualImageConstPointer;
+  using typename Superclass::VirtualPointType;
+  using typename Superclass::VirtualIndexType;
+  using typename Superclass::MovingTransformType;
+  using typename Superclass::FixedTransformType;
+  using typename Superclass::JacobianType;
+  using typename Superclass::VirtualImageConstPointer;
 
 protected:
   RegistrationParameterScalesFromPhysicalShift() = default;
@@ -72,12 +72,12 @@ protected:
   PrintSelf(std::ostream & os, Indent indent) const override;
 
   void
-  ComputeSampleShifts(const ParametersType & deltaParameters, ScalesType & localShifts) override;
+  ComputeSampleShifts(const ParametersType & deltaParameters, ScalesType & sampleShifts) override;
 
 private:
   template <typename TTransform>
   void
-  ComputeSampleShiftsInternal(const ParametersType & deltaParameters, ScalesType & localShifts);
+  ComputeSampleShiftsInternal(const ParametersType & deltaParameters, ScalesType & sampleShifts);
 
 }; // class RegistrationParameterScalesFromPhysicalShift
 

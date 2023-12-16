@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@
 namespace itk
 {
 /**
- *\class BSplineDownsampleImageFilter
+ * \class BSplineDownsampleImageFilter
  * \brief Down-samples an image by a factor of 2 using B-Spline filter interpolation.
  *
  * This class is the public interface for spline down-sampling as defined by the
@@ -49,7 +49,7 @@ namespace itk
  *      using DownsamplerType2D = itk::BSplineDownsampleImageFilter<ImageType2D,ImageType2D,ResamplerType>;
  *      using UpsamplerType2D = itk::BSplineUpsampleImageFilter<ImageType2D,ImageType2D,ResamplerType>;
  *
- *      DownsamplerType2D::Pointer downSampler = DownsamplerType2D::New();
+ *      auto downSampler = DownsamplerType2D::New();
  *      UpsamplerType2D::Pointer   upSampler =   UpsamplerType2D::New();
  *      int splineOrder = 3;
  *      downSampler->SetSplineOrder(splineOrder);
@@ -91,7 +91,7 @@ template <typename TInputImage,
 class ITK_TEMPLATE_EXPORT BSplineDownsampleImageFilter : public ResamplerType
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineDownsampleImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BSplineDownsampleImageFilter);
 
   /** Standard class type aliases. */
   using Self = BSplineDownsampleImageFilter;
@@ -106,16 +106,16 @@ public:
   itkNewMacro(Self);
 
   /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
 
   /** InputImagePointer type alias support */
-  using InputImagePointer = typename Superclass::InputImagePointer;
+  using typename Superclass::InputImagePointer;
 
   /** OutputImagePointer type alias support */
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
+  using typename Superclass::OutputImagePointer;
 
   /** OutputImageIterator type alias support */
-  using OutputImageIterator = typename Superclass::OutputImageIterator;
+  using typename Superclass::OutputImageIterator;
 
   /** Creates an image half the size of the input image with spacing twice the
    * input image. */

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,11 +30,6 @@
 #include "itkObjectFactory.h"
 #include "itksys/SystemTools.hxx"
 #include <unistd.h>
-
-#ifdef __APPLE__
-#  include <sys/types.h>
-#  include <sys/sysctl.h>
-#endif
 
 namespace itk
 {
@@ -60,7 +55,6 @@ PlatformMultiThreader::MultipleMethodExecute()
     if (m_MultipleMethod[thread_loop] == (ThreadFunctionType) nullptr)
     {
       itkExceptionMacro(<< "No multiple method set for: " << thread_loop);
-      return;
     }
   }
 
@@ -129,7 +123,7 @@ PlatformMultiThreader::SpawnThread(ThreadFunctionType f, void * UserData)
     }
     m_SpawnedThreadActiveFlagLock[id]->unlock();
 
-    id++;
+    ++id;
   }
 
   if (id >= ITK_MAX_THREADS)
@@ -181,7 +175,7 @@ PlatformMultiThreader::TerminateThread(ThreadIdType WorkUnitID)
 #endif
 
 void
-PlatformMultiThreader ::SpawnWaitForSingleMethodThread(ThreadProcessIdType threadHandle)
+PlatformMultiThreader::SpawnWaitForSingleMethodThread(ThreadProcessIdType threadHandle)
 {
   // Using POSIX threads
   if (pthread_join(threadHandle, nullptr))
@@ -191,7 +185,7 @@ PlatformMultiThreader ::SpawnWaitForSingleMethodThread(ThreadProcessIdType threa
 }
 
 ThreadProcessIdType
-PlatformMultiThreader ::SpawnDispatchSingleMethodThread(PlatformMultiThreader::WorkUnitInfo * threadInfo)
+PlatformMultiThreader::SpawnDispatchSingleMethodThread(PlatformMultiThreader::WorkUnitInfo * threadInfo)
 {
   // Using POSIX threads
   pthread_attr_t attr;

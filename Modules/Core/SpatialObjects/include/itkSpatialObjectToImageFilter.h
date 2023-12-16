@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class SpatialObjectToImageFilter
+ * \class SpatialObjectToImageFilter
  * \brief Base class for filters that take a SpatialObject
  *        as input and produce an image as output.
  *  By default, if the user does not specify the size of the output image,
@@ -34,14 +34,14 @@ namespace itk
  * \ingroup ITKSpatialObjects
  *
  * \sphinx
- * \sphinxexample{Core/SpatialObjects/ConvertSpacialObjectToImage,Convert Spacial Object To Image}
+ * \sphinxexample{Core/SpatialObjects/ConvertSpatialObjectToImage,Convert Spatial Object To Image}
  * \endsphinx
  */
 template <typename TInputSpatialObject, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT SpatialObjectToImageFilter : public ImageSource<TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SpatialObjectToImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SpatialObjectToImageFilter);
 
   /** Standard class type aliases. */
   using Self = SpatialObjectToImageFilter;
@@ -50,6 +50,7 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   using OutputImageType = TOutputImage;
+  using IndexType = typename OutputImageType::IndexType;
   using SizeType = typename OutputImageType::SizeType;
   using PointType = typename OutputImageType::PointType;
   using OutputImagePointer = typename OutputImageType::Pointer;
@@ -64,7 +65,7 @@ public:
   itkTypeMacro(SpatialObjectToImageFilter, ImageSource);
 
   /** Superclass type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
 
   /** Some convenient type alias. */
   using InputSpatialObjectType = TInputSpatialObject;
@@ -80,7 +81,7 @@ public:
   /** Set/Get the image input of this process object.  */
   using Superclass::SetInput;
   virtual void
-  SetInput(const InputSpatialObjectType * object);
+  SetInput(const InputSpatialObjectType * input);
 
   virtual void
   SetInput(unsigned int, const InputSpatialObjectType * object);
@@ -100,6 +101,7 @@ public:
     this->SetOrigin(refImage->GetOrigin());
     this->SetSpacing(refImage->GetSpacing());
     this->SetDirection(refImage->GetDirection());
+    this->SetIndex(refImage->GetLargestPossibleRegion().GetIndex());
     this->SetSize(refImage->GetLargestPossibleRegion().GetSize());
   }
 
@@ -122,7 +124,7 @@ public:
   /** Directions of the output image. The
    * direction is for oriented images. */
   virtual void
-  SetDirection(const DirectionType & direction);
+  SetDirection(const DirectionType & dir);
 
   virtual const DirectionType &
   GetDirection() const;
@@ -161,6 +163,12 @@ public:
   virtual const double *
   GetOrigin() const;
 
+  /** The index of the output image. The index is the pixel
+   * coordinates of the image region.
+   * \sa GetSize() */
+  itkSetMacro(Index, IndexType);
+  itkGetConstMacro(Index, IndexType);
+
   /** The spatial object being transformed can be part of a hierarchy.
    * How deep in the hierarchy should we descend in generating the
    * image?  A ChildrenDepth of 0 means to only include the object
@@ -176,6 +184,7 @@ public:
    *  the ValueAtInWorldSpace() function instead of IsInsideInWorldSpace() */
   itkSetMacro(UseObjectValue, bool);
   itkGetConstMacro(UseObjectValue, bool);
+  itkBooleanMacro(UseObjectValue);
 
 protected:
   SpatialObjectToImageFilter();
@@ -187,6 +196,7 @@ protected:
   void
   GenerateData() override;
 
+  IndexType     m_Index;
   SizeType      m_Size;
   double        m_Spacing[OutputImageDimension];
   double        m_Origin[OutputImageDimension];

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,10 +43,10 @@ main(int, char *[])
   // Software Guide : BeginCodeSnippet
   using SpatialObjectType = itk::SpatialObject<3>;
 
-  SpatialObjectType::Pointer object1 = SpatialObjectType ::New();
+  auto object1 = SpatialObjectType::New();
   object1->GetProperty().SetName("First Object");
 
-  SpatialObjectType::Pointer object2 = SpatialObjectType ::New();
+  auto object2 = SpatialObjectType::New();
   object2->GetProperty().SetName("Second Object");
   // Software Guide : EndCodeSnippet
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkRegularStepGradientDescentOptimizer_hxx
-#define _itkRegularStepGradientDescentOptimizer_hxx
 
 #include "itkRegularStepGradientDescentOptimizer.h"
 
@@ -27,7 +25,7 @@ namespace itk
  * This method will be overridden in non-vector spaces
  */
 void
-RegularStepGradientDescentOptimizer ::StepAlongGradient(double factor, const DerivativeType & transformedGradient)
+RegularStepGradientDescentOptimizer::StepAlongGradient(double factor, const DerivativeType & transformedGradient)
 {
   itkDebugMacro(<< "factor = " << factor << "  transformedGradient= " << transformedGradient);
 
@@ -36,7 +34,7 @@ RegularStepGradientDescentOptimizer ::StepAlongGradient(double factor, const Der
   ParametersType newPosition(spaceDimension);
   ParametersType currentPosition = this->GetCurrentPosition();
 
-  for (unsigned int j = 0; j < spaceDimension; j++)
+  for (unsigned int j = 0; j < spaceDimension; ++j)
   {
     newPosition[j] = currentPosition[j] + transformedGradient[j] * factor;
   }
@@ -46,5 +44,3 @@ RegularStepGradientDescentOptimizer ::StepAlongGradient(double factor, const Der
   this->SetCurrentPosition(newPosition);
 }
 } // end namespace itk
-
-#endif

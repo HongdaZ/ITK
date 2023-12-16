@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,8 +39,8 @@ itkTriangleMeshToSimplexMeshFilterTest(int, char *[])
   // declare the triangle to simplex mesh filter
   using SimplexFilterType = itk::TriangleMeshToSimplexMeshFilter<TriangleMeshType, SimplexMeshType>;
 
-  SphereMeshSourceType::Pointer mySphereMeshSource = SphereMeshSourceType::New();
-  PointType                     center;
+  auto      mySphereMeshSource = SphereMeshSourceType::New();
+  PointType center;
   center.Fill(0);
   PointType::ValueType scaleInit[3] = { 5, 5, 5 };
   VectorType           scale = scaleInit;
@@ -51,7 +51,7 @@ itkTriangleMeshToSimplexMeshFilterTest(int, char *[])
 
   std::cout << "Triangle mesh created. " << std::endl;
 
-  SimplexFilterType::Pointer simplexFilter = SimplexFilterType::New();
+  auto simplexFilter = SimplexFilterType::New();
   simplexFilter->SetInput(mySphereMeshSource->GetOutput());
   simplexFilter->Update();
   simplexFilter->Print(std::cout);

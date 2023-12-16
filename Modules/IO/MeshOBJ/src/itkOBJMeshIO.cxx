@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,22 +18,23 @@
 
 #include "itkOBJMeshIO.h"
 #include "itkNumericTraits.h"
-#include <itksys/SystemTools.hxx>
+#include "itksys/SystemTools.hxx"
+#include "itkMakeUniqueForOverwrite.h"
 #include <locale>
 #include <vector>
 
 
 namespace itk
 {
-OBJMeshIO ::OBJMeshIO()
+OBJMeshIO::OBJMeshIO()
 {
   this->AddSupportedWriteExtension(".obj");
 }
 
-OBJMeshIO ::~OBJMeshIO() = default;
+OBJMeshIO::~OBJMeshIO() = default;
 
 bool
-OBJMeshIO ::CanReadFile(const char * fileName)
+OBJMeshIO::CanReadFile(const char * fileName)
 {
   if (!itksys::SystemTools::FileExists(fileName, true))
   {
@@ -49,7 +50,7 @@ OBJMeshIO ::CanReadFile(const char * fileName)
 }
 
 bool
-OBJMeshIO ::CanWriteFile(const char * fileName)
+OBJMeshIO::CanWriteFile(const char * fileName)
 {
   if (itksys::SystemTools::GetFilenameLastExtension(fileName) != ".obj")
   {
@@ -60,7 +61,7 @@ OBJMeshIO ::CanWriteFile(const char * fileName)
 }
 
 void
-OBJMeshIO ::OpenFile()
+OBJMeshIO::OpenFile()
 {
   if (this->m_FileName.empty())
   {
@@ -89,7 +90,7 @@ OBJMeshIO ::OpenFile()
 }
 
 void
-OBJMeshIO ::CloseFile()
+OBJMeshIO::CloseFile()
 {
   if (m_InputFile.is_open())
   {
@@ -98,7 +99,7 @@ OBJMeshIO ::CloseFile()
 }
 
 bool
-OBJMeshIO ::SplitLine(const std::string & line, std::string & type, std::string & content)
+OBJMeshIO::SplitLine(const std::string & line, std::string & type, std::string & content)
 {
   std::locale                 loc;
   std::string::const_iterator start = line.begin();
@@ -126,7 +127,7 @@ OBJMeshIO ::SplitLine(const std::string & line, std::string & type, std::string 
 }
 
 void
-OBJMeshIO ::ReadMeshInformation()
+OBJMeshIO::ReadMeshInformation()
 {
   // Define input file stream and attach it to input file
   OpenFile();
@@ -156,7 +157,7 @@ OBJMeshIO ::ReadMeshInformation()
         std::string       item;
         while (ss >> item)
         {
-          numberOfCellPoints++;
+          ++numberOfCellPoints;
         }
       }
       else if (type == "vn")
@@ -212,7 +213,7 @@ OBJMeshIO ::ReadMeshInformation()
 }
 
 void
-OBJMeshIO ::ReadPoints(void * buffer)
+OBJMeshIO::ReadPoints(void * buffer)
 {
   // Define input file stream and attach it to input file
   OpenFile();
@@ -233,7 +234,7 @@ OBJMeshIO ::ReadPoints(void * buffer)
       if (type == "v")
       {
         std::stringstream ss(inputLine);
-        for (unsigned int ii = 0; ii < this->m_PointDimension; ii++)
+        for (unsigned int ii = 0; ii < this->m_PointDimension; ++ii)
         {
           ss >> data[index++];
         }
@@ -245,13 +246,13 @@ OBJMeshIO ::ReadPoints(void * buffer)
 }
 
 void
-OBJMeshIO ::ReadCells(void * buffer)
+OBJMeshIO::ReadCells(void * buffer)
 {
   // Define input file stream and attach it to input file
   OpenFile();
 
   // Read and analyze the first line in the file
-  auto *        data = new long[this->m_CellBufferSize - this->m_NumberOfCells];
+  const auto    data = make_unique_for_overwrite<long[]>(this->m_CellBufferSize - this->m_NumberOfCells);
   SizeValueType index = 0;
 
   std::string line;
@@ -294,14 +295,14 @@ OBJMeshIO ::ReadCells(void * buffer)
 
   CloseFile();
 
-  this->WriteCellsBuffer(data, static_cast<long *>(buffer), CellGeometryEnum::POLYGON_CELL, this->m_NumberOfCells);
+  this->WriteCellsBuffer(
+    data.get(), static_cast<long *>(buffer), CellGeometryEnum::POLYGON_CELL, this->m_NumberOfCells);
   // this->WriteCellsBuffer(data, static_cast<unsigned int *>(buffer),
   // CellGeometryEnum::TRIANGLE_CELL, 3, this->m_NumberOfCells);
-  delete[] data;
 }
 
 void
-OBJMeshIO ::ReadPointData(void * buffer)
+OBJMeshIO::ReadPointData(void * buffer)
 {
   // Define input file stream and attach it to input file
   OpenFile();
@@ -322,7 +323,7 @@ OBJMeshIO ::ReadPointData(void * buffer)
       if (type == "vn")
       {
         std::stringstream ss(inputLine);
-        for (unsigned int ii = 0; ii < this->m_PointDimension; ii++)
+        for (unsigned int ii = 0; ii < this->m_PointDimension; ++ii)
         {
           ss >> data[index++];
         }
@@ -334,11 +335,11 @@ OBJMeshIO ::ReadPointData(void * buffer)
 }
 
 void
-OBJMeshIO ::ReadCellData(void * itkNotUsed(buffer))
+OBJMeshIO::ReadCellData(void * itkNotUsed(buffer))
 {}
 
 void
-OBJMeshIO ::WriteMeshInformation()
+OBJMeshIO::WriteMeshInformation()
 {
   // Check file name
   if (this->m_FileName.empty())
@@ -478,7 +479,7 @@ OBJMeshIO::WritePoints(void * buffer)
 }
 
 void
-OBJMeshIO ::WriteCells(void * buffer)
+OBJMeshIO::WriteCells(void * buffer)
 {
   // check file name
   if (this->m_FileName.empty())
@@ -575,7 +576,7 @@ OBJMeshIO ::WriteCells(void * buffer)
 }
 
 void
-OBJMeshIO ::WritePointData(void * buffer)
+OBJMeshIO::WritePointData(void * buffer)
 {
   // Point data must be vector
   if (!m_UpdatePointData || m_NumberOfPointPixelComponents != m_PointDimension)
@@ -690,15 +691,15 @@ OBJMeshIO ::WritePointData(void * buffer)
 }
 
 void
-OBJMeshIO ::WriteCellData(void * itkNotUsed(buffer))
+OBJMeshIO::WriteCellData(void * itkNotUsed(buffer))
 {}
 
 void
-OBJMeshIO ::Write()
+OBJMeshIO::Write()
 {}
 
 void
-OBJMeshIO ::PrintSelf(std::ostream & os, Indent indent) const
+OBJMeshIO::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }

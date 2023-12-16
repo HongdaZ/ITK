@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,14 +58,14 @@ itkKappaStatisticImageToImageMetricTest(int, char *[])
 
   double epsilon = 0.000001;
 
-  TransformType::Pointer    transform = TransformType::New();
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto transform = TransformType::New();
+  auto interpolator = InterpolatorType::New();
 
   FixedImageType::SizeType fixedImageSize;
   fixedImageSize.Fill(128);
 
   // Create fixed image
-  FixedImageType::Pointer fixedImage = FixedImageType::New();
+  auto fixedImage = FixedImageType::New();
   fixedImage->SetRegions(fixedImageSize);
   fixedImage->Allocate(true); // initialize buffer to zero
   fixedImage->Update();
@@ -84,7 +84,7 @@ itkKappaStatisticImageToImageMetricTest(int, char *[])
   movingImageSize.Fill(128);
 
   // Create moving image
-  MovingImageType::Pointer movingImage = MovingImageType::New();
+  auto movingImage = MovingImageType::New();
   movingImage->SetRegions(movingImageSize);
   movingImage->Allocate(true); // initialize buffer to zero
   movingImage->Update();
@@ -99,7 +99,7 @@ itkKappaStatisticImageToImageMetricTest(int, char *[])
     }
   }
 
-  MetricType::Pointer metric = MetricType::New();
+  auto metric = MetricType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(metric, KappaStatisticImageToImageMetric, ImageToImageMetric);
 
@@ -147,7 +147,7 @@ itkKappaStatisticImageToImageMetricTest(int, char *[])
   // The value 0.620753 was computed by hand for these two images
   double                  expectedMatchMeasure = 0.620753;
   MetricType::MeasureType value = metric->GetValue(parameters);
-  if (!itk::Math::FloatAlmostEqual((double)value, expectedMatchMeasure, 10, epsilon))
+  if (!itk::Math::FloatAlmostEqual(static_cast<double>(value), expectedMatchMeasure, 10, epsilon))
   {
     std::cerr << "Error !" << std::endl;
     std::cerr << "Expected: " << expectedMatchMeasure << " but got " << static_cast<double>(value) << std::endl;
@@ -160,12 +160,12 @@ itkKappaStatisticImageToImageMetricTest(int, char *[])
   //
   metric->ComputeGradient();
 
-  GradientImageType::Pointer xGradImage = GradientImageType::New();
+  auto xGradImage = GradientImageType::New();
   xGradImage->SetRegions(movingImageSize);
   xGradImage->Allocate(true); // initialize buffer to zero
   xGradImage->Update();
 
-  GradientImageType::Pointer yGradImage = GradientImageType::New();
+  auto yGradImage = GradientImageType::New();
   yGradImage->SetRegions(movingImageSize);
   yGradImage->Allocate(true); // initialize buffer to zero
   yGradImage->Update();
@@ -235,7 +235,7 @@ itkKappaStatisticImageToImageMetricTest(int, char *[])
   double expectedDerivativeMeasure = -0.0477502;
   for (unsigned int i = 0; i < derivative.size(); ++i)
   {
-    if (!itk::Math::FloatAlmostEqual((double)derivative[i], expectedDerivativeMeasure, 10, epsilon))
+    if (!itk::Math::FloatAlmostEqual(static_cast<double>(derivative[i]), expectedDerivativeMeasure, 10, epsilon))
     {
       std::cerr << "Error !" << std::endl;
       std::cerr << "Expected: " << expectedDerivativeMeasure << " but got " << static_cast<double>(derivative[i])
@@ -250,7 +250,7 @@ itkKappaStatisticImageToImageMetricTest(int, char *[])
   //
   metric->GetValueAndDerivative(parameters, value, derivative);
 
-  if (!itk::Math::FloatAlmostEqual((double)value, expectedMatchMeasure, 10, epsilon))
+  if (!itk::Math::FloatAlmostEqual(static_cast<double>(value), expectedMatchMeasure, 10, epsilon))
   {
     std::cerr << "Error !" << std::endl;
     std::cerr << "Expected: " << expectedMatchMeasure << " but got " << static_cast<double>(value) << std::endl;
@@ -259,7 +259,7 @@ itkKappaStatisticImageToImageMetricTest(int, char *[])
   }
   for (unsigned int i = 0; i < derivative.size(); ++i)
   {
-    if (!itk::Math::FloatAlmostEqual((double)derivative[i], expectedDerivativeMeasure, 10, epsilon))
+    if (!itk::Math::FloatAlmostEqual(static_cast<double>(derivative[i]), expectedDerivativeMeasure, 10, epsilon))
     {
       std::cerr << "Error !" << std::endl;
       std::cerr << "Expected: " << expectedDerivativeMeasure << " but got " << static_cast<double>(derivative[i])
@@ -282,7 +282,7 @@ itkKappaStatisticImageToImageMetricTest(int, char *[])
   // The value 0.379247 was computed by hand
   expectedMatchMeasure = 0.379247;
   value = metric->GetValue(parameters);
-  if (!itk::Math::FloatAlmostEqual((double)value, expectedMatchMeasure, 10, epsilon))
+  if (!itk::Math::FloatAlmostEqual(static_cast<double>(value), expectedMatchMeasure, 10, epsilon))
   {
     std::cerr << "Error !" << std::endl;
     std::cerr << "Expected: " << expectedMatchMeasure << " but got " << static_cast<double>(value) << std::endl;

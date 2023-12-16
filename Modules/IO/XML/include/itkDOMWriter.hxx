@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkDOMWriter_hxx
 #define itkDOMWriter_hxx
 
-#include "itkDOMWriter.h"
 #include "itksys/SystemTools.hxx"
 #include "itkStdStreamLogOutput.h"
 #include "itkFileTools.h"
@@ -34,7 +33,7 @@ DOMWriter<TInput>::DOMWriter()
   // Create the logger.
   this->m_Logger = LoggerType::New();
   // by default logged messages go to the console
-  typename StdStreamLogOutput::Pointer defout = StdStreamLogOutput::New();
+  auto defout = StdStreamLogOutput::New();
   defout->SetStream(std::cout);
   this->m_Logger->AddLogOutput(defout);
   // settings that may be important
@@ -59,8 +58,8 @@ DOMWriter<TInput>::SetInput(const InputType * input)
 
 /** Get the input object to be written. */
 template <typename TInput>
-const typename DOMWriter<TInput>::InputType *
-DOMWriter<TInput>::GetInput() const
+auto
+DOMWriter<TInput>::GetInput() const -> const InputType *
 {
   return this->m_Input;
 }
@@ -115,7 +114,7 @@ DOMWriter<TInput>::Update()
 {
   if (this->m_IntermediateDOM.IsNull())
   {
-    typename DOMNodeType::Pointer temp = DOMNodeType::New();
+    auto temp = DOMNodeType::New();
     this->SetIntermediateDOM(temp);
   }
 
@@ -136,7 +135,7 @@ DOMWriter<TInput>::Update()
   itksys::SystemTools::ChangeDirectory(sOldWorkingDir);
 
   // write the newly updated DOM object to the output XML file
-  typename DOMNodeXMLWriter::Pointer writer = DOMNodeXMLWriter::New();
+  auto writer = DOMNodeXMLWriter::New();
   writer->SetFileName(fn.ToString());
   writer->SetInput(this->m_IntermediateDOM);
   writer->Update();

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 
 #include "itkGradientMagnitudeRecursiveGaussianImageFilter.h"
 #include "itkSimpleFilterWatcher.h"
+#include "itkTestingMacros.h"
 
 template <typename TImage1Type, typename TImage2Type>
 class ImageInformationIsEqual
@@ -43,33 +44,25 @@ public:
 };
 
 int
-itkGradientMagnitudeRecursiveGaussianFilterTest(int, char *[])
+itkGradientMagnitudeRecursiveGaussianFilterTest(int argc, char * argv[])
 {
+  if (argc != 3)
+  {
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " sigma normalizeAcrossScale" << std::endl;
+    return EXIT_FAILURE;
+  }
 
-  // Define the dimension of the images
   constexpr unsigned int myDimension = 3;
-
-  // Declare the types of the images
   using myImageType = itk::Image<float, myDimension>;
-
-  // Declare the type of the index to access images
   using myIndexType = itk::Index<myDimension>;
-
-  // Declare the type of the size
   using mySizeType = itk::Size<myDimension>;
-
-  // Declare the type of the Region
   using myRegionType = itk::ImageRegion<myDimension>;
 
-  // Create the image
-  myImageType::Pointer inputImage = myImageType::New();
+  auto inputImage = myImageType::New();
 
-
-  // Define their size, and start index
   mySizeType size;
-  size[0] = 8;
-  size[1] = 8;
-  size[2] = 8;
+  size.Fill(8);
 
   myIndexType start;
   start.Fill(0);
@@ -78,11 +71,9 @@ itkGradientMagnitudeRecursiveGaussianFilterTest(int, char *[])
   region.SetIndex(start);
   region.SetSize(size);
 
-  // Initialize Image A
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
-  inputImage->Allocate();
+  // initialize the image with default-valued pixels (in this case, 0.0)
+  inputImage->SetRegions(region);
+  inputImage->Allocate(true);
 
   // Set the metadata for the image
   myImageType::PointType     origin;
@@ -105,23 +96,8 @@ itkGradientMagnitudeRecursiveGaussianFilterTest(int, char *[])
   // Declare Iterator type for the input image
   using myIteratorType = itk::ImageRegionIteratorWithIndex<myImageType>;
 
-  // Create one iterator for the Input Image A (this is a light object)
-  myIteratorType it(inputImage, inputImage->GetRequestedRegion());
-
-  // Initialize the content of Image A
-  while (!it.IsAtEnd())
-  {
-    it.Set(0.0);
-    ++it;
-  }
-
-  size[0] = 4;
-  size[1] = 4;
-  size[2] = 4;
-
-  start[0] = 2;
-  start[1] = 2;
-  start[2] = 2;
+  size.Fill(4);
+  start.Fill(2);
 
   // Create one iterator for an internal region
   region.SetSize(size);
@@ -135,34 +111,28 @@ itkGradientMagnitudeRecursiveGaussianFilterTest(int, char *[])
     ++itb;
   }
 
-  // Declare the type for the
   using myFilterType = itk::GradientMagnitudeRecursiveGaussianImageFilter<myImageType>;
-
   using myGradientImageType = myFilterType::OutputImageType;
 
 
-  // Create a  Filter
-  myFilterType::Pointer    filter = myFilterType::New();
+  auto filter = myFilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, GradientMagnitudeRecursiveGaussianImageFilter, InPlaceImageFilter);
+
+
   itk::SimpleFilterWatcher watcher(filter);
 
+  auto sigma = static_cast<typename myFilterType::RealType>(std::stod(argv[1]));
+  filter->SetSigma(sigma);
+  ITK_TEST_SET_GET_VALUE(sigma, filter->GetSigma());
 
-  // Connect the input images
+  auto normalizeAcrossScale = static_cast<bool>(std::stoi(argv[2]));
+  ITK_TEST_SET_GET_BOOLEAN(filter, NormalizeAcrossScale, normalizeAcrossScale);
+
   filter->SetInput(inputImage);
 
-  // Select the value of Sigma
-  filter->SetSigma(2.5);
-
-
   // Execute the filter
-  try
-  {
-    filter->Update();
-  }
-  catch (...)
-  {
-    std::cerr << "Exception thrown during Update() " << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
 
 
   // Get the Smart Pointer to the Filter Output
@@ -171,7 +141,7 @@ itkGradientMagnitudeRecursiveGaussianFilterTest(int, char *[])
   // by another during GenerateData() call
   myGradientImageType::Pointer outputImage = filter->GetOutput();
 
-  // Declare Iterator type for the output image
+#ifndef NDEBUG
   using myOutputIteratorType = itk::ImageRegionIteratorWithIndex<myGradientImageType>;
 
   // Create an iterator for going through the output image
@@ -185,6 +155,7 @@ itkGradientMagnitudeRecursiveGaussianFilterTest(int, char *[])
     std::cout << itg.Get() << std::endl;
     ++itg;
   }
+#endif
 
   if (!ImageInformationIsEqual<myImageType, myImageType>::Check(inputImage, outputImage))
   {
@@ -207,15 +178,7 @@ itkGradientMagnitudeRecursiveGaussianFilterTest(int, char *[])
   inputImage->FillBuffer(1);
 
   // Execute the filter
-  try
-  {
-    filter->UpdateLargestPossibleRegion();
-  }
-  catch (...)
-  {
-    std::cerr << "Exception thrown during Update() " << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(filter->UpdateLargestPossibleRegion());
 
   // All objects should be automatically destroyed at this point
   std::cout << std::endl << "Test PASSED ! " << std::endl;

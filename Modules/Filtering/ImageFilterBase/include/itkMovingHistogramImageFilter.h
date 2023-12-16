@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,7 +66,7 @@ namespace itk
  * to consider that the histogram will never be empty.
  *
  * One histogram is created for each thread by the method NewHistogram().
- * The NewHistogram() method can be overriden to pass some parameters to the
+ * The NewHistogram() method can be overridden to pass some parameters to the
  * histogram.
  *
  * The neighborhood is defined by a structuring element, and must a
@@ -89,7 +89,7 @@ class ITK_TEMPLATE_EXPORT MovingHistogramImageFilter
   : public MovingHistogramImageFilterBase<TInputImage, TOutputImage, TKernel>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MovingHistogramImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MovingHistogramImageFilter);
 
   /** Standard class type aliases. */
   using Self = MovingHistogramImageFilter;
@@ -111,7 +111,7 @@ public:
   using IndexType = typename TInputImage::IndexType;
   using PixelType = typename TInputImage::PixelType;
   using OffsetType = typename TInputImage::OffsetType;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
   using OutputPixelType = typename TOutputImage::PixelType;
 
   /** Image related type alias. */

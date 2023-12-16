@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class PCAShapeSignedDistanceFunction
+ * \class PCAShapeSignedDistanceFunction
  * \brief Compute the signed distance from a N-dimensional PCA Shape.
  *
  * This class computes the signed distance from a N-dimensional shape defined
@@ -68,7 +68,7 @@ class ITK_TEMPLATE_EXPORT PCAShapeSignedDistanceFunction
   : public ShapeSignedDistanceFunction<TCoordRep, VSpaceDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PCAShapeSignedDistanceFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(PCAShapeSignedDistanceFunction);
 
   /** Standard class type aliases. */
   using Self = PCAShapeSignedDistanceFunction;
@@ -87,19 +87,19 @@ public:
   static constexpr unsigned int SpaceDimension = Superclass::SpaceDimension;
 
   /** CoordRep type alias support */
-  using CoordRepType = typename Superclass::CoordRepType;
+  using typename Superclass::CoordRepType;
 
   /** InputeType type alias support */
-  using InputType = typename Superclass::InputType;
+  using typename Superclass::InputType;
 
   /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** Parameters type alias support */
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
 
   /** Image type alias support */
   using ImageType = TImage;

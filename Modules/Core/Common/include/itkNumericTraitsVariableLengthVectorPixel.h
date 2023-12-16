@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ namespace itk
 {
 /**
  * \brief Define numeric traits for VariableLengthVector.
- * \tparam T Component type of VariableLenghtVector
+ * \tparam T Component type of VariableLengthVector
  *
  * We provide here a generic implementation based on creating types of
  * VariableLengthVector whose components are the types of the NumericTraits from
@@ -140,7 +140,7 @@ public:
   IsPositive(const Self & a)
   {
     bool flag = false;
-    for (unsigned int i = 0; i < GetLength(a); i++)
+    for (unsigned int i = 0; i < GetLength(a); ++i)
     {
       if (a[i] > NumericTraits<ValueType>::ZeroValue())
       {
@@ -154,7 +154,7 @@ public:
   IsNonpositive(const Self & a)
   {
     bool flag = false;
-    for (unsigned int i = 0; i < GetLength(a); i++)
+    for (unsigned int i = 0; i < GetLength(a); ++i)
     {
       if (!(a[i] > 0.0))
       {
@@ -168,7 +168,7 @@ public:
   IsNegative(const Self & a)
   {
     bool flag = false;
-    for (unsigned int i = 0; i < GetLength(a); i++)
+    for (unsigned int i = 0; i < GetLength(a); ++i)
     {
       if (a[i] < NumericTraits<ValueType>::ZeroValue())
       {
@@ -182,7 +182,7 @@ public:
   IsNonnegative(const Self & a)
   {
     bool flag = false;
-    for (unsigned int i = 0; i < GetLength(a); i++)
+    for (unsigned int i = 0; i < GetLength(a); ++i)
     {
       if (!(a[i] < 0.0))
       {
@@ -192,8 +192,8 @@ public:
     return flag;
   }
 
-  static constexpr bool IsSigned = NumericTraits<ValueType>::IsSigned;
-  static constexpr bool IsInteger = NumericTraits<ValueType>::IsInteger;
+  static constexpr bool IsSigned = std::is_signed<ValueType>::value;
+  static constexpr bool IsInteger = std::is_integral<ValueType>::value;
   static constexpr bool IsComplex = NumericTraits<ValueType>::IsComplex;
 
 
@@ -222,7 +222,7 @@ public:
   static void
   AssignToArray(const Self & v, TArray & mv)
   {
-    for (unsigned int i = 0; i < GetLength(v); i++)
+    for (unsigned int i = 0; i < GetLength(v); ++i)
     {
       mv[i] = v[i];
     }

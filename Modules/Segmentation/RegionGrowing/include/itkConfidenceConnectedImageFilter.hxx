@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkConfidenceConnectedImageFilter_hxx
 
 #include "itkMath.h"
-#include "itkConfidenceConnectedImageFilter.h"
 #include "itkMacro.h"
 #include "itkImageRegionIterator.h"
 #include "itkImageNeighborhoodOffsets.h"
@@ -74,8 +73,8 @@ ConfidenceConnectedImageFilter<TInputImage, TOutputImage>::AddSeed(const IndexTy
 
 /** Method to access seed container */
 template <typename TInputImage, typename TOutputImage>
-const typename ConfidenceConnectedImageFilter<TInputImage, TOutputImage>::SeedsContainerType &
-ConfidenceConnectedImageFilter<TInputImage, TOutputImage>::GetSeeds() const
+auto
+ConfidenceConnectedImageFilter<TInputImage, TOutputImage>::GetSeeds() const -> const SeedsContainerType &
 {
   itkDebugMacro("returning Seeds");
   return this->m_Seeds;
@@ -143,7 +142,7 @@ ConfidenceConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
   // Compute the statistics of the seed point
 
   // Set up the image function used for connectivity
-  typename FunctionType::Pointer function = FunctionType::New();
+  auto function = FunctionType::New();
   function->SetInputImage(inputImage);
 
   InputRealType lower;
@@ -155,9 +154,9 @@ ConfidenceConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
   if (m_InitialNeighborhoodRadius > 0)
   {
     const auto neighborhoodOffsets =
-      Experimental::GenerateRectangularImageNeighborhoodOffsets(SizeType::Filled(m_InitialNeighborhoodRadius));
+      GenerateRectangularImageNeighborhoodOffsets(SizeType::Filled(m_InitialNeighborhoodRadius));
     auto neighborhoodRange =
-      Experimental::ShapedImageNeighborhoodRange<const InputImageType>(*inputImage, IndexType(), neighborhoodOffsets);
+      ShapedImageNeighborhoodRange<const InputImageType>(*inputImage, IndexType(), neighborhoodOffsets);
 
     InputRealType sumOfSquares = itk::NumericTraits<InputRealType>::ZeroValue();
 
@@ -184,7 +183,7 @@ ConfidenceConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
         sumOfSquares += neighborhoodSumOfSquares;
         ++num;
       }
-      si++;
+      ++si;
     }
 
     if (num == 0)
@@ -216,7 +215,7 @@ ConfidenceConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
         sumOfSquares += value * value;
         ++num;
       }
-      si++;
+      ++si;
     }
 
     if (num == 0)
@@ -225,8 +224,8 @@ ConfidenceConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
       // no seeds result in zero image
       return;
     }
-    m_Mean = sum / double(num);
-    m_Variance = (sumOfSquares - (sum * sum / double(num))) / (double(num) - 1.0);
+    m_Mean = sum / static_cast<double>(num);
+    m_Variance = (sumOfSquares - (sum * sum / static_cast<double>(num))) / (static_cast<double>(num) - 1.0);
   }
 
   lower = m_Mean - m_Multiplier * std::sqrt(m_Variance);
@@ -252,7 +251,7 @@ ConfidenceConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
         highestSeedIntensity = seedIntensity;
       }
     }
-    si++;
+    ++si;
   }
 
   // Adjust lower and upper to always contain the seed's intensity, otherwise,
@@ -308,7 +307,7 @@ ConfidenceConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
     // Essentially, we flip the iterator around, so we walk the input
     // image (so Get() will get pixel values from the input) and constrain
     // iterator such it only visits pixels that were set in the output.
-    typename SecondFunctionType::Pointer secondFunction = SecondFunctionType::New();
+    auto secondFunction = SecondFunctionType::New();
     secondFunction->SetInputImage(outputImage);
     secondFunction->ThresholdBetween(m_ReplaceValue, m_ReplaceValue);
 
@@ -327,8 +326,9 @@ ConfidenceConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
       ++numberOfSamples;
       ++sit;
     }
-    m_Mean = sum / double(numberOfSamples);
-    m_Variance = (sumOfSquares - (sum * sum / double(numberOfSamples))) / (double(numberOfSamples) - 1.0);
+    m_Mean = sum / static_cast<double>(numberOfSamples);
+    m_Variance = (sumOfSquares - (sum * sum / static_cast<double>(numberOfSamples))) /
+                 (static_cast<double>(numberOfSamples) - 1.0);
     // if the variance is zero, there is no point in continuing
     if (Math::AlmostEquals(m_Variance, 0.0))
     {
@@ -388,7 +388,7 @@ ConfidenceConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
         progress.CompletedPixel(); // potential exception thrown here
       }
     }
-    catch (ProcessAborted &)
+    catch (const ProcessAborted &)
     {
       break; // interrupt the iterations loop
     }

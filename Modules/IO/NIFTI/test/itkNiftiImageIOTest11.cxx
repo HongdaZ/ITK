@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,35 +22,34 @@
 // Specific ImageIO test
 
 int
-itkNiftiImageIOTest11(int ac, char * av[])
+itkNiftiImageIOTest11(int argc, char * argv[])
 {
   std::string testfilename;
-  if (ac > 1)
+  if (argc > 1)
   {
-    char * testdir = *++av;
+    char * testdir = *++argv;
     itksys::SystemTools::ChangeDirectory(testdir);
   }
   else
   {
     return EXIT_FAILURE;
   }
-  if (ac > 2)
+  if (argc > 2)
   {
-    testfilename = *++av;
+    testfilename = *++argv;
   }
   else
   {
     return EXIT_FAILURE;
   }
   using ImageType = itk::Image<char, 3>;
-  ImageType::RegionType    imageRegion;
-  ImageType::SizeType      size;
-  ImageType::IndexType     index;
-  ImageType::SpacingType   spacing;
-  ImageType::PointType     origin;
-  ImageType::DirectionType myDirection;
+  ImageType::RegionType  imageRegion;
+  ImageType::SizeType    size;
+  ImageType::IndexType   index;
+  ImageType::SpacingType spacing;
+  ImageType::PointType   origin;
 
-  size[0] = static_cast<long int>(itk::NumericTraits<short>::max()) * 2;
+  size[0] = static_cast<long>(itk::NumericTraits<short>::max()) * 2;
   size[1] = 1;
   size[2] = 1;
 

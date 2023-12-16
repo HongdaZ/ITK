@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,19 +38,19 @@ namespace itk
  *  This code was taken from the Insight Journal paper:
  *
  *      "Cell Tracking using Coupled Active Surfaces for Nuclei and Membranes"
- *      http://www.insight-journal.org/browse/publication/642
+ *      https://www.insight-journal.org/browse/publication/642
  *      https://hdl.handle.net/10380/3055
  *
  *  That is based on the papers:
  *
  *      "Level Set Segmentation: Active Contours without edge"
- *      http://www.insight-journal.org/browse/publication/322
+ *      https://www.insight-journal.org/browse/publication/322
  *      https://hdl.handle.net/1926/1532
  *
  *      and
  *
  *      "Level set segmentation using coupled active surfaces"
- *      http://www.insight-journal.org/browse/publication/323
+ *      https://www.insight-journal.org/browse/publication/323
  *      https://hdl.handle.net/1926/1533
  *
  * \ingroup ITKReview
@@ -64,7 +64,7 @@ class ITK_TEMPLATE_EXPORT ScalarChanAndVeseDenseLevelSetImageFilter
   : public MultiphaseDenseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputImage, TFunction>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarChanAndVeseDenseLevelSetImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ScalarChanAndVeseDenseLevelSetImageFilter);
 
   using Self = ScalarChanAndVeseDenseLevelSetImageFilter;
   using Superclass = MultiphaseDenseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputImage, TFunction>;
@@ -80,10 +80,10 @@ public:
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
 
   /** Inherited type alias from the superclass. */
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using InputPointType = typename Superclass::InputPointType;
-  using ValueType = typename Superclass::ValueType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::InputImagePointer;
+  using typename Superclass::InputPointType;
+  using typename Superclass::ValueType;
   using InputSpacingType = typename InputImageType::SpacingType;
 
   using FeatureImageType = TFeatureImage;
@@ -98,8 +98,8 @@ public:
   using IndexType = typename OutputImageType::IndexType;
   using OutputPixelType = typename OutputImageType::PixelType;
 
-  using TimeStepType = typename Superclass::TimeStepType;
-  using FiniteDifferenceFunctionType = typename Superclass::FiniteDifferenceFunctionType;
+  using typename Superclass::TimeStepType;
+  using typename Superclass::FiniteDifferenceFunctionType;
 
   using FunctionType = TFunction;
   using FunctionPointer = typename FunctionType::Pointer;

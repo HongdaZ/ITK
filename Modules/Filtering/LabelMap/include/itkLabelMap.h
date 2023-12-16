@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class LabelMap
+ * \class LabelMap
  *  \brief Templated n-dimensional image to store labeled objects.
  *
  * LabelMap is an image class specialized in storing the labeled
@@ -56,22 +56,21 @@ namespace itk
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/584  or
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  * \ingroup ImageObjects
  * \ingroup LabeledImageObject
  * \ingroup ITKLabelMap
  *
  * \sphinx
- * \sphinxexample{Filtering/LabelMap/RemoveLabelsFromLabelMa,Remove Labels From Label Map}
+ * \sphinxexample{Filtering/LabelMap/RemoveLabelsFromLabelMap,Remove Labels From Label Map}
  * \endsphinx
  */
 template <typename TLabelObject>
 class ITK_TEMPLATE_EXPORT LabelMap : public ImageBase<TLabelObject::ImageDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LabelMap);
+  ITK_DISALLOW_COPY_AND_MOVE(LabelMap);
 
   /** Standard class type aliases */
   using Self = LabelMap;
@@ -90,7 +89,7 @@ public:
 
   using LabelObjectPointerType = typename LabelObjectType::Pointer;
 
-  using SizeValueType = typename Superclass::SizeValueType;
+  using typename Superclass::SizeValueType;
   using LengthType = SizeValueType;
 
   /** Dimension of the image.  This constant is used by functions that are
@@ -108,31 +107,31 @@ public:
   using LabelObjectVectorType = std::vector<LabelObjectPointerType>;
 
   /** Index type alias support An index is used to access pixel values. */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   /** Offset type alias support An offset is used to access pixel values. */
-  using OffsetType = typename Superclass::OffsetType;
+  using typename Superclass::OffsetType;
 
   /** Size type alias support A size is used to define region bounds. */
-  using SizeType = typename Superclass::SizeType;
+  using typename Superclass::SizeType;
 
   /** Direction type alias support A matrix of direction cosines. */
-  using DirectionType = typename Superclass::DirectionType;
+  using typename Superclass::DirectionType;
 
   /** Region type alias support A region is used to specify a subset of an image.
    */
-  using RegionType = typename Superclass::RegionType;
+  using typename Superclass::RegionType;
 
   /** Spacing type alias support  Spacing holds the size of a pixel.  The
    * spacing is the geometric distance between image samples. */
-  using SpacingType = typename Superclass::SpacingType;
+  using typename Superclass::SpacingType;
 
   /** Origin type alias support  The origin is the geometric coordinates
    * of the index (0,0). */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** Offset type alias (relative position between indices) */
-  using OffsetValueType = typename Superclass::OffsetValueType;
+  using typename Superclass::OffsetValueType;
 
   /** Restore the data object to its initial state. This means releasing
    * memory. */
@@ -195,7 +194,7 @@ public:
    * in the image - usit with care.
    */
   void
-  SetPixel(const IndexType & idx, const LabelType & label);
+  SetPixel(const IndexType & idx, const LabelType & iLabel);
 
   /**
    * Add index \c idx to the label object whose label is \c label. If no label object
@@ -234,7 +233,7 @@ public:
 
   /**
    * Add a label object to the image. If a label object already has the label,
-   * it is overriden.
+   * it is overridden.
    */
   void
   AddLabelObject(LabelObjectType * labelObject);
@@ -308,7 +307,7 @@ public:
   Optimize();
 
   /**
-   *\class ConstIterator
+   * \class ConstIterator
    * \brief A forward iterator over the LabelObjects of a LabelMap
    * \ingroup ITKLabelMap
    */
@@ -373,11 +372,7 @@ public:
       return m_Iterator == iter.m_Iterator && m_Begin == iter.m_Begin && m_End == iter.m_End;
     }
 
-    bool
-    operator!=(const ConstIterator & iter) const
-    {
-      return !(*this == iter);
-    }
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
 
     void
     GoToBegin()
@@ -399,7 +394,7 @@ public:
   };
 
   /**
-   *\class Iterator
+   * \class Iterator
    * \brief A forward iterator over the LabelObjects of a LabelMap
    * \ingroup ITKLabelMap
    */
@@ -464,11 +459,7 @@ public:
       return m_Iterator == iter.m_Iterator && m_Begin == iter.m_Begin && m_End == iter.m_End;
     }
 
-    bool
-    operator!=(const Iterator & iter) const
-    {
-      return !(*this == iter);
-    }
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Iterator);
 
     void
     GoToBegin()
@@ -510,7 +501,7 @@ private:
   LabelType                m_BackgroundValue;
 
   void
-  AddPixel(const LabelObjectContainerIterator & it, const IndexType & idx, const LabelType & iLabel);
+  AddPixel(const LabelObjectContainerIterator & it, const IndexType & idx, const LabelType & label);
 
   void
   RemovePixel(const LabelObjectContainerIterator & it, const IndexType & idx, bool iEmitModifiedEvent);

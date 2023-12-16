@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 #include "itkMeshSpatialObject.h"
 #include "itkTetrahedronCell.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 int
 itkMeshSpatialObjectTest(int, char *[])
@@ -35,7 +36,7 @@ itkMeshSpatialObjectTest(int, char *[])
   using CellAutoPointer = CellType::CellAutoPointer;
 
   // Create an itkMesh
-  MeshType::Pointer mesh = MeshType::New();
+  auto mesh = MeshType::New();
 
   MeshType::CoordRepType testPointCoords[4][3] = { { 0, 0, 0 }, { 9, 0, 0 }, { 9, 9, 0 }, { 0, 0, 9 } };
 
@@ -55,20 +56,20 @@ itkMeshSpatialObjectTest(int, char *[])
 
   // Create the mesh Spatial Object
 
-  MeshSpatialObjectType::Pointer meshSO = MeshSpatialObjectType::New();
-  meshSO->Print(std::cout);
+  auto meshSO = MeshSpatialObjectType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(meshSO, MeshSpatialObject, SpatialObject);
+
+
+  double isInsidePrecisionInObjectSpace = 1;
+  meshSO->SetIsInsidePrecisionInObjectSpace(isInsidePrecisionInObjectSpace);
+  ITK_TEST_SET_GET_VALUE(isInsidePrecisionInObjectSpace, meshSO->GetIsInsidePrecisionInObjectSpace());
 
   meshSO->SetMesh(mesh);
+  ITK_TEST_SET_GET_VALUE(mesh, meshSO->GetMesh());
+
   meshSO->Update();
 
-  std::cout << "Testing GetMesh(): ";
-
-  if (mesh != meshSO->GetMesh())
-  {
-    std::cout << "[FAILED]" << std::endl;
-    return EXIT_FAILURE;
-  }
-  std::cout << "[PASSED]" << std::endl;
 
   std::cout << "Testing Bounding Box: ";
 
@@ -138,7 +139,7 @@ itkMeshSpatialObjectTest(int, char *[])
   using TriangleCellType = itk::TriangleCell<CellInterfaceType>;
 
   // Create an itkMesh
-  MeshType::Pointer meshTriangle = MeshType::New();
+  auto meshTriangle = MeshType::New();
 
   MeshType::CoordRepType testTrianglePointCoords[4][3] = {
     { 50, 50, 64 }, { 50, 100, 64 }, { 100, 50, 64 }, { 100, 100, 64 }
@@ -166,7 +167,7 @@ itkMeshSpatialObjectTest(int, char *[])
   meshTriangle->SetCell(1, testCell4);
 
   // Create the mesh Spatial Object
-  MeshSpatialObjectType::Pointer meshTriangleSO = MeshSpatialObjectType::New();
+  auto meshTriangleSO = MeshSpatialObjectType::New();
   meshTriangleSO->SetMesh(meshTriangle);
   meshTriangleSO->Update();
 
@@ -186,7 +187,7 @@ itkMeshSpatialObjectTest(int, char *[])
   meshSO->Print(std::cout);
   std::cout << "[PASSED]" << std::endl;
 
-  std::cout << "[TEST DONE]" << std::endl;
 
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

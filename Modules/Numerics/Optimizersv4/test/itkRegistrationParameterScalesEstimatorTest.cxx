@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,10 +43,10 @@ public:
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::ParametersValueType;
 
   itkTypeMacro(RegistrationParameterScalesEstimatorTestMetric, ImageToImageMetricv4);
 
@@ -89,7 +89,7 @@ public:
   }
 
   void
-  Initialize() throw(itk::ExceptionObject) override
+  Initialize() override
   {}
 
   void
@@ -128,7 +128,7 @@ template <typename TMetric>
 class RegistrationParameterScalesEstimatorTest : public itk::RegistrationParameterScalesEstimator<TMetric>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegistrationParameterScalesEstimatorTest);
+  ITK_DISALLOW_COPY_AND_MOVE(RegistrationParameterScalesEstimatorTest);
 
   /** Standard class type aliases. */
   using Self = RegistrationParameterScalesEstimatorTest;
@@ -141,18 +141,18 @@ public:
   itkTypeMacro(RegistrationParameterScalesEstimatorTest, RegistrationParameterScalesEstimator);
 
   /** Type of scales */
-  using ScalesType = typename Superclass::ScalesType;
+  using typename Superclass::ScalesType;
   /** Type of parameters of the optimizer */
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
   /** Type of float */
-  using FloatType = typename Superclass::FloatType;
+  using typename Superclass::FloatType;
 
-  using VirtualPointType = typename Superclass::VirtualPointType;
-  using VirtualIndexType = typename Superclass::VirtualIndexType;
-  using MovingTransformType = typename Superclass::MovingTransformType;
-  using FixedTransformType = typename Superclass::FixedTransformType;
-  using JacobianType = typename Superclass::JacobianType;
-  using VirtualImageConstPointer = typename Superclass::VirtualImageConstPointer;
+  using typename Superclass::VirtualPointType;
+  using typename Superclass::VirtualIndexType;
+  using typename Superclass::MovingTransformType;
+  using typename Superclass::FixedTransformType;
+  using typename Superclass::JacobianType;
+  using typename Superclass::VirtualImageConstPointer;
 
   /** Estimate parameter scales with maximum squared norms of Jacobians. */
   void
@@ -174,14 +174,14 @@ public:
     parameterScales.Fill(1.0);
 
     // checking each sample point
-    for (itk::SizeValueType c = 0; c < numSamples; c++)
+    for (itk::SizeValueType c = 0; c < numSamples; ++c)
     {
       VirtualPointType point = this->m_SamplePoints[c];
 
       ParametersType squaredNorms(numPara);
       this->ComputeSquaredJacobianNorms(point, squaredNorms);
 
-      for (itk::SizeValueType p = 0; p < numPara; p++)
+      for (itk::SizeValueType p = 0; p < numPara; ++p)
       {
         if (norms[p] < squaredNorms[p])
         {
@@ -192,7 +192,7 @@ public:
 
     if (numSamples > 0)
     {
-      for (itk::SizeValueType p = 0; p < numPara; p++)
+      for (itk::SizeValueType p = 0; p < numPara; ++p)
       {
         parameterScales[p] = norms[p];
       }
@@ -233,8 +233,8 @@ itkRegistrationParameterScalesEstimatorTest(int, char *[])
   using MovingImageType = itk::Image<PixelType, ImageDimension>;
   using VirtualImageType = itk::Image<PixelType, ImageDimension>;
 
-  FixedImageType::Pointer   fixedImage = FixedImageType::New();
-  MovingImageType::Pointer  movingImage = MovingImageType::New();
+  auto                      fixedImage = FixedImageType::New();
+  auto                      movingImage = MovingImageType::New();
   VirtualImageType::Pointer virtualImage = fixedImage;
 
   MovingImageType::SizeType size;
@@ -246,17 +246,17 @@ itkRegistrationParameterScalesEstimatorTest(int, char *[])
 
   // Transform begins
   using MovingTransformType = itk::AffineTransform<double, ImageDimension>;
-  MovingTransformType::Pointer movingTransform = MovingTransformType::New();
+  auto movingTransform = MovingTransformType::New();
   movingTransform->SetIdentity();
 
   using FixedTransformType = itk::TranslationTransform<double, ImageDimension>;
-  FixedTransformType::Pointer fixedTransform = FixedTransformType::New();
+  auto fixedTransform = FixedTransformType::New();
   fixedTransform->SetIdentity();
   // Transform done
 
   // Metric begins
   using MetricType = RegistrationParameterScalesEstimatorTestMetric<FixedImageType, MovingImageType>;
-  MetricType::Pointer metric = MetricType::New();
+  auto metric = MetricType::New();
 
   metric->SetVirtualDomainFromImage(virtualImage);
   metric->SetFixedImage(fixedImage);
@@ -286,21 +286,21 @@ itkRegistrationParameterScalesEstimatorTest(int, char *[])
   virtualImage->TransformIndexToPhysicalPoint(virtualImage->GetLargestPossibleRegion().GetUpperIndex(), upperPoint);
 
   itk::SizeValueType param = 0;
-  for (itk::SizeValueType row = 0; row < ImageDimension; row++)
+  for (itk::SizeValueType row = 0; row < ImageDimension; ++row)
   {
-    for (itk::SizeValueType col = 0; col < ImageDimension; col++)
+    for (itk::SizeValueType col = 0; col < ImageDimension; ++col)
     {
       // max squared jacobian norms
       theoreticalJacobianScales[param++] = upperPoint[col] * upperPoint[col];
     }
   }
-  for (itk::SizeValueType row = 0; row < ImageDimension; row++)
+  for (itk::SizeValueType row = 0; row < ImageDimension; ++row)
   {
     theoreticalJacobianScales[param++] = 1;
   }
 
   bool jacobianPass = true;
-  for (itk::SizeValueType p = 0; p < jacobianScales.GetSize(); p++)
+  for (itk::SizeValueType p = 0; p < jacobianScales.GetSize(); ++p)
   {
     if (itk::Math::NotAlmostEquals(jacobianScales[p], theoreticalJacobianScales[p]))
     {
@@ -309,7 +309,7 @@ itkRegistrationParameterScalesEstimatorTest(int, char *[])
     }
   }
   bool nonUniformForJacobian = false;
-  for (itk::SizeValueType p = 1; p < jacobianScales.GetSize(); p++)
+  for (itk::SizeValueType p = 1; p < jacobianScales.GetSize(); ++p)
   {
     if (itk::Math::NotAlmostEquals(jacobianScales[p], jacobianScales[0]))
     {
@@ -321,9 +321,9 @@ itkRegistrationParameterScalesEstimatorTest(int, char *[])
 
   jacobianScaleEstimator->EstimateScales(jacobianScales);
   bool randomPass = true;
-  for (itk::SizeValueType p = 0; p < jacobianScales.GetSize(); p++)
+  for (itk::SizeValueType p = 0; p < jacobianScales.GetSize(); ++p)
   {
-    if (std::abs((jacobianScales[p] - theoreticalJacobianScales[p]) / theoreticalJacobianScales[p]) > 0.3)
+    if (itk::Math::abs((jacobianScales[p] - theoreticalJacobianScales[p]) / theoreticalJacobianScales[p]) > 0.3)
     {
       randomPass = false;
       break;
@@ -331,7 +331,7 @@ itkRegistrationParameterScalesEstimatorTest(int, char *[])
   }
   jacobianScaleEstimator->EstimateScales(jacobianScales);
   bool fullDomainPass = true;
-  for (itk::SizeValueType p = 0; p < jacobianScales.GetSize(); p++)
+  for (itk::SizeValueType p = 0; p < jacobianScales.GetSize(); ++p)
   {
     if (itk::Math::NotAlmostEquals(jacobianScales[p], theoreticalJacobianScales[p]))
     {

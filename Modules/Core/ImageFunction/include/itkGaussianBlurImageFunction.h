@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,15 +34,12 @@ namespace itk
  * \sa ImageFunction
  * \ingroup ITKImageFunction
  *
- * \sphinx
- * \sphinxexample{Core/ImageFunction/GaussianBlueImageFunction,GaussianBlurImageFunction}
- * \endsphinx
  */
 template <typename TInputImage, typename TOutput = double>
 class ITK_TEMPLATE_EXPORT GaussianBlurImageFunction : public ImageFunction<TInputImage, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianBlurImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(GaussianBlurImageFunction);
 
   /**Standard "Self" type alias */
   using Self = GaussianBlurImageFunction;
@@ -63,8 +60,8 @@ public:
   /** InputImageType type alias support */
   using InputImageType = TInputImage;
   using InputPixelType = typename InputImageType::PixelType;
-  using IndexType = typename Superclass::IndexType;
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::IndexType;
+  using typename Superclass::ContinuousIndexType;
 
   /** Dimension of the underlying image. */
   static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
@@ -90,9 +87,9 @@ public:
   using SigmaArrayType = itk::FixedArray<double, Self::ImageDimension>;
 
   /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
-  /** Evalutate the  in the given dimension at specified point */
+  /** Evaluate the function in the given dimension at specified point */
   TOutput
   Evaluate(const PointType & point) const override;
 
@@ -102,7 +99,7 @@ public:
 
   /** Evaluate the function at specified ContinuousIndex position. */
   TOutput
-  EvaluateAtContinuousIndex(const ContinuousIndexType & index) const override;
+  EvaluateAtContinuousIndex(const ContinuousIndexType & cindex) const override;
 
   /** The standard deviation for the discrete Gaussian kernel.  Sets the
    * standard deviation independently for each dimension.

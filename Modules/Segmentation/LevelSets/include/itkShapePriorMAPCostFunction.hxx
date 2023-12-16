@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkShapePriorMAPCostFunction_hxx
 #define itkShapePriorMAPCostFunction_hxx
 
-#include "itkShapePriorMAPCostFunction.h"
 
 namespace itk
 {
@@ -54,8 +53,9 @@ ShapePriorMAPCostFunction<TFeatureImage, TOutputPixel>::PrintSelf(std::ostream &
  *
  */
 template <typename TFeatureImage, typename TOutputPixel>
-typename ShapePriorMAPCostFunction<TFeatureImage, TOutputPixel>::MeasureType
+auto
 ShapePriorMAPCostFunction<TFeatureImage, TOutputPixel>::ComputeLogInsideTerm(const ParametersType & parameters) const
+  -> MeasureType
 {
   this->m_ShapeFunction->SetParameters(parameters);
 
@@ -101,10 +101,10 @@ typename ShapePriorMAPCostFunction<TFeatureImage, TOutputPixel>::MeasureType
 ShapePriorMAPCostFunction<TFeatureImage, TOutputPixel>::ComputeLogShapePriorTerm(
   const ParametersType & parameters) const
 {
-  // assume the shape parameters is from a independent gaussian distributions
+  // assume the shape parameters is from an independent gaussian distributions
   MeasureType measure = 0.0;
 
-  for (unsigned int j = 0; j < this->m_ShapeFunction->GetNumberOfShapeParameters(); j++)
+  for (unsigned int j = 0; j < this->m_ShapeFunction->GetNumberOfShapeParameters(); ++j)
   {
     measure += itk::Math::sqr((parameters[j] - m_ShapeParameterMeans[j]) / m_ShapeParameterStandardDeviations[j]);
   }
@@ -116,8 +116,9 @@ ShapePriorMAPCostFunction<TFeatureImage, TOutputPixel>::ComputeLogShapePriorTerm
  *
  */
 template <typename TFeatureImage, typename TOutputPixel>
-typename ShapePriorMAPCostFunction<TFeatureImage, TOutputPixel>::MeasureType
+auto
 ShapePriorMAPCostFunction<TFeatureImage, TOutputPixel>::ComputeLogGradientTerm(const ParametersType & parameters) const
+  -> MeasureType
 {
   this->m_ShapeFunction->SetParameters(parameters);
 

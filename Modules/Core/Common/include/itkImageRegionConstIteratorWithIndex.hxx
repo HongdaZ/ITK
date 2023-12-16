@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageRegionConstIteratorWithIndex_hxx
 #define itkImageRegionConstIteratorWithIndex_hxx
 
-#include "itkImageRegionConstIteratorWithIndex.h"
 
 namespace itk
 {
@@ -30,7 +29,7 @@ ImageRegionConstIteratorWithIndex<TImage> &
 ImageRegionConstIteratorWithIndex<TImage>::operator++()
 {
   this->m_Remaining = false;
-  for (unsigned int in = 0; in < TImage::ImageDimension; in++)
+  for (unsigned int in = 0; in < TImage::ImageDimension; ++in)
   {
     const IndexValueType positionIndex = ++this->m_PositionIndex[in];
     if (positionIndex < this->m_EndIndex[in])
@@ -62,7 +61,7 @@ ImageRegionConstIteratorWithIndex<TImage> &
 ImageRegionConstIteratorWithIndex<TImage>::operator--()
 {
   this->m_Remaining = false;
-  for (unsigned int in = 0; in < TImage::ImageDimension; in++)
+  for (unsigned int in = 0; in < TImage::ImageDimension; ++in)
   {
     if (this->m_PositionIndex[in] > this->m_BeginIndex[in])
     {

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkCollidingFrontsImageFilter_hxx
 #define itkCollidingFrontsImageFilter_hxx
-#include "itkCollidingFrontsImageFilter.h"
 
 #include "itkMultiplyImageFilter.h"
 #include "itkBinaryThresholdImageFunction.h"
@@ -81,7 +80,7 @@ CollidingFrontsImageFilter<TInputImage, TOutputImage>::GenerateData()
 
   using MultiplyFilterType = itk::MultiplyImageFilter<GradientImageType, GradientImageType, OutputImageType>;
 
-  typename MultiplyFilterType::Pointer multiplyFilter = MultiplyFilterType::New();
+  auto multiplyFilter = MultiplyFilterType::New();
   multiplyFilter->SetInput1(fastMarchingFilter1->GetGradientImage());
   multiplyFilter->SetInput2(fastMarchingFilter2->GetGradientImage());
   multiplyFilter->Update();
@@ -113,7 +112,7 @@ CollidingFrontsImageFilter<TInputImage, TOutputImage>::GenerateData()
     using FunctionType = BinaryThresholdImageFunction<OutputImageType>;
     using IteratorType = FloodFilledImageFunctionConditionalConstIterator<OutputImageType, FunctionType>;
 
-    typename FunctionType::Pointer function = FunctionType::New();
+    auto function = FunctionType::New();
     function->SetInputImage(multipliedImage);
     function->ThresholdBelow(m_NegativeEpsilon);
 

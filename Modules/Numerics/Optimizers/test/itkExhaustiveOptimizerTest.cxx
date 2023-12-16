@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@
 #include "itkExhaustiveOptimizer.h"
 
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 /**
  *  The objectif function is the quadratic form:
@@ -151,16 +152,18 @@ itkExhaustiveOptimizerTest(int, char *[])
   using ScalesType = OptimizerType::ScalesType;
 
 
-  // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  // Declaration of an itkOptimizer
+  auto itkOptimizer = OptimizerType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(itkOptimizer, ExhaustiveOptimizer, SingleValuedNonLinearOptimizer);
 
 
   // Index observer (enables us to check if all positions were indeed visisted):
-  IndexObserver::Pointer idxObserver = IndexObserver::New();
+  auto idxObserver = IndexObserver::New();
   itkOptimizer->AddObserver(itk::IterationEvent(), idxObserver);
 
   // Declaration of the CostFunction
-  RSGCostFunction::Pointer costFunction = RSGCostFunction::New();
+  auto costFunction = RSGCostFunction::New();
   itkOptimizer->SetCostFunction(costFunction);
 
 
@@ -184,7 +187,9 @@ itkExhaustiveOptimizerTest(int, char *[])
   itkOptimizer->SetScales(parametersScale);
 
 
-  itkOptimizer->SetStepLength(1.0);
+  auto stepLength = 1.0;
+  itkOptimizer->SetStepLength(stepLength);
+  ITK_TEST_SET_GET_VALUE(stepLength, itkOptimizer->GetStepLength());
 
 
   using StepsType = OptimizerType::StepsType;
@@ -193,7 +198,10 @@ itkExhaustiveOptimizerTest(int, char *[])
   steps[1] = 10;
 
   itkOptimizer->SetNumberOfSteps(steps);
+  ITK_TEST_SET_GET_VALUE(steps, itkOptimizer->GetNumberOfSteps());
 
+
+  std::cout << "MaximumNumberOfIterations: " << itkOptimizer->GetMaximumNumberOfIterations() << std::endl;
 
   try
   {
@@ -249,7 +257,7 @@ itkExhaustiveOptimizerTest(int, char *[])
   //
   bool   trueParamsPass = true;
   double trueParameters[2] = { 2, -2 };
-  for (unsigned int j = 0; j < 2; j++)
+  for (unsigned int j = 0; j < 2; ++j)
   {
     if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > 0.01)
     {
@@ -267,9 +275,6 @@ itkExhaustiveOptimizerTest(int, char *[])
     return EXIT_FAILURE;
   }
 
-
-  std::cout << "Testing PrintSelf " << std::endl;
-  itkOptimizer->Print(std::cout);
 
   std::cout << "Test passed." << std::endl;
   return EXIT_SUCCESS;

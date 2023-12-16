@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,50 +16,35 @@
  *
  *=========================================================================*/
 
-/**
- * This is a test file for the itkGaussianSpatialObject class.
- */
-
 #include "itkGaussianSpatialObject.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 int
 itkGaussianSpatialObjectTest(int, char *[])
 {
   using GaussianType = itk::GaussianSpatialObject<4>;
 
-  GaussianType::Pointer myGaussian = GaussianType::New();
-  myGaussian->Print(std::cout);
+  auto myGaussian = GaussianType::New();
 
-  myGaussian->SetMaximum(2);
-  GaussianType::ScalarType maximum = myGaussian->GetMaximum();
-  std::cout << "Testing Maximum: ";
-  if (itk::Math::NotExactlyEquals(maximum, 2))
-  {
-    std::cout << "[FAILURE]" << std::endl;
-    return EXIT_FAILURE;
-  }
-  std::cout << "[PASSED]" << std::endl;
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(myGaussian, GaussianSpatialObject, SpatialObject);
 
-  myGaussian->SetRadiusInObjectSpace(3);
-  GaussianType::ScalarType radius = myGaussian->GetRadiusInObjectSpace();
-  std::cout << "Testing Radius: ";
-  if (itk::Math::NotExactlyEquals(radius, 3))
-  {
-    std::cout << "[FAILURE]" << std::endl;
-    return EXIT_FAILURE;
-  }
-  std::cout << "[PASSED]" << std::endl;
+  GaussianType::ScalarType maximum = 2;
+  myGaussian->SetMaximum(maximum);
+  ITK_TEST_SET_GET_VALUE(maximum, myGaussian->GetMaximum());
 
-  myGaussian->SetSigmaInObjectSpace(1.5);
-  GaussianType::ScalarType sigma = myGaussian->GetSigmaInObjectSpace();
-  std::cout << "Testing Sigma: ";
-  if (sigma != 1.5)
-  {
-    std::cout << "[FAILURE]" << std::endl;
-    return EXIT_FAILURE;
-  }
-  std::cout << "[PASSED]" << std::endl;
+  GaussianType::ScalarType radius = 3;
+  myGaussian->SetRadiusInObjectSpace(radius);
+  ITK_TEST_SET_GET_VALUE(radius, myGaussian->GetRadiusInObjectSpace());
+
+  GaussianType::ScalarType sigma = 1.5;
+  myGaussian->SetSigmaInObjectSpace(sigma);
+  ITK_TEST_SET_GET_VALUE(sigma, myGaussian->GetSigmaInObjectSpace());
+
+  GaussianType::PointType center;
+  center.Fill(0.0);
+  myGaussian->SetCenterInObjectSpace(center);
+  ITK_TEST_SET_GET_VALUE(center, myGaussian->GetCenterInObjectSpace());
 
   // Point consistency
 
@@ -103,7 +88,7 @@ itkGaussianSpatialObjectTest(int, char *[])
   std::cout << "ObjectToWorldTransform" << std::endl;
 
   // Create myGaussian2 as a child of myGaussian
-  GaussianType::Pointer myGaussian2 = GaussianType::New();
+  auto myGaussian2 = GaussianType::New();
   std::cout << "AddChild" << std::endl;
   myGaussian->AddChild(myGaussian2);
 
@@ -154,7 +139,7 @@ itkGaussianSpatialObjectTest(int, char *[])
   std::cout << "World bounds = " << boundingBox->GetBounds() << std::endl;
   std::cout << "World Center = " << myGaussian->GetCenterInObjectSpace() << std::endl;
   std::cout << "World Radius = " << myGaussian->GetRadiusInObjectSpace() << std::endl;
-  for (unsigned int i = 0; i < 3; i++)
+  for (unsigned int i = 0; i < 3; ++i)
   {
     if (itk::Math::NotAlmostEquals(boundingBox->GetBounds()[2 * i], 7.0) ||
         itk::Math::NotAlmostEquals(boundingBox->GetBounds()[2 * i + 1], 16.0))
@@ -164,8 +149,7 @@ itkGaussianSpatialObjectTest(int, char *[])
     }
   }
 
-  myGaussian->Print(std::cout);
 
-  std::cout << "[PASSED]" << std::endl;
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

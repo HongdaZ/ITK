@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@
 #include "itkResampleImageFilter.h"
 
 #include "itkBSplineTransform.h"
+#include "itkTestingMacros.h"
 
 #include <fstream>
 
@@ -75,41 +76,26 @@ public:
     using FixedReaderType = itk::ImageFileReader<FixedImageType>;
     using MovingReaderType = itk::ImageFileReader<MovingImageType>;
 
-    using MovingWriterType = itk::ImageFileWriter<MovingImageType>;
-
-
-    typename FixedReaderType::Pointer fixedReader = FixedReaderType::New();
+    auto fixedReader = FixedReaderType::New();
     fixedReader->SetFileName(argv[2]);
 
-    try
-    {
-      fixedReader->Update();
-    }
-    catch (const itk::ExceptionObject & excp)
-    {
-      std::cerr << "Exception thrown " << std::endl;
-      std::cerr << excp << std::endl;
-      return EXIT_FAILURE;
-    }
+    ITK_TRY_EXPECT_NO_EXCEPTION(fixedReader->Update());
 
 
-    typename MovingReaderType::Pointer movingReader = MovingReaderType::New();
-    typename MovingWriterType::Pointer movingWriter = MovingWriterType::New();
+    auto movingReader = MovingReaderType::New();
 
     movingReader->SetFileName(argv[3]);
-    movingWriter->SetFileName(argv[4]);
-
 
     typename FixedImageType::ConstPointer fixedImage = fixedReader->GetOutput();
 
 
     using FilterType = itk::ResampleImageFilter<MovingImageType, FixedImageType>;
 
-    typename FilterType::Pointer resampler = FilterType::New();
+    auto resampler = FilterType::New();
 
     using InterpolatorType = itk::LinearInterpolateImageFunction<MovingImageType, double>;
 
-    typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
+    auto interpolator = InterpolatorType::New();
 
     resampler->SetInterpolator(interpolator);
 
@@ -130,15 +116,12 @@ public:
 
     resampler->SetInput(movingReader->GetOutput());
 
-    movingWriter->SetInput(resampler->GetOutput());
-
-
     const unsigned int SpaceDimension = ImageDimension;
     using CoordinateRepType = double;
 
     using TransformType = itk::BSplineTransform<CoordinateRepType, SpaceDimension, VSplineOrder>;
 
-    typename TransformType::Pointer bsplineTransform = TransformType::New();
+    auto bsplineTransform = TransformType::New();
 
 
     using RegionType = typename TransformType::RegionType;
@@ -164,7 +147,7 @@ public:
 
     using PhysicalDimensionsType = typename TransformType::PhysicalDimensionsType;
     PhysicalDimensionsType fixedDimensions;
-    for (unsigned int d = 0; d < ImageDimension; d++)
+    for (unsigned int d = 0; d < ImageDimension; ++d)
     {
       fixedDimensions[d] = fixedSpacing[d] * (fixedSize[d] - 1.0);
     }
@@ -187,7 +170,7 @@ public:
 
     infile.open(argv[1]);
 
-    for (unsigned int n = 0; n < numberOfNodes; n++)
+    for (unsigned int n = 0; n < numberOfNodes; ++n)
     {
       infile >> parameters[n];
       infile >> parameters[n + numberOfNodes];
@@ -199,29 +182,20 @@ public:
     bsplineTransform->SetParameters(parameters);
 
 
-    typename CommandProgressUpdate::Pointer observer = CommandProgressUpdate::New();
+    auto observer = CommandProgressUpdate::New();
 
     resampler->AddObserver(itk::ProgressEvent(), observer);
 
 
     resampler->SetTransform(bsplineTransform);
 
-    try
-    {
-      movingWriter->Update();
-    }
-    catch (const itk::ExceptionObject & excp)
-    {
-      std::cerr << "Exception thrown " << std::endl;
-      std::cerr << excp << std::endl;
-      return EXIT_FAILURE;
-    }
+    ITK_TRY_EXPECT_NO_EXCEPTION(itk::WriteImage(resampler->GetOutput(), argv[4]));
 
 
     using VectorType = itk::Vector<float, ImageDimension>;
     using DeformationFieldType = itk::Image<VectorType, ImageDimension>;
 
-    typename DeformationFieldType::Pointer field = DeformationFieldType::New();
+    auto field = DeformationFieldType::New();
     field->SetRegions(fixedRegion);
     field->SetOrigin(fixedOrigin);
     field->SetSpacing(fixedSpacing);
@@ -249,25 +223,9 @@ public:
       ++fi;
     }
 
-
-    using FieldWriterType = itk::ImageFileWriter<DeformationFieldType>;
-    typename FieldWriterType::Pointer fieldWriter = FieldWriterType::New();
-
-    fieldWriter->SetInput(field);
-
     if (argc >= 6)
     {
-      fieldWriter->SetFileName(argv[5]);
-      try
-      {
-        fieldWriter->Update();
-      }
-      catch (const itk::ExceptionObject & excp)
-      {
-        std::cerr << "Exception thrown " << std::endl;
-        std::cerr << excp << std::endl;
-        return EXIT_FAILURE;
-      }
+      ITK_TRY_EXPECT_NO_EXCEPTION(itk::WriteImage(field, argv[5]));
     }
     return EXIT_SUCCESS;
   }
@@ -280,8 +238,8 @@ itkBSplineTransformTest3(int argc, char * argv[])
 
   if (argc < 7)
   {
-    std::cerr << "Missing Parameters " << std::endl;
-    std::cerr << "Usage: " << argv[0];
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
     std::cerr << " coefficientsFile fixedImage ";
     std::cerr << "movingImage deformedMovingImage" << std::endl;
     std::cerr << "[deformationField][multithreader use #threads]" << std::endl;

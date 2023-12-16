@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkFastMarchingUpwindGradientImageFilter_hxx
 #define itkFastMarchingUpwindGradientImageFilter_hxx
 
-#include "itkFastMarchingUpwindGradientImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkNumericTraits.h"
 #include "itkMath.h"
@@ -115,7 +114,7 @@ FastMarchingUpwindGradientImageFilter<TLevelSet, TSpeedImage>::GenerateData()
   {
     Superclass::GenerateData();
   }
-  catch (ProcessAborted & exc)
+  catch (const ProcessAborted &)
   {
     // process was aborted, clean up the state of the filter
     // (most of the cleanup will have already been done by the
@@ -123,7 +122,7 @@ FastMarchingUpwindGradientImageFilter<TLevelSet, TSpeedImage>::GenerateData()
 
     // restore the original stopping value
     this->SetStoppingValue(stoppingValue);
-    throw exc;
+    throw;
   }
 
   // restore the original stopping value
@@ -255,7 +254,7 @@ FastMarchingUpwindGradientImageFilter<TLevelSet, TSpeedImage>::ComputeGradient(
 
   unsigned int xStride[Self::SetDimension];
 
-  for (unsigned int j = 0; j < SetDimension; j++)
+  for (unsigned int j = 0; j < SetDimension; ++j)
   {
     centerPixel = output->GetPixel(index);
 

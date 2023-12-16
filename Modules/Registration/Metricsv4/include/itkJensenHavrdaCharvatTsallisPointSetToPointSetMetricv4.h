@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,7 +49,7 @@ namespace itk
  * k-d tree from the transformed points.
  *
  * Contributed by Nicholas J. Tustison, James C. Gee in the Insight Journal
- * paper:  https://hdl.handle.net/1926/1524
+ * paper: https://www.insight-journal.org/browse/publication/317
  *
  * \note The original work reported in Tustison et al. 2011 optionally employed
  * a regularization term to prevent the moving point set(s) from coalescing
@@ -73,7 +73,7 @@ class ITK_TEMPLATE_EXPORT JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4
   : public PointSetToPointSetMetricv4<TPointSet, TPointSet, TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4);
+  ITK_DISALLOW_COPY_AND_MOVE(JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4);
 
   /** Standard class type aliases. */
   using Self = JensenHavrdaCharvatTsallisPointSetToPointSetMetricv4;
@@ -94,20 +94,20 @@ public:
   static constexpr unsigned int PointDimension = TPointSet::PointDimension;
 
   /** Types transferred from the base class */
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using DerivativeValueType = typename Superclass::DerivativeValueType;
-  using LocalDerivativeType = typename Superclass::LocalDerivativeType;
-  using PointType = typename Superclass::PointType;
-  using PixelType = typename Superclass::PixelType;
-  using CoordRepType = typename Superclass::CoordRepType;
-  using PointIdentifier = typename Superclass::PointIdentifier;
-  using NeighborsIdentifierType = typename Superclass::NeighborsIdentifierType;
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeValueType;
+  using typename Superclass::LocalDerivativeType;
+  using typename Superclass::PointType;
+  using typename Superclass::PixelType;
+  using typename Superclass::CoordRepType;
+  using typename Superclass::PointIdentifier;
+  using typename Superclass::NeighborsIdentifierType;
+  using typename Superclass::NumberOfParametersType;
 
-  using JacobianType = typename Superclass::JacobianType;
-  using FixedTransformJacobianType = typename Superclass::FixedTransformJacobianType;
-  using MovingTransformJacobianType = typename Superclass::MovingTransformJacobianType;
+  using typename Superclass::JacobianType;
+  using typename Superclass::FixedTransformJacobianType;
+  using typename Superclass::MovingTransformJacobianType;
 
   using RealType = MeasureType;
 

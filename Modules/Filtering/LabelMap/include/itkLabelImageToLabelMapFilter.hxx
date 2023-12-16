@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,8 @@
 #ifndef itkLabelImageToLabelMapFilter_hxx
 #define itkLabelImageToLabelMapFilter_hxx
 
-#include "itkLabelImageToLabelMapFilter.h"
 #include "itkNumericTraits.h"
-#include "itkProgressReporter.h"
+#include "itkTotalProgressReporter.h"
 #include "itkImageLinearConstIteratorWithIndex.h"
 
 namespace itk
@@ -62,7 +61,7 @@ LabelImageToLabelMapFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateDat
   // init the temp images - one per thread
   m_TemporaryImages.resize(this->GetNumberOfWorkUnits());
 
-  for (ThreadIdType i = 0; i < this->GetNumberOfWorkUnits(); i++)
+  for (ThreadIdType i = 0; i < this->GetNumberOfWorkUnits(); ++i)
   {
     if (i == 0)
     {
@@ -86,7 +85,7 @@ LabelImageToLabelMapFilter<TInputImage, TOutputImage>::ThreadedGenerateData(
   const OutputImageRegionType & regionForThread,
   ThreadIdType                  threadId)
 {
-  ProgressReporter progress(this, threadId, regionForThread.GetNumberOfPixels());
+  TotalProgressReporter progress(this, this->GetInput()->GetRequestedRegion().GetNumberOfPixels());
 
   using InputLineIteratorType = ImageLinearConstIteratorWithIndex<InputImageType>;
   InputLineIteratorType it(this->GetInput(), regionForThread);
@@ -121,6 +120,7 @@ LabelImageToLabelMapFilter<TInputImage, TOutputImage>::ThreadedGenerateData(
         ++it;
       }
     }
+    progress.Completed(regionForThread.GetSize(0));
   }
 }
 
@@ -132,7 +132,7 @@ LabelImageToLabelMapFilter<TInputImage, TOutputImage>::AfterThreadedGenerateData
 
   // merge the lines from the temporary images in the output image
   // don't use the first image - that's the output image
-  for (ThreadIdType i = 1; i < this->GetNumberOfWorkUnits(); i++)
+  for (ThreadIdType i = 1; i < this->GetNumberOfWorkUnits(); ++i)
   {
     for (typename OutputImageType::Iterator it(m_TemporaryImages[i]); !it.IsAtEnd(); ++it)
     {

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include "itkOctree.h"
 #include "itkNumericTraits.h"
 #include "itkImageRegionIterator.h"
+#include "itkTestingMacros.h"
 #include <cstdlib>
 #include <ctime>
 #include <cmath>
@@ -44,12 +45,10 @@ itkOctreeTest(int, char *[])
   ImageType::RegionType      region;
   region.SetSize(imageSize);
   region.SetIndex(imageIndex);
-  ImageType::Pointer img = ImageType::New();
-  img->SetLargestPossibleRegion(region);
-  img->SetBufferedRegion(region);
-  img->SetRequestedRegion(region);
+  auto img = ImageType::New();
+  img->SetRegions(region);
   img->Allocate();
-  srand((unsigned)time(nullptr));
+  srand(static_cast<unsigned int>(time(nullptr)));
   itk::ImageRegionIterator<ImageType> ri(img, region);
   try
   {
@@ -73,7 +72,11 @@ itkOctreeTest(int, char *[])
   }
 
   using OctreeType = itk::Octree<unsigned int, 16384, IdentityMap<unsigned int, 16384>>;
-  OctreeType::Pointer octree = OctreeType::New();
+  auto octree = OctreeType::New();
+
+  // ITK_EXERCISE_BASIC_OBJECT_METHODS(octree, Octree, OctreeBase);
+
+
   octree->BuildFromImage(img);
   ImageType::Pointer                  output = octree->GetImage();
   itk::ImageRegionIterator<ImageType> ri2(output, region);
@@ -90,7 +93,7 @@ itkOctreeTest(int, char *[])
       if (mapped != y)
       {
         std::cerr << "Error comparing Input and Output of Octree" << std::endl;
-        return -1;
+        return EXIT_FAILURE;
       }
       ++ri;
       ++ri2;

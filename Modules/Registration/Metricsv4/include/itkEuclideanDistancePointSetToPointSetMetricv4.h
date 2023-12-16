@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,7 +45,7 @@ class ITK_TEMPLATE_EXPORT EuclideanDistancePointSetToPointSetMetricv4
   : public PointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(EuclideanDistancePointSetToPointSetMetricv4);
+  ITK_DISALLOW_COPY_AND_MOVE(EuclideanDistancePointSetToPointSetMetricv4);
 
   /** Standard class type aliases. */
   using Self = EuclideanDistancePointSetToPointSetMetricv4;
@@ -60,12 +60,26 @@ public:
   itkTypeMacro(EuclideanDistancePointSetToPointSetMetricv4, PointSetToPointSetMetricv4);
 
   /** Types transferred from the base class */
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using LocalDerivativeType = typename Superclass::LocalDerivativeType;
-  using PointType = typename Superclass::PointType;
-  using PixelType = typename Superclass::PixelType;
-  using PointIdentifier = typename Superclass::PointIdentifier;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::LocalDerivativeType;
+  using typename Superclass::PointType;
+  using typename Superclass::PixelType;
+  using typename Superclass::PointIdentifier;
+
+  using RealType = MeasureType;
+  /**
+   * Distance threshold to be used to calculate the metric value.
+   * Only point pairs that have distance lesser than this threshold
+   * contribute to the metric. Default is -1 to include all the pairs.
+   */
+  itkSetMacro(DistanceThreshold, RealType);
+
+  /**
+   * Get the Distance threshold to be used to calculate the metric value
+   * Default = -1.
+   */
+  itkGetConstMacro(DistanceThreshold, RealType);
 
   /**
    * Calculates the local metric value for a single point.
@@ -95,6 +109,9 @@ protected:
   /** PrintSelf function */
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
+
+private:
+  RealType m_DistanceThreshold = -1.0;
 };
 } // end namespace itk
 

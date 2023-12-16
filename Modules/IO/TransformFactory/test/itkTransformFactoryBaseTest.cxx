@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@
 #include "itkVersion.h"
 #include "itkTransformFactoryBase.h"
 
-#define itkPushIfTransformDim(str, D)                                                                                  \
+#define itkPushIfTransformDim(str, D) \
   (D <= (ITK_TRANSFORM_FACTORY_MAX_DIM)) ? defaultTransforms.push_back(str) : ((void)0)
 
 int
@@ -95,6 +95,7 @@ itkTransformFactoryBaseTest(int, char *[])
   itkPushIfTransformDim("ScalableAffineTransform_double_3_3", 3);
   itkPushIfTransformDim("ScaleLogarithmicTransform_double_3_3", 3);
   itkPushIfTransformDim("ScaleSkewVersor3DTransform_double_3_3", 3);
+  itkPushIfTransformDim("ComposeScaleSkewVersor3DTransform_double_3_3", 3);
   itkPushIfTransformDim("ScaleTransform_double_2_2", 2);
   itkPushIfTransformDim("ScaleTransform_double_3_3", 3);
   itkPushIfTransformDim("ScaleTransform_double_4_4", 4);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkVectorGradientMagnitudeImageFilter_hxx
 #define itkVectorGradientMagnitudeImageFilter_hxx
 
-#include "itkVectorGradientMagnitudeImageFilter.h"
 
 #include "itkNeighborhoodAlgorithm.h"
 #include "itkImageRegionIterator.h"
@@ -27,26 +26,16 @@
 #include "itkCastImageFilter.h"
 
 #include "itkMath.h"
+#include "itkPrintHelper.h"
 
 namespace itk
 {
 template <typename TInputImage, typename TRealType, typename TOutputImage>
 VectorGradientMagnitudeImageFilter<TInputImage, TRealType, TOutputImage>::VectorGradientMagnitudeImageFilter()
 {
-  unsigned int i;
-
   m_UseImageSpacing = true;
   m_UsePrincipleComponents = true;
-  m_RequestedNumberOfThreads = this->GetNumberOfWorkUnits();
-  for (i = 0; i < ImageDimension; i++)
-  {
-    m_DerivativeWeights[i] = static_cast<TRealType>(1.0);
-  }
-  for (i = 0; i < VectorDimension; i++)
-  {
-    m_ComponentWeights[i] = static_cast<TRealType>(1.0);
-    m_SqrtComponentWeights[i] = static_cast<TRealType>(1.0);
-  }
+  m_RequestedNumberOfWorkUnits = this->GetNumberOfWorkUnits();
   this->DynamicMultiThreadingOn();
   this->ThreaderUpdateProgressOff();
 }
@@ -56,25 +45,19 @@ void
 VectorGradientMagnitudeImageFilter<TInputImage, TRealType, TOutputImage>::PrintSelf(std::ostream & os,
                                                                                     Indent         indent) const
 {
-  unsigned i;
+  using namespace print_helper;
 
   Superclass::PrintSelf(os, indent);
-  os << indent << "m_UseImageSpacing = " << m_UseImageSpacing << std::endl;
-  os << indent << "m_UsePrincipleComponents = " << m_UsePrincipleComponents << std::endl;
-  os << indent << "m_RequestedNumberOfThreads = " << m_RequestedNumberOfThreads << std::endl;
-  os << indent << "m_DerivativeWeights = ";
-  for (i = 0; i < ImageDimension; i++)
-  {
-    os << m_DerivativeWeights[i] << " ";
-  }
-  os << std::endl;
-  os << indent << "m_ComponentWeights = ";
-  for (i = 0; i < VectorDimension; i++)
-  {
-    os << m_ComponentWeights[i] << " ";
-  }
-  os << std::endl;
-  os << indent << "m_RealValuedInputImage = " << m_RealValuedInputImage.GetPointer() << std::endl;
+
+  os << indent << "DerivativeWeights: " << m_DerivativeWeights << std::endl;
+  os << indent << "ComponentWeights: " << m_ComponentWeights << std::endl;
+  os << indent << "SqrtComponentWeights: " << m_SqrtComponentWeights << std::endl;
+  os << indent << "UseImageSpacing: " << m_UseImageSpacing << std::endl;
+  os << indent << "UsePrincipleComponents: " << m_UsePrincipleComponents << std::endl;
+  os << indent << "RequestedNumberOfThreads: "
+     << static_cast<typename NumericTraits<ThreadIdType>::PrintType>(m_RequestedNumberOfWorkUnits) << std::endl;
+
+  itkPrintSelfObjectMacro(RealValuedInputImage);
 }
 
 template <typename TInputImage, typename TRealType, typename TOutputImage>
@@ -90,7 +73,7 @@ VectorGradientMagnitudeImageFilter<TInputImage, TRealType, TOutputImage>::SetUse
   // otherwise, the user may have provided their own weightings.
   if (f == false && m_UseImageSpacing == true)
   {
-    for (unsigned i = 0; i < ImageDimension; ++i)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       m_DerivativeWeights[i] = static_cast<TRealType>(1.0);
     }
@@ -155,7 +138,7 @@ VectorGradientMagnitudeImageFilter<TInputImage, TRealType, TOutputImage>::Before
   Superclass::BeforeThreadedGenerateData();
 
   // Calculate the square-roots of the component weights.
-  for (unsigned i = 0; i < VectorDimension; ++i)
+  for (unsigned int i = 0; i < VectorDimension; ++i)
   {
     if (m_ComponentWeights[i] < 0)
     {
@@ -169,7 +152,7 @@ VectorGradientMagnitudeImageFilter<TInputImage, TRealType, TOutputImage>::Before
   // in case our input image has changed.
   if (m_UseImageSpacing == true)
   {
-    for (unsigned i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       if (static_cast<TRealType>(this->GetInput()->GetSpacing()[i]) == 0.0)
       {
@@ -184,12 +167,12 @@ VectorGradientMagnitudeImageFilter<TInputImage, TRealType, TOutputImage>::Before
   // data is ok because we have a special solver.
   if (m_UsePrincipleComponents == true && ImageDimension != 3)
   {
-    m_RequestedNumberOfThreads = this->GetNumberOfWorkUnits();
+    m_RequestedNumberOfWorkUnits = this->GetNumberOfWorkUnits();
     this->SetNumberOfWorkUnits(1);
   }
   else
   {
-    this->SetNumberOfWorkUnits(m_RequestedNumberOfThreads);
+    this->SetNumberOfWorkUnits(m_RequestedNumberOfWorkUnits);
   }
   //
   // cast might not be necessary, but CastImagefilter is optimized for
@@ -216,8 +199,7 @@ VectorGradientMagnitudeImageFilter<TInputImage, TRealType, TOutputImage>::Dynami
   NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<RealVectorImageType>                        bC;
   RadiusType                                                                                      r1;
   r1.Fill(1);
-  faceList =
-    bC(dynamic_cast<const RealVectorImageType *>(m_RealValuedInputImage.GetPointer()), outputRegionForThread, r1);
+  faceList = bC(m_RealValuedInputImage.GetPointer(), outputRegionForThread, r1);
 
   typename NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<RealVectorImageType>::FaceListType::iterator fit;
   fit = faceList.begin();
@@ -229,8 +211,7 @@ VectorGradientMagnitudeImageFilter<TInputImage, TRealType, TOutputImage>::Dynami
   // conditions.
   for (fit = faceList.begin(); fit != faceList.end(); ++fit)
   {
-    bit = ConstNeighborhoodIteratorType(
-      r1, dynamic_cast<const RealVectorImageType *>(m_RealValuedInputImage.GetPointer()), *fit);
+    bit = ConstNeighborhoodIteratorType(r1, m_RealValuedInputImage.GetPointer(), *fit);
     it = ImageRegionIterator<TOutputImage>(this->GetOutput(), *fit);
     bit.OverrideBoundaryCondition(&nbc);
     bit.GoToBegin();
@@ -273,7 +254,7 @@ VectorGradientMagnitudeImageFilter<TInputImage, TRealType, TOutputImage>::Dynami
 
 template <typename TInputImage, typename TRealType, typename TOutputImage>
 int
-VectorGradientMagnitudeImageFilter<TInputImage, TRealType, TOutputImage>::CubicSolver(double * c, double * s)
+VectorGradientMagnitudeImageFilter<TInputImage, TRealType, TOutputImage>::CubicSolver(const double * c, double * s)
 {
   // IMPORTANT
   // This code is specialized for particular case of positive symmetric

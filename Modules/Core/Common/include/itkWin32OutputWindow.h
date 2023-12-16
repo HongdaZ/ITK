@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,7 +53,7 @@ namespace itk
 class ITKCommon_EXPORT Win32OutputWindow : public OutputWindow
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Win32OutputWindow);
+  ITK_DISALLOW_COPY_AND_MOVE(Win32OutputWindow);
 
   /** Standard class type aliases. */
   using Self = Win32OutputWindow;
@@ -69,15 +69,15 @@ public:
 
   /** Put the text into the display window.
    * Each new line is converted to a carriage return, new line. */
-  virtual void
-  DisplayText(const char *);
+  void
+  DisplayText(const char *) override;
 
   static LRESULT APIENTRY
                  WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 protected:
-  Win32OutputWindow() {}
-  virtual ~Win32OutputWindow();
+  Win32OutputWindow() = default;
+  ~Win32OutputWindow() override;
 
   void
   PromptText(const char * text);

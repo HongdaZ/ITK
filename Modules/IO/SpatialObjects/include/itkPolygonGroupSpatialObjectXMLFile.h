@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,10 +31,10 @@ namespace itk
  * creates a corresponding PolygonGroupSpatialObject
  * \ingroup ITKIOSpatialObjects
  */
-class PolygonGroupSpatialObjectXMLFileReader : public XMLReader<GroupSpatialObject<3>>
+class ITK_TEMPLATE_EXPORT PolygonGroupSpatialObjectXMLFileReader : public XMLReader<GroupSpatialObject<3>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PolygonGroupSpatialObjectXMLFileReader);
+  ITK_DISALLOW_COPY_AND_MOVE(PolygonGroupSpatialObjectXMLFileReader);
 
   /** Standard type alias */
   using Self = PolygonGroupSpatialObjectXMLFileReader;
@@ -85,10 +85,10 @@ private:
  * based on a GroupSpatialObject.
  * \ingroup ITKIOSpatialObjects
  */
-class PolygonGroupSpatialObjectXMLFileWriter : public XMLWriterBase<GroupSpatialObject<3>>
+class ITK_TEMPLATE_EXPORT PolygonGroupSpatialObjectXMLFileWriter : public XMLWriterBase<GroupSpatialObject<3>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PolygonGroupSpatialObjectXMLFileWriter);
+  ITK_DISALLOW_COPY_AND_MOVE(PolygonGroupSpatialObjectXMLFileWriter);
 
   /** standard type alias */
   using Superclass = XMLWriterBase<GroupSpatialObject<3>>;
@@ -99,7 +99,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(PolygonGroupSpatialObjectXMLFileWriter, XMLWriterBase<GroupSpatialObjectType>);
+  itkTypeMacro(PolygonGroupSpatialObjectXMLFileWriter, XMLWriterBase);
 
   using GroupType = GroupSpatialObject<3>;
 

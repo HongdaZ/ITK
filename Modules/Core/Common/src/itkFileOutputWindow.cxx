@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@ namespace itk
 /**
  * Prompting off by default
  */
-FileOutputWindow ::FileOutputWindow()
+FileOutputWindow::FileOutputWindow()
 {
   m_Flush = false;
   m_Append = false;
@@ -30,14 +30,14 @@ FileOutputWindow ::FileOutputWindow()
   m_FileName = "";
 }
 
-FileOutputWindow ::~FileOutputWindow()
+FileOutputWindow::~FileOutputWindow()
 {
   delete m_Stream;
   m_Stream = nullptr;
 }
 
 void
-FileOutputWindow ::PrintSelf(std::ostream & os, Indent indent) const
+FileOutputWindow::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
@@ -48,7 +48,7 @@ FileOutputWindow ::PrintSelf(std::ostream & os, Indent indent) const
 }
 
 void
-FileOutputWindow ::Initialize()
+FileOutputWindow::Initialize()
 {
   if (!m_Stream)
   {
@@ -71,7 +71,7 @@ FileOutputWindow ::Initialize()
  *
  */
 void
-FileOutputWindow ::DisplayText(const char * txt)
+FileOutputWindow::DisplayText(const char * txt)
 {
   if (!txt)
   {

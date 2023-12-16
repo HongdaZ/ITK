@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,8 +30,8 @@ dynamic_castDownCast(const char * type, const char * instanceSource, itk::Object
 {
   using DerivedType = TDerived;
 
-  constexpr static int passed = 0;
-  constexpr static int failed = 1;
+  static constexpr int passed = 0;
+  static constexpr int failed = 1;
 
   DerivedType const * derived = dynamic_cast<DerivedType const *>(base);
   if (derived != nullptr)
@@ -57,13 +57,13 @@ ITKObjectProducer ::ITKObjectProducer()
 }
 
 itk::Object *
-ITKObjectProducer ::EquivalencyTable()
+ITKObjectProducer::EquivalencyTable()
 {
   return m_EquivalencyTable.GetPointer();
 }
 
 itk::Object *
-ITKObjectProducer ::Image()
+ITKObjectProducer::Image()
 {
   return m_Image.GetPointer();
 }

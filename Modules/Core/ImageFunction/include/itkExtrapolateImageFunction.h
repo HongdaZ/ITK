@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class ExtrapolateImageFunction
+ * \class ExtrapolateImageFunction
  * \brief Base class for all image extrapolaters.
  *
  * ExtrapolateImageFunction is the base for all ImageFunctions that
@@ -45,7 +45,7 @@ class ExtrapolateImageFunction
   : public ImageFunction<TInputImage, typename NumericTraits<typename TInputImage::PixelType>::RealType, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExtrapolateImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(ExtrapolateImageFunction);
 
   /** Standard class type aliases. */
   using Self = ExtrapolateImageFunction;
@@ -58,22 +58,22 @@ public:
   itkTypeMacro(ExtrapolateImageFunction, ImageFunction);
 
   /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
 
   /** Dimension underlying input image. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
 
   /** RealType type alias support */
   using RealType = typename NumericTraits<typename TInputImage::PixelType>::RealType;
@@ -86,9 +86,8 @@ public:
   OutputType
   Evaluate(const PointType & point) const override
   {
-    ContinuousIndexType index;
-
-    this->GetInputImage()->TransformPhysicalPointToContinuousIndex(point, index);
+    const ContinuousIndexType index =
+      this->GetInputImage()->template TransformPhysicalPointToContinuousIndex<TCoordRep>(point);
     return (this->EvaluateAtContinuousIndex(index));
   }
 

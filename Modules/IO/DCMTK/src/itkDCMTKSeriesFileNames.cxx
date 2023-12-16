@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,12 +20,13 @@
 #include "itksys/SystemTools.hxx"
 #include "itkProgressReporter.h"
 #include "itkDCMTKFileReader.h"
+#include "itkPrintHelper.h"
 #include "itksys/Directory.hxx"
 #include <algorithm>
 
 namespace itk
 {
-DCMTKSeriesFileNames ::DCMTKSeriesFileNames()
+DCMTKSeriesFileNames::DCMTKSeriesFileNames()
 {
   m_InputDirectory = "";
   m_OutputDirectory = "";
@@ -35,10 +36,10 @@ DCMTKSeriesFileNames ::DCMTKSeriesFileNames()
   m_LoadPrivateTags = false;
 }
 
-DCMTKSeriesFileNames ::~DCMTKSeriesFileNames() = default;
+DCMTKSeriesFileNames::~DCMTKSeriesFileNames() = default;
 
 void
-DCMTKSeriesFileNames ::SetInputDirectory(const char * name)
+DCMTKSeriesFileNames::SetInputDirectory(const char * name)
 {
   if (!name)
   {
@@ -49,7 +50,7 @@ DCMTKSeriesFileNames ::SetInputDirectory(const char * name)
 }
 
 void
-DCMTKSeriesFileNames ::SetInputDirectory(std::string const & name)
+DCMTKSeriesFileNames::SetInputDirectory(std::string const & name)
 {
   if (name.empty())
   {
@@ -72,7 +73,7 @@ DCMTKSeriesFileNames ::SetInputDirectory(std::string const & name)
 }
 
 void
-DCMTKSeriesFileNames ::GetDicomData(const std::string & series, bool saveFileNames)
+DCMTKSeriesFileNames::GetDicomData(const std::string & series, bool saveFileNames)
 {
   if (saveFileNames)
   {
@@ -96,7 +97,7 @@ DCMTKSeriesFileNames ::GetDicomData(const std::string & series, bool saveFileNam
 
   std::vector<DCMTKFileReader *> allHeaders;
 
-  for (unsigned int i = 0; i < numFiles; i++)
+  for (unsigned int i = 0; i < numFiles; ++i)
   {
     std::string curFile = directory.GetFile(i);
     if (curFile == "." || curFile == "..")
@@ -158,7 +159,7 @@ DCMTKSeriesFileNames ::GetDicomData(const std::string & series, bool saveFileNam
 }
 
 const DCMTKSeriesFileNames::FileNamesContainerType &
-DCMTKSeriesFileNames ::GetFileNames(const std::string series)
+DCMTKSeriesFileNames::GetFileNames(const std::string series)
 {
   this->GetDicomData(series, true);
   return m_InputFileNames;
@@ -173,7 +174,7 @@ DCMTKSeriesFileNames::GetSeriesUIDs()
 
 
 const DCMTKSeriesFileNames::FileNamesContainerType &
-DCMTKSeriesFileNames ::GetInputFileNames()
+DCMTKSeriesFileNames::GetInputFileNames()
 {
   // Do not specify any UID
   this->GetDicomData("", true);
@@ -181,20 +182,43 @@ DCMTKSeriesFileNames ::GetInputFileNames()
 }
 
 const DCMTKSeriesFileNames::FileNamesContainerType &
-DCMTKSeriesFileNames ::GetOutputFileNames()
+DCMTKSeriesFileNames::GetOutputFileNames()
 {
-  return m_InputFileNames;
+  return m_OutputFileNames;
 }
 
 void
-DCMTKSeriesFileNames ::PrintSelf(std::ostream & os, Indent indent) const
+DCMTKSeriesFileNames::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  unsigned int i;
   os << indent << "InputDirectory: " << m_InputDirectory << std::endl;
-  os << indent << "LoadSequences:" << m_LoadSequences << std::endl;
-  os << indent << "LoadPrivateTags:" << m_LoadPrivateTags << std::endl;
+  os << indent << "OutputDirectory: " << m_OutputDirectory << std::endl;
+
+  for (unsigned int i = 0; i < m_InputFileNames.size(); ++i)
+  {
+    os << indent << "InputFileNames[" << i << "]: " << m_InputFileNames[i] << std::endl;
+  }
+
+  for (unsigned int i = 0; i < m_OutputFileNames.size(); ++i)
+  {
+    os << indent << "OutputFileNames[" << i << "]: " << m_OutputFileNames[i] << std::endl;
+  }
+
+  for (unsigned int i = 0; i < m_SeriesUIDs.size(); ++i)
+  {
+    os << indent << "SeriesUIDs[" << i << "]: " << m_SeriesUIDs[i] << std::endl;
+  }
+
+  if (m_UseSeriesDetails)
+  {
+    os << indent << "UseSeriesDetails: True" << std::endl;
+  }
+  else
+  {
+    os << indent << "UseSeriesDetails: False" << std::endl;
+  }
+
   if (m_Recursive)
   {
     os << indent << "Recursive: True" << std::endl;
@@ -204,14 +228,27 @@ DCMTKSeriesFileNames ::PrintSelf(std::ostream & os, Indent indent) const
     os << indent << "Recursive: False" << std::endl;
   }
 
-  for (i = 0; i < m_InputFileNames.size(); i++)
+  if (m_LoadSequences)
   {
-    os << indent << "InputFileNames[" << i << "]: " << m_InputFileNames[i] << std::endl;
+    os << indent << "LoadSequences: True" << std::endl;
+  }
+  else
+  {
+    os << indent << "LoadSequences: False" << std::endl;
+  }
+
+  if (m_LoadPrivateTags)
+  {
+    os << indent << "LoadPrivateTags: True" << std::endl;
+  }
+  else
+  {
+    os << indent << "LoadPrivateTags: False" << std::endl;
   }
 }
 
 void
-DCMTKSeriesFileNames ::SetUseSeriesDetails(bool useSeriesDetails)
+DCMTKSeriesFileNames::SetUseSeriesDetails(bool useSeriesDetails)
 {
   m_UseSeriesDetails = useSeriesDetails;
   //  m_SerieHelper->SetUseSeriesDetails(m_UseSeriesDetails);

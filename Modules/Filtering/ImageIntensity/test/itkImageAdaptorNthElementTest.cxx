@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -94,11 +94,9 @@ itkImageAdaptorNthElementTest(int, char *[])
   //                 Create and Initialize the RGBPixel image
   //-------------------------------------------------------------
 
-  myContainerPixelImageType::Pointer myContainerPixelImage = myContainerPixelImageType::New();
+  auto myContainerPixelImage = myContainerPixelImageType::New();
 
-  myContainerPixelImage->SetLargestPossibleRegion(region);
-  myContainerPixelImage->SetBufferedRegion(region);
-  myContainerPixelImage->SetRequestedRegion(region);
+  myContainerPixelImage->SetRegions(region);
   myContainerPixelImage->Allocate();
   myContainerPixelImage->SetSpacing(spacing);
 
@@ -143,11 +141,9 @@ itkImageAdaptorNthElementTest(int, char *[])
   //                 Create and Initialize the Float image
   //-------------------------------------------------------------
 
-  myFloatImageType::Pointer myFloatImage = myFloatImageType::New();
+  auto myFloatImage = myFloatImageType::New();
 
-  myFloatImage->SetLargestPossibleRegion(region);
-  myFloatImage->SetBufferedRegion(region);
-  myFloatImage->SetRequestedRegion(region);
+  myFloatImage->SetRegions(region);
   myFloatImage->Allocate();
   myFloatImage->SetSpacing(spacing);
 
@@ -185,7 +181,7 @@ itkImageAdaptorNthElementTest(int, char *[])
   //         Create the adaptor and connect the image
   //-------------------------------------------------------------
 
-  myAdaptorType::Pointer myAdaptor = myAdaptorType::New();
+  auto myAdaptor = myAdaptorType::New();
 
   myAdaptor->SetImage(myContainerPixelImage);
 
@@ -193,7 +189,7 @@ itkImageAdaptorNthElementTest(int, char *[])
   //         Create the filter and connect the inputs
   //-------------------------------------------------------------
 
-  myFilterType::Pointer filter = myFilterType::New();
+  auto filter = myFilterType::New();
 
   filter->SetInput1(myAdaptor);
   filter->SetInput2(myFloatImage);

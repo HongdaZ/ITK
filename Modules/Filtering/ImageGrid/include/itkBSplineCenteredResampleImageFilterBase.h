@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ namespace itk
 {
 
 /**
- *\class BSplineCenteredResampleImageFilterBase
+ * \class BSplineCenteredResampleImageFilterBase
  * \brief Evaluates the Centered B-Spline interpolation of an image.  Spline order may be from 0 to 5.
  *
  * This class defines N-Dimension CenteredB-Spline transformation.
@@ -66,7 +66,7 @@ class ITK_TEMPLATE_EXPORT BSplineCenteredResampleImageFilterBase
   : public BSplineResampleImageFilterBase<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineCenteredResampleImageFilterBase);
+  ITK_DISALLOW_COPY_AND_MOVE(BSplineCenteredResampleImageFilterBase);
 
   /** Standard class type aliases. */
   using Self = BSplineCenteredResampleImageFilterBase;
@@ -81,25 +81,25 @@ public:
   itkNewMacro(Self);
 
   /** OutputImagePixelType type alias support */
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  using typename Superclass::OutputImagePixelType;
 
   /** OutputImageIterator type alias support */
-  using OutputImageIterator = typename Superclass::OutputImageIterator;
+  using typename Superclass::OutputImageIterator;
 
 protected:
   void
   InitializePyramidSplineFilter(int SplineOrder) override;
 
   void
-  Reduce1DImage(const std::vector<double> & In,
-                OutputImageIterator &       Iter,
-                unsigned int                traverseSize,
+  Reduce1DImage(const std::vector<double> & in,
+                OutputImageIterator &       out,
+                unsigned int                inTraverseSize,
                 ProgressReporter &          progress) override;
 
   void
-  Expand1DImage(const std::vector<double> & In,
-                OutputImageIterator &       Iter,
-                unsigned int                traverseSize,
+  Expand1DImage(const std::vector<double> & in,
+                OutputImageIterator &       out,
+                unsigned int                inTraverseSize,
                 ProgressReporter &          progress) override;
 
 protected:

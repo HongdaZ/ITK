@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -64,8 +64,7 @@ namespace itk
  *  This filter was contributed in the Insight Journal paper:
  *  "A Label Geometry Image Filter for Multiple Object Measurement"
  *  by Padfield D., Miller J
- *  http://www.insight-journal.org/browse/publication/301
- *  https://hdl.handle.net/1926/1493
+ *  https://www.insight-journal.org/browse/publication/301
  *
  * \ingroup ITKReview
  *
@@ -77,7 +76,7 @@ template <typename TLabelImage, typename TIntensityImage = TLabelImage>
 class ITK_TEMPLATE_EXPORT LabelGeometryImageFilter : public ImageToImageFilter<TLabelImage, TIntensityImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LabelGeometryImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(LabelGeometryImageFilter);
 
   /** Standard Self type alias */
   using Self = LabelGeometryImageFilter;
@@ -199,9 +198,9 @@ public:
 
       m_SecondOrderRawMoments.set_size(ImageDimension, ImageDimension);
       m_SecondOrderCentralMoments.set_size(ImageDimension, ImageDimension);
-      for (unsigned int i = 0; i < ImageDimension; i++)
+      for (unsigned int i = 0; i < ImageDimension; ++i)
       {
-        for (unsigned int j = 0; j < ImageDimension; j++)
+        for (unsigned int j = 0; j < ImageDimension; ++j)
         {
           m_SecondOrderRawMoments(i, j) = 0;
           m_SecondOrderCentralMoments(i, j) = 0;

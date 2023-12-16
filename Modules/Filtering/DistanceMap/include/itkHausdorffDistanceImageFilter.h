@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class HausdorffDistanceImageFilter
+ * \class HausdorffDistanceImageFilter
  * \brief Computes the Hausdorff distance between the set of
  * non-zero pixels of two images.
  *
@@ -63,7 +63,7 @@ template <typename TInputImage1, typename TInputImage2>
 class ITK_TEMPLATE_EXPORT HausdorffDistanceImageFilter : public ImageToImageFilter<TInputImage1, TInputImage1>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HausdorffDistanceImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(HausdorffDistanceImageFilter);
 
   /** Standard Self type alias */
   using Self = HausdorffDistanceImageFilter;

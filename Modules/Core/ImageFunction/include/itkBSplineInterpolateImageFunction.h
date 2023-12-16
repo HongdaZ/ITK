@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,14 +28,15 @@
 #ifndef itkBSplineInterpolateImageFunction_h
 #define itkBSplineInterpolateImageFunction_h
 
-#include <vector>
-
 #include "itkInterpolateImageFunction.h"
 #include "vnl/vnl_matrix.h"
 
 #include "itkBSplineDecompositionImageFilter.h"
 #include "itkConceptChecking.h"
 #include "itkCovariantVector.h"
+
+#include <memory> // For unique_ptr.
+#include <vector>
 
 namespace itk
 {
@@ -82,7 +83,7 @@ template <typename TImageType, typename TCoordRep = double, typename TCoefficien
 class ITK_TEMPLATE_EXPORT BSplineInterpolateImageFunction : public InterpolateImageFunction<TImageType, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineInterpolateImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(BSplineInterpolateImageFunction);
 
   /** Standard class type aliases. */
   using Self = BSplineInterpolateImageFunction;
@@ -97,25 +98,25 @@ public:
   itkNewMacro(Self);
 
   /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
 
   /** Dimension underlying input image. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   /** Size type alias support */
-  using SizeType = typename Superclass::SizeType;
+  using typename Superclass::SizeType;
 
   /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
 
   /** PointType type alias support */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** Iterator type alias support */
   using Iterator = ImageLinearIteratorWithIndex<TImageType>;
@@ -142,9 +143,8 @@ public:
   OutputType
   Evaluate(const PointType & point) const override
   {
-    ContinuousIndexType index;
-
-    this->GetInputImage()->TransformPhysicalPointToContinuousIndex(point, index);
+    const ContinuousIndexType index =
+      this->GetInputImage()->template TransformPhysicalPointToContinuousIndex<TCoordRep>(point);
     // No thread info passed in, so call method that doesn't need thread ID.
     return (this->EvaluateAtContinuousIndex(index));
   }
@@ -152,9 +152,8 @@ public:
   virtual OutputType
   Evaluate(const PointType & point, ThreadIdType threadId) const
   {
-    ContinuousIndexType index;
-
-    this->GetInputImage()->TransformPhysicalPointToContinuousIndex(point, index);
+    const ContinuousIndexType index =
+      this->GetInputImage()->template TransformPhysicalPointToContinuousIndex<TCoordRep>(point);
     return (this->EvaluateAtContinuousIndex(index, threadId));
   }
 
@@ -172,7 +171,11 @@ public:
   }
 
   virtual OutputType
-  EvaluateAtContinuousIndex(const ContinuousIndexType & index, ThreadIdType threadId) const;
+  EvaluateAtContinuousIndex(const ContinuousIndexType & x, ThreadIdType threadId) const
+  {
+    // Pass evaluateIndex, weights by reference. Different threadIDs get different instances.
+    return this->EvaluateAtContinuousIndexInternal(x, m_ThreadedEvaluateIndex[threadId], m_ThreadedWeights[threadId]);
+  }
 
   CovariantVectorType
   EvaluateDerivative(const PointType & point) const
@@ -187,9 +190,8 @@ public:
   CovariantVectorType
   EvaluateDerivative(const PointType & point, ThreadIdType threadId) const
   {
-    ContinuousIndexType index;
-
-    this->GetInputImage()->TransformPhysicalPointToContinuousIndex(point, index);
+    const ContinuousIndexType index =
+      this->GetInputImage()->template TransformPhysicalPointToContinuousIndex<TCoordRep>(point);
     return (this->EvaluateDerivativeAtContinuousIndex(index, threadId));
   }
 
@@ -211,7 +213,11 @@ public:
   }
 
   CovariantVectorType
-  EvaluateDerivativeAtContinuousIndex(const ContinuousIndexType & x, ThreadIdType threadId) const;
+  EvaluateDerivativeAtContinuousIndex(const ContinuousIndexType & x, ThreadIdType threadId) const
+  {
+    return this->EvaluateDerivativeAtContinuousIndexInternal(
+      x, m_ThreadedEvaluateIndex[threadId], m_ThreadedWeights[threadId], m_ThreadedWeightsDerivative[threadId]);
+  }
 
   void
   EvaluateValueAndDerivative(const PointType & point, OutputType & value, CovariantVectorType & deriv) const
@@ -230,9 +236,8 @@ public:
                              CovariantVectorType & deriv,
                              ThreadIdType          threadId) const
   {
-    ContinuousIndexType index;
-
-    this->GetInputImage()->TransformPhysicalPointToContinuousIndex(point, index);
+    const ContinuousIndexType index =
+      this->GetInputImage()->template TransformPhysicalPointToContinuousIndex<TCoordRep>(point);
     this->EvaluateValueAndDerivativeAtContinuousIndex(index, value, deriv, threadId);
   }
 
@@ -259,15 +264,23 @@ public:
   void
   EvaluateValueAndDerivativeAtContinuousIndex(const ContinuousIndexType & x,
                                               OutputType &                value,
-                                              CovariantVectorType &       deriv,
-                                              ThreadIdType                threadId) const;
+                                              CovariantVectorType &       derivativeValue,
+                                              ThreadIdType                threadId) const
+  {
+    this->EvaluateValueAndDerivativeAtContinuousIndexInternal(x,
+                                                              value,
+                                                              derivativeValue,
+                                                              m_ThreadedEvaluateIndex[threadId],
+                                                              m_ThreadedWeights[threadId],
+                                                              m_ThreadedWeightsDerivative[threadId]);
+  }
 
   /** Get/Sets the Spline Order, supports 0th - 5th order splines. The default
    *  is a 3rd order spline. */
   void
   SetSplineOrder(unsigned int SplineOrder);
 
-  itkGetConstMacro(SplineOrder, int);
+  itkGetConstMacro(SplineOrder, unsigned int);
 
   void
   SetNumberOfWorkUnits(ThreadIdType numThreads);
@@ -318,7 +331,7 @@ protected:
    *  in-turn dependent on the dimensionality of the image and the order of the spline.
    */
   virtual OutputType
-  EvaluateAtContinuousIndexInternal(const ContinuousIndexType & index,
+  EvaluateAtContinuousIndexInternal(const ContinuousIndexType & x,
                                     vnl_matrix<long> &          evaluateIndex,
                                     vnl_matrix<double> &        weights) const;
 
@@ -337,7 +350,7 @@ protected:
                                               vnl_matrix<double> &        weightsDerivative) const;
 
   BSplineInterpolateImageFunction();
-  ~BSplineInterpolateImageFunction() override;
+  ~BSplineInterpolateImageFunction() override = default;
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 
@@ -401,10 +414,10 @@ private:
   // derivatives.
   bool m_UseImageDirection;
 
-  ThreadIdType         m_NumberOfWorkUnits;
-  vnl_matrix<long> *   m_ThreadedEvaluateIndex;
-  vnl_matrix<double> * m_ThreadedWeights;
-  vnl_matrix<double> * m_ThreadedWeightsDerivative;
+  ThreadIdType                          m_NumberOfWorkUnits;
+  std::unique_ptr<vnl_matrix<long>[]>   m_ThreadedEvaluateIndex;
+  std::unique_ptr<vnl_matrix<double>[]> m_ThreadedWeights;
+  std::unique_ptr<vnl_matrix<double>[]> m_ThreadedWeightsDerivative;
 };
 } // namespace itk
 

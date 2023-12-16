@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@
 #ifndef itkDirectFourierReconstructionImageToImageFilter_hxx
 #define itkDirectFourierReconstructionImageToImageFilter_hxx
 
-#include "itkDirectFourierReconstructionImageToImageFilter.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 namespace itk
 {
@@ -195,7 +195,7 @@ DirectFourierReconstructionImageToImageFilter<TInputImage, TOutputImage>::Genera
   inputIt.GoToBegin();
 
   // Setup projection line
-  ProjectionLineType::Pointer    projectionLine = ProjectionLineType::New();
+  auto                           projectionLine = ProjectionLineType::New();
   ProjectionLineType::RegionType pRegion;
   ProjectionLineType::SizeType   pSize;
   ProjectionLineType::IndexType  pStart;
@@ -211,12 +211,12 @@ DirectFourierReconstructionImageToImageFilter<TInputImage, TOutputImage>::Genera
   const unsigned int            pLineHalfShift = pSize[0] - inputROISize[m_RDirection] / 2;
 
   // Setup 1D FFT Filter
-  FFTLineFilterType::Pointer FFT = FFTLineFilterType::New();
+  auto FFT = FFTLineFilterType::New();
   FFT->SetInput(projectionLine);
 
   // Setup FFT Line interpolator stack
-  auto * FFTLineInterpolator = new FFTLineInterpolatorType::Pointer[alpha_size];
-  for (unsigned int alpha = 0; alpha < alpha_size; alpha++)
+  const auto FFTLineInterpolator = make_unique_for_overwrite<FFTLineInterpolatorType::Pointer[]>(alpha_size);
+  for (unsigned int alpha = 0; alpha < alpha_size; ++alpha)
   {
     FFTLineInterpolator[alpha] = FFTLineInterpolatorType::New();
     FFTLineInterpolator[alpha]->SetSplineOrder(m_RadialSplineOrder);
@@ -232,7 +232,7 @@ DirectFourierReconstructionImageToImageFilter<TInputImage, TOutputImage>::Genera
   FFTSliceRegion.SetSize(FFTSliceSize);
   FFTSliceRegion.SetIndex(FFTSliceStart);
 
-  FFTSliceType::Pointer FFTSlice = FFTSliceType::New();
+  auto FFTSlice = FFTSliceType::New();
   FFTSlice->SetRegions(FFTSliceRegion);
   FFTSlice->Allocate(true); // initialize
                             // buffer to zero
@@ -382,7 +382,7 @@ DirectFourierReconstructionImageToImageFilter<TInputImage, TOutputImage>::Genera
     } // for FFTSliceIt
 
     // Setup inverse 2D FFT Filter
-    IFFTSliceFilterType::Pointer IFFT = IFFTSliceFilterType::New();
+    auto IFFT = IFFTSliceFilterType::New();
     IFFT->SetInput(FFTSlice);
 
     // Calculate the inverse 2D FFT of the slice
@@ -414,8 +414,6 @@ DirectFourierReconstructionImageToImageFilter<TInputImage, TOutputImage>::Genera
 
     inputIt.NextSlice();
   } // while ( !inputIt.IsAtEnd() )
-
-  delete[] FFTLineInterpolator;
 }
 } // namespace itk
 

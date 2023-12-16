@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,16 +21,8 @@
 #include "itkTestingMacros.h"
 
 int
-itkLevelSetDomainPartitionImageTest(int argc, char * argv[])
+itkLevelSetDomainPartitionImageTest(int, char *[])
 {
-
-  if (argc < 1)
-  {
-    std::cerr << "Missing Arguments" << std::endl;
-    std::cerr << "Program " << itkNameOfTestExecutableMacro(argv) << std::endl;
-    return EXIT_FAILURE;
-  }
-
   constexpr unsigned int Dimension = 2;
 
   using InputPixelType = unsigned short;
@@ -64,7 +56,7 @@ itkLevelSetDomainPartitionImageTest(int argc, char * argv[])
   region.SetSize(size);
 
   // Binary initialization
-  InputImageType::Pointer binary = InputImageType::New();
+  auto binary = InputImageType::New();
   binary->SetRegions(region);
   binary->SetSpacing(spacing);
   binary->SetOrigin(origin);
@@ -78,10 +70,29 @@ itkLevelSetDomainPartitionImageTest(int argc, char * argv[])
   regionVector[0] = region;
   regionVector[1] = region;
 
-  DomainPartitionSourceType::Pointer partitionSource = DomainPartitionSourceType::New();
+  auto partitionSource = DomainPartitionSourceType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(partitionSource, LevelSetDomainPartitionImage, LevelSetDomainPartitionBase);
+
+
+  // Exercise exceptions
+  ITK_TRY_EXPECT_EXCEPTION(partitionSource->PopulateListDomain());
+
   partitionSource->SetNumberOfLevelSetFunctions(numberOfLevelSetFunctions);
-  partitionSource->SetImage(binary);
+
   partitionSource->SetLevelSetDomainRegionVector(regionVector);
+
+  LevelSetDomainRegionVectorType regionVectorObtained = partitionSource->GetLevelSetDomainRegionVector();
+
+  ITK_TEST_EXPECT_EQUAL(regionVector.size(), regionVectorObtained.size());
+  for (size_t i = 0; i < regionVector.size(); ++i)
+  {
+    ITK_TEST_EXPECT_EQUAL(regionVector[i], regionVectorObtained[i]);
+  }
+
+  partitionSource->SetImage(binary);
+  ITK_TEST_SET_GET_VALUE(binary, partitionSource->GetImage());
+
   partitionSource->PopulateListDomain();
 
 

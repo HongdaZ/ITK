@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@
 namespace itk
 {
 /**
- *\class KLMDynamicBorderArray
+ * \class KLMDynamicBorderArray
  * \brief  Object maintaining a reference to a list of borders associated
  * with a region.
  *
@@ -114,7 +114,7 @@ public:
 };
 
 /**
- *\class KLMSegmentationBorder
+ * \class KLMSegmentationBorder
  * \brief Base class for KLMSegmentationBorder object
  *
  * itkKLMSegmentationBorder is the base class for the KLMSegmentationBorder
@@ -139,7 +139,7 @@ class ITK_FORWARD_EXPORT KLMSegmentationRegion;
 class ITKKLMRegionGrowing_EXPORT KLMSegmentationBorder : public SegmentationBorder
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(KLMSegmentationBorder);
+  ITK_DISALLOW_COPY_AND_MOVE(KLMSegmentationBorder);
 
   /** Standard class type aliases. */
   using Self = KLMSegmentationBorder;

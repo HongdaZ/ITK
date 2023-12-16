@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -82,7 +82,7 @@ itkFloatingPointExceptionsTest(int argc, char * argv[])
       std::cout.flush();
     }
   }
-  if (testName == "FPOverFlow")
+  if (testName == "FPOverflow")
   {
     std::cout << "Testing floating point overflow" << std::endl;
     std::cout.flush();
@@ -103,7 +103,7 @@ itkFloatingPointExceptionsTest(int argc, char * argv[])
       std::cout.flush();
     }
   }
-  if (testName == "FPUnderFlow")
+  if (testName == "FPUnderflow")
   {
     std::cout << "Testing floating point underflow" << std::endl;
     std::cout.flush();

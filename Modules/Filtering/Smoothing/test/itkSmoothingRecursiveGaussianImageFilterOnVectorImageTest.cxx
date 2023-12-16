@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ itkSmoothingRecursiveGaussianImageFilterOnVectorImageTest(int, char *[])
   constexpr unsigned int numberOfComponents = 3;
 
   // Create the image
-  myImageType::Pointer inputImage = myImageType::New();
+  auto inputImage = myImageType::New();
 
 
   // Define their size, and start index
@@ -59,9 +59,7 @@ itkSmoothingRecursiveGaussianImageFilterOnVectorImageTest(int, char *[])
   region.SetSize(size);
 
   // Initialize Image A
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetRegions(region);
   inputImage->SetNumberOfComponentsPerPixel(numberOfComponents);
   inputImage->Allocate();
 
@@ -109,7 +107,7 @@ itkSmoothingRecursiveGaussianImageFilterOnVectorImageTest(int, char *[])
 
 
   // Create a  Filter
-  myFilterType::Pointer    filter = myFilterType::New();
+  auto                     filter = myFilterType::New();
   itk::SimpleFilterWatcher watchit(filter);
 
   // Connect the input images
@@ -126,7 +124,7 @@ itkSmoothingRecursiveGaussianImageFilterOnVectorImageTest(int, char *[])
   }
   catch (const itk::ExceptionObject & err)
   {
-    (&err)->Print(std::cerr);
+    err.Print(std::cerr);
     return EXIT_FAILURE;
   }
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,10 +23,12 @@
 
 #include "itkMRFImageFilter.h"
 
+#include <memory> // For unique_ptr.
+
 namespace itk
 {
 /**
- *\class RGBGibbsPriorFilter
+ * \class RGBGibbsPriorFilter
  * \brief The RGBGibbsPriorFilter applies Gibbs Prior model for the segmentation
  * of MRF images.
  *
@@ -48,7 +50,7 @@ template <typename TInputImage, typename TClassifiedImage>
 class ITK_TEMPLATE_EXPORT RGBGibbsPriorFilter : public MRFImageFilter<TInputImage, TClassifiedImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RGBGibbsPriorFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(RGBGibbsPriorFilter);
 
   /** Standard "Self" type alias. */
   using Self = RGBGibbsPriorFilter;
@@ -63,12 +65,12 @@ public:
   itkTypeMacro(RGBGibbsPriorFilter, MRFImageFilter);
 
   /** Types from superclass.  */
-  using InputImagePixelType = typename Superclass::InputImagePixelType;
-  using InputImageRegionConstIterator = typename Superclass::InputImageRegionConstIterator;
-  using InputImageRegionIterator = typename Superclass::InputImageRegionIterator;
-  using LabelledImageRegionIterator = typename Superclass::LabelledImageRegionIterator;
-  using LabelledImagePixelType = typename Superclass::LabelledImagePixelType;
-  using IndexValueType = typename Superclass::IndexValueType;
+  using typename Superclass::InputImagePixelType;
+  using typename Superclass::InputImageRegionConstIterator;
+  using typename Superclass::InputImageRegionIterator;
+  using typename Superclass::LabelledImageRegionIterator;
+  using typename Superclass::LabelledImagePixelType;
+  using typename Superclass::IndexValueType;
 
   /** A smart pointer to the input image type. */
   using InputImageType = TInputImage;
@@ -107,7 +109,7 @@ public:
 
   /** Set the labelled image. */
   void
-  SetLabelledImage(LabelledImageType LabelledImage);
+  SetLabelledImage(LabelledImageType image);
 
   /** Get the labelled image. */
   LabelledImageType
@@ -194,7 +196,7 @@ public:
 
 protected:
   RGBGibbsPriorFilter();
-  ~RGBGibbsPriorFilter() override;
+  ~RGBGibbsPriorFilter() override = default;
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 
@@ -237,13 +239,13 @@ private:
 
   typename ClassifierType::Pointer m_ClassifierPtr;
 
-  unsigned int m_BoundaryGradient{ 7 }; /** the threshold for the existence of a
-                                       boundary. */
-  double      m_BoundaryWeight{ 1 };    /** weight for H_1 */
-  double      m_GibbsPriorWeight{ 1 };  /** weight for H_2 */
-  int         m_StartRadius{ 10 };      /** define the start region of the object. */
-  int         m_RecursiveNumber{ 0 };   /** number of SA iterations. */
-  LabelType * m_LabelStatus{ nullptr }; /** array for the state of each pixel. */
+  unsigned int m_BoundaryGradient{ 7 };                  /** the threshold for the existence of a
+                                                        boundary. */
+  double                       m_BoundaryWeight{ 1 };    /** weight for H_1 */
+  double                       m_GibbsPriorWeight{ 1 };  /** weight for H_2 */
+  int                          m_StartRadius{ 10 };      /** define the start region of the object. */
+  int                          m_RecursiveNumber{ 0 };   /** number of SA iterations. */
+  std::unique_ptr<LabelType[]> m_LabelStatus{ nullptr }; /** array for the state of each pixel. */
 
   InputImagePointer m_MediumImage; /** the medium image to store intermedium
                                      result */
@@ -261,8 +263,8 @@ private:
   InputPixelType m_LowPoint;         /** the point give lowest value of H-1 in
                                        neighbor. */
 
-  unsigned short * m_Region{ nullptr };      /** for region erase. */
-  unsigned short * m_RegionCount{ nullptr }; /** for region erase. */
+  std::unique_ptr<unsigned short[]> m_Region{ nullptr };      /** for region erase. */
+  std::unique_ptr<unsigned short[]> m_RegionCount{ nullptr }; /** for region erase. */
 
   /** weights for different clique configuration. */
   double m_CliqueWeight_1{ 0.0 }; /** weight for cliques that v/h smooth boundary */

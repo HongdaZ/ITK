@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,7 +59,7 @@ template <typename TInputImage, typename TOutputImage, typename TBinaryPriorImag
 class ITK_TEMPLATE_EXPORT VoronoiSegmentationImageFilterBase : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VoronoiSegmentationImageFilterBase);
+  ITK_DISALLOW_COPY_AND_MOVE(VoronoiSegmentationImageFilterBase);
 
   /** Standard class type aliases. */
   using Self = VoronoiSegmentationImageFilterBase;
@@ -271,7 +271,7 @@ protected:
 
   // Compute the statistics of the pixels inside the cell.
   void
-  GetPixelIndexFromPolygon(PointTypeDeque VertList, IndexList * PixelPool);
+  GetPixelIndexFromPolygon(PointTypeDeque vertlist, IndexList * PixelPool);
 
   virtual bool
   TestHomogeneity(IndexList &)

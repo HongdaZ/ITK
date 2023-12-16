@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSimplexMeshVolumeCalculator_hxx
 #define itkSimplexMeshVolumeCalculator_hxx
 
-#include "itkSimplexMeshVolumeCalculator.h"
 #include "itkMath.h"
 
 namespace itk
@@ -57,7 +56,7 @@ SimplexMeshVolumeCalculator<TInputMesh>::Finalize()
   m_Kz = (m_Muncz + (m_Wxyz / 3.0) + ((m_Wxz + m_Wyz) / 2.0)) / m_NumberOfTriangles;
 
   m_Volume = (m_Kx * m_VolumeX + m_Ky * m_VolumeY + m_Kz * m_VolumeZ);
-  m_Volume = std::fabs(m_Volume);
+  m_Volume = itk::Math::abs(m_Volume);
 }
 
 template <typename TInputMesh>
@@ -81,7 +80,7 @@ SimplexMeshVolumeCalculator<TInputMesh>::FindCellId(IdentifierType id1, Identifi
     {
       break;
     }
-    cellIt++;
+    ++cellIt;
   }
 
   if (cellIt == cells1.end())
@@ -141,36 +140,36 @@ SimplexMeshVolumeCalculator<TInputMesh>::CalculateTriangleVolume(InputPointType 
 
   // Determine max unit normal component...
   //
-  absu[0] = std::fabs(u[0]);
-  absu[1] = std::fabs(u[1]);
-  absu[2] = std::fabs(u[2]);
+  absu[0] = itk::Math::abs(u[0]);
+  absu[1] = itk::Math::abs(u[1]);
+  absu[2] = itk::Math::abs(u[2]);
   if ((absu[0] > absu[1]) && (absu[0] > absu[2]))
   {
-    m_Muncx++;
+    ++m_Muncx;
   }
   else if ((absu[1] > absu[0]) && (absu[1] > absu[2]))
   {
-    m_Muncy++;
+    ++m_Muncy;
   }
   else if ((absu[2] > absu[0]) && (absu[2] > absu[1]))
   {
-    m_Muncz++;
+    ++m_Muncz;
   }
   else if (Math::AlmostEquals(absu[0], absu[1]) && itk::Math::AlmostEquals(absu[0], absu[2]))
   {
-    m_Wxyz++;
+    ++m_Wxyz;
   }
   else if (Math::AlmostEquals(absu[0], absu[1]) && (absu[0] > absu[2]))
   {
-    m_Wxy++;
+    ++m_Wxy;
   }
   else if (Math::AlmostEquals(absu[0], absu[2]) && (absu[0] > absu[1]))
   {
-    m_Wxz++;
+    ++m_Wxz;
   }
   else if (Math::AlmostEquals(absu[1], absu[2]) && (absu[0] < absu[2]))
   {
-    m_Wyz++;
+    ++m_Wyz;
   }
   else
   {
@@ -197,7 +196,7 @@ SimplexMeshVolumeCalculator<TInputMesh>::CalculateTriangleVolume(InputPointType 
   b = std::sqrt(ii[0] + jj[0] + kk[0]);
   c = std::sqrt(ii[2] + jj[2] + kk[2]);
   s = 0.5 * (a + b + c);
-  area = std::sqrt(std::fabs(s * (s - a) * (s - b) * (s - c)));
+  area = std::sqrt(itk::Math::abs(s * (s - a) * (s - b) * (s - c)));
 
   // Volume elements ...
   //
@@ -205,13 +204,13 @@ SimplexMeshVolumeCalculator<TInputMesh>::CalculateTriangleVolume(InputPointType 
   yavg = (p1[1] + p2[1] + p3[1]) / 3.0;
   xavg = (p1[0] + p2[0] + p3[0]) / 3.0;
 
-  m_VolumeX += (area * (double)u[2] * (double)zavg);
-  m_VolumeY += (area * (double)u[1] * (double)yavg);
-  m_VolumeZ += (area * (double)u[0] * (double)xavg);
+  m_VolumeX += (area * static_cast<double>(u[2]) * static_cast<double>(zavg));
+  m_VolumeY += (area * static_cast<double>(u[1]) * static_cast<double>(yavg));
+  m_VolumeZ += (area * static_cast<double>(u[0]) * static_cast<double>(xavg));
 
   m_Area += area;
 
-  m_NumberOfTriangles++;
+  ++m_NumberOfTriangles;
 }
 
 template <typename TInputMesh>

@@ -5,17 +5,18 @@
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
 # the COPYING file, which can be found at the root of the source code
-# distribution tree, or in https://support.hdfgroup.org/ftp/HDF5/releases.
+# distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
 #
 #
 # This file provides functions for C++ support.
 #
-#-----------------------------------------------------------------------------
+# ITK --start
 if(POLICY CMP0075)
   cmake_policy(SET CMP0075 NEW) # CMake 3.12.1: Include file check macros honor CMAKE_REQUIRED_LIBRARIES.
 endif()
+# ITK --stop
 
 #-------------------------------------------------------------------------------
 ENABLE_LANGUAGE (CXX)
@@ -53,8 +54,8 @@ macro (HDF_CXX_FUNCTION_TEST OTHER_TEST)
   if (NOT DEFINED ${OTHER_TEST})
     set (MACRO_CHECK_FUNCTION_DEFINITIONS "-D${OTHER_TEST} ${CMAKE_REQUIRED_FLAGS}")
     set (OTHER_TEST_ADD_LIBRARIES)
-    if (CMAKE_REQUIRED_LIBRARIES)
-      set (OTHER_TEST_ADD_LIBRARIES "-DLINK_LIBRARIES:STRING=${CMAKE_REQUIRED_LIBRARIES}")
+    if (HDF5_REQUIRED_LIBRARIES)
+      set (OTHER_TEST_ADD_LIBRARIES "-DLINK_LIBRARIES:STRING=${HDF5_REQUIRED_LIBRARIES}")
     endif ()
 
     foreach (def
@@ -75,7 +76,9 @@ macro (HDF_CXX_FUNCTION_TEST OTHER_TEST)
       )
     endif ()
 
-    #message (STATUS "Performing ${OTHER_TEST}")
+    if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.15.0")
+      message (TRACE "Performing ${OTHER_TEST}")
+    endif ()
     TRY_COMPILE (${OTHER_TEST}
         ${CMAKE_BINARY_DIR}
         ${HDF_RESOURCES_EXT_DIR}/HDFCXXTests.cpp
@@ -85,9 +88,13 @@ macro (HDF_CXX_FUNCTION_TEST OTHER_TEST)
     )
     if (${OTHER_TEST} EQUAL 0)
       set (${OTHER_TEST} 1 CACHE INTERNAL "CXX test ${FUNCTION}")
-      message (STATUS "Performing CXX Test ${OTHER_TEST} - Success")
+      if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.15.0")
+        message (VERBOSE "Performing CXX Test ${OTHER_TEST} - Success")
+      endif ()
     else ()
-      message (STATUS "Performing CXX Test ${OTHER_TEST} - Failed")
+      if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.15.0")
+        message (VERBOSE "Performing CXX Test ${OTHER_TEST} - Failed")
+      endif ()
       set (${OTHER_TEST} "" CACHE INTERNAL "CXX test ${FUNCTION}")
       file (APPEND ${CMAKE_BINARY_DIR}/CMakeFiles/CMakeError.log
           "Performing CXX Test ${OTHER_TEST} failed with the following output:\n"
@@ -101,14 +108,9 @@ endmacro ()
 # Check a bunch of cxx functions
 #-----------------------------------------------------------------------------
 if (CMAKE_CXX_COMPILER_LOADED)
-  foreach (test
-      OLD_HEADER_FILENAME
-      HDF_NO_NAMESPACE
-      HDF_NO_STD
-      BOOL_NOTDEFINED
-      NO_STATIC_CAST
+  foreach (cxx_test
       CXX_HAVE_OFFSETOF
   )
-    HDF_CXX_FUNCTION_TEST (${test})
+    HDF_CXX_FUNCTION_TEST (${cxx_test})
   endforeach ()
 endif ()

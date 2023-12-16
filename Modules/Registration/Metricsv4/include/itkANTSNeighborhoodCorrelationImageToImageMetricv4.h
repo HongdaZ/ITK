@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -101,7 +101,7 @@ class ITK_TEMPLATE_EXPORT ANTSNeighborhoodCorrelationImageToImageMetricv4
   : public ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputationValueType, TMetricTraits>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ANTSNeighborhoodCorrelationImageToImageMetricv4);
+  ITK_DISALLOW_COPY_AND_MOVE(ANTSNeighborhoodCorrelationImageToImageMetricv4);
 
   /** Standard class type aliases. */
   using Self = ANTSNeighborhoodCorrelationImageToImageMetricv4;
@@ -114,39 +114,39 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(Self, Superclass);
+  itkTypeMacro(ANTSNeighborhoodCorrelationImageToImageMetricv4, ImageToImageMetricv4);
 
   /** superclass types */
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using DerivativeValueType = typename Superclass::DerivativeValueType;
-  using VirtualPointType = typename Superclass::VirtualPointType;
-  using FixedImagePointType = typename Superclass::FixedImagePointType;
-  using FixedImagePixelType = typename Superclass::FixedImagePixelType;
-  using FixedTransformType = typename Superclass::FixedTransformType;
-  using FixedImageGradientType = typename Superclass::FixedImageGradientType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeValueType;
+  using typename Superclass::VirtualPointType;
+  using typename Superclass::FixedImagePointType;
+  using typename Superclass::FixedImagePixelType;
+  using typename Superclass::FixedTransformType;
+  using typename Superclass::FixedImageGradientType;
   using FixedImageJacobianType = typename FixedTransformType::JacobianType;
 
-  using MovingImagePointType = typename Superclass::MovingImagePointType;
-  using MovingImagePixelType = typename Superclass::MovingImagePixelType;
-  using MovingImageGradientType = typename Superclass::MovingImageGradientType;
-  using MovingTransformType = typename Superclass::MovingTransformType;
+  using typename Superclass::MovingImagePointType;
+  using typename Superclass::MovingImagePixelType;
+  using typename Superclass::MovingImageGradientType;
+  using typename Superclass::MovingTransformType;
   using MovingImageJacobianType = typename MovingTransformType::JacobianType;
-  using JacobianType = typename Superclass::JacobianType;
+  using typename Superclass::JacobianType;
 
-  using VirtualImageGradientType = typename Superclass::VirtualImageGradientType;
+  using typename Superclass::VirtualImageGradientType;
 
-  using FixedImageType = typename Superclass::FixedImageType;
-  using MovingImageType = typename Superclass::MovingImageType;
+  using typename Superclass::FixedImageType;
+  using typename Superclass::MovingImageType;
   using VirtualImageType = typename Superclass::VirtualImageType;
-  using FixedOutputPointType = typename Superclass::FixedOutputPointType;
-  using MovingOutputPointType = typename Superclass::MovingOutputPointType;
+  using typename Superclass::FixedOutputPointType;
+  using typename Superclass::MovingOutputPointType;
 
   using FixedTransformJacobianType = typename Superclass::FixedTransformType::JacobianType;
   using MovingTransformJacobianType = typename Superclass::MovingTransformType::JacobianType;
 
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
-  using ImageDimensionType = typename Superclass::ImageDimensionType;
+  using typename Superclass::NumberOfParametersType;
+  using typename Superclass::ImageDimensionType;
 
   using ImageRegionType = typename VirtualImageType::RegionType;
   using RadiusType = typename VirtualImageType::SizeType;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,9 @@ itkBMPImageIOTest4(int argc, char * argv[])
 {
   if (argc < 3)
   {
-    std::cerr << "Usage: " << argv[0] << " lowerLeftImage upperLeftImage" << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " lowerLeftImage upperLeftImage" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -46,7 +48,7 @@ itkBMPImageIOTest4(int argc, char * argv[])
   using IteratorType = itk::ImageRegionConstIterator<ImageType>;
 
 
-  ReaderType::Pointer lowerLeftImageReader = ReaderType::New();
+  auto lowerLeftImageReader = ReaderType::New();
 
   itk::BMPImageIO::Pointer lowerLeftImageIO = itk::BMPImageIO::New();
 
@@ -55,7 +57,7 @@ itkBMPImageIOTest4(int argc, char * argv[])
   lowerLeftImageReader->SetImageIO(lowerLeftImageIO);
   lowerLeftImageReader->SetFileName(argv[1]);
 
-  ReaderType::Pointer upperLeftImageReader = ReaderType::New();
+  auto upperLeftImageReader = ReaderType::New();
 
   itk::BMPImageIO::Pointer upperLeftImageIO = itk::BMPImageIO::New();
 
@@ -104,9 +106,9 @@ itkBMPImageIOTest4(int argc, char * argv[])
     if (!(it1.Value() == it2.Value()))
     {
       std::cout << "Test failed!" << std::endl;
-      std::cout << "An image stored in a lower-left bitmap is different than \
-                   the same image stored in a upper-left bitmap."
-                << std::endl;
+      std::cout
+        << "An image stored in a lower-left bitmap is different than the same image stored in an upper-left bitmap."
+        << std::endl;
       return EXIT_FAILURE;
     }
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ class ITK_TEMPLATE_EXPORT GPUFiniteDifferenceImageFilter
   : public GPUInPlaceImageFilter<TInputImage, TOutputImage, TParentImageFilter>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUFiniteDifferenceImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(GPUFiniteDifferenceImageFilter);
 
   /** Standard class type aliases. */
   using Self = GPUFiniteDifferenceImageFilter;
@@ -240,33 +240,18 @@ protected:
    *
    * \param timeStepList The set of time changes compiled from all the threaded calls
    * to ThreadedGenerateData.
-   * \param valid The set of flags indicating which of "list" elements are
-   *  valid
+   * \param valid The set of flags indicating which of "timeStepList" elements are
+   *  valid.
    *
    * The default is to return the minimum value in the list. */
   TimeStepType
-  ResolveTimeStep(const std::vector<TimeStepType> & timeStepList, const std::vector<bool> & valid) const override;
+  ResolveTimeStep(const std::vector<TimeStepType> & timeStepList, const BooleanStdVectorType & valid) const override;
 
   /** This method is called after the solution has been generated to allow
    * subclasses to apply some further processing to the output. */
   void
   PostProcessOutput() override
   {}
-
-  /** The maximum number of iterations this filter will run */
-
-  // unsigned int m_NumberOfIterations;
-
-  /** A counter for keeping track of the number of elapsed
-      iterations during filtering. */
-  // unsigned int m_ElapsedIterations;
-
-  /** Indicates whether the filter automatically resets to UNINITIALIZED state
-      after completing, or whether filter must be manually reset */
-  bool m_ManualReinitialization;
-
-  double m_RMSChange;
-  double m_MaximumRMSError;
 
   /** Timers for statistics */
   TimeProbe m_InitTime, m_ComputeUpdateTime, m_ApplyUpdateTime, m_SmoothFieldTime;

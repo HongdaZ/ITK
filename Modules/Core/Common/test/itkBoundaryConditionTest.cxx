@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,7 +55,7 @@ filln(itk::Image<float, 2> * img)
     it.Set(100.0 * j + i);
     ++it;
     i = i + 1.0f;
-    if ((unsigned long)i % img->GetRequestedRegion().GetSize()[0] == 0)
+    if (static_cast<unsigned long>(i) % img->GetRequestedRegion().GetSize()[0] == 0)
     {
       j = j + 1.0f;
       i = 0.0f;
@@ -116,21 +116,13 @@ itkBoundaryConditionTest(int, char *[])
   Region3D.SetIndex(orig3D);
   RegionND.SetIndex(origND);
 
-  ImageType2D::Pointer image2D = ImageType2D::New();
-  ImageType3D::Pointer image3D = ImageType3D::New();
-  ImageTypeND::Pointer imageND = ImageTypeND::New();
+  auto image2D = ImageType2D::New();
+  auto image3D = ImageType3D::New();
+  auto imageND = ImageTypeND::New();
 
-  image2D->SetLargestPossibleRegion(Region2D);
-  image3D->SetLargestPossibleRegion(Region3D);
-  imageND->SetLargestPossibleRegion(RegionND);
-
-  image2D->SetBufferedRegion(Region2D);
-  image3D->SetBufferedRegion(Region3D);
-  imageND->SetBufferedRegion(RegionND);
-
-  image2D->SetRequestedRegion(Region2D);
-  image3D->SetRequestedRegion(Region3D);
-  imageND->SetRequestedRegion(RegionND);
+  image2D->SetRegions(Region2D);
+  image3D->SetRegions(Region3D);
+  imageND->SetRegions(RegionND);
 
   image2D->Allocate();
   image3D->Allocate();
@@ -170,7 +162,7 @@ itkBoundaryConditionTest(int, char *[])
   SmartIteratorType it2d(sz2, image2D, image2D->GetRequestedRegion());
 
   itk::ConstantBoundaryCondition<ImageType2D> cbc;
-  cbc.SetConstant(itk::NumericTraits<float>::ZeroValue());
+  cbc.SetConstant(0.0f);
   it2d.OverrideBoundaryCondition(&cbc);
 
   SmartIteratorType::NeighborhoodType tempN;

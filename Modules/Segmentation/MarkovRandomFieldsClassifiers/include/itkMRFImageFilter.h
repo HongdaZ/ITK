@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@
 
 namespace itk
 {
-/**\class MRFImageFilterEnums
+/** \class MRFImageFilterEnums
  * \brief Contains all enum classes in MRFImageFilter class;
  * \ingroup ITKMarkovRandomFieldsClassifiers
  */
@@ -55,7 +55,7 @@ public:
 extern ITKMarkovRandomFieldsClassifiers_EXPORT std::ostream &
                                                operator<<(std::ostream & out, const MRFImageFilterEnums::MRFStop value);
 /**
- *\class MRFImageFilter
+ * \class MRFImageFilter
  * \brief Implementation of a labeller object that uses Markov Random Fields
  * to classify pixels in an image data set.
  *
@@ -149,14 +149,14 @@ template <typename TInputImage, typename TClassifiedImage>
 class ITK_TEMPLATE_EXPORT MRFImageFilter : public ImageToImageFilter<TInputImage, TClassifiedImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MRFImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MRFImageFilter);
 
   /** Standard class type aliases. */
   using Self = MRFImageFilter;
   using Superclass = ImageToImageFilter<TInputImage, TClassifiedImage>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
+  using typename Superclass::OutputImagePointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -299,7 +299,7 @@ public:
    * 3 x 3 x 3 kernel. The labeler needs to be extended for a different
    * kernel size. */
   virtual void
-  SetMRFNeighborhoodWeight(std::vector<double> BetaMatrix);
+  SetMRFNeighborhoodWeight(std::vector<double> betaMatrix);
 
   virtual std::vector<double>
   GetMRFNeighborhoodWeight()

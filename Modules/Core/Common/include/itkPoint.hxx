@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkPoint_hxx
 #define itkPoint_hxx
-#include "itkPoint.h"
 #include "itkNumericTraitsPointPixel.h"
 #include "itkMath.h"
 #include "itkObject.h"
@@ -42,7 +41,7 @@ template <typename T, unsigned int TPointDimension>
 const Point<T, TPointDimension> &
 Point<T, TPointDimension>::operator+=(const VectorType & vec)
 {
-  for (unsigned int i = 0; i < TPointDimension; i++)
+  for (unsigned int i = 0; i < TPointDimension; ++i)
   {
     (*this)[i] += vec[i];
   }
@@ -56,7 +55,7 @@ template <typename T, unsigned int TPointDimension>
 const Point<T, TPointDimension> &
 Point<T, TPointDimension>::operator-=(const VectorType & vec)
 {
-  for (unsigned int i = 0; i < TPointDimension; i++)
+  for (unsigned int i = 0; i < TPointDimension; ++i)
   {
     (*this)[i] -= vec[i];
   }
@@ -72,7 +71,7 @@ Point<T, TPointDimension>::operator+(const VectorType & vec) const
 {
   Self result;
 
-  for (unsigned int i = 0; i < TPointDimension; i++)
+  for (unsigned int i = 0; i < TPointDimension; ++i)
   {
     result[i] = (*this)[i] + vec[i];
   }
@@ -88,7 +87,7 @@ Point<T, TPointDimension>::operator-(const VectorType & vec) const
 {
   Self result;
 
-  for (unsigned int i = 0; i < TPointDimension; i++)
+  for (unsigned int i = 0; i < TPointDimension; ++i)
   {
     result[i] = (*this)[i] - vec[i];
   }
@@ -104,7 +103,7 @@ Point<T, TPointDimension>::operator-(const Self & pnt) const
 {
   VectorType result;
 
-  for (unsigned int i = 0; i < TPointDimension; i++)
+  for (unsigned int i = 0; i < TPointDimension; ++i)
   {
     result[i] = (*this)[i] - pnt[i];
   }
@@ -136,8 +135,8 @@ Point<T, TPointDimension>::GetVnlVector() const
 }
 
 template <typename T, unsigned int TPointDimension>
-typename Point<T, TPointDimension>::VectorType
-Point<T, TPointDimension>::GetVectorFromOrigin() const
+auto
+Point<T, TPointDimension>::GetVectorFromOrigin() const -> VectorType
 {
   // VectorType knows how to construct from ValueType*.
   return &(*this)[0];
@@ -150,7 +149,7 @@ template <typename T, unsigned int TPointDimension>
 void
 Point<T, TPointDimension>::SetToMidPoint(const Self & A, const Self & B)
 {
-  for (unsigned int i = 0; i < TPointDimension; i++)
+  for (unsigned int i = 0; i < TPointDimension; ++i)
   {
     (*this)[i] = (A[i] + B[i]) / 2.0;
   }
@@ -166,7 +165,7 @@ Point<T, TPointDimension>::SetToBarycentricCombination(const Self & A, const Sel
   const double wa = alpha;
   const double wb = 1.0 - alpha;
 
-  for (unsigned int i = 0; i < TPointDimension; i++)
+  for (unsigned int i = 0; i < TPointDimension; ++i)
   {
     (*this)[i] = wa * A[i] + wb * B[i];
   }
@@ -185,7 +184,7 @@ Point<T, TPointDimension>::SetToBarycentricCombination(const Self & A,
 {
   const double weightForC = 1.0 - weightForA - weightForB;
 
-  for (unsigned int i = 0; i < TPointDimension; i++)
+  for (unsigned int i = 0; i < TPointDimension; ++i)
   {
     (*this)[i] = weightForA * A[i] + weightForB * B[i] + weightForC * C[i];
   }
@@ -200,17 +199,17 @@ Point<T, TPointDimension>::SetToBarycentricCombination(const Self * P, const dou
 {
   this->Fill(NumericTraits<T>::ZeroValue()); // put this point to null
   double weightSum = 0.0;
-  for (unsigned int j = 0; j < N - 1; j++)
+  for (unsigned int j = 0; j < N - 1; ++j)
   {
     const double weight = weights[j];
     weightSum += weight;
-    for (unsigned int i = 0; i < TPointDimension; i++)
+    for (unsigned int i = 0; i < TPointDimension; ++i)
     {
       (*this)[i] += weight * P[j][i];
     }
   }
   const double weight = (1.0 - weightSum);
-  for (unsigned int i = 0; i < TPointDimension; i++)
+  for (unsigned int i = 0; i < TPointDimension; ++i)
   {
     (*this)[i] += weight * P[N - 1][i];
   }
@@ -242,7 +241,7 @@ BarycentricCombination<TPointContainer, TWeightContainer>::Evaluate(const PointC
   {
     const double weight = weights[j++];
     weightSum += weight;
-    for (unsigned int i = 0; i < PointDimension; i++)
+    for (unsigned int i = 0; i < PointDimension; ++i)
     {
       barycentre[i] += weight * (point->Value())[i];
     }
@@ -252,7 +251,7 @@ BarycentricCombination<TPointContainer, TWeightContainer>::Evaluate(const PointC
   // Compute directly the last one
   // to make sure that the weights sum 1
   const double weight = (1.0 - weightSum);
-  for (unsigned int i = 0; i < PointDimension; i++)
+  for (unsigned int i = 0; i < PointDimension; ++i)
   {
     barycentre[i] += weight * (last->Value())[i];
   }
@@ -274,7 +273,7 @@ operator<<(std::ostream & os, const Point<T, TPointDimension> & vct)
   }
   else
   {
-    for (unsigned int i = 0; i + 1 < TPointDimension; i++)
+    for (unsigned int i = 0; i + 1 < TPointDimension; ++i)
     {
       os << vct[i] << ", ";
     }
@@ -291,7 +290,7 @@ template <typename T, unsigned int TPointDimension>
 std::istream &
 operator>>(std::istream & is, Point<T, TPointDimension> & vct)
 {
-  for (unsigned int i = 0; i < TPointDimension; i++)
+  for (unsigned int i = 0; i < TPointDimension; ++i)
   {
     is >> vct[i];
   }

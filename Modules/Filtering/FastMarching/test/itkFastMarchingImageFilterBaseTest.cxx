@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
  * and does not exercise the base class filter. The process of testing
  * the running of the filter is delegated to other tests.
  * @tparam VDimension
- * @return EXIT_SUCCESS if all test passs, EXIT_FAILURE otherwise
+ * @return EXIT_SUCCESS if all test pass, EXIT_FAILURE otherwise
  */
 template <unsigned int VDimension>
 static int
@@ -34,10 +34,10 @@ FastMarchingImageFilterBaseTestFunction()
   using PixelType = float;
 
   using ImageType = itk::Image<PixelType, VDimension>;
-  typename ImageType::Pointer input = ImageType::New();
+  auto input = ImageType::New();
 
   using FastMarchingImageFilterType = itk::FastMarchingImageFilterBase<ImageType, ImageType>;
-  typename FastMarchingImageFilterType::Pointer fastMarchingFilter = FastMarchingImageFilterType::New();
+  auto fastMarchingFilter = FastMarchingImageFilterType::New();
 
   bool overrideOutputInformation = true;
   ITK_TEST_SET_GET_BOOLEAN(fastMarchingFilter, OverrideOutputInformation, overrideOutputInformation);
@@ -91,7 +91,7 @@ itkFastMarchingImageFilterBaseTest(int, char *[])
 
   using FastMarchingImageFilterType = itk::FastMarchingImageFilterBase<ImageType, ImageType>;
 
-  FastMarchingImageFilterType::Pointer fastMarchingFilter = FastMarchingImageFilterType::New();
+  auto fastMarchingFilter = FastMarchingImageFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(fastMarchingFilter, FastMarchingImageFilterBase, FastMarchingBase);
 

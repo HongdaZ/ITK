@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 
 /*
  * This test addresses bug
- * http://public.kitware.com/Bug/view.php?id=11972
+ * https://public.kitware.com/Bug/view.php?id=11972
  *
  */
 
@@ -36,13 +36,13 @@
 int
 itkImageMaskSpatialObjectTest3(int, char *[])
 {
-  constexpr unsigned int NDimensions = 3;
+  constexpr unsigned int VDimension = 3;
 
-  using ImageMaskSpatialObjectType = itk::ImageMaskSpatialObject<NDimensions>;
+  using ImageMaskSpatialObjectType = itk::ImageMaskSpatialObject<VDimension>;
   using PixelType = ImageMaskSpatialObjectType::PixelType;
-  using ImageType = itk::Image<PixelType, NDimensions>;
+  using ImageType = itk::Image<PixelType, VDimension>;
 
-  ImageType::Pointer   image = ImageType::New();
+  auto                 image = ImageType::New();
   ImageType::SizeType  size = { { 5, 5, 5 } };
   ImageType::PointType origin;
   origin.Fill(0);
@@ -69,27 +69,25 @@ itkImageMaskSpatialObjectTest3(int, char *[])
   image->SetRegions(region);
   image->Allocate(true); // initialize buffer to zero
 
-  ImageMaskSpatialObjectType::Pointer imageMaskSpatialObject = ImageMaskSpatialObjectType::New();
+  auto imageMaskSpatialObject = ImageMaskSpatialObjectType::New();
   imageMaskSpatialObject->SetImage(image);
   imageMaskSpatialObject->Update();
 
   ImageMaskSpatialObjectType::PointType bndMin = imageMaskSpatialObject->GetMyBoundingBoxInWorldSpace()->GetMinimum();
-  ImageMaskSpatialObjectType::IndexType bndMinI;
-  image->TransformPhysicalPointToIndex(bndMin, bndMinI);
+  ImageMaskSpatialObjectType::IndexType bndMinI = image->TransformPhysicalPointToIndex(bndMin);
 
   ImageMaskSpatialObjectType::PointType bndMax = imageMaskSpatialObject->GetMyBoundingBoxInWorldSpace()->GetMaximum();
-  ImageMaskSpatialObjectType::IndexType bndMaxI;
-  image->TransformPhysicalPointToIndex(bndMax, bndMaxI);
+  ImageMaskSpatialObjectType::IndexType bndMaxI = image->TransformPhysicalPointToIndex(bndMax);
 
   ImageMaskSpatialObjectType::RegionType::SizeType regionSize;
   ImageMaskSpatialObjectType::IndexType::IndexType regionIndex;
-  for (unsigned int i = 0; i < NDimensions; ++i)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     regionIndex[i] = bndMinI[i];
     regionSize[i] = bndMaxI[i] - bndMinI[i];
   }
 
-  for (unsigned int i = 0; i < 3; i++)
+  for (unsigned int i = 0; i < 3; ++i)
   {
     if (regionSize[i] != 0)
     {
@@ -116,5 +114,7 @@ itkImageMaskSpatialObjectTest3(int, char *[])
     }
   }
 
+
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

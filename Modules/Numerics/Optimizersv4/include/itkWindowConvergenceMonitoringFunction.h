@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ template <typename TScalar = double>
 class ITK_TEMPLATE_EXPORT WindowConvergenceMonitoringFunction : public ConvergenceMonitoringFunction<TScalar, TScalar>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WindowConvergenceMonitoringFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(WindowConvergenceMonitoringFunction);
 
   using Self = WindowConvergenceMonitoringFunction;
   using Superclass = ConvergenceMonitoringFunction<TScalar, TScalar>;
@@ -55,9 +55,9 @@ public:
   using ScalarType = TScalar;
   using RealType = typename NumericTraits<ScalarType>::RealType;
 
-  using EnergyValueType = typename Superclass::EnergyValueType;
-  using EnergyValueContainerType = typename Superclass::EnergyValueContainerType;
-  using EnergyValueContainerSizeType = typename Superclass::EnergyValueContainerSizeType;
+  using typename Superclass::EnergyValueType;
+  using typename Superclass::EnergyValueContainerType;
+  using typename Superclass::EnergyValueContainerSizeType;
   using EnergyValueIterator = typename EnergyValueContainerType::iterator;
   using EnergyValueConstIterator = typename EnergyValueContainerType::const_iterator;
 

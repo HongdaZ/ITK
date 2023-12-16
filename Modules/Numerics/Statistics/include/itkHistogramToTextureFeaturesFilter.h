@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ namespace itk
 {
 namespace Statistics
 {
-/**\class HistogramToTextureFeaturesFilterEnums
+/** \class HistogramToTextureFeaturesFilterEnums
  *\brief This class contains all enum classes used by HistogramToTextureFeaturesFilter class.
  * \ingroup ITKStatistics
  */
@@ -57,7 +57,7 @@ extern ITKStatistics_EXPORT std::ostream &
                             operator<<(std::ostream & out, const HistogramToTextureFeaturesFilterEnums::TextureFeature value);
 
 /**
- *\class HistogramToTextureFeaturesFilter
+ * \class HistogramToTextureFeaturesFilter
  *  \brief This class computes texture feature coefficients from a grey level
  * co-occurrence matrix.
  *
@@ -66,7 +66,7 @@ extern ITKStatistics_EXPORT std::ostream &
  * or related class).
  *
  * The features calculated are as follows (where \f$ g(i, j) \f$ is the element in
- * cell i, j of a a normalized GLCM):
+ * cell i, j of a normalized GLCM):
  *
  * "Energy" \f$ = f_1 = \sum_{i,j}g(i, j)^2 \f$
  *
@@ -103,7 +103,7 @@ extern ITKStatistics_EXPORT std::ostream &
  * Web references:
  *
  * http://www.cssip.uq.edu.au/meastex/www/algs/algs/algs.html
- * http://www.ucalgary.ca/~mhallbey/texture/texture_tutorial.html
+ * https://www.ucalgary.ca/~mhallbey/texture/texture_tutorial.html
  *
  * Print references:
  *
@@ -114,7 +114,7 @@ extern ITKStatistics_EXPORT std::ostream &
  * Haralick, R.M. 1979. Statistical and Structural Approaches to Texture.
  * Proceedings of the IEEE, 67:786-804.
  *
- * R.W. Conners and C.A. Harlow. A Theoretical Comaprison of Texture Algorithms.
+ * R.W. Conners and C.A. Harlow. A Theoretical Comparison of Texture Algorithms.
  * IEEE Transactions on Pattern Analysis and Machine Intelligence,  2:204-222, 1980.
  *
  * R.W. Conners, M.M. Trivedi, and C.A. Harlow. Segmentation of a High-Resolution
@@ -132,7 +132,7 @@ template <typename THistogram>
 class ITK_TEMPLATE_EXPORT HistogramToTextureFeaturesFilter : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HistogramToTextureFeaturesFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(HistogramToTextureFeaturesFilter);
 
   /** Standard type alias */
   using Self = HistogramToTextureFeaturesFilter;
@@ -248,7 +248,7 @@ public:
 
   /** convenience method to access the texture values */
   MeasurementType
-  GetFeature(TextureFeatureEnum name);
+  GetFeature(TextureFeatureEnum feature);
 
 protected:
   HistogramToTextureFeaturesFilter();

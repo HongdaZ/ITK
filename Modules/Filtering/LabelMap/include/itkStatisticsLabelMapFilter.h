@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class StatisticsLabelMapFilter
+ * \class StatisticsLabelMapFilter
  * \brief The valuator class for the StatisticsLabelObject
  *
  * StatisticsLabelMapFilter can be used to set the attributes values
@@ -32,18 +32,17 @@ namespace itk
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/584  or
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
  */
 template <typename TImage, typename TFeatureImage>
 class ITK_TEMPLATE_EXPORT StatisticsLabelMapFilter
-  : public ShapeLabelMapFilter<TImage, Image<typename TImage::PixelType, TImage ::ImageDimension>>
+  : public ShapeLabelMapFilter<TImage, Image<typename TImage::PixelType, TImage::ImageDimension>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(StatisticsLabelMapFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(StatisticsLabelMapFilter);
 
   /** Standard class type aliases. */
   using Self = StatisticsLabelMapFilter;
@@ -134,6 +133,16 @@ public:
   itkSetMacro(NumberOfBins, unsigned int);
   itkGetConstReferenceMacro(NumberOfBins, unsigned int);
 
+  // Set the default number of bins to match the number of values for 8 or 16-bit integers; otherwise 128
+  static constexpr unsigned int
+  GetDefaultNumberOfBins()
+  {
+    constexpr size_t bitsShift = std::min(8 * sizeof(FeatureImagePixelType), 8 * sizeof(m_NumberOfBins) - 1);
+
+    return std::is_integral<FeatureImagePixelType>::value && sizeof(FeatureImagePixelType) <= 2 ? 1u << bitsShift
+                                                                                                : 128u;
+  }
+
 protected:
   StatisticsLabelMapFilter();
   ~StatisticsLabelMapFilter() override = default;
@@ -148,10 +157,10 @@ protected:
   PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
-  FeatureImagePixelType m_Minimum;
-  FeatureImagePixelType m_Maximum;
-  unsigned int          m_NumberOfBins;
-  bool                  m_ComputeHistogram;
+  FeatureImagePixelType m_Minimum{ NumericTraits<FeatureImagePixelType>::ZeroValue() };
+  FeatureImagePixelType m_Maximum{ NumericTraits<FeatureImagePixelType>::ZeroValue() };
+  unsigned int          m_NumberOfBins{ GetDefaultNumberOfBins() };
+  bool                  m_ComputeHistogram{ true };
 }; // end of class
 } // end namespace itk
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkTriangleMeshToBinaryImageFilter_hxx
 #define itkTriangleMeshToBinaryImageFilter_hxx
 
-#include "itkTriangleMeshToBinaryImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkNumericTraits.h"
 #include <cstdlib>
@@ -34,7 +33,7 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::TriangleMeshToBinaryI
   m_Size.Fill(0);
   m_Index.Fill(0);
 
-  for (unsigned int i = 0; i < 3; i++)
+  for (unsigned int i = 0; i < 3; ++i)
   {
     m_Spacing[i] = 1.0;
     m_Origin[i] = 0;
@@ -58,16 +57,16 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::SetInput(TInputMesh *
 
 /** Get the input Mesh */
 template <typename TInputMesh, typename TOutputImage>
-typename TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::InputMeshType *
-TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::GetInput()
+auto
+TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::GetInput() -> InputMeshType *
 {
   return static_cast<TInputMesh *>(this->ProcessObject::GetInput(0));
 }
 
 /** Get the input Mesh */
 template <typename TInputMesh, typename TOutputImage>
-typename TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::InputMeshType *
-TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::GetInput(unsigned int idx)
+auto
+TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::GetInput(unsigned int idx) -> InputMeshType *
 {
   return itkDynamicCastInDebugMode<TInputMesh *>(this->ProcessObject::GetInput(idx));
 }
@@ -157,17 +156,12 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::GenerateData()
       itkExceptionMacro(<< "Must Set Image Size");
     }
 
-    typename OutputImageType::RegionType region;
+    const typename OutputImageType::RegionType region(m_Index, m_Size);
 
-    region.SetSize(m_Size);
-    region.SetIndex(m_Index);
-
-    OutputImage->SetLargestPossibleRegion(region); //
-    OutputImage->SetBufferedRegion(region);        // set the region
-    OutputImage->SetRequestedRegion(region);       //
-    OutputImage->SetSpacing(m_Spacing);            // set spacing
-    OutputImage->SetOrigin(m_Origin);              //   and origin
-    OutputImage->SetDirection(m_Direction);        // direction cosines
+    OutputImage->SetRegions(region);        // set the region
+    OutputImage->SetSpacing(m_Spacing);     // set spacing
+    OutputImage->SetOrigin(m_Origin);       //   and origin
+    OutputImage->SetDirection(m_Direction); // direction cosines
   }
   else
   {
@@ -186,46 +180,6 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::GenerateData()
 
   RasterizeTriangles();
 
-  using myIteratorType = itk::ImageRegionIteratorWithIndex<OutputImageType>;
-
-  myIteratorType it(OutputImage, OutputImage->GetLargestPossibleRegion());
-
-  int DataIndex = 0;
-  int StencilId = 0;
-  it.GoToBegin();
-
-  size_t n = m_StencilIndex.size();
-  if (n == 0)
-  {
-    itkWarningMacro(<< "No Image Indices Found.");
-  }
-  else
-  {
-    int StencilMin = m_StencilIndex[0];
-    int StencilMax = m_StencilIndex[n - 1];
-
-    while (!it.IsAtEnd())
-    {
-      if (DataIndex >= StencilMin && DataIndex <= StencilMax)
-      {
-        if (DataIndex == m_StencilIndex[StencilId])
-        {
-          it.Set(m_InsideValue);
-          StencilId++;
-        }
-        else
-        {
-          it.Set(m_OutsideValue);
-        }
-      }
-      else
-      {
-        it.Set(m_OutsideValue);
-      }
-      DataIndex++;
-      ++it;
-    }
-  }
   itkDebugMacro(<< "TriangleMeshToBinaryImageFilter::Update() finished");
 } // end update function
 
@@ -246,12 +200,12 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::PolygonToImageRaster(
 
   // each iteration of the following loop examines one edge of the
   // polygon, where the endpoints of the edge are p1 and p2
-  auto      n = (int)(coords.size());
+  auto      n = static_cast<int>(coords.size());
   PointType p0 = coords[0];
   PointType p1 = coords[n - 1];
   double    area = 0.0;
 
-  for (int i = 0; i < n; i++)
+  for (int i = 0; i < n; ++i)
   {
     PointType p2 = coords[i];
     // calculate the area (actually double the area) of the polygon's
@@ -276,8 +230,8 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::PolygonToImageRaster(
       std::swap(p1, p2);
     }
 
-    auto zmin = (int)(std::ceil(p1[2]));
-    auto zmax = (int)(std::ceil(p2[2]));
+    auto zmin = static_cast<int>(std::ceil(p1[2]));
+    auto zmax = static_cast<int>(std::ceil(p2[2]));
 
     if (zmin > extent[5] || zmax < extent[4])
     {
@@ -294,9 +248,9 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::PolygonToImageRaster(
       zmax = extent[5] + 1;
     }
     double temp = 1.0 / (p2[2] - p1[2]);
-    for (int z = zmin; z < zmax; z++)
+    for (int z = zmin; z < zmax; ++z)
     {
-      double      r = (p2[2] - (double)(z)) * temp;
+      double      r = (p2[2] - static_cast<double>(z)) * temp;
       double      f = 1.0 - r;
       Point2DType XY;
       XY[0] = r * p1[0] + f * p2[0];
@@ -327,7 +281,7 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::PolygonToImageRaster(
   // except that 'x' is our depth value and we can store multiple
   // 'x' values per (y,z) value.
 
-  for (int z = extent[4]; z <= extent[5]; z++)
+  for (int z = extent[4]; z <= extent[5]; ++z)
   {
     Point2DVector & xylist = matrix[z - extent[4]];
 
@@ -339,8 +293,8 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::PolygonToImageRaster(
     // sort by ascending y, then x
     std::sort(xylist.begin(), xylist.end(), ComparePoints2D);
 
-    n = (int)(xylist.size()) / 2;
-    for (int k = 0; k < n; k++)
+    n = static_cast<int>(xylist.size()) / 2;
+    for (int k = 0; k < n; ++k)
     {
       Point2DType & p2D1 = xylist[2 * k];
       double        X1 = p2D1[0];
@@ -354,9 +308,9 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::PolygonToImageRaster(
         continue;
       }
       double temp = 1.0 / (Y2 - Y1);
-      auto   ymin = (int)(std::ceil(Y1));
-      auto   ymax = (int)(std::ceil(Y2));
-      for (int y = ymin; y < ymax; y++)
+      auto   ymin = static_cast<int>(std::ceil(Y1));
+      auto   ymax = static_cast<int>(std::ceil(Y2));
+      for (int y = ymin; y < ymax; ++y)
       {
         double r = (Y2 - y) * temp;
         double f = 1.0 - r;
@@ -396,18 +350,18 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::RasterizeTriangles()
   OutputImagePointer OutputImage = this->GetOutput();
 
   // need to transform points from physical to index coordinates
-  PointsContainer::Pointer NewPoints = PointsContainer::New();
-  PointSetType::Pointer    NewPointSet = PointSetType::New();
-  PointSetType::PointType  newpoint;
+  auto                    NewPoints = PointsContainer::New();
+  auto                    NewPointSet = PointSetType::New();
+  PointSetType::PointType newpoint;
 
-  // the index value type must match the point value type
-  ContinuousIndex<PointType::ValueType, 3> ind;
-  unsigned int                             pointId = 0;
+  unsigned int pointId = 0;
 
   while (points != myPoints->End())
   {
     PointType p = points.Value();
-    OutputImage->TransformPhysicalPointToContinuousIndex(p, ind);
+    // the index value type must match the point value type
+    const ContinuousIndex<PointType::ValueType, 3> ind =
+      OutputImage->template TransformPhysicalPointToContinuousIndex<PointType::ValueType>(p);
     NewPoints->InsertElement(pointId++, ind);
 
     ++points;
@@ -460,11 +414,12 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::RasterizeTriangles()
     ++cellIt;
   }
 
-  // create the equivalent of vtkStencilData from our zymatrix
-  m_StencilIndex.clear(); // prevent corruption of the filter in later updates
-  for (int z = extent[4]; z <= extent[5]; z++)
+  OutputImagePointer outputImage = this->GetOutput();
+  outputImage->FillBuffer(m_OutsideValue);
+
+  for (int z = extent[4]; z <= extent[5]; ++z)
   {
-    for (int y = extent[2]; y <= extent[3]; y++)
+    for (int y = extent[2]; y <= extent[3]; ++y)
     {
       int           zyidx = (z - extent[4]) * zInc + (y - extent[2]);
       Point1DVector xlist = zymatrix[zyidx];
@@ -491,14 +446,14 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::RasterizeTriangles()
 
       std::vector<double> nlist;
       size_t              m = xlist.size();
-      for (size_t j = 1; j < m; j++)
+      for (size_t j = 1; j < m; ++j)
       {
         Point1D p1D = xlist[j];
         double  x = p1D.m_X;
         int     sign = p1D.m_Sign;
 
         // check absolute distance from lastx to x
-        if (std::abs(x - lastx) > m_Tolerance)
+        if (itk::Math::abs(x - lastx) > m_Tolerance)
         {
           signproduct = sign * lastSign;
           if (signproduct < 0)
@@ -514,12 +469,12 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::RasterizeTriangles()
 
       // create the stencil extents
       int minx1 = extent[0]; // minimum allowable x1 value
-      int n = (int)(nlist.size()) / 2;
+      int n = static_cast<int>(nlist.size()) / 2;
 
-      for (int i = 0; i < n; i++)
+      for (int i = 0; i < n; ++i)
       {
-        auto x1 = (int)(std::ceil(nlist[2 * i]));
-        auto x2 = (int)(std::floor(nlist[2 * i + 1]));
+        auto x1 = static_cast<int>(std::ceil(nlist[2 * i]));
+        auto x2 = static_cast<int>(std::floor(nlist[2 * i + 1]));
 
         if (x2 < extent[0] || x1 > (extent[1]))
         {
@@ -530,9 +485,14 @@ TriangleMeshToBinaryImageFilter<TInputMesh, TOutputImage>::RasterizeTriangles()
 
         if (x2 >= x1)
         {
-          for (int idX = x1; idX <= x2; idX++)
+          IndexType ind;
+          ind[1] = y;
+          ind[2] = z;
+          for (int idX = x1; idX <= x2; ++idX)
           {
-            m_StencilIndex.push_back(idX + y * m_Size[0] + z * m_Size[0] * m_Size[1]);
+            // TODO: check whether replacing this for loop by ImageScanlineIterator is faster
+            ind[0] = idX;
+            outputImage->SetPixel(ind, m_InsideValue);
           }
         }
         // next x1 value must be at least x2+1

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,19 +30,19 @@ itkKdTreeGeneratorTest(int, char *[])
 
     constexpr SampleType::MeasurementVectorSizeType measurementVectorSize = 2;
 
-    SampleType::Pointer sample = SampleType::New();
+    auto sample = SampleType::New();
     sample->SetMeasurementVectorSize(measurementVectorSize);
 
     MeasurementVectorType mv(measurementVectorSize);
     for (unsigned int i = 0; i < 1000; ++i)
     {
-      mv[0] = (float)i;
-      mv[1] = (float)((1000 - i) / 2);
+      mv[0] = static_cast<float>(i);
+      mv[1] = static_cast<float>((1000 - i) / 2);
       sample->PushBack(mv);
     }
 
     using TreeGeneratorType = itk::Statistics::KdTreeGenerator<SampleType>;
-    TreeGeneratorType::Pointer treeGenerator = TreeGeneratorType::New();
+    auto treeGenerator = TreeGeneratorType::New();
 
     std::cout << "KdTreeGenerator class name: " << treeGenerator->GetNameOfClass() << std::endl;
 
@@ -81,7 +81,7 @@ itkKdTreeGeneratorTest(int, char *[])
     queryPoint[1] = 7.0;
 
     using DistanceMetricType = itk::Statistics::EuclideanDistanceMetric<MeasurementVectorType>;
-    DistanceMetricType::Pointer    distanceMetric = DistanceMetricType::New();
+    auto                           distanceMetric = DistanceMetricType::New();
     DistanceMetricType::OriginType origin(measurementVectorSize);
     for (unsigned int i = 0; i < measurementVectorSize; ++i)
     {
@@ -123,19 +123,19 @@ itkKdTreeGeneratorTest(int, char *[])
     using MeasurementVectorType = itk::Vector<float, 2>;
 
     using SampleType = itk::Statistics::ListSample<MeasurementVectorType>;
-    SampleType::Pointer sample = SampleType::New();
+    auto sample = SampleType::New();
     sample->SetMeasurementVectorSize(2);
 
     MeasurementVectorType mv;
     for (unsigned int i = 0; i < 1000; ++i)
     {
-      mv[0] = (float)i;
-      mv[1] = (float)((1000 - i) / 2);
+      mv[0] = static_cast<float>(i);
+      mv[1] = static_cast<float>((1000 - i) / 2);
       sample->PushBack(mv);
     }
 
     using TreeGeneratorType = itk::Statistics::KdTreeGenerator<SampleType>;
-    TreeGeneratorType::Pointer treeGenerator = TreeGeneratorType::New();
+    auto treeGenerator = TreeGeneratorType::New();
 
     treeGenerator->SetSample(sample);
     treeGenerator->SetBucketSize(16);
@@ -172,7 +172,7 @@ itkKdTreeGeneratorTest(int, char *[])
     queryPoint[1] = 7.0;
 
     using DistanceMetricType = itk::Statistics::EuclideanDistanceMetric<MeasurementVectorType>;
-    DistanceMetricType::Pointer    distanceMetric = DistanceMetricType::New();
+    auto                           distanceMetric = DistanceMetricType::New();
     DistanceMetricType::OriginType origin(2);
     for (unsigned int i = 0; i < MeasurementVectorType::Length; ++i)
     {

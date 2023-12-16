@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,7 +50,7 @@ itkImageFromBuffer(itk::VXLVideoIO::Pointer vxlIO, void * buffer, size_t bufferS
   space.Fill(1.0); // May need fixing
 
   // Use itkImportImageFilter to create an ITK image
-  ImportFilterType::Pointer importFilter = ImportFilterType::New();
+  auto importFilter = ImportFilterType::New();
   importFilter->SetRegion(region);
   importFilter->SetOrigin(origin);
   importFilter->SetSpacing(space);
@@ -417,7 +417,7 @@ test_VXLVideoIO(char *        input,
     ImageType::Pointer cameraFrame = itkImageFromBuffer(vxlIO, camBuffer, camBufferSize);
 
     // Write out the ITK image -- DEBUG
-    WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
     writer->SetFileName(cameraOutput);
     writer->SetInput(cameraFrame);
     writer->Update();

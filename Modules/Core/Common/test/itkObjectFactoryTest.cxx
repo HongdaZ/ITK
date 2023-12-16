@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,20 +20,21 @@
 #include "itkImage.h"
 #include <list>
 
-#define CHECK_FOR_VALUE(a, b)                                                                                          \
-  {                                                                                                                    \
-    if (a != b)                                                                                                        \
-    {                                                                                                                  \
-      std::cerr << "Error in " #a << " expected " << b << " but got " << a << std::endl;                               \
-      return EXIT_FAILURE;                                                                                             \
-    }                                                                                                                  \
-  }
+#define CHECK_FOR_VALUE(a, b)                                                            \
+  {                                                                                      \
+    if (a != b)                                                                          \
+    {                                                                                    \
+      std::cerr << "Error in " #a << " expected " << b << " but got " << a << std::endl; \
+      return EXIT_FAILURE;                                                               \
+    }                                                                                    \
+  }                                                                                      \
+  ITK_MACROEND_NOOP_STATEMENT
 
 template <typename TPixel, unsigned int VImageDimension = 2>
 class TestImage : public itk::Image<TPixel, VImageDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TestImage);
+  ITK_DISALLOW_COPY_AND_MOVE(TestImage);
 
   /** Standard class type aliases.   */
   using Self = TestImage;
@@ -56,7 +57,7 @@ template <typename TPixel, unsigned int VImageDimension = 3>
 class TestImage2 : public itk::Image<TPixel, VImageDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TestImage2);
+  ITK_DISALLOW_COPY_AND_MOVE(TestImage2);
 
   /** Standard class type aliases.   */
   using Self = TestImage2;
@@ -78,7 +79,7 @@ public:
 class TestFactory : public itk::ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TestFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(TestFactory);
 
   using Self = TestFactory;
   using Superclass = itk::ObjectFactoryBase;
@@ -107,7 +108,7 @@ public:
   static void
   RegisterOneFactory()
   {
-    TestFactory::Pointer factory = TestFactory::New();
+    auto factory = TestFactory::New();
     itk::ObjectFactoryBase::RegisterFactory(factory);
   }
 
@@ -145,7 +146,7 @@ TestNewImage(myPointer v, const char * expectedClassName)
 int
 itkObjectFactoryTest(int, char *[])
 {
-  TestFactory::Pointer factory = TestFactory::New();
+  auto factory = TestFactory::New();
   itk::ObjectFactoryBase::RegisterFactory(factory);
 
   // List all registered factories
@@ -164,7 +165,7 @@ itkObjectFactoryTest(int, char *[])
     std::list<std::string>::const_iterator n = names.begin();
     std::list<std::string>::const_iterator d = descriptions.begin();
     std::list<bool>::const_iterator        e = enableflags.begin();
-    for (std::list<std::string>::const_iterator o = overrides.begin(); o != overrides.end(); ++o, ++n, ++d, e++)
+    for (std::list<std::string>::const_iterator o = overrides.begin(); o != overrides.end(); ++o, ++n, ++d, ++e)
     {
       std::cout << "    Override " << *o << " with " << *n << std::endl
                 << "      described as \"" << *d << "\"" << std::endl

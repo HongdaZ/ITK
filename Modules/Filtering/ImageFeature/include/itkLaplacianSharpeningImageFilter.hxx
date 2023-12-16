@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkLaplacianSharpeningImageFilter_hxx
 #define itkLaplacianSharpeningImageFilter_hxx
-#include "itkLaplacianSharpeningImageFilter.h"
 
 #include "itkNeighborhoodOperatorImageFilter.h"
 #include "itkLaplacianOperator.h"
@@ -93,7 +92,7 @@ LaplacianSharpeningImageFilter<TInputImage, TOutputImage>::GenerateData()
   // Create the Laplacian operator
   LaplacianOperator<RealType, ImageDimension> oper;
   double                                      s[ImageDimension];
-  for (unsigned i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     if (this->GetInput()->GetSpacing()[i] == 0.0)
     {
@@ -112,11 +111,11 @@ LaplacianSharpeningImageFilter<TInputImage, TOutputImage>::GenerateData()
   using NOIF = NeighborhoodOperatorImageFilter<InputImageType, RealImageType>;
   ZeroFluxNeumannBoundaryCondition<InputImageType> nbc;
 
-  typename NOIF::Pointer filter = NOIF::New();
+  auto filter = NOIF::New();
   filter->OverrideBoundaryCondition(static_cast<typename NOIF::ImageBoundaryConditionPointerType>(&nbc));
 
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
 
   // Register the filter with the with progress accumulator using

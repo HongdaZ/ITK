@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,8 +50,8 @@ runGPUImageFilterTest(const std::string & inFile, const std::string & outFile)
   using ReaderType = itk::ImageFileReader<InputImageType>;
   using WriterType = itk::ImageFileWriter<OutputImageType>;
 
-  typename ReaderType::Pointer reader = ReaderType::New();
-  typename WriterType::Pointer writer = WriterType::New();
+  auto reader = ReaderType::New();
+  auto writer = WriterType::New();
 
   reader->SetFileName(inFile);
   writer->SetFileName(outFile);
@@ -63,9 +63,9 @@ runGPUImageFilterTest(const std::string & inFile, const std::string & outFile)
   using MeanFilterType = itk::MeanImageFilter<InputImageType, OutputImageType>;
   using ThresholdFilterType = itk::BinaryThresholdImageFilter<InputImageType, OutputImageType>;
 
-  typename MeanFilterType::Pointer      filter1 = MeanFilterType::New();
-  typename MeanFilterType::Pointer      filter2 = MeanFilterType::New();
-  typename ThresholdFilterType::Pointer filter3 = ThresholdFilterType::New();
+  auto filter1 = MeanFilterType::New();
+  auto filter2 = MeanFilterType::New();
+  auto filter3 = ThresholdFilterType::New();
 
   // Mean filter kernel radius
   typename InputImageType::SizeType indexRadius;

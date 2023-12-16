@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +38,7 @@ namespace itk
 class ITKCommon_EXPORT StoppingCriterionBase : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(StoppingCriterionBase);
+  ITK_DISALLOW_COPY_AND_MOVE(StoppingCriterionBase);
 
   using Self = StoppingCriterionBase;
   using Superclass = Object;
@@ -49,7 +49,7 @@ public:
 
   /** \return \c true if the stopping criterion is reached (and the algorithm
   must stop).
-      \return \c fasle else. */
+      \return \c false else. */
   virtual bool
   IsSatisfied() const = 0;
   virtual std::string

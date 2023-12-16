@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkBorderQuadEdgeMeshFilter_hxx
 #define itkBorderQuadEdgeMeshFilter_hxx
 
-#include "itkBorderQuadEdgeMeshFilter.h"
 
 namespace itk
 {
@@ -33,16 +32,16 @@ BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::BorderQuadEdgeMeshFilter()
 
 // ----------------------------------------------------------------------------
 template <typename TInputMesh, typename TOutputMesh>
-typename BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::MapPointIdentifier
-BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::GetBoundaryPtMap()
+auto
+BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::GetBoundaryPtMap() -> MapPointIdentifier
 {
   return this->m_BoundaryPtMap;
 }
 
 // ----------------------------------------------------------------------------
 template <typename TInputMesh, typename TOutputMesh>
-typename BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::InputVectorPointType
-BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::GetBorder()
+auto
+BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::GetBorder() -> InputVectorPointType
 {
   return this->m_Border;
 }
@@ -93,8 +92,8 @@ BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
 // *** under testing ***
 #if !defined(ITK_WRAPPING_PARSER)
 template <typename TInputMesh, typename TOutputMesh>
-typename BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::InputQEType *
-BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::ComputeLongestBorder()
+auto
+BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::ComputeLongestBorder() -> InputQEType *
 {
   BoundaryRepresentativeEdgesPointer boundaryRepresentativeEdges = BoundaryRepresentativeEdgesType::New();
 
@@ -143,8 +142,8 @@ BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::ComputeLongestBorder()
 // ----------------------------------------------------------------------------
 #if !defined(ITK_WRAPPING_PARSER)
 template <typename TInputMesh, typename TOutputMesh>
-typename BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::InputQEType *
-BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::ComputeLargestBorder()
+auto
+BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::ComputeLargestBorder() -> InputQEType *
 {
   BoundaryRepresentativeEdgesPointer boundaryRepresentativeEdges = BoundaryRepresentativeEdgesType::New();
 
@@ -169,7 +168,7 @@ BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::ComputeLargestBorder()
 
     for (InputIteratorGeom e_it = (*b_it)->BeginGeomLnext(); e_it != (*b_it)->EndGeomLnext(); ++e_it)
     {
-      k++;
+      ++k;
     }
 
     if (k > max_id)
@@ -254,8 +253,8 @@ BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::DiskTransform()
 
 // ----------------------------------------------------------------------------
 template <typename TInputMesh, typename TOutputMesh>
-typename BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::InputCoordRepType
-BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::RadiusMaxSquare()
+auto
+BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::RadiusMaxSquare() -> InputCoordRepType
 {
   InputMeshConstPointer input = this->GetInput();
 
@@ -281,8 +280,8 @@ BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::RadiusMaxSquare()
 
 // ----------------------------------------------------------------------------
 template <typename TInputMesh, typename TOutputMesh>
-typename BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::InputPointType
-BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::GetMeshBarycentre()
+auto
+BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::GetMeshBarycentre() -> InputPointType
 {
   InputMeshConstPointer input = this->GetInput();
 

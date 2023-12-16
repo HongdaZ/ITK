@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,8 +32,7 @@ namespace itk
  * This code was contributed in the Insight Journal paper:
  * "Efficient implementation of kernel filtering"
  * by Beare R., Lehmann G
- * https://hdl.handle.net/1926/555
- * http://www.insight-journal.org/browse/publication/160
+ * https://www.insight-journal.org/browse/publication/160
  *
  * \author Richard Beare
  * \author Gaetan Lehmann
@@ -45,7 +44,7 @@ class ITK_TEMPLATE_EXPORT MaskedMovingHistogramImageFilter
   : public MovingHistogramImageFilterBase<TInputImage, TOutputImage, TKernel>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MaskedMovingHistogramImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MaskedMovingHistogramImageFilter);
 
   /** Standard class type aliases. */
   using Self = MaskedMovingHistogramImageFilter;
@@ -68,7 +67,7 @@ public:
   using IndexType = typename TInputImage::IndexType;
   using PixelType = typename TInputImage::PixelType;
   using OffsetType = typename TInputImage::OffsetType;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
   using OutputPixelType = typename TOutputImage::PixelType;
   using InputPixelType = typename TInputImage::PixelType;
   using MaskPixelType = typename MaskImageType::PixelType;

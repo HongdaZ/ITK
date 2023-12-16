@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class ContourDirectedMeanDistanceImageFilter
+ * \class ContourDirectedMeanDistanceImageFilter
  * \brief Computes the directed Mean distance between the boundaries of
  * non-zero pixel regions of two images.
  *
@@ -64,7 +64,7 @@ template <typename TInputImage1, typename TInputImage2>
 class ITK_TEMPLATE_EXPORT ContourDirectedMeanDistanceImageFilter : public ImageToImageFilter<TInputImage1, TInputImage1>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ContourDirectedMeanDistanceImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ContourDirectedMeanDistanceImageFilter);
 
   /** Standard Self type alias */
   using Self = ContourDirectedMeanDistanceImageFilter;
@@ -118,9 +118,10 @@ public:
   /** Return the computed directed Mean distance. */
   itkGetConstMacro(ContourDirectedMeanDistance, RealType);
 
-  /** Set if image spacing should be used in computing distances. */
+  /** Set/Get if image spacing should be used in computing distances. */
   itkSetMacro(UseImageSpacing, bool);
   itkGetConstMacro(UseImageSpacing, bool);
+  itkBooleanMacro(UseImageSpacing);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
@@ -175,7 +176,7 @@ private:
   Array<IdentifierType> m_Count;
   RealType              m_ContourDirectedMeanDistance;
   bool                  m_UseImageSpacing;
-}; // end of class
+};
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION

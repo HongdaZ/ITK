@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -107,7 +107,7 @@ class ITK_TEMPLATE_EXPORT ShapeDetectionLevelSetImageFilter
   : public SegmentationLevelSetImageFilter<TInputImage, TFeatureImage, TOutputPixelType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShapeDetectionLevelSetImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ShapeDetectionLevelSetImageFilter);
 
   /** Standard class type aliases */
   using Self = ShapeDetectionLevelSetImageFilter;
@@ -116,9 +116,9 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Inherited type alias from the superclass. */
-  using ValueType = typename Superclass::ValueType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using FeatureImageType = typename Superclass::FeatureImageType;
+  using typename Superclass::ValueType;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::FeatureImageType;
 
   /** Type of the segmentation function */
   using ShapeDetectionFunctionType = ShapeDetectionLevelSetFunction<OutputImageType, FeatureImageType>;

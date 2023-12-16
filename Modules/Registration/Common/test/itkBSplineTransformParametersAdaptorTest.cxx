@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,7 +50,7 @@ itkBSplineTransformParametersAdaptorTest(int, char *[])
   /**
    * Instantiate a transform
    */
-  TransformType::Pointer transform = TransformType::New();
+  auto transform = TransformType::New();
   transform->SetTransformDomainOrigin(origin);
   transform->SetTransformDomainPhysicalDimensions(dimensions);
   transform->SetTransformDomainMeshSize(meshSize);
@@ -87,7 +87,7 @@ itkBSplineTransformParametersAdaptorTest(int, char *[])
    */
 
   TransformType::MeshSizeType requiredMeshSize;
-  for (unsigned int d = 0; d < SpaceDimension; d++)
+  for (unsigned int d = 0; d < SpaceDimension; ++d)
   {
     requiredMeshSize[d] = (d + 1) * meshSize[d];
   }
@@ -95,7 +95,7 @@ itkBSplineTransformParametersAdaptorTest(int, char *[])
   TransformType::SizeType gridSizeBefore = transform->GetCoefficientImages()[0]->GetLargestPossibleRegion().GetSize();
 
   using AdaptorType = itk::BSplineTransformParametersAdaptor<TransformType>;
-  AdaptorType::Pointer adaptor = AdaptorType::New();
+  auto adaptor = AdaptorType::New();
   adaptor->SetTransform(transform);
   adaptor->SetRequiredTransformDomainMeshSize(requiredMeshSize);
   adaptor->SetRequiredTransformDomainOrigin(transform->GetTransformDomainOrigin());

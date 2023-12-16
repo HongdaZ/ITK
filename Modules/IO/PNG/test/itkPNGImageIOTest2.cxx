@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,7 +50,9 @@ itkPNGImageIOTest2(int argc, char * argv[])
   // Test the reading of an image as grayscale image and writing of grayscale image
   if (argc < 5)
   {
-    std::cerr << "Usage: " << argv[0] << " input"
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " input"
               << " output"
               << " useCompression"
               << " compressionLevel"
@@ -145,7 +147,7 @@ itkPNGImageIOTest2(int argc, char * argv[])
   }
 
   // Actually reading an RGBA image
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
   reader->SetImageIO(io);
 
@@ -184,7 +186,7 @@ itkPNGImageIOTest2(int argc, char * argv[])
   ImageType::Pointer inputImage = reader->GetOutput();
 
   // Write the grayscale output image
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(inputImage);
   writer->SetImageIO(io);
   writer->SetFileName(argv[2]);

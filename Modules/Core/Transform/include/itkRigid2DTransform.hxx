@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkRigid2DTransform_hxx
 #define itkRigid2DTransform_hxx
 
-#include "itkRigid2DTransform.h"
 #include "vnl/algo/vnl_svd.h"
 
 namespace itk
@@ -71,7 +70,7 @@ Rigid2DTransform<TParametersValueType>::SetMatrix(const MatrixType & matrix, con
 {
   itkDebugMacro("setting  m_Matrix  to " << matrix);
   // The matrix must be orthogonal otherwise it is not
-  // representing a valid rotaion in 2D space
+  // representing a valid rotation in 2D space
   typename MatrixType::InternalMatrixType test = matrix.GetVnlMatrix() * matrix.GetTranspose();
 
   if (!test.is_identity(tolerance))
@@ -150,8 +149,8 @@ Rigid2DTransform<TParametersValueType>::GetInverse(Self * inverse) const
 
 
 template <typename TParametersValueType>
-typename Rigid2DTransform<TParametersValueType>::InverseTransformBasePointer
-Rigid2DTransform<TParametersValueType>::GetInverseTransform() const
+auto
+Rigid2DTransform<TParametersValueType>::GetInverseTransform() const -> InverseTransformBasePointer
 {
   Pointer inv = New();
 
@@ -236,7 +235,7 @@ Rigid2DTransform<TParametersValueType>::SetParameters(const ParametersType & par
 
   // Set translation
   OutputVectorType translation;
-  for (unsigned int i = 0; i < OutputSpaceDimension; i++)
+  for (unsigned int i = 0; i < OutputSpaceDimension; ++i)
   {
     translation[i] = parameters[i + 1];
   }
@@ -255,15 +254,15 @@ Rigid2DTransform<TParametersValueType>::SetParameters(const ParametersType & par
 
 
 template <typename TParametersValueType>
-const typename Rigid2DTransform<TParametersValueType>::ParametersType &
-Rigid2DTransform<TParametersValueType>::GetParameters() const
+auto
+Rigid2DTransform<TParametersValueType>::GetParameters() const -> const ParametersType &
 {
   itkDebugMacro(<< "Getting parameters ");
 
   // Get the angle
   this->m_Parameters[0] = this->GetAngle();
   // Get the translation
-  for (unsigned int i = 0; i < OutputSpaceDimension; i++)
+  for (unsigned int i = 0; i < OutputSpaceDimension; ++i)
   {
     this->m_Parameters[i + 1] = this->GetTranslation()[i];
   }
@@ -294,7 +293,7 @@ Rigid2DTransform<TParametersValueType>::ComputeJacobianWithRespectToParameters(c
 
   // compute derivatives for the translation part
   unsigned int blockOffset = 1;
-  for (unsigned int dim = 0; dim < OutputSpaceDimension; dim++)
+  for (unsigned int dim = 0; dim < OutputSpaceDimension; ++dim)
   {
     j[dim][blockOffset + dim] = 1.0;
   }

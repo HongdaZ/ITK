@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@
 #include "itkNearestNeighborInterpolateImageFunction.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
-
+#include "itkTestingMacros.h"
 
 namespace
 {
@@ -56,9 +56,8 @@ itkDiffeomorphicDemonsRegistrationFilterTest2(int argc, char * argv[])
 
   if (argc < 8)
   {
-    std::cerr << "Missing arguments" << std::endl;
-    std::cerr << "Usage:" << std::endl;
-    std::cerr << argv[0] << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
     std::cerr << "fixedImage movingImage resampledImage" << std::endl;
     std::cerr << "GradientEnum [0=Symmetric,1=Fixed,2=WarpedMoving,3=MappedMoving]" << std::endl;
     std::cerr << "UseFirstOrderExp [0=No,1=Yes]" << std::endl;
@@ -77,33 +76,26 @@ itkDiffeomorphicDemonsRegistrationFilterTest2(int argc, char * argv[])
   using ReaderType = itk::ImageFileReader<ImageType>;
   using WriterType = itk::ImageFileWriter<ImageType>;
 
-  ReaderType::Pointer fixedReader = ReaderType::New();
-  ReaderType::Pointer movingReader = ReaderType::New();
+  auto fixedReader = ReaderType::New();
+  auto movingReader = ReaderType::New();
 
   fixedReader->SetFileName(argv[1]);
   movingReader->SetFileName(argv[2]);
 
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   writer->SetFileName(argv[3]);
 
-  try
-  {
-    fixedReader->Update();
-    movingReader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << excp << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(fixedReader->Update());
+  ITK_TRY_EXPECT_NO_EXCEPTION(movingReader->Update());
+
 
   //-------------------------------------------------------------
   std::cout << "Run registration and warp moving" << std::endl;
 
   using RegistrationType = itk::DiffeomorphicDemonsRegistrationFilter<ImageType, ImageType, FieldType>;
 
-  RegistrationType::Pointer registrator = RegistrationType::New();
+  auto registrator = RegistrationType::New();
 
   registrator->SetMovingImage(movingReader->GetOutput());
   registrator->SetFixedImage(fixedReader->GetOutput());
@@ -172,7 +164,7 @@ itkDiffeomorphicDemonsRegistrationFilterTest2(int argc, char * argv[])
   std::cout << "Max. kernel width: " << registrator->GetMaximumKernelWidth() << std::endl;
 
   double v[ImageDimension];
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     v[j] = registrator->GetStandardDeviations()[j];
   }
@@ -187,11 +179,11 @@ itkDiffeomorphicDemonsRegistrationFilterTest2(int argc, char * argv[])
 
   // warp moving image
   using WarperType = itk::WarpImageFilter<ImageType, ImageType, FieldType>;
-  WarperType::Pointer warper = WarperType::New();
+  auto warper = WarperType::New();
 
   using CoordRepType = WarperType::CoordRepType;
   using InterpolatorType = itk::NearestNeighborInterpolateImageFunction<ImageType, CoordRepType>;
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
 
   const ImageType * fixed = fixedReader->GetOutput();
   const ImageType * moving = movingReader->GetOutput();
@@ -210,15 +202,8 @@ itkDiffeomorphicDemonsRegistrationFilterTest2(int argc, char * argv[])
   writer->SetInput(warper->GetOutput());
   writer->UseCompressionOn();
 
-  try
-  {
-    writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << excp << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+
 
   std::cout << "Test passed" << std::endl;
   return EXIT_SUCCESS;

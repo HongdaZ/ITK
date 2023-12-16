@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ class DicomImage;
 
 namespace itk
 {
-/**\class DCMTKImageIOEnums
+/** \class DCMTKImageIOEnums
  * \brief Enums used by the DCMTKImageIO class
  * \ingroup IOFilters
  * \ingroup ITKIODCMTK
@@ -37,7 +37,7 @@ class DCMTKImageIOEnums
 {
 public:
   /**
-   *\class LogLevel
+   * \class LogLevel
    * \ingroup IOFilters
    * \ingroup ITKIODCMTK
    * enum for DCMTK log level.  These are defined here without
@@ -60,7 +60,7 @@ extern ITKIODCMTK_EXPORT std::ostream &
                          operator<<(std::ostream & out, const DCMTKImageIOEnums::LogLevel value);
 
 /**
- *\class DCMTKImageIO
+ * \class DCMTKImageIO
  *
  *  \brief Read DICOM image file format.
  *
@@ -71,7 +71,7 @@ extern ITKIODCMTK_EXPORT std::ostream &
 class ITKIODCMTK_EXPORT DCMTKImageIO : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DCMTKImageIO);
+  ITK_DISALLOW_COPY_AND_MOVE(DCMTKImageIO);
 
   /** Standard class type aliases. */
   using Self = DCMTKImageIO;

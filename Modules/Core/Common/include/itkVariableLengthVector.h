@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,11 +20,9 @@
 
 #include <cassert>
 #include <algorithm>
+#include <type_traits>
 #include "itkNumericTraits.h"
-#include "itkStaticAssert.h"
 #include "itkMetaProgrammingLibrary.h"
-#include "itkEnableIf.h"
-#include "itkIsBaseOf.h"
 #include "itkIsNumber.h"
 #include "itkPromoteType.h"
 #include "itkBinaryOperationConcept.h"
@@ -274,7 +272,7 @@ public:
     operator()(unsigned int newSize, unsigned int oldSize, TValue2 * oldBuffer, TValue2 * newBuffer) const
     {
       itkAssertInDebugAndIgnoreInReleaseMacro(newBuffer);
-      const std::size_t nb = std::min(newSize, oldSize);
+      const size_t nb = std::min(newSize, oldSize);
       itkAssertInDebugAndIgnoreInReleaseMacro(nb == 0 || (nb > 0 && oldBuffer != nullptr));
       std::copy_n(oldBuffer, nb, newBuffer);
     }
@@ -334,7 +332,7 @@ public:
    * \post \c m_NumElements is \c dimension
    * \post \c m_LetArrayManageMemory is true
    */
-  explicit VariableLengthVector(unsigned int dimension);
+  explicit VariableLengthVector(unsigned int length);
 
   /** Constructor that initializes array with contents from a user supplied
    * buffer.
@@ -349,7 +347,7 @@ public:
    * \post `m_NumElements == sz`
    * \post `m_LetArrayManageMemory == LetArrayManageMemory`
    */
-  VariableLengthVector(ValueType * data, unsigned int sz, bool LetArrayManageMemory = false);
+  VariableLengthVector(ValueType * datain, unsigned int sz, bool LetArrayManageMemory = false);
 
   /** Constructor that initializes array with contents from a user supplied
    * buffer.
@@ -370,7 +368,7 @@ public:
    * \post `m_NumElements == sz`
    * \post `m_LetArrayManageMemory == LetArrayManageMemory`
    */
-  VariableLengthVector(const ValueType * data, unsigned int sz, bool LetArrayManageMemory = false);
+  VariableLengthVector(const ValueType * datain, unsigned int sz, bool LetArrayManageMemory = false);
 
   /** Copy constructor. The reason why the copy constructor and the assignment
    * operator are templated is that it will allow implicit casts to be
@@ -499,7 +497,7 @@ public:
   Self &
   operator=(VariableLengthVectorExpression<TExpr1, TExpr2, TBinaryOp> const & rhs);
 
-  /** Set the all the elements of the array to the specified value.
+  /** Set all the elements of the array to the specified value.
    * \pre This function may be called on empty vectors, it's a no-op.
    */
   void
@@ -693,7 +691,7 @@ public:
    * \post \c Size() is left unmodified.
    */
   void
-  SetData(TValue * data, bool LetArrayManageMemory = false);
+  SetData(TValue * datain, bool LetArrayManageMemory = false);
 
   /** Similar to the previous method. In the above method, the size must be
    * separately set prior to using user-supplied data. This introduces an
@@ -710,7 +708,7 @@ public:
    * \post `m_NumElements == sz`
    */
   void
-  SetData(TValue * data, unsigned int sz, bool LetArrayManageMemory = false);
+  SetData(TValue * datain, unsigned int sz, bool LetArrayManageMemory = false);
 
   /** This destructor is not virtual for performance reasons. However, this
    * means that subclasses cannot allocate memory.
@@ -759,7 +757,7 @@ public:
   Self &
   operator--()
   {
-    for (ElementIdentifier i = 0; i < m_NumElements; i++)
+    for (ElementIdentifier i = 0; i < m_NumElements; ++i)
     {
       this->m_Data[i] -= static_cast<ValueType>(1.0);
     }
@@ -770,7 +768,7 @@ public:
   Self &
   operator++() // prefix operator ++v;
   {
-    for (ElementIdentifier i = 0; i < m_NumElements; i++)
+    for (ElementIdentifier i = 0; i < m_NumElements; ++i)
     {
       this->m_Data[i] += static_cast<ValueType>(1.0);
     }
@@ -811,7 +809,7 @@ public:
   operator-=(const VariableLengthVector<T> & v)
   {
     itkAssertInDebugAndIgnoreInReleaseMacro(m_NumElements == v.GetSize());
-    for (ElementIdentifier i = 0; i < m_NumElements; i++)
+    for (ElementIdentifier i = 0; i < m_NumElements; ++i)
     {
       m_Data[i] -= static_cast<ValueType>(v[i]);
     }
@@ -822,7 +820,7 @@ public:
   Self &
   operator-=(TValue s)
   {
-    for (ElementIdentifier i = 0; i < m_NumElements; i++)
+    for (ElementIdentifier i = 0; i < m_NumElements; ++i)
     {
       m_Data[i] -= s;
     }
@@ -842,7 +840,7 @@ public:
   operator+=(const VariableLengthVector<T> & v)
   {
     itkAssertInDebugAndIgnoreInReleaseMacro(m_NumElements == v.GetSize());
-    for (ElementIdentifier i = 0; i < m_NumElements; i++)
+    for (ElementIdentifier i = 0; i < m_NumElements; ++i)
     {
       m_Data[i] += static_cast<ValueType>(v[i]);
     }
@@ -853,7 +851,7 @@ public:
   Self &
   operator+=(TValue s)
   {
-    for (ElementIdentifier i = 0; i < m_NumElements; i++)
+    for (ElementIdentifier i = 0; i < m_NumElements; ++i)
     {
       m_Data[i] += s;
     }
@@ -912,7 +910,7 @@ public:
   operator*=(T s)
   {
     const ValueType & sc = static_cast<ValueType>(s);
-    for (ElementIdentifier i = 0; i < m_NumElements; i++)
+    for (ElementIdentifier i = 0; i < m_NumElements; ++i)
     {
       m_Data[i] *= sc;
     }
@@ -925,7 +923,7 @@ public:
   Self &
   operator*=(TValue s)
   {
-    for (ElementIdentifier i = 0; i < m_NumElements; i++)
+    for (ElementIdentifier i = 0; i < m_NumElements; ++i)
     {
       m_Data[i] *= s;
     }
@@ -943,7 +941,7 @@ public:
   operator/=(T s)
   {
     const RealValueType sc = s;
-    for (ElementIdentifier i = 0; i < m_NumElements; i++)
+    for (ElementIdentifier i = 0; i < m_NumElements; ++i)
     {
       m_Data[i] = static_cast<ValueType>(static_cast<RealValueType>(m_Data[i]) / sc);
     }
@@ -960,8 +958,7 @@ public:
   bool
   operator==(const Self & v) const;
 
-  bool
-  operator!=(const Self & v) const;
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
 
   /** Returns vector's Euclidean Norm  */
   RealValueType
@@ -1054,7 +1051,7 @@ struct GetType
  * \sa \c VariableLengthVectorExpression
  */
 template <typename TExpr1, typename TExpr2>
-inline typename mpl::EnableIf<mpl::And<mpl::IsArray<TExpr1>, mpl::IsArray<TExpr2>>, unsigned int>::Type
+inline std::enable_if_t<mpl::And<mpl::IsArray<TExpr1>, mpl::IsArray<TExpr2>>::Value, unsigned int>
 GetSize(TExpr1 const & lhs, TExpr2 const & rhs)
 {
   (void)rhs;
@@ -1073,7 +1070,7 @@ GetSize(TExpr1 const & lhs, TExpr2 const & rhs)
  * \sa \c VariableLengthVectorExpression
  */
 template <typename TExpr1, typename TExpr2>
-inline typename mpl::EnableIf<mpl::And<mpl::IsArray<TExpr1>, mpl::Not<mpl::IsArray<TExpr2>>>, unsigned int>::Type
+inline std::enable_if_t<mpl::And<mpl::IsArray<TExpr1>, mpl::Not<mpl::IsArray<TExpr2>>>::Value, unsigned int>
 GetSize(TExpr1 const & lhs, TExpr2 const & itkNotUsed(rhs))
 {
   return lhs.Size();
@@ -1089,7 +1086,7 @@ GetSize(TExpr1 const & lhs, TExpr2 const & itkNotUsed(rhs))
  * \sa \c VariableLengthVectorExpression
  */
 template <typename TExpr1, typename TExpr2>
-inline typename mpl::EnableIf<mpl::And<mpl::IsArray<TExpr2>, mpl::Not<mpl::IsArray<TExpr1>>>, unsigned int>::Type
+inline std::enable_if_t<mpl::And<mpl::IsArray<TExpr2>, mpl::Not<mpl::IsArray<TExpr1>>>::Value, unsigned int>
 GetSize(TExpr1 const & itkNotUsed(lhs), TExpr2 const & rhs)
 {
   return rhs.Size();
@@ -1155,7 +1152,7 @@ struct CanBeMultiplied
             mpl::And<mpl::IsNumber<TExpr1>, mpl::IsArray<TExpr2>>>
 {};
 
-/** Tells whether objects from two types can be multiplied.
+/** Tells whether objects from two types can be divided.
  * The operation is authorized if and only if:
  * - the first operand is an array while the second is a number.
  * \note As this traits is dedicated to help overload `operator/()`, it
@@ -1205,10 +1202,10 @@ struct VariableLengthVectorExpression
     : m_lhs(lhs)
     , m_rhs(rhs)
   {
-    // Not neccessary actually as end-user/developer is not expected to
+    // Not necessary actually as end-user/developer is not expected to
     // provide new BinaryOperations
-    itkStaticAssert((itk::mpl::IsBaseOf<Details::op::BinaryOperationConcept, TBinaryOp>::Value),
-                    "The Binary Operation shall inherit from BinaryOperationConcept");
+    static_assert(std::is_base_of<Details::op::BinaryOperationConcept, TBinaryOp>::value,
+                  "The Binary Operation shall inherit from BinaryOperationConcept");
   }
 
   /// Returns the size of the vector expression.
@@ -1263,8 +1260,8 @@ private:
  * \sa \c mpl::IsArray<> to know the exact array types recognized as \em array by this traits
  */
 template <typename TExpr1, typename TExpr2>
-inline typename mpl::EnableIf<Details::op::CanBeAddedOrSubtracted<TExpr1, TExpr2>,
-                              VariableLengthVectorExpression<TExpr1, TExpr2, Details::op::Plus>>::Type
+inline std::enable_if_t<Details::op::CanBeAddedOrSubtracted<TExpr1, TExpr2>::Value,
+                        VariableLengthVectorExpression<TExpr1, TExpr2, Details::op::Plus>>
 operator+(TExpr1 const & lhs, TExpr2 const & rhs)
 {
   return VariableLengthVectorExpression<TExpr1, TExpr2, Details::op::Plus>(lhs, rhs);
@@ -1280,8 +1277,8 @@ operator+(TExpr1 const & lhs, TExpr2 const & rhs)
  * \sa \c mpl::IsArray<> to know the exact array types recognized as \em array by this traits
  */
 template <typename TExpr1, typename TExpr2>
-inline typename mpl::EnableIf<Details::op::CanBeAddedOrSubtracted<TExpr1, TExpr2>,
-                              VariableLengthVectorExpression<TExpr1, TExpr2, Details::op::Sub>>::Type
+inline std::enable_if_t<Details::op::CanBeAddedOrSubtracted<TExpr1, TExpr2>::Value,
+                        VariableLengthVectorExpression<TExpr1, TExpr2, Details::op::Sub>>
 operator-(TExpr1 const & lhs, TExpr2 const & rhs)
 {
   return VariableLengthVectorExpression<TExpr1, TExpr2, Details::op::Sub>(lhs, rhs);
@@ -1296,8 +1293,8 @@ operator-(TExpr1 const & lhs, TExpr2 const & rhs)
  * \sa \c mpl::IsArray<> to know the exact array types recognized as \em array by this traits
  */
 template <typename TExpr1, typename TExpr2>
-inline typename mpl::EnableIf<Details::op::CanBeMultiplied<TExpr1, TExpr2>,
-                              VariableLengthVectorExpression<TExpr1, TExpr2, Details::op::Mult>>::Type
+inline std::enable_if_t<Details::op::CanBeMultiplied<TExpr1, TExpr2>::Value,
+                        VariableLengthVectorExpression<TExpr1, TExpr2, Details::op::Mult>>
 operator*(TExpr1 const & lhs, TExpr2 const & rhs)
 {
   return VariableLengthVectorExpression<TExpr1, TExpr2, Details::op::Mult>(lhs, rhs);
@@ -1311,8 +1308,8 @@ operator*(TExpr1 const & lhs, TExpr2 const & rhs)
  * \sa \c mpl::IsArray<> to know the exact array types recognized as \em array by this traits
  */
 template <typename TExpr1, typename TExpr2>
-inline typename mpl::EnableIf<Details::op::CanBeDivided<TExpr1, TExpr2>,
-                              VariableLengthVectorExpression<TExpr1, TExpr2, Details::op::Div>>::Type
+inline std::enable_if_t<Details::op::CanBeDivided<TExpr1, TExpr2>::Value,
+                        VariableLengthVectorExpression<TExpr1, TExpr2, Details::op::Div>>
 operator/(TExpr1 const & lhs, TExpr2 const & rhs)
 {
   return VariableLengthVectorExpression<TExpr1, TExpr2, Details::op::Div>(lhs, rhs);
@@ -1343,7 +1340,7 @@ operator<<(std::ostream & os, VariableLengthVectorExpression<TExpr1, TExpr2, TBi
  * \relates itk::VariableLengthVectorExpression
  */
 template <typename TExpr>
-inline typename mpl::EnableIf<mpl::IsArray<TExpr>, typename TExpr::RealValueType>::Type
+inline std::enable_if_t<mpl::IsArray<TExpr>::Value, typename TExpr::RealValueType>
 GetNorm(TExpr const & v)
 {
   return static_cast<typename TExpr::RealValueType>(std::sqrt(static_cast<double>(GetSquaredNorm(v))));
@@ -1355,7 +1352,7 @@ GetNorm(TExpr const & v)
  * \relates itk::VariableLengthVectorExpression
  */
 template <typename TExpr>
-inline typename mpl::EnableIf<mpl::IsArray<TExpr>, typename TExpr::RealValueType>::Type
+inline std::enable_if_t<mpl::IsArray<TExpr>::Value, typename TExpr::RealValueType>
 GetSquaredNorm(TExpr const & v)
 {
   using RealValueType = typename TExpr::RealValueType;
@@ -1378,10 +1375,10 @@ std::ostream &
 operator<<(std::ostream & os, const VariableLengthVector<TValue> & arr)
 {
   const unsigned int length = arr.Size();
-  const signed int   last = (unsigned int)length - 1;
+  const int          last = static_cast<unsigned int>(length) - 1;
 
   os << "[";
-  for (signed int i = 0; i < last; ++i)
+  for (int i = 0; i < last; ++i)
   {
     os << arr[i] << ", ";
   }

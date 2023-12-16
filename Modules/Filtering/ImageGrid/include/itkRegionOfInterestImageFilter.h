@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class RegionOfInterestImageFilter
+ * \class RegionOfInterestImageFilter
  * \brief Extract a region of interest from the input image.
  *
  *  This filter produces an output image of the same dimension as the input
@@ -54,14 +54,14 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT RegionOfInterestImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegionOfInterestImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(RegionOfInterestImageFilter);
 
   /** Standard class type aliases. */
   using Self = RegionOfInterestImageFilter;
   using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
-  using InputImageRegionType = typename Superclass::InputImageRegionType;
+  using typename Superclass::InputImageRegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

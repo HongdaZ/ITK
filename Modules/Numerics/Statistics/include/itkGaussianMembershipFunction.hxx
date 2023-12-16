@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkGaussianMembershipFunction_hxx
 #define itkGaussianMembershipFunction_hxx
 
-#include "itkGaussianMembershipFunction.h"
 
 namespace itk
 {
@@ -137,7 +136,7 @@ GaussianMembershipFunction<TMeasurementVector>::SetCovariance(const CovarianceMa
   else
   {
     const double aLargeDouble =
-      std::pow(NumericTraits<double>::max(), 1.0 / 3.0) / (double)this->GetMeasurementVectorSize();
+      std::pow(NumericTraits<double>::max(), 1.0 / 3.0) / static_cast<double>(this->GetMeasurementVectorSize());
     m_InverseCovariance.SetIdentity();
     m_InverseCovariance *= aLargeDouble;
 

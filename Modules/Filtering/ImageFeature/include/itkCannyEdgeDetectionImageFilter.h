@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,7 @@ public:
 };
 
 /**
- *\class CannyEdgeDetectionImageFilter
+ * \class CannyEdgeDetectionImageFilter
  * \brief This filter is an implementation of a Canny edge detector for
  * scalar-valued images.
  *
@@ -88,7 +88,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT CannyEdgeDetectionImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CannyEdgeDetectionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(CannyEdgeDetectionImageFilter);
 
   /** Standard "Self" & Superclass type alias.  */
   using Self = CannyEdgeDetectionImageFilter;
@@ -152,7 +152,7 @@ public:
   void
   SetVariance(const typename ArrayType::ValueType v)
   {
-    for (unsigned int i = 0; i < TInputImage::ImageDimension; i++)
+    for (unsigned int i = 0; i < TInputImage::ImageDimension; ++i)
     {
       if (Math::NotExactlyEquals(m_Variance[i], v))
       {
@@ -168,7 +168,7 @@ public:
   void
   SetMaximumError(const typename ArrayType::ValueType v)
   {
-    for (unsigned int i = 0; i < TInputImage::ImageDimension; i++)
+    for (unsigned int i = 0; i < TInputImage::ImageDimension; ++i)
     {
       if (Math::NotExactlyEquals(m_MaximumError[i], v))
       {
@@ -179,19 +179,13 @@ public:
     }
   }
 
-  /** \brief Set the Threshold value for detected edges.
-   *
-   * TODO:  Document in the ITKv4 migration guide that
-   * the SetThreshold member function was removed from
-   * the CannyEdgeDetectionImageFilter, and that both
-   * UpperThreshold and LowerThreshold need to be set.
-   * To get the same results as with the SetThreshold method
-   * change "myfilter->SetThrehsold" to "myfilter->SetUpperThreshold",
-   * and add "myfilter->SetLowerThreshold(GetUpperThreshold()/2.0)"
+  /** \brief Set the upper threshold value for detected edges.
    */
   itkSetMacro(UpperThreshold, OutputImagePixelType);
   itkGetConstMacro(UpperThreshold, OutputImagePixelType);
 
+  /** \brief Set the lower threshold value for detected edges.
+   */
   itkSetMacro(LowerThreshold, OutputImagePixelType);
   itkGetConstMacro(LowerThreshold, OutputImagePixelType);
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -83,7 +83,7 @@ namespace itk
 class ITKOptimizers_EXPORT ExhaustiveOptimizer : public SingleValuedNonLinearOptimizer
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExhaustiveOptimizer);
+  ITK_DISALLOW_COPY_AND_MOVE(ExhaustiveOptimizer);
 
   /** Standard "Self" type alias. */
   using Self = ExhaustiveOptimizer;
@@ -137,35 +137,35 @@ protected:
   AdvanceOneStep();
 
   void
-  IncrementIndex(ParametersType & param);
+  IncrementIndex(ParametersType & newPosition);
 
 protected:
-  MeasureType m_CurrentValue;
+  MeasureType m_CurrentValue{ 0 };
 
-  StepsType m_NumberOfSteps;
+  StepsType m_NumberOfSteps{};
 
-  SizeValueType m_CurrentIteration;
+  SizeValueType m_CurrentIteration{ 0 };
 
-  bool m_Stop;
+  bool m_Stop{ false };
 
-  unsigned int m_CurrentParameter;
+  unsigned int m_CurrentParameter{ 0 };
 
-  double m_StepLength;
+  double m_StepLength{ 1.0 };
 
-  ParametersType m_CurrentIndex;
+  ParametersType m_CurrentIndex{};
 
-  SizeValueType m_MaximumNumberOfIterations;
+  SizeValueType m_MaximumNumberOfIterations{ 1 };
 
-  MeasureType m_MaximumMetricValue;
+  MeasureType m_MaximumMetricValue{ itk::NumericTraits<MeasureType>::max() };
 
-  MeasureType m_MinimumMetricValue;
+  MeasureType m_MinimumMetricValue{ itk::NumericTraits<MeasureType>::Zero };
 
-  ParametersType m_MinimumMetricValuePosition;
+  ParametersType m_MinimumMetricValuePosition{};
 
-  ParametersType m_MaximumMetricValuePosition;
+  ParametersType m_MaximumMetricValuePosition{};
 
 private:
-  std::ostringstream m_StopConditionDescription;
+  std::ostringstream m_StopConditionDescription{};
 };
 } // end namespace itk
 

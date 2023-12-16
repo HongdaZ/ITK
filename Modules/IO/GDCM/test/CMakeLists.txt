@@ -92,14 +92,14 @@ set_property(TEST itkGDCMSeriesReadImageWriteTest APPEND PROPERTY DEPENDS ITKDat
 itk_add_test(NAME itkGDCMSeriesStreamReadImageWriteTest1
       COMMAND ITKIOGDCMTestDriver itkGDCMSeriesStreamReadImageWriteTest
               DATA{${ITK_DATA_ROOT}/Input/DicomSeries/,REGEX:Image[0-9]+.dcm}
-              ${ITK_TEST_OUTPUT_DIR}/itkGDCMSeriesStreamReadImageWriteTest1.mhd 0.859375 0.85939 1.60016 0)
+              ${ITK_TEST_OUTPUT_DIR}/itkGDCMSeriesStreamReadImageWriteTest1.mhd 0.859375 0.85939 1.60016 0 1 0 0 0)
 
 set_property(TEST itkGDCMSeriesStreamReadImageWriteTest1 APPEND PROPERTY DEPENDS ITKData)
 
 itk_add_test(NAME itkGDCMSeriesStreamReadImageWriteTest2
       COMMAND ITKIOGDCMTestDriver itkGDCMSeriesStreamReadImageWriteTest
               DATA{${ITK_DATA_ROOT}/Input/DicomSeries/,REGEX:Image[0-9]+.dcm}
-              ${ITK_TEST_OUTPUT_DIR}/itkGDCMSeriesStreamReadImageWriteTest2.mhd 0.859375 0.85939 1.60016 1)
+              ${ITK_TEST_OUTPUT_DIR}/itkGDCMSeriesStreamReadImageWriteTest2.mhd 0.859375 0.85939 1.60016 0 1 0 0 1)
 
 set_property(TEST itkGDCMSeriesStreamReadImageWriteTest2 APPEND PROPERTY DEPENDS ITKData)
 
@@ -114,7 +114,7 @@ itk_add_test(NAME itkGDCMImageReadSeriesWriteTest
       itkGDCMImageReadSeriesWriteTest
         DATA{${ITK_DATA_ROOT}/Input/HeadMRVolume.mha}
         ${ITK_TEST_OUTPUT_DIR}/itkGDCMImageReadSeriesWriteTest
-        ${ITK_TEST_OUTPUT_DIR}/itkGDCMImageReadSeriesWriteTest.mha )
+        ${ITK_TEST_OUTPUT_DIR}/itkGDCMImageReadSeriesWriteTest.mha)
 
 itk_add_test(NAME itkGDCMSeriesMissingDicomTagTest
   COMMAND ITKIOGDCMTestDriver itkGDCMSeriesMissingDicomTagTest
@@ -215,6 +215,15 @@ itk_add_test(NAME itkGDCMImageIOTest3_mono1
       ${ITK_TEST_OUTPUT_DIR}/itkGDCMImageIOTest3_mono1.mha
       scalar
   )
+
+itk_add_test(NAME itkGDCM_ComplianceTest_singlebit
+  COMMAND ITKIOGDCMTestDriver
+    --compare DATA{Baseline/single-bit.mha}
+      ${ITK_TEST_OUTPUT_DIR}/single-bit.mha
+    itkGDCMImageReadWriteTest
+      DATA{Input/single-bit.dcm}
+      ${ITK_TEST_OUTPUT_DIR}/single-bit.mha
+      scalar)
 
 function(AddComplianceTest fileName)
   itk_add_test(NAME itkGDCM_ComplianceTestRGB_${fileName}

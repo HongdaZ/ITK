@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@
 #include "itkTestingComparisonImageFilter.h"
 #include "itkExtractImageFilter.h"
 #include "itkPipelineMonitorImageFilter.h"
+#include "itkTestingMacros.h"
 
 
 constexpr unsigned int VDimension = 3;
@@ -44,7 +45,7 @@ SameImage(ImagePointer testImage, ImagePointer baselineImage)
   // NOTE ALEX: it look slike this filter does not take the spacing
   // into account, to check later.
   using DiffType = itk::Testing::ComparisonImageFilter<ImageType, ImageType>;
-  DiffType::Pointer diff = DiffType::New();
+  auto diff = DiffType::New();
   diff->SetValidInput(baselineImage);
   diff->SetTestInput(testImage);
   diff->SetDifferenceThreshold(intensityTolerance);
@@ -61,7 +62,7 @@ SameImage(ImagePointer testImage, ImagePointer baselineImage)
   SpacingType testImageSpacing = testImage->GetSpacing();
   SpacingType baselineImageSpacing = baselineImage->GetSpacing();
   // compare spacing
-  for (unsigned int i = 0; i < VDimension; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     if (itk::Math::NotAlmostEquals(testImageSpacing[i], baselineImageSpacing[i]))
     {
@@ -77,7 +78,7 @@ bool
 SameImage(std::string testImageFileName, ImagePointer baselineImage)
 {
   using ReaderType = itk::ImageFileReader<ImageType>;
-  ReaderType::Pointer readerTestImage = ReaderType::New();
+  auto readerTestImage = ReaderType::New();
   readerTestImage->SetFileName(testImageFileName);
 
   // NOTE ALEX: here we suppose the reading went well
@@ -118,7 +119,7 @@ ActualTest(std::string inputFileName,
   using ReaderType = itk::ImageFileReader<ImageType>;
   using WriterType = itk::ImageFileWriter<ImageType>;
 
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(inputFileName.c_str());
   reader->SetUseStreaming(true);
 
@@ -142,11 +143,11 @@ ActualTest(std::string inputFileName,
 
   // ??
   using MonitorFilter = itk::PipelineMonitorImageFilter<ImageType>;
-  MonitorFilter::Pointer monitor = MonitorFilter::New();
+  auto monitor = MonitorFilter::New();
   monitor->SetInput(reader->GetOutput());
 
   // Setup the writer
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(outputFileName);
   writer->SetInput(monitor->GetOutput());
 
@@ -202,14 +203,14 @@ ActualTest(std::string inputFileName,
   if (pasteWriting)
   {
     using ExtractImageFilterType = itk::ExtractImageFilter<ImageType, ImageType>;
-    ExtractImageFilterType::Pointer extractBaselineImage = ExtractImageFilterType::New();
+    auto extractBaselineImage = ExtractImageFilterType::New();
     extractBaselineImage->SetDirectionCollapseToSubmatrix();
     extractBaselineImage->SetInput(reader->GetOutput());
     extractBaselineImage->SetExtractionRegion(pasteRegion);
 
-    ReaderType::Pointer readerTestImage = ReaderType::New();
+    auto readerTestImage = ReaderType::New();
     readerTestImage->SetFileName(outputFileName);
-    ExtractImageFilterType::Pointer extractTestImage = ExtractImageFilterType::New();
+    auto extractTestImage = ExtractImageFilterType::New();
     extractTestImage->SetDirectionCollapseToSubmatrix();
     extractTestImage->SetInput(readerTestImage->GetOutput());
     extractTestImage->SetExtractionRegion(pasteRegion);
@@ -240,7 +241,9 @@ itkImageFileWriterStreamingPastingCompressingTest1(int argc, char * argv[])
 {
   if (argc < 3)
   {
-    std::cerr << "Usage: " << argv[0] << " input outputBase outputExtension [expect exception (0|1)] ..." << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " input outputBase outputExtension [expect exception (0|1)] ..." << std::endl;
     return EXIT_FAILURE;
   }
 

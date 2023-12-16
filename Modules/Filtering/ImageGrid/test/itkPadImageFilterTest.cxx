@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ itkPadImageFilterTest(int, char *[])
   using SizeValueType = ShortImage::SizeValueType;
 
   using FilterType = itk::PadImageFilter<ShortImage, ShortImage>;
-  FilterType::Pointer padFilter = FilterType::New();
+  auto padFilter = FilterType::New();
 
   SizeType      lowerBound = { { 1, 2 } };
   SizeType      upperBound = { { 3, 4 } };
@@ -98,7 +98,7 @@ itkPadImageFilterTest(int, char *[])
   }
 
   // Fill in a test image
-  ShortImage::Pointer    inputImage = ShortImage::New();
+  auto                   inputImage = ShortImage::New();
   ShortImage::SizeType   inputSize = { { 1, 1 } };
   ShortImage::RegionType inputRegion(inputSize);
   inputImage->SetRegions(inputRegion);
@@ -113,9 +113,9 @@ itkPadImageFilterTest(int, char *[])
 
   // Checkout output values
   ShortImage::Pointer output = padFilter->GetOutput();
-  for (int j = -2; j <= 2; j++)
+  for (int j = -2; j <= 2; ++j)
   {
-    for (int i = -2; i <= 2; i++)
+    for (int i = -2; i <= 2; ++i)
     {
       ShortImage::IndexType index;
       index[0] = i;

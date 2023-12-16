@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ namespace itk
 {
 namespace Statistics
 {
-/**\class HistogramToRunLengthFeaturesFilterEnums
+/** \class HistogramToRunLengthFeaturesFilterEnums
  * \brief Contains all enum classes used by HistogramToRunLengthFeaturesFilter class.
  * \ingroup ITKStatistics
  */
@@ -59,7 +59,7 @@ using RunLengthFeatureEnum = HistogramToRunLengthFeaturesFilterEnums::RunLengthF
 extern ITKStatistics_EXPORT std::ostream &
                             operator<<(std::ostream & out, const HistogramToRunLengthFeaturesFilterEnums::RunLengthFeature value);
 /**
- *\class HistogramToRunLengthFeaturesFilter
+ * \class HistogramToRunLengthFeaturesFilter
  *  \brief This class computes texture feature coefficients from a grey level
  * run-length matrix.
  *
@@ -86,7 +86,7 @@ extern ITKStatistics_EXPORT std::ostream &
  * gray-level run-length distributions. Pattern Recognition Letters, 12:490-502,
  * 1991.
  *
- * IJ article: https://hdl.handle.net/1926/1374
+ * IJ article: https://www.insight-journal.org/browse/publication/231
  *
  * \sa ScalarImageToRunLengthFeaturesFilter
  * \sa ScalarImageToRunLengthMatrixFilter
@@ -100,7 +100,7 @@ template <typename THistogram>
 class ITK_TEMPLATE_EXPORT HistogramToRunLengthFeaturesFilter : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HistogramToRunLengthFeaturesFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(HistogramToRunLengthFeaturesFilter);
 
   /** Standard type alias */
   using Self = HistogramToRunLengthFeaturesFilter;
@@ -216,7 +216,7 @@ public:
 
   /** convenience method to access the run length values */
   MeasurementType
-  GetFeature(RunLengthFeatureEnum name);
+  GetFeature(RunLengthFeatureEnum feature);
 
 protected:
   HistogramToRunLengthFeaturesFilter();

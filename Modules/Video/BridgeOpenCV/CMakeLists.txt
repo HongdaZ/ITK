@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 foreach(p
     ## Only policies introduced after the cmake_minimum_required
     ## version need to explicitly be set to NEW.
@@ -19,11 +19,15 @@ set(ITKVideoBridgeOpenCV_LIBRARIES ITKVideoBridgeOpenCV)
 
 # When this module is loaded by an app, load OpenCV too.
 set(ITKVideoBridgeOpenCV_EXPORT_CODE_INSTALL "
+set(OpenCV_CUDA ${OpenCV_CUDA}) # Windows specific option
+set(OpenCV_STATIC ${OpenCV_STATIC}) # Windows specific option
 set(OpenCV_DIR \"${OpenCV_DIR}\")
 find_package(OpenCV REQUIRED)
 ")
 set(ITKVideoBridgeOpenCV_EXPORT_CODE_BUILD "
 if(NOT ITK_BINARY_DIR)
+  set(OpenCV_CUDA ${OpenCV_CUDA}) # Windows specific option
+  set(OpenCV_STATIC ${OpenCV_STATIC}) # Windows specific option
   set(OpenCV_DIR \"${OpenCV_DIR}\")
   find_package(OpenCV REQUIRED)
 endif()

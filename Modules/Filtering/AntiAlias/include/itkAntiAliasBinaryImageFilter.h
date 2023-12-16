@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -107,7 +107,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT AntiAliasBinaryImageFilter : public SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AntiAliasBinaryImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(AntiAliasBinaryImageFilter);
 
   /** Standard class type aliases */
   using Self = AntiAliasBinaryImageFilter;
@@ -116,11 +116,11 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Inherited type alias from the superclass. */
-  using ValueType = typename Superclass::ValueType;
-  using IndexType = typename Superclass::IndexType;
-  using TimeStepType = typename Superclass::TimeStepType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::ValueType;
+  using typename Superclass::IndexType;
+  using typename Superclass::TimeStepType;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::InputImageType;
 
   /** The function type which will calculate the curvature flow */
   using CurvatureFunctionType = CurvatureFlowFunction<OutputImageType>;

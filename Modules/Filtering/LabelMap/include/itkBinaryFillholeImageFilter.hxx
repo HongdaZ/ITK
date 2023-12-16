@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkBinaryFillholeImageFilter_hxx
 #define itkBinaryFillholeImageFilter_hxx
 
-#include "itkBinaryFillholeImageFilter.h"
 #include "itkBinaryNotImageFilter.h"
 #include "itkBinaryImageToShapeLabelMapFilter.h"
 #include "itkShapeOpeningLabelMapFilter.h"
@@ -75,14 +74,14 @@ BinaryFillholeImageFilter<TInputImage>::GenerateData()
   }
 
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
 
   // Allocate the output
   this->AllocateOutputs();
 
   using NotType = BinaryNotImageFilter<InputImageType>;
-  typename NotType::Pointer notInput = NotType::New();
+  auto notInput = NotType::New();
   notInput->SetInput(this->GetInput());
   notInput->SetForegroundValue(m_ForegroundValue);
   notInput->SetBackgroundValue(backgroundValue);
@@ -91,7 +90,7 @@ BinaryFillholeImageFilter<TInputImage>::GenerateData()
   progress->RegisterInternalFilter(notInput, .2f);
 
   using LabelizerType = typename itk::BinaryImageToShapeLabelMapFilter<InputImageType>;
-  typename LabelizerType::Pointer labelizer = LabelizerType::New();
+  auto labelizer = LabelizerType::New();
   labelizer->SetInput(notInput->GetOutput());
   labelizer->SetInputForegroundValue(m_ForegroundValue);
   labelizer->SetOutputBackgroundValue(backgroundValue);
@@ -101,7 +100,7 @@ BinaryFillholeImageFilter<TInputImage>::GenerateData()
 
   using LabelMapType = typename LabelizerType::OutputImageType;
   using OpeningType = typename itk::ShapeOpeningLabelMapFilter<LabelMapType>;
-  typename OpeningType::Pointer opening = OpeningType::New();
+  auto opening = OpeningType::New();
   opening->SetInput(labelizer->GetOutput());
   opening->SetAttribute(LabelMapType::LabelObjectType::NUMBER_OF_PIXELS_ON_BORDER);
   opening->SetLambda(1);
@@ -110,7 +109,7 @@ BinaryFillholeImageFilter<TInputImage>::GenerateData()
 
   // invert the image during the binarization
   using BinarizerType = typename itk::LabelMapMaskImageFilter<LabelMapType, OutputImageType>;
-  typename BinarizerType::Pointer binarizer = BinarizerType::New();
+  auto binarizer = BinarizerType::New();
   binarizer->SetInput(opening->GetOutput());
   binarizer->SetLabel(backgroundValue);
   binarizer->SetNegated(true);

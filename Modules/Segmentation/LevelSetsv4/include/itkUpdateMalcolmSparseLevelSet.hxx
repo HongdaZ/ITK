@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,6 @@
 
 #include "itkConnectedImageNeighborhoodShape.h"
 #include "itkMath.h"
-#include "itkUpdateMalcolmSparseLevelSet.h"
 
 
 namespace itk
@@ -54,7 +53,7 @@ UpdateMalcolmSparseLevelSet<VDimension, TEquationContainer>::Update()
   this->m_OutputLevelSet->SetDomainOffset(this->m_Offset);
 
   using LabelMapToLabelImageFilterType = LabelMapToLabelImageFilter<LevelSetLabelMapType, LabelImageType>;
-  typename LabelMapToLabelImageFilterType::Pointer labelMapToLabelImageFilter = LabelMapToLabelImageFilterType::New();
+  auto labelMapToLabelImageFilter = LabelMapToLabelImageFilterType::New();
   labelMapToLabelImageFilter->SetInput(this->m_InputLevelSet->GetLabelMap());
   labelMapToLabelImageFilter->Update();
 
@@ -114,7 +113,7 @@ UpdateMalcolmSparseLevelSet<VDimension, TEquationContainer>::Update()
   }
 
   using LabelImageToLabelMapFilterType = LabelImageToLabelMapFilter<LabelImageType, LevelSetLabelMapType>;
-  typename LabelImageToLabelMapFilterType::Pointer labelImageToLabelMapFilter = LabelImageToLabelMapFilterType::New();
+  auto labelImageToLabelMapFilter = LabelImageToLabelMapFilterType::New();
   labelImageToLabelMapFilter->SetInput(this->m_InternalImage);
   labelImageToLabelMapFilter->SetBackgroundValue(LevelSetType::PlusOneLayer());
   labelImageToLabelMapFilter->Update();
@@ -176,7 +175,7 @@ UpdateMalcolmSparseLevelSet<VDimension, TEquationContainer>::EvolveWithUnPhasedP
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&sp_nbc);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   TermContainerPointer termContainer = this->m_EquationContainer->GetEquation(this->m_CurrentLevelSetId);
 
@@ -254,7 +253,7 @@ template <unsigned int VDimension, typename TEquationContainer>
 void
 UpdateMalcolmSparseLevelSet<VDimension, TEquationContainer>::EvolveWithPhasedPropagation(LevelSetLayerType & ioList,
                                                                                          LevelSetLayerType & ioUpdate,
-                                                                                         const bool & iContraction)
+                                                                                         const bool iContraction)
 {
   itkAssertInDebugAndIgnoreInReleaseMacro(ioList.size() == ioUpdate.size());
 
@@ -266,7 +265,7 @@ UpdateMalcolmSparseLevelSet<VDimension, TEquationContainer>::EvolveWithPhasedPro
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&sp_nbc);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   TermContainerPointer termContainer = this->m_EquationContainer->GetEquation(this->m_CurrentLevelSetId);
 
@@ -361,7 +360,7 @@ UpdateMalcolmSparseLevelSet<VDimension, TEquationContainer>::CompactLayersToSing
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&sp_nbc);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   auto nodeIt = listZero.begin();
   auto nodeEnd = listZero.end();

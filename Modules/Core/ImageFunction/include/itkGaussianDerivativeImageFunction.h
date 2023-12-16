@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,7 +51,7 @@ class ITK_TEMPLATE_EXPORT GaussianDerivativeImageFunction
   : public ImageFunction<TInputImage, Vector<TOutput, TInputImage::ImageDimension>, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianDerivativeImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(GaussianDerivativeImageFunction);
 
   /** Standard class type aliases. */
   using Self = GaussianDerivativeImageFunction;
@@ -83,7 +83,7 @@ public:
   using OperatorNeighborhoodType = Neighborhood<TOutput, Self::ImageDimension>;
 
   using VectorType = Vector<TOutput, Self::ImageDimension>;
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
   using OperatorArrayType = FixedArray<OperatorNeighborhoodType, Self::ImageDimension>;
 
   using GaussianDerivativeSpatialFunctionType = GaussianDerivativeSpatialFunction<TOutput, 1>;
@@ -108,7 +108,7 @@ public:
 
   /** Evaluate the function at specified ContinuousIndex position. */
   OutputType
-  EvaluateAtContinuousIndex(const ContinuousIndexType & index) const override;
+  EvaluateAtContinuousIndex(const ContinuousIndexType & cindex) const override;
 
   /**
    * UseImageSpacing controls the extent of the computations.

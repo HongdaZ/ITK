@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,14 +30,14 @@
 namespace itk
 {
 /**
- *\class ConstantImageSource
+ * \class ConstantImageSource
  * Image Source that generates an image with constant pixel value.
  */
 template <class TOutputImage>
 class ConstantImageSource : public GenerateImageSource<TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConstantImageSource);
+  ITK_DISALLOW_COPY_AND_MOVE(ConstantImageSource);
 
   /** Standard class type aliases. */
   using Self = ConstantImageSource;
@@ -124,7 +124,7 @@ TestStreamWrite(char * file1, unsigned int numberOfStreams = 0)
 
   // Create a source object (in this case a constant image).
   typename ImageType::SizeValueType size[TDimension];
-  for (unsigned int i = 0; i < TDimension; i++)
+  for (unsigned int i = 0; i < TDimension; ++i)
   {
     size[i] = 2 << (i + 1);
   }
@@ -196,7 +196,7 @@ TestStreamRead(char * file1, unsigned int numberOfStreams = 0)
 
   // Create a source object (in this case a constant image).
   typename ImageType::SizeValueType size[TDimension];
-  for (unsigned int i = 0; i < TDimension; i++)
+  for (unsigned int i = 0; i < TDimension; ++i)
   {
     size[i] = 2 << (i + 1);
   }
@@ -292,14 +292,14 @@ itkVTKImageIOStreamTest(int argc, char * argv[])
   unsigned int numberOfStreams = 2;
   int          status = 0;
 
-#define ReadWriteTestMACRO(scalarType)                                                                                 \
-  status += TestStreamWrite<scalarType, 2>(argv[1], 0);                                                                \
-  status += TestStreamWrite<scalarType, 2>(argv[1], numberOfStreams);                                                  \
-  status += TestStreamWrite<scalarType, 3>(argv[1], 0);                                                                \
-  status += TestStreamWrite<scalarType, 3>(argv[1], numberOfStreams);                                                  \
-  status += TestStreamRead<scalarType, 2>(argv[1], 0);                                                                 \
-  status += TestStreamRead<scalarType, 2>(argv[1], numberOfStreams);                                                   \
-  status += TestStreamRead<scalarType, 3>(argv[1], 0);                                                                 \
+#define ReadWriteTestMACRO(scalarType)                                \
+  status += TestStreamWrite<scalarType, 2>(argv[1], 0);               \
+  status += TestStreamWrite<scalarType, 2>(argv[1], numberOfStreams); \
+  status += TestStreamWrite<scalarType, 3>(argv[1], 0);               \
+  status += TestStreamWrite<scalarType, 3>(argv[1], numberOfStreams); \
+  status += TestStreamRead<scalarType, 2>(argv[1], 0);                \
+  status += TestStreamRead<scalarType, 2>(argv[1], numberOfStreams);  \
+  status += TestStreamRead<scalarType, 3>(argv[1], 0);                \
   status += TestStreamRead<scalarType, 3>(argv[1], numberOfStreams);
 
   ReadWriteTestMACRO(float) ReadWriteTestMACRO(double) ReadWriteTestMACRO(unsigned char) ReadWriteTestMACRO(char)

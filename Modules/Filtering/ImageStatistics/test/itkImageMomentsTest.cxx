@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include "itkImageMomentsCalculator.h"
 
 #include "itkImageMaskSpatialObject.h"
+#include "itkTestingMacros.h"
 
 using PixelType = unsigned short;
 using VectorType = itk::Vector<double, 3>;
@@ -33,7 +34,9 @@ itkImageMomentsTest(int argc, char * argv[])
 {
   if (argc != 2)
   {
-    std::cerr << "Usage: " << argv[0] << " <mask|nomask>" << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " <mask|nomask>" << std::endl;
     return EXIT_FAILURE;
   }
   const std::string maskCondition{ argv[1] };
@@ -84,13 +87,11 @@ itkImageMomentsTest(int argc, char * argv[])
   tpa.GetVnlMatrix().set((double *)pad);
 
   /* Allocate a simple test image */
-  ImageType::Pointer image = ImageType::New();
+  auto image = ImageType::New();
 
   ImageType::RegionType region;
   region.SetSize(size);
-  image->SetLargestPossibleRegion(region);
-  image->SetBufferedRegion(region);
-  image->SetRequestedRegion(region);
+  image->SetRegions(region);
 
   /* Set origin and spacing of physical coordinates */
   image->SetOrigin(origin);
@@ -103,21 +104,21 @@ itkImageMomentsTest(int argc, char * argv[])
   /* FIXME: The method used here to set the points is klutzy,
      but appears to be the only method currently supported. */
   itk::Index<3> index; /* Index over pixels */
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i < 6; ++i)
   {
     index.SetIndex(point[i]);
     image->SetPixel(index, mass);
   }
 
   /* Compute the moments */
-  CalculatorType::Pointer moments = CalculatorType::New();
+  auto moments = CalculatorType::New();
   moments->SetImage(image);
   if (maskCondition == std::string("mask"))
   {
     // Test the mask spatial object for masked ImageMomentsTest
     // Make a mask that covers the entire image space
     using MaskImageType = itk::Image<unsigned char, 3>;
-    MaskImageType::Pointer maskimg = MaskImageType::New();
+    auto maskimg = MaskImageType::New();
     maskimg->CopyInformation(image);
     maskimg->SetRegions(image->GetLargestPossibleRegion());
     maskimg->Allocate();
@@ -126,7 +127,7 @@ itkImageMomentsTest(int argc, char * argv[])
 
     // convert mask image to mask
     using LFFImageMaskSpatialObjectType = typename itk::ImageMaskSpatialObject<MaskImageType::ImageDimension>;
-    typename LFFImageMaskSpatialObjectType::Pointer mask = LFFImageMaskSpatialObjectType::New();
+    auto mask = LFFImageMaskSpatialObjectType::New();
     mask->SetImage(maskimg.GetPointer());
     mask->Update();
     // Purposefully use the base class type
@@ -207,7 +208,7 @@ itkImageMomentsTest(int argc, char * argv[])
   /* Do some error checking on the transforms */
   double dist = pa2p->Metric(pa2p);
   std::cout << "Distance from self to self = " << dist << std::endl;
-  AffineTransformType::Pointer p2pa2p = AffineTransformType::New();
+  auto p2pa2p = AffineTransformType::New();
   p2pa2p->Compose(p2pa);
   p2pa2p->Compose(pa2p);
   double trerr = p2pa2p->Metric();

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class KappaSigmaThresholdImageCalculator
+ * \class KappaSigmaThresholdImageCalculator
  * \brief Computes a Kappa-Sigma-Clipping threshold for an image.
  *
  * When an image is mostly composed of background pixels, most of the automatic
@@ -43,7 +43,7 @@ namespace itk
  *
  * \author Gaetan Lehmann
  * \note This class was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/367
+ * https://www.insight-journal.org/browse/publication/132
  *
  * \ingroup Operators
  * \ingroup ITKThresholding
@@ -52,7 +52,7 @@ template <typename TInputImage, typename TMaskImage>
 class ITK_TEMPLATE_EXPORT KappaSigmaThresholdImageCalculator : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(KappaSigmaThresholdImageCalculator);
+  ITK_DISALLOW_COPY_AND_MOVE(KappaSigmaThresholdImageCalculator);
 
   /** Standard class type aliases. */
   using Self = KappaSigmaThresholdImageCalculator;

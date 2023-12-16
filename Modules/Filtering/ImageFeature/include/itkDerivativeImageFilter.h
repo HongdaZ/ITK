@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class DerivativeImageFilter
+ * \class DerivativeImageFilter
  * \brief Computes the directional derivative of an image.
  * The directional derivative at each pixel location is computed by convolution
  * with a derivative operator of user-specified order.
@@ -43,14 +43,14 @@ namespace itk
  *
  * \sphinx
  * \sphinxexample{Filtering/ImageFeature/DerivativeImage,Apply A Filter Only To A Specified Region Of An Image}
- * \sphinxexample{Filtering/ImageFeature/RequesterRegion, Apply A Filter Only To A Specified Region Of An Image}
+ * \sphinxexample{Filtering/ImageFeature/RequestedRegion,Apply A Filter Only To A Specified Region Of An Image}
  * \endsphinx
  */
 template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT DerivativeImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DerivativeImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(DerivativeImageFilter);
 
   /** Standard class type aliases. */
   using Self = DerivativeImageFilter;
@@ -92,6 +92,15 @@ public:
   itkSetMacro(Direction, unsigned int);
   itkGetConstMacro(Direction, unsigned int);
 
+  /** Set/Get whether or not the filter will use the spacing of the input
+   * image in its calculations. Use On to compute the derivatives in physical
+   * space; use Off to ignore the image spacing and to compute the derivatives
+   * in isotropic voxel space. Default is On. */
+  itkSetMacro(UseImageSpacing, bool);
+  itkGetConstMacro(UseImageSpacing, bool);
+  itkBooleanMacro(UseImageSpacing);
+
+#if !defined(ITK_FUTURE_LEGACY_REMOVE)
   /** Use the image spacing information in calculations. Use this option if you
    *  want derivatives in physical space. Default is UseImageSpacingOn. */
   void
@@ -107,11 +116,7 @@ public:
   {
     this->SetUseImageSpacing(false);
   }
-
-  /** Set/Get whether or not the filter will use the spacing of the input
-      image in its calculations */
-  itkSetMacro(UseImageSpacing, bool);
-  itkGetConstMacro(UseImageSpacing, bool);
+#endif
 
   /** DerivativeImageFilter needs a larger input requested region than
    * the output requested region (larger in the direction of the

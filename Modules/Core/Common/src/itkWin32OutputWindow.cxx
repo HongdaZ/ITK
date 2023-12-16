@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,13 +26,14 @@
  *
  *=========================================================================*/
 #include "itkWin32OutputWindow.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 namespace itk
 {
 /** */
 HWND Win32OutputWindow::m_OutputWindow = nullptr;
 
-Win32OutputWindow ::~Win32OutputWindow()
+Win32OutputWindow::~Win32OutputWindow()
 {
   if (Win32OutputWindow::m_OutputWindow)
   {
@@ -43,7 +44,7 @@ Win32OutputWindow ::~Win32OutputWindow()
 
 /** */
 LRESULT APIENTRY
-        Win32OutputWindow ::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+        Win32OutputWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   switch (message)
   {
@@ -77,7 +78,7 @@ LRESULT APIENTRY
 
 /** Display text in the window, and translate the \n to \r\n. */
 void
-Win32OutputWindow ::DisplayText(const char * text)
+Win32OutputWindow::DisplayText(const char * text)
 {
   if (!text)
   {
@@ -91,7 +92,7 @@ Win32OutputWindow ::DisplayText(const char * text)
   }
 
   /** Create a buffer big enough to hold the entire text */
-  char * buffer = new char[strlen(text) + 1];
+  const auto buffer = make_unique_for_overwrite<char[]>(strlen(text) + 1);
 
   /** Start at the beginning */
   const char * NewLinePos = text;
@@ -109,19 +110,18 @@ Win32OutputWindow ::DisplayText(const char * text)
     else
     {
       int len = NewLinePos - text;
-      strncpy(buffer, text, len);
+      strncpy(buffer.get(), text, len);
       buffer[len] = 0;
       text = NewLinePos + 1;
-      Win32OutputWindow::AddText(buffer);
+      Win32OutputWindow::AddText(buffer.get());
       Win32OutputWindow::AddText("\r\n");
     }
   }
-  delete[] buffer;
 }
 
 /** Add some text to the EDIT control. */
 void
-Win32OutputWindow ::AddText(const char * text)
+Win32OutputWindow::AddText(const char * text)
 {
   if (!Initialize() || (strlen(text) == 0))
   {
@@ -138,7 +138,7 @@ Win32OutputWindow ::AddText(const char * text)
 /** initialize the output window with an EDIT control and
  *  a container window. */
 int
-Win32OutputWindow ::Initialize()
+Win32OutputWindow::Initialize()
 {
   /** check to see if it is already initialized */
   if (Win32OutputWindow::m_OutputWindow)
@@ -219,7 +219,7 @@ Win32OutputWindow ::Initialize()
 
 /** Prompt some text */
 void
-Win32OutputWindow ::PromptText(const char * text)
+Win32OutputWindow::PromptText(const char * text)
 {
   std::ostringstream msg;
 

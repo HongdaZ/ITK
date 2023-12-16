@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,6 @@
 #define itkFastMarchingImageToNodePairContainerAdaptor_hxx
 
 #include "itkMath.h"
-#include "itkFastMarchingImageToNodePairContainerAdaptor.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
 
 namespace itk
@@ -61,22 +60,22 @@ FastMarchingImageToNodePairContainerAdaptor<TInput, TOutput, TImage>::SetForbidd
 }
 
 template <typename TInput, typename TOutput, typename TImage>
-typename FastMarchingImageToNodePairContainerAdaptor<TInput, TOutput, TImage>::NodePairContainerType *
-FastMarchingImageToNodePairContainerAdaptor<TInput, TOutput, TImage>::GetAlivePoints()
+auto
+FastMarchingImageToNodePairContainerAdaptor<TInput, TOutput, TImage>::GetAlivePoints() -> NodePairContainerType *
 {
   return m_AlivePoints.GetPointer();
 }
 
 template <typename TInput, typename TOutput, typename TImage>
-typename FastMarchingImageToNodePairContainerAdaptor<TInput, TOutput, TImage>::NodePairContainerType *
-FastMarchingImageToNodePairContainerAdaptor<TInput, TOutput, TImage>::GetTrialPoints()
+auto
+FastMarchingImageToNodePairContainerAdaptor<TInput, TOutput, TImage>::GetTrialPoints() -> NodePairContainerType *
 {
   return m_TrialPoints.GetPointer();
 }
 
 template <typename TInput, typename TOutput, typename TImage>
-typename FastMarchingImageToNodePairContainerAdaptor<TInput, TOutput, TImage>::NodePairContainerType *
-FastMarchingImageToNodePairContainerAdaptor<TInput, TOutput, TImage>::GetForbiddenPoints()
+auto
+FastMarchingImageToNodePairContainerAdaptor<TInput, TOutput, TImage>::GetForbiddenPoints() -> NodePairContainerType *
 {
   return m_ForbiddenPoints.GetPointer();
 }

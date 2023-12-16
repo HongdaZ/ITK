@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,7 +57,7 @@ class TransformParametersAdaptor
       Transform<typename TTransform::ScalarType, TTransform::InputSpaceDimension, TTransform::OutputSpaceDimension>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TransformParametersAdaptor);
+  ITK_DISALLOW_COPY_AND_MOVE(TransformParametersAdaptor);
 
   /** Standard class type aliases. */
   using Self = TransformParametersAdaptor;
@@ -71,13 +71,13 @@ public:
 
   /** Typedefs associated with the transform */
 
-  using TransformBaseType = typename Superclass::TransformBaseType;
+  using typename Superclass::TransformBaseType;
   using TransformType = TTransform;
   using TransformPointer = typename TransformType::Pointer;
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
-  using FixedParametersValueType = typename Superclass::FixedParametersValueType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::ParametersValueType;
+  using typename Superclass::FixedParametersValueType;
+  using typename Superclass::FixedParametersType;
 
   /** Set the transform to be adapted */
   itkSetObjectMacro(Transform, TransformType);
@@ -103,13 +103,6 @@ public:
       this->m_RequiredFixedParameters = fixedParameters;
       this->Modified();
     }
-  }
-
-  /** Get the fixed parameters */
-  const FixedParametersType &
-  GetRequiredFixedParameters() const override
-  {
-    return this->m_RequiredFixedParameters;
   }
 
   /** Initialize the transform using the specified fixed parameters */

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -122,7 +122,7 @@ private:
 
   /** An internal table for keeping track of stride lengths in a neighborhood,
       i.e. the memory offsets between pixels along each dimensional axis. */
-  unsigned m_StrideTable[Dimension];
+  unsigned int m_StrideTable[Dimension];
 };
 
 /**
@@ -244,7 +244,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT SparseFieldLevelSetImageFilter : public FiniteDifferenceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SparseFieldLevelSetImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SparseFieldLevelSetImageFilter);
 
   /** Standard class type aliases */
   using Self = SparseFieldLevelSetImageFilter;
@@ -253,9 +253,9 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /**Typedefs from the superclass */
-  using TimeStepType = typename Superclass::TimeStepType;
-  using RadiusType = typename Superclass::RadiusType;
-  using NeighborhoodScalesType = typename Superclass::NeighborhoodScalesType;
+  using typename Superclass::TimeStepType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::NeighborhoodScalesType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -435,7 +435,7 @@ protected:
    *  "up" and "down" list for promotion/demotion of indices leaving the
    *  active set. */
   void
-  UpdateActiveLayerValues(TimeStepType dt, LayerType * StatusUpList, LayerType * StatusDownList);
+  UpdateActiveLayerValues(TimeStepType dt, LayerType * UpList, LayerType * DownList);
 
   /** */
   void

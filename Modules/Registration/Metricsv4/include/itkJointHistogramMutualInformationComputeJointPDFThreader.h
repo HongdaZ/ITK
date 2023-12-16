@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,7 +57,7 @@ class ITK_TEMPLATE_EXPORT JointHistogramMutualInformationComputeJointPDFThreader
       TJointHistogramMetric>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(JointHistogramMutualInformationComputeJointPDFThreader);
+  ITK_DISALLOW_COPY_AND_MOVE(JointHistogramMutualInformationComputeJointPDFThreader);
 
   /** Standard class type aliases. */
   using Self = JointHistogramMutualInformationComputeJointPDFThreader;
@@ -73,19 +73,19 @@ public:
   itkNewMacro(Self);
 
   /** Superclass types. */
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  using typename Superclass::DomainType;
+  using typename Superclass::AssociateType;
 
   using VirtualImageType = typename Superclass::VirtualImageType;
-  using VirtualIndexType = typename Superclass::VirtualIndexType;
-  using VirtualPointType = typename Superclass::VirtualPointType;
+  using typename Superclass::VirtualIndexType;
+  using typename Superclass::VirtualPointType;
 
 protected:
   JointHistogramMutualInformationComputeJointPDFThreader() = default;
 
   /** Walk through the domain, and call this->ProcessPoint on every point. */
   void
-  ThreadedExecution(const DomainType & subdomain, const ThreadIdType threadId) override;
+  ThreadedExecution(const DomainType & imageSubRegion, const ThreadIdType threadId) override;
 };
 
 /** \class JointHistogramMutualInformationComputeJointPDFThreader
@@ -99,7 +99,7 @@ class ITK_TEMPLATE_EXPORT
                                                                       TJointHistogramMetric>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(JointHistogramMutualInformationComputeJointPDFThreader);
+  ITK_DISALLOW_COPY_AND_MOVE(JointHistogramMutualInformationComputeJointPDFThreader);
 
   /** Standard class type aliases. */
   using Self = JointHistogramMutualInformationComputeJointPDFThreader;
@@ -114,12 +114,12 @@ public:
   itkNewMacro(Self);
 
   /** Superclass types. */
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  using typename Superclass::DomainType;
+  using typename Superclass::AssociateType;
 
   using VirtualImageType = typename Superclass::VirtualImageType;
-  using VirtualIndexType = typename Superclass::VirtualIndexType;
-  using VirtualPointType = typename Superclass::VirtualPointType;
+  using typename Superclass::VirtualIndexType;
+  using typename Superclass::VirtualPointType;
 
   using JointHistogramMetricType = TJointHistogramMetric;
   using VirtualPointSetType = typename JointHistogramMetricType::VirtualPointSetType;
@@ -129,12 +129,12 @@ protected:
 
   /** Walk through the domain, and call this->ProcessPoint on every point. */
   void
-  ThreadedExecution(const DomainType & subdomain, const ThreadIdType threadId) override;
+  ThreadedExecution(const DomainType & indexSubRange, const ThreadIdType threadId) override;
 };
 } // end namespace itk
 
+#ifndef ITK_MANUAL_INSTANTIATION
+#  include "itkJointHistogramMutualInformationComputeJointPDFThreader.hxx"
 #endif
 
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "itkJointHistogramMutualInformationComputeJointPDFThreader.hxx"
 #endif

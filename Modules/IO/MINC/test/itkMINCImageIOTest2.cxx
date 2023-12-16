@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,9 @@
 #include "itkMINCImageIOFactory.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
+#include "itkTestingMacros.h"
+#include <vector>
+#include <numeric>
 
 int
 itkMINCImageIOTest2(int argc, char * argv[])
@@ -30,22 +33,35 @@ itkMINCImageIOTest2(int argc, char * argv[])
 
   if (argc < 3)
   {
-    std::cerr << "Missing Arguments " << std::endl;
-    std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << " inputfile outputfile " << std::endl;
+    std::cerr << "Missing Parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " inputfile outputfile " << std::endl;
     return EXIT_FAILURE;
   }
 
   using ImageType = itk::Image<unsigned short, 3>;
 
   itk::MINCImageIO::Pointer mincIO1 = itk::MINCImageIO::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(mincIO1, MINCImageIO, ImageIOBase);
+
+
+  unsigned int               supportedDimCount = 4; // includes the degenerate 0-dimensional case
+  std::vector<unsigned long> supportedDims(supportedDimCount);
+  std::iota(std::begin(supportedDims), std::end(supportedDims), 0);
+  for (auto const & value : supportedDims)
+  {
+    ITK_TEST_EXPECT_TRUE(mincIO1->SupportsDimension(value));
+  }
+
+  ITK_TEST_EXPECT_TRUE(!mincIO1->SupportsDimension(supportedDims.back() + 1));
+
   itk::MINCImageIO::Pointer mincIO2 = itk::MINCImageIO::New();
 
   using ReaderType = itk::ImageFileReader<ImageType>;
   using WriterType = itk::ImageFileWriter<ImageType>;
 
-  ReaderType::Pointer reader = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
+  auto reader = ReaderType::New();
+  auto writer = WriterType::New();
 
   reader->SetImageIO(mincIO1);
   writer->SetImageIO(mincIO2);
@@ -55,19 +71,14 @@ itkMINCImageIOTest2(int argc, char * argv[])
 
   writer->SetInput(reader->GetOutput());
 
-  try
-  {
-    writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << excp << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+
 
   ImageType::ConstPointer image = reader->GetOutput();
 
   image->Print(std::cout);
 
+
+  std::cout << "Test finished." << std::endl;
   return EXIT_SUCCESS;
 }

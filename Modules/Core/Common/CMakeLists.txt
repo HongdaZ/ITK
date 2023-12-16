@@ -24,6 +24,10 @@ mark_as_advanced(CMAKE_THREAD_LIBS)
 set(ITK_DEFAULT_MAX_THREADS 128 CACHE STRING "The maximum number of threads allowed. Default: 128")
 mark_as_advanced(ITK_DEFAULT_MAX_THREADS)
 
+set(ITK_DEFAULT_THREADER "Auto" CACHE STRING "Default multithreader.")
+mark_as_advanced(ITK_DEFAULT_THREADER)
+set_property(CACHE ITK_DEFAULT_THREADER PROPERTY STRINGS Auto TBB Pool Platform)
+
 # See if compiler preprocessor has the __FUNCTION__ directive used by itkExceptionMacro
 include(CheckCPPDirective)
 check_cpp_directive_exists(__FUNCTION__ ITK_CPP_FUNCTION)
@@ -34,17 +38,6 @@ include(CheckIncludeFiles)
 check_include_files(fenv.h HAVE_FENV_H)
 # check if the platform has some widely used header files
 check_include_files("unistd.h" HAVE_UNISTD_H)
-
-
-# Check if this platform support the sse2 rounding functions for 32 and 64 bits
-include(CheckSupportForSSERounding)
-
-
-# Check for atomic functions
-include(CheckSymbolExists)
-if(WIN32 AND NOT MINGW)
-  check_symbol_exists(InterlockedAdd "windows.h" ITK_HAS_INTERLOCKEDADD)
-endif()
 
 if(CMAKE_CXX_STANDARD)
    set(TRY_COMP_CXX_STANDARD
@@ -67,16 +60,21 @@ foreach(CXX_TEST_VERSION 201103L 201402L 201703L)
   endif()
 endforeach()
 
-try_compile( ITK_HAS_GNU_ATTRIBUTE_ALIGNED
+try_compile(ITK_HAS_GNU_ATTRIBUTE_ALIGNED
   ${ITK_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/CMake/itkCheckHasGNUAttributeAligned.cxx
-  CMAKE_FLAGS "-DCMAKE_BUILD_TYPE:STRING=Debug" )
+  CMAKE_FLAGS "-DCMAKE_BUILD_TYPE:STRING=Debug")
 
 set(ITK_WINDOWS_EXPORT_ALL_SYMBOLS ${CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS})
 
 try_compile(ITK_HAS_MALLINFO
   ${ITK_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/CMake/itkCheckHasMallinfo.cxx
+  )
+
+try_compile(ITK_HAS_MALLINFO2
+  ${ITK_BINARY_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/CMake/itkCheckHasMallinfo2.cxx
   )
 
 try_compile(ITK_HAS_FEENABLEEXCEPT
@@ -152,21 +150,8 @@ set(ITKCommon_LIBRARIES ITKCommon)
 
 itk_module_impl()
 
-# configure and install compiler feature header files
-# that have fine granular support of C++11 features
-# identified in a way consistent with CMake 3.1.0 and
-# greater
-include(CMake/itkGenerateNewCompilerFeatureDetectionHeaders.cmake)
-
 install(FILES
   ${ITKCommon_BINARY_DIR}/itkConfigure.h
-  ${CMAKE_CURRENT_BINARY_DIR}/itk_compiler_detection.h
   DESTINATION ${ITKCommon_INSTALL_INCLUDE_DIR}
-  COMPONENT Development
-)
-
-install(FILES
-  ${ITK_compiler_detection_support_headers}
-  DESTINATION ${ITKCommon_INSTALL_INCLUDE_DIR}/compilers
   COMPONENT Development
 )

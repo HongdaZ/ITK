@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,10 @@
  * like Add/RemoveChild(...), Get/SetChildren(...), etc...
  */
 
+#include "itkTestingMacros.h"
 #include "itkTubeSpatialObject.h"
 #include "itkGroupSpatialObject.h"
+#include "itkTestingMacros.h"
 
 
 int
@@ -53,6 +55,13 @@ itkTubeSpatialObjectTest(int, char *[])
   std::cout << "Testing SpatialObject:" << std::endl << std::endl;
 
   TubePointer tube1 = TubeType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(tube1, TubeSpatialObject, PointBasedSpatialObject);
+
+
+  auto root = false;
+  ITK_TEST_SET_GET_BOOLEAN(tube1, Root, root);
+
   tube1->GetProperty().SetName("Tube 1");
   tube1->SetId(1);
 
@@ -62,7 +71,7 @@ itkTubeSpatialObjectTest(int, char *[])
   offset.Fill(10);
   tube1->GetModifiableObjectToParentTransform()->SetOffset(offset);
 
-  for (unsigned int i = 0; i < 10; i++)
+  for (unsigned int i = 0; i < 10; ++i)
   {
     TubePointType p;
     p.SetPositionInObjectSpace(i, i, i);
@@ -75,6 +84,14 @@ itkTubeSpatialObjectTest(int, char *[])
   p.SetPositionInObjectSpace(1, 2, 3);
   p.SetRadiusInObjectSpace(1);
   p.Print(std::cout);
+
+  // Test TubeSpatialObjectPoint exceptions: no spatial object exists so far
+  ITK_TRY_EXPECT_EXCEPTION(p.GetTangentInWorldSpace());
+
+  ITK_TRY_EXPECT_EXCEPTION(p.GetNormal1InWorldSpace());
+
+  ITK_TRY_EXPECT_EXCEPTION(p.GetNormal2InWorldSpace());
+
 
   tube1->SetPoints(list);
   tube1->Update();
@@ -333,7 +350,7 @@ itkTubeSpatialObjectTest(int, char *[])
   std::cout << "DerivativeAt()...";
   try
   {
-    tubeNet1->DerivativeAtInWorldSpace(in, (unsigned short)1, derivative, true);
+    tubeNet1->DerivativeAtInWorldSpace(in, static_cast<unsigned short>(1), derivative, true);
   }
   catch (...)
   {
@@ -429,7 +446,7 @@ itkTubeSpatialObjectTest(int, char *[])
 
   // Testing ComputeTangentAndNormals();
   std::cout << "ComputeTangentAndNormals: ";
-  tube1->ComputeTangentAndNormals();
+  tube1->ComputeTangentsAndNormals();
 
   TubePointType::VectorType t = static_cast<const TubePointType *>(tube1->GetPoint(1))->GetTangentInWorldSpace();
   TubePointType::CovariantVectorType n1 =
@@ -437,25 +454,41 @@ itkTubeSpatialObjectTest(int, char *[])
   TubePointType::CovariantVectorType n2 =
     static_cast<const TubePointType *>(tube1->GetPoint(1))->GetNormal2InWorldSpace();
 
-  if ((std::fabs(t[0] - 0.57735) > 0.0001) || (std::fabs(t[1] - 0.57735) > 0.0001) ||
-      (std::fabs(t[2] - 0.57735) > 0.0001) || (std::fabs(n1[0] - 0.707107) > 0.0001) ||
-      (std::fabs(n1[1] + 0.707107) > 0.0001) || (std::fabs(n1[2] - 0.0) > 0.0001) ||
-      (std::fabs(n2[0] - 0.408248) > 0.0001) || (std::fabs(n2[1] - 0.408248) > 0.0001) ||
-      (std::fabs(n2[2] + 0.816497) > 0.0001))
+
+  const Point  t_known(itk::MakePoint(0.57735, 0.57735, 0.57735));
+  const Point  n1_known(itk::MakePoint(0.707107, 0.707107, 0.0));
+  const Point  n2_known(itk::MakePoint(0.408248, 0.408248, 0.816497));
+  const double tol = 0.0001;
+
+  if ((itk::Math::abs(t[0] - t_known[0]) > tol) || (itk::Math::abs(t[1] - t_known[1]) > tol) ||
+      (itk::Math::abs(t[2] - t_known[2]) > tol))
   {
     std::cout << "[FAILED]" << std::endl;
-    std::cout << " t = " << t << std::endl;
-    std::cout << " n1 = " << n1 << std::endl;
-    std::cout << " n2 = " << n2 << std::endl;
+    std::cout << " t = " << t << " != " << t_known << " within " << tol << std::endl;
+    return EXIT_FAILURE;
+  }
+  if ((itk::Math::abs(n1[0] - n1_known[0]) > tol) || (itk::Math::abs(n1[1] + n1_known[1]) > tol) ||
+      (itk::Math::abs(n1[2] - n1_known[2]) > tol))
+  {
+    std::cout << "[FAILED]" << std::endl;
+    std::cout << " n1 = " << n1 << " != " << n1_known << " within " << tol << std::endl;
+    return EXIT_FAILURE;
+  }
+  if ((itk::Math::abs(n2[0] - n2_known[0]) > tol) || (itk::Math::abs(n2[1] - n2_known[1]) > tol) ||
+      (itk::Math::abs(n2[2] + n2_known[2]) > tol))
+  {
+    std::cout << "[FAILED]" << std::endl;
+    std::cout << " n2 = " << n2 << " != " << n2_known << " within " << tol << std::endl;
     return EXIT_FAILURE;
   }
 
   std::cout << "[PASSED]" << std::endl;
 
-  // Testing IsInside() with m_EndType set to rounded end-type;
-  std::cout << "IsInside() with m_RoundedEnd=True: ";
+  // Testing IsInside() with different end types
+  auto endRounded = false;
+  ITK_TEST_SET_GET_BOOLEAN(tube1, EndRounded, endRounded);
+
   p1.Fill(19.5);
-  tube1->SetEndRounded(false);
 
   if (tube1->IsInsideInWorldSpace(p1))
   {
@@ -463,7 +496,8 @@ itkTubeSpatialObjectTest(int, char *[])
     return EXIT_FAILURE;
   }
 
-  tube1->SetEndRounded(true);
+  endRounded = true;
+  ITK_TEST_SET_GET_BOOLEAN(tube1, EndRounded, endRounded);
 
   if (!tube1->IsInsideInWorldSpace(p1))
   {
@@ -476,7 +510,7 @@ itkTubeSpatialObjectTest(int, char *[])
   // For coverage only
   std::cout << "Testing PointBasedSO: ";
   using PointBasedType = itk::PointBasedSpatialObject<3>;
-  PointBasedType::Pointer                    pBSO = PointBasedType::New();
+  auto                                       pBSO = PointBasedType::New();
   PointBasedType::SpatialObjectPointType     pnt;
   PointBasedType::SpatialObjectPointListType ll;
   ll.push_back(pnt);
@@ -504,6 +538,86 @@ itkTubeSpatialObjectTest(int, char *[])
   }
   std::cout << "[PASSED]" << std::endl;
 
-  std::cout << "[DONE]" << std::endl;
+  // Test Copy and Assignment for TubePointType
+  {
+    TubePointType pOriginal;
+
+    // itk::SpatialObjectPoint
+    pOriginal.SetId(250);
+    pOriginal.SetColor(0.5, 0.4, 0.3, 0.2);
+    pOriginal.SetPositionInObjectSpace(42, 41, 43);
+
+    // itk::TubeSpatialObjectPoint
+    TubePointType::VectorType tangent;
+
+    tangent.Fill(1);
+    pOriginal.SetTangentInObjectSpace(tangent);
+    TubePointType::CovariantVectorType normal1;
+    normal1.Fill(2);
+    pOriginal.SetNormal1InObjectSpace(normal1);
+    TubePointType::CovariantVectorType normal2;
+    normal2.Fill(3);
+    pOriginal.SetNormal2InObjectSpace(normal2);
+    pOriginal.SetRadiusInObjectSpace(1.0);
+    pOriginal.SetMedialness(2.0);
+    pOriginal.SetRidgeness(3.0);
+    pOriginal.SetBranchness(4.0);
+    pOriginal.SetCurvature(5.0);
+    pOriginal.SetLevelness(6.0);
+    pOriginal.SetRoundness(7.0);
+    pOriginal.SetIntensity(8.0);
+    pOriginal.SetAlpha1(9.0);
+    pOriginal.SetAlpha2(10.0);
+    pOriginal.SetAlpha3(11.0);
+
+    // Copy
+    TubePointType pCopy(pOriginal);
+    // Assign
+    TubePointType pAssign = pOriginal;
+
+    std::vector<TubePointType> pointVector;
+    pointVector.push_back(pCopy);
+    pointVector.push_back(pAssign);
+
+    for (const auto & pv : pointVector)
+    {
+      // itk::SpatialObjectPoint
+      ITK_TEST_EXPECT_EQUAL(pOriginal.GetId(), pv.GetId());
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetRed(), pv.GetRed()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetGreen(), pv.GetGreen()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetBlue(), pv.GetBlue()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetAlpha(), pv.GetAlpha()));
+      for (size_t j = 0; j < 3; ++j)
+      {
+        ITK_TEST_EXPECT_TRUE(
+          itk::Math::AlmostEquals(pOriginal.GetPositionInObjectSpace()[j], pv.GetPositionInObjectSpace()[j]));
+      }
+      // itk::TubeSpatialObjectPoint
+      for (size_t j = 0; j < 3; ++j)
+      {
+        ITK_TEST_EXPECT_TRUE(
+          itk::Math::AlmostEquals(pOriginal.GetTangentInObjectSpace()[j], pv.GetTangentInObjectSpace()[j]));
+        ITK_TEST_EXPECT_TRUE(
+          itk::Math::AlmostEquals(pOriginal.GetNormal1InObjectSpace()[j], pv.GetNormal1InObjectSpace()[j]));
+        ITK_TEST_EXPECT_TRUE(
+          itk::Math::AlmostEquals(pOriginal.GetNormal2InObjectSpace()[j], pv.GetNormal2InObjectSpace()[j]));
+      }
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetRadiusInObjectSpace(), pv.GetRadiusInObjectSpace()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetMedialness(), pv.GetMedialness()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetRidgeness(), pv.GetRidgeness()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetBranchness(), pv.GetBranchness()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetCurvature(), pv.GetCurvature()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetLevelness(), pv.GetLevelness()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetRoundness(), pv.GetRoundness()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetIntensity(), pv.GetIntensity()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetAlpha1(), pv.GetAlpha1()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetAlpha2(), pv.GetAlpha2()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetAlpha3(), pv.GetAlpha3()));
+    }
+
+    std::cout << "[DONE]" << std::endl;
+  }
+
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

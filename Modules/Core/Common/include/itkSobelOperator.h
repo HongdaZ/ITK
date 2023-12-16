@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -98,14 +98,13 @@ template <typename TPixel, unsigned int VDimension = 2, typename TAllocator = Ne
 class ITK_TEMPLATE_EXPORT SobelOperator : public NeighborhoodOperator<TPixel, VDimension, TAllocator>
 {
 public:
-  /** Standard type alias */
+  /** Standard class type aliases. */
   using Self = SobelOperator;
   using Superclass = NeighborhoodOperator<TPixel, VDimension, TAllocator>;
 
   itkTypeMacro(SobelOperator, NeighborhoodOperator);
 
-  /** Creates the operator with length only in the specified direction.  For
-   * the Sobel operator, this
+  /** Creates the operator with length only in the specified direction.
    * The radius of the operator will be 0 except along the axis on which
    * the operator will work.
    * \sa CreateToRadius \sa FillCenteredDirectional \sa SetDirection() \sa GetDirection() */
@@ -121,36 +120,23 @@ public:
    * \sa CreateDirectional \sa Fill */
   // virtual void CreateToRadius(const unsigned long);
 
-
-  /**
-   * Prints some debugging information
-   */
   void
-  PrintSelf(std::ostream & os, Indent i) const override
+  PrintSelf(std::ostream & os, Indent indent) const override
   {
-    os << i << "SobelOperator { this=" << this << "}" << std::endl;
-    Superclass::PrintSelf(os, i.GetNextIndent());
+    Superclass::PrintSelf(os, indent);
   }
 
 protected:
-  /**
-   * Typedef support for coefficient vector type.  Necessary to
-   * work around compiler bug on VC++.
-   */
-  using CoefficientVector = typename Superclass::CoefficientVector;
-  using PixelType = typename Superclass::PixelType;
+  /** Type alias support for coefficient vector type.*/
+  using typename Superclass::CoefficientVector;
 
-  /**
-   * Calculates operator coefficients.
-   */
+  /** Calculates operator coefficients. */
   CoefficientVector
   GenerateCoefficients() override;
 
-  /**
-   * Arranges coefficients spatially in the memory buffer.
-   */
+  /** Arranges coefficients spatially in the memory buffer. */
   void
-  Fill(const CoefficientVector & c) override;
+  Fill(const CoefficientVector & coeff) override;
 };
 } // namespace itk
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,10 +28,10 @@ namespace itk
 namespace TemporalProcessObjectTest
 {
 
-using SizeValueType = ::itk::SizeValueType;
-using OffsetValueType = ::itk::OffsetValueType;
+using SizeValueType = itk::SizeValueType;
+using OffsetValueType = itk::OffsetValueType;
 
-/**\class CallRecordEnumms
+/** \class CallRecordEnumms
  * \brief Contains all enum classes for CallRecord class.
  */
 class CallRecordEnums
@@ -99,7 +99,7 @@ operator<<(std::ostream & out, const CallRecordEnums::MethodType value)
 }
 
 /**
- *\class CallRecord
+ * \class CallRecord
  * Record of a start or end of a GenerateDataCall from a
  * DummyTemporalProcessObject instance
  */
@@ -181,11 +181,7 @@ public:
             m_MethodType == other.GetMethodType());
   }
 
-  bool
-  operator!=(const CallRecord & other) const
-  {
-    return !(*this == other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(CallRecord);
 
 protected:
   SizeValueType  m_CallerId;
@@ -200,7 +196,7 @@ protected:
 std::vector<CallRecord> m_CallStack;
 
 /**
- *\class DummyTemporalDataObject
+ * \class DummyTemporalDataObject
  * Create TemporaDataObject subclass that does nothing, but overrides some
  * methods to provide debug output
  */
@@ -236,7 +232,7 @@ public:
 
   /** Override PropagateRequestedRegion for debug output */
   void
-  PropagateRequestedRegion() throw(itk::InvalidRequestedRegionError) override
+  PropagateRequestedRegion() override
   {
     Superclass::PropagateRequestedRegion();
   }
@@ -262,7 +258,7 @@ public:
     for (SizeValueType i = 0; i < x; ++i)
     {
       // Create a new DataObject
-      DataObject::Pointer obj = dynamic_cast<DataObject *>(DataObject::New().GetPointer());
+      DataObject::Pointer obj = DataObject::New().GetPointer();
 
       // Append to the end of the buffer
       m_DataObjectBuffer->MoveHeadForward();
@@ -306,7 +302,7 @@ public:
 };
 
 /**
- *\class DummyTemporalProcessObject
+ * \class DummyTemporalProcessObject
  * Create TemporalProcessObject subclass that does nothing, but implements
  * New() and TemporalStreamingGenerateData()
  */
@@ -362,7 +358,7 @@ public:
     // Just pass frames from the input through to the output and add debug info
     for (SizeValueType i = outputStart; i < outputStart + numFramesOut; ++i)
     {
-      DataObject::Pointer newObj = dynamic_cast<DataObject *>(DataObject::New().GetPointer());
+      DataObject::Pointer newObj = DataObject::New().GetPointer();
 
       // Set the output
       this->GetOutput()->SetObjectAtFrame(i, newObj);
@@ -512,7 +508,7 @@ protected:
   DummyTemporalProcessObject()
 
   {
-    DummyTemporalDataObject::Pointer po = DummyTemporalDataObject::New();
+    auto po = DummyTemporalDataObject::New();
 
     this->SetNthOutput(0, po.GetPointer());
   }
@@ -532,19 +528,19 @@ int
 itkTemporalProcessObjectTest(int, char *[])
 {
 
-  using SizeValueType = ::itk::SizeValueType;
-  using OffsetValueType = ::itk::OffsetValueType;
+  using SizeValueType = itk::SizeValueType;
+  using OffsetValueType = itk::OffsetValueType;
   //////
   // Set up pipeline
   //////
 
   // Create 3 new DummyTemporalProcessObjects
   using TPOType = itk::TemporalProcessObjectTest::DummyTemporalProcessObject;
-  TPOType::Pointer tpo1 = TPOType::New();
+  auto tpo1 = TPOType::New();
   tpo1->SetIdNumber(1);
-  TPOType::Pointer tpo2 = TPOType::New();
+  auto tpo2 = TPOType::New();
   tpo2->SetIdNumber(2);
-  TPOType::Pointer tpo3 = TPOType::New();
+  auto tpo3 = TPOType::New();
   tpo3->SetIdNumber(3);
 
   // Set up the Process Objects in a pipeline
@@ -571,7 +567,7 @@ itkTemporalProcessObjectTest(int, char *[])
 
   // Create a new TemporalDataObject to pass through the pipeline
   using TDOType = itk::TemporalProcessObjectTest::DummyTemporalDataObject;
-  TDOType::Pointer tdo = TDOType::New();
+  auto tdo = TDOType::New();
   tpo1->SetInput(tdo);
 
   // Set up regions for TemporalDataObject

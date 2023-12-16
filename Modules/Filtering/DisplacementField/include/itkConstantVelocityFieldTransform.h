@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,16 +32,16 @@ namespace itk
  *
  * \ingroup ITKDisplacementField
  */
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 class ITK_TEMPLATE_EXPORT ConstantVelocityFieldTransform
-  : public DisplacementFieldTransform<TParametersValueType, NDimensions>
+  : public DisplacementFieldTransform<TParametersValueType, VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConstantVelocityFieldTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(ConstantVelocityFieldTransform);
 
   /** Standard class type aliases. */
   using Self = ConstantVelocityFieldTransform;
-  using Superclass = DisplacementFieldTransform<TParametersValueType, NDimensions>;
+  using Superclass = DisplacementFieldTransform<TParametersValueType, VDimension>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
@@ -52,45 +52,45 @@ public:
   itkNewMacro(Self);
 
   /** InverseTransform type. */
-  using InverseTransformBasePointer = typename Superclass::InverseTransformBasePointer;
+  using typename Superclass::InverseTransformBasePointer;
 
   /** Scalar type. */
-  using ScalarType = typename Superclass::ScalarType;
+  using typename Superclass::ScalarType;
 
   /** Type of the input parameters. */
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename Superclass::FixedParametersValueType;
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
+  using typename Superclass::FixedParametersType;
+  using typename Superclass::FixedParametersValueType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::ParametersValueType;
 
   /** Transform category type. */
-  using TransformCategoryEnum = typename Superclass::TransformCategoryEnum;
+  using typename Superclass::TransformCategoryEnum;
 
   /** The number of parameters defining this transform. */
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
+  using typename Superclass::NumberOfParametersType;
 
   /** Standard coordinate point type for this class. */
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
+  using typename Superclass::InputPointType;
+  using typename Superclass::OutputPointType;
 
   /** Standard vector type for this class. */
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
+  using typename Superclass::InputVectorType;
+  using typename Superclass::OutputVectorType;
 
-  using InputVectorPixelType = typename Superclass::InputVectorPixelType;
-  using OutputVectorPixelType = typename Superclass::OutputVectorPixelType;
+  using typename Superclass::InputVectorPixelType;
+  using typename Superclass::OutputVectorPixelType;
 
   /** Derivative type */
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeType;
 
   /** Dimension of the constant velocity field . */
-  static constexpr unsigned int ConstantVelocityFieldDimension = NDimensions;
+  static constexpr unsigned int ConstantVelocityFieldDimension = VDimension;
 
   /** Dimension of the vector spaces. */
-  static constexpr unsigned int Dimension = NDimensions;
+  static constexpr unsigned int Dimension = VDimension;
 
   /** Define the displacement field type and corresponding interpolator type. */
-  using DisplacementFieldType = typename Superclass::DisplacementFieldType;
+  using typename Superclass::DisplacementFieldType;
   using DisplacementFieldPointer = typename DisplacementFieldType::Pointer;
 
   /** Define the displacement field type and corresponding interpolator type. */

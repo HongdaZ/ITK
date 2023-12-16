@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkPathToChainCodePathFilter_hxx
 #define itkPathToChainCodePathFilter_hxx
 
-#include "itkPathToChainCodePathFilter.h"
 
 namespace itk
 {
@@ -70,7 +69,7 @@ PathToChainCodePathFilter<TInputPath, TOutputChainCodePath>::GenerateData()
     }
     else
     {
-      for (int d = 0; d < dimension; d++)
+      for (int d = 0; d < dimension; ++d)
       {
         if (offset[d])
         {

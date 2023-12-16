@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class GradientDescentOptimizerv4Template
+ * \class GradientDescentOptimizerv4Template
  *  \brief Gradient descent optimizer.
  *
  * GradientDescentOptimizer implements a simple gradient descent optimizer.
@@ -79,7 +79,7 @@ class ITK_TEMPLATE_EXPORT GradientDescentOptimizerv4Template
   : public GradientDescentOptimizerBasev4Template<TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GradientDescentOptimizerv4Template);
+  ITK_DISALLOW_COPY_AND_MOVE(GradientDescentOptimizerv4Template);
 
   /** Standard class type aliases. */
   using Self = GradientDescentOptimizerv4Template;
@@ -88,7 +88,7 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GradientDescentOptimizerv4Template, Superclass);
+  itkTypeMacro(GradientDescentOptimizerv4Template, GradientDescentOptimizerBasev4Template);
 
   /** New macro for creation of through a Smart Pointer   */
   itkNewMacro(Self);
@@ -98,13 +98,13 @@ public:
   using InternalComputationValueType = TInternalComputationValueType;
 
   /** Derivative type */
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeType;
 
   /** Metric type over which this class is templated */
-  using MeasureType = typename Superclass::MeasureType;
-  using IndexRangeType = typename Superclass::IndexRangeType;
-  using ScalesType = typename Superclass::ScalesType;
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::IndexRangeType;
+  using typename Superclass::ScalesType;
+  using typename Superclass::ParametersType;
 
   /**
    * Set/Get the learning rate to apply. It is overridden by

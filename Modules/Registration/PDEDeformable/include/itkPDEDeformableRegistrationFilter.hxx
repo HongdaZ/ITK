@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkPDEDeformableRegistrationFilter_hxx
 #define itkPDEDeformableRegistrationFilter_hxx
 
-#include "itkPDEDeformableRegistrationFilter.h"
 
 #include "itkImageRegionIterator.h"
 #include "itkImageLinearIteratorWithIndex.h"
@@ -27,7 +26,6 @@
 #include "itkGaussianOperator.h"
 #include "itkVectorNeighborhoodOperatorImageFilter.h"
 
-#include "itkMath.h"
 #include "itkMath.h"
 
 namespace itk
@@ -52,7 +50,7 @@ PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
   this->SetNumberOfIterations(10);
 
   unsigned int j;
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     m_StandardDeviations[j] = 1.0;
     m_UpdateFieldStandardDeviations[j] = 1.0;
@@ -78,12 +76,12 @@ PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
 
   if (this->GetFixedImage())
   {
-    num++;
+    ++num;
   }
 
   if (this->GetMovingImage())
   {
-    num++;
+    ++num;
   }
 
   return num;
@@ -98,7 +96,7 @@ PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
 {
   unsigned int j;
 
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     if (Math::NotExactlyEquals(value, m_StandardDeviations[j]))
     {
@@ -108,7 +106,7 @@ PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
   if (j < ImageDimension)
   {
     this->Modified();
-    for (j = 0; j < ImageDimension; j++)
+    for (j = 0; j < ImageDimension; ++j)
     {
       m_StandardDeviations[j] = value;
     }
@@ -125,7 +123,7 @@ PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
 {
   unsigned int j;
 
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     if (Math::NotExactlyEquals(value, m_UpdateFieldStandardDeviations[j]))
     {
@@ -135,7 +133,7 @@ PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
   if (j < ImageDimension)
   {
     this->Modified();
-    for (j = 0; j < ImageDimension; j++)
+    for (j = 0; j < ImageDimension; ++j)
     {
       m_UpdateFieldStandardDeviations[j] = value;
     }
@@ -154,7 +152,7 @@ PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
   os << indent << "Smooth deformation field: " << (m_SmoothDisplacementField ? "on" : "off") << std::endl;
   unsigned int j = 0;
   os << indent << "Standard deviations: [" << m_StandardDeviations[j];
-  for (j = 1; j < ImageDimension; j++)
+  for (j = 1; j < ImageDimension; ++j)
   {
     os << ", " << m_StandardDeviations[j];
   }
@@ -162,7 +160,7 @@ PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
   os << indent << "Smooth update field: " << (m_SmoothUpdateField ? "on" : "off") << std::endl;
   j = 0;
   os << indent << "Update field standard deviations: [" << m_UpdateFieldStandardDeviations[j];
-  for (j = 1; j < ImageDimension; j++)
+  for (j = 1; j < ImageDimension; ++j)
   {
     os << ", " << m_UpdateFieldStandardDeviations[j];
   }
@@ -223,7 +221,7 @@ PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
   else
   {
     typename Superclass::PixelType zeros;
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       zeros[j] = 0;
     }
@@ -343,8 +341,8 @@ PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
   using OperatorType = GaussianOperator<ScalarType, ImageDimension>;
   using SmootherType = VectorNeighborhoodOperatorImageFilter<DisplacementFieldType, DisplacementFieldType>;
 
-  auto *                         oper = new OperatorType;
-  typename SmootherType::Pointer smoother = SmootherType::New();
+  auto * oper = new OperatorType;
+  auto   smoother = SmootherType::New();
 
   using PixelContainerPointer = typename DisplacementFieldType::PixelContainerPointer;
   PixelContainerPointer swapPtr;
@@ -352,7 +350,7 @@ PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
   // graft the output field onto the mini-pipeline
   smoother->GraftOutput(m_TempField);
 
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     // smooth along this dimension
     oper->SetDirection(j);
@@ -402,7 +400,7 @@ PDEDeformableRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
   OperatorType                   opers[ImageDimension];
   typename SmootherType::Pointer smoothers[ImageDimension];
 
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     // smooth along this dimension
     opers[j].SetDirection(j);

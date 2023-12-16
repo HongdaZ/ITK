@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -192,10 +192,10 @@ CreateTree_1(NodeListType & internalList)
 {
   std::cout << "create tree" << std::endl;
 
-  TreeType::Pointer tree = TreeType::New();
+  auto tree = TreeType::New();
 
 
-  TreeChangeListener::Pointer treeChangeListener = TreeChangeListener::New();
+  auto                        treeChangeListener = TreeChangeListener::New();
   itk::TreeAddEvent<TreeType> ev;
   unsigned long               tag = tree->AddObserver(ev, treeChangeListener);
 
@@ -265,8 +265,8 @@ CreateTree_2(NodeListType & internalList)
 {
   std::cout << "create tree 2" << std::endl;
 
-  TreeType::Pointer tree = TreeType::New();
-  auto *            newNode = new TestData(9);
+  auto   tree = TreeType::New();
+  auto * newNode = new TestData(9);
   internalList.push_back(newNode);
   tree->SetRoot(newNode);
   itk::PostOrderTreeIterator<TreeType> it(tree);
@@ -399,7 +399,7 @@ itkTreeContainerTest2(int, char *[])
   result = IteratorTest(preOrderIt_Tree_1_2);
   testCounter += PrintResult(result, 3761);
 
-  TreeChangeListener::Pointer    treeChangeListener = TreeChangeListener::New();
+  auto                           treeChangeListener = TreeChangeListener::New();
   itk::TreeChangeEvent<TreeType> ev;
   unsigned long                  tag = tree->AddObserver(ev, treeChangeListener);
   tree->Clear();

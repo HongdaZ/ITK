@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -97,7 +97,7 @@ class ITK_TEMPLATE_EXPORT ObjectToObjectMultiMetricv4
   : public ObjectToObjectMetric<TFixedDimension, TMovingDimension, TVirtualImage, TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ObjectToObjectMultiMetricv4);
+  ITK_DISALLOW_COPY_AND_MOVE(ObjectToObjectMultiMetricv4);
 
   /** Standard class type aliases */
   using Self = ObjectToObjectMultiMetricv4;
@@ -113,15 +113,15 @@ public:
   itkNewMacro(Self);
 
   /** Types inherited from Superclass. */
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using DerivativeValueType = typename Superclass::DerivativeValueType;
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
-  using CoordinateRepresentationType = typename Superclass::CoordinateRepresentationType;
-  using MovingTransformType = typename Superclass::MovingTransformType;
-  using FixedTransformType = typename Superclass::FixedTransformType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeValueType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::ParametersValueType;
+  using typename Superclass::NumberOfParametersType;
+  using typename Superclass::CoordinateRepresentationType;
+  using typename Superclass::MovingTransformType;
+  using typename Superclass::FixedTransformType;
 
   /** type alias related to the metric queue */
   using MetricType = Superclass;
@@ -186,13 +186,13 @@ public:
   GetDerivative(DerivativeType &) const override;
 
   /** Evaluate the metric value and derivative.
-   * \note \param value will contain the value of only the *first* metric on return.
-   * \param derivative holds the combined derivative on return.
+   * \param firstValue will contain the value of only the *first* metric on return.
+   * \param derivativeResult holds the combined derivative on return.
    *
    * \sa GetValueArray
    * \sa GetWeightedValue */
   void
-  GetValueAndDerivative(MeasureType & value, DerivativeType & derivative) const override;
+  GetValueAndDerivative(MeasureType & firstValue, DerivativeType & derivativeResult) const override;
 
   /** Returns an itkArray of metric values, one for each component metric. It
    *  only has meaning after a call to GetValue(), GetDerivative() or GetValueAndDerivative(). */
@@ -211,7 +211,7 @@ public:
   bool
   SupportsArbitraryVirtualDomainSamples() const override;
 
-  using MetricCategoryType = typename Superclass::MetricCategoryType;
+  using typename Superclass::MetricCategoryType;
 
   /** Get metric category */
   MetricCategoryType

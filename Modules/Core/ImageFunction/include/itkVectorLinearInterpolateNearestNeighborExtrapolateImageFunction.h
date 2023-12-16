@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,8 +43,8 @@ namespace itk
  * \warning This function work only for Vector images. For
  * scalar images use LinearInterpolateImageFunction.
  *
- *  This paper was contributed in the Insight Journal paper:
- *  https://hdl.handle.net/1926/510
+ * This paper was contributed in the Insight Journal paper:
+ * https://www.insight-journal.org/browse/publication/154
  *
  * \ingroup ImageFunctions ImageInterpolators
  * \ingroup ITKImageFunction
@@ -55,7 +55,7 @@ class ITK_TEMPLATE_EXPORT VectorLinearInterpolateNearestNeighborExtrapolateImage
   : public VectorInterpolateImageFunction<TInputImage, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorLinearInterpolateNearestNeighborExtrapolateImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(VectorLinearInterpolateNearestNeighborExtrapolateImageFunction);
 
   /** Standard class type aliases. */
   using Self = VectorLinearInterpolateNearestNeighborExtrapolateImageFunction;
@@ -70,12 +70,12 @@ public:
   itkTypeMacro(VectorLinearInterpolateNearestNeighborExtrapolateImageFunction, VectorInterpolateImageFunction);
 
   /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
-  using PixelType = typename Superclass::PixelType;
-  using ValueType = typename Superclass::ValueType;
-  using RealType = typename Superclass::RealType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::PixelType;
+  using typename Superclass::ValueType;
+  using typename Superclass::RealType;
 
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** Grab the vector dimension from the superclass. */
   // static constexpr unsigned int Dimension = //                    Superclass::Dimension;
@@ -84,14 +84,14 @@ public:
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
-  using IndexValueType = typename Superclass::IndexValueType;
+  using typename Superclass::IndexType;
+  using typename Superclass::IndexValueType;
 
   /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
 
   /** Output type is Vector<double,Dimension> */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** Should check if an index is inside the image buffer, however we
    * require that it answers true to use the extrapolation possibility. */

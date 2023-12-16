@@ -12,12 +12,16 @@ itkNiftiImageIOTest9.cxx
 itkNiftiImageIOTest10.cxx
 itkNiftiImageIOTest11.cxx
 itkNiftiImageIOTest12.cxx
+itkNiftiImageIOTest13.cxx
+itkNiftiLargeImageRegionReadTest.cxx
 itkNiftiReadAnalyzeTest.cxx
+itkNiftiReadWriteDirectionTest.cxx
 itkExtractSlice.cxx
+itkNiftiWriteCoerceOrthogonalDirectionTest.cxx
 )
 
 # For itkNiftiImageIOTest.h.
-include_directories( ${ITKIONIFTI_SOURCE_DIR}/test )
+include_directories(${ITKIONIFTI_SOURCE_DIR}/test)
 
 add_library(ITKIONIFTI-TestSupport  itkNiftiImageIOTestHelper.cxx)
 itk_module_target_label(ITKIONIFTI-TestSupport)
@@ -26,6 +30,10 @@ target_link_libraries(ITKIONIFTI-TestSupport LINK_PUBLIC ${ITKIONIFTI-Test_LIBRA
 list(APPEND ITKIONIFTI-Test_LIBRARIES ITKIONIFTI-TestSupport)
 
 CreateTestDriver(ITKIONIFTI  "${ITKIONIFTI-Test_LIBRARIES}" "${ITKIONIFTITests}")
+
+itk_add_test(NAME itkNiftisform2DirectionDef.nii.gz
+      COMMAND ITKIONIFTITestDriver itkNiftiImageIOTest
+              ${ITK_TEST_OUTPUT_DIR} DATA{${ITK_DATA_ROOT}/Input/itkNiftisform2DirectionDef.nii.gz})
 
 itk_add_test(NAME itkNiftiIOBigEndianCompressed.hdr
       COMMAND ITKIONIFTITestDriver itkNiftiImageIOTest
@@ -55,7 +63,7 @@ itk_add_test(NAME itkNiftiIOShouldSucceed
       COMMAND ITKIONIFTITestDriver itkNiftiImageIOTest2
               ${ITK_TEST_OUTPUT_DIR} itkNiftiIOShouldSucceed true DATA{${ITK_DATA_ROOT}/Input/LittleEndian.hdr,LittleEndian.mhd,LittleEndian.img})
 itk_add_test(NAME itkDirCosinesTest
-      COMMAND ITKIONIFTITestDriver itkNiftiImageIOTest4 ${ITK_TEST_OUTPUT_DIR} )
+      COMMAND ITKIONIFTITestDriver itkNiftiImageIOTest4 ${ITK_TEST_OUTPUT_DIR})
 itk_add_test(NAME itkNiftiSlopeInterceptTest
       COMMAND ITKIONIFTITestDriver itkNiftiImageIOTest5 ${ITK_TEST_OUTPUT_DIR})
 itk_add_test(NAME itkNiftiVectorImageTest2
@@ -69,11 +77,50 @@ itk_add_test(NAME itkNiftiRGBImageTest
 itk_add_test(NAME itkNiftiRGBAImageTest
       COMMAND ITKIONIFTITestDriver itkNiftiImageIOTest10 ${ITK_TEST_OUTPUT_DIR} RGBAImage.nii.gz)
 itk_add_test(NAME itkNiftiVectorImageTest
-      COMMAND ITKIONIFTITestDriver itkNiftiImageIOTest3 ${ITK_TEST_OUTPUT_DIR} )
+      COMMAND ITKIONIFTITestDriver itkNiftiImageIOTest3 ${ITK_TEST_OUTPUT_DIR})
 itk_add_test(NAME itkNiftiDimensionLimitsTest
-      COMMAND ITKIONIFTITestDriver itkNiftiImageIOTest11 ${ITK_TEST_OUTPUT_DIR} SizeFailure.nii.gz )
+      COMMAND ITKIONIFTITestDriver itkNiftiImageIOTest11 ${ITK_TEST_OUTPUT_DIR} SizeFailure.nii.gz)
+itk_add_test(NAME itkNiftiLargeRGBTest
+        COMMAND ITKIONIFTITestDriver itkNiftiImageIOTest12 ${ITK_TEST_OUTPUT_DIR} LargeRGBImage.nii.gz)
 itk_add_test(NAME itkNiftiReadAnalyzeTest
-      COMMAND ITKIONIFTITestDriver itkNiftiReadAnalyzeTest ${ITK_TEST_OUTPUT_DIR} )
+      COMMAND ITKIONIFTITestDriver itkNiftiReadAnalyzeTest ${ITK_TEST_OUTPUT_DIR})
 itk_add_test(NAME itkExtractSliceSlopeInterceptUCHAR
       COMMAND ITKIONIFTITestDriver --compare DATA{Baseline/SlopeInterceptUCHAR-midSlice.nrrd} ${ITK_TEST_OUTPUT_DIR}/SlopeInterceptUCHAR-midSlice.nrrd
               itkExtractSlice DATA{Input/SlopeInterceptUCHAR.nii.gz} ${ITK_TEST_OUTPUT_DIR}/SlopeInterceptUCHAR-midSlice.nrrd)
+
+itk_add_test(NAME itkNiftiReadWriteDirectionTest
+        COMMAND ITKIONIFTITestDriver itkNiftiReadWriteDirectionTest
+        DATA{${ITK_DATA_ROOT}/Input/LPSLabels.nii.gz}
+        DATA{${ITK_DATA_ROOT}/Input/LPSLabels_noqform.nii.gz}
+        DATA{${ITK_DATA_ROOT}/Input/LPSLabels_nosform.nii.gz}
+        ${ITK_TEST_OUTPUT_DIR}
+        )
+
+itk_add_test(NAME itkNiftiReadWriteDirectionSmallVoxelTest
+        COMMAND ITKIONIFTITestDriver itkNiftiReadWriteDirectionTest
+        DATA{Input/SmallVoxels.nii.gz}
+        DATA{Input/SmallVoxels_noqform.nii.gz}
+        DATA{Input/SmallVoxels_nosform.nii.gz}
+        ${ITK_TEST_OUTPUT_DIR}
+        )
+
+itk_add_test(NAME itkNiftiSmallVoxelsAffinePrecisionTest
+      COMMAND ITKIONIFTITestDriver
+      itkNiftiImageIOTest13
+      DATA{Input/SmallVoxels_AffinePrecision.nii.gz}
+      )
+
+itk_add_test(NAME itkNiftiQFormSFormDifferentSpacingTest
+      COMMAND ITKIONIFTITestDriver
+      itkNiftiImageIOTest13
+      DATA{Input/ChickenEgg-zeros.nii.gz}
+      )
+
+itk_add_test(NAME itkNiftiLargeImageRegionReadTest
+      COMMAND ITKIONIFTITestDriver itkNiftiLargeImageRegionReadTest
+      ${ITK_TEST_OUTPUT_DIR}/itkNiftiLargeImageRegionReadTest.nii.gz)
+
+itk_add_test(NAME itkNiftiWriteCoerceOrthogonalDirectionTest
+        COMMAND ITKIONIFTITestDriver itkNiftiWriteCoerceOrthogonalDirectionTest
+        ${ITK_TEST_OUTPUT_DIR}
+        )

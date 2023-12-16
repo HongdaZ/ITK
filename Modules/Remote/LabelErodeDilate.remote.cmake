@@ -27,12 +27,12 @@
 #--   - [ ] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -47,10 +47,10 @@ itk_fetch_module(LabelErodeDilate
   operations are efficient (approximately constant time wrt
   structuring element size). Only circular/spherical/hyperspherical
   structuring elements are supported.
-  http://www.insight-journal.org/browse/publication/228
-  https://hdl.handle.net/10380/3399"
+  https://www.insight-journal.org/browse/publication/886
+  https://www.insight-journal.org/browse/publication/228"
   MODULE_COMPLIANCE_LEVEL 2
   #UPSTREAM_GIT_REPOSITORY
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKLabelErodeDilate.git
-  GIT_TAG f99a566b76d285516123798bfbfa4b2ebf7a8fa2
+  GIT_TAG af2525c2f2d45d43989dfcdd9b9587a0f9c8a03e
   )

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,32 +22,34 @@
 #include "itkImageFileWriter.h"
 #include "itkTextOutput.h"
 #include "itkSimpleFilterWatcher.h"
+#include "itkTestingMacros.h"
 
 int
-itkMapMaskedRankImageFilterTest(int ac, char * av[])
+itkMapMaskedRankImageFilterTest(int argc, char * argv[])
 {
   // Comment the following if you want to use the itk text output window
   itk::OutputWindow::SetInstance(itk::TextOutput::New());
 
-  if (ac < 5)
+  if (argc < 5)
   {
-    std::cerr << "Usage: " << av[0] << " InputImage maskImage BaselineImage radius" << std::endl;
-    return -1;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " InputImage maskImage BaselineImage radius"
+              << std::endl;
+    return EXIT_FAILURE;
   }
 
   using ImageType = itk::Image<unsigned short, 2>;
 
   using ReaderType = itk::ImageFileReader<ImageType>;
-  ReaderType::Pointer input = ReaderType::New();
-  input->SetFileName(av[1]);
+  auto input = ReaderType::New();
+  input->SetFileName(argv[1]);
 
-  ReaderType::Pointer input2 = ReaderType::New();
-  input2->SetFileName(av[2]);
+  auto input2 = ReaderType::New();
+  input2->SetFileName(argv[2]);
 
   // Create a filter
   using SEType = itk::FlatStructuringElement<2>;
   using FilterType = itk::MaskedRankImageFilter<ImageType, ImageType, ImageType, SEType>;
-  FilterType::Pointer      filter = FilterType::New();
+  auto                     filter = FilterType::New();
   itk::SimpleFilterWatcher filterWatch(filter);
 
   using RadiusType = FilterType::RadiusType;
@@ -130,7 +132,7 @@ itkMapMaskedRankImageFilterTest(int ac, char * av[])
 
   try
   {
-    int r = std::stoi(av[4]);
+    int r = std::stoi(argv[4]);
     filter->SetInput(input->GetOutput());
     filter->SetMaskImage(input2->GetOutput());
     filter->SetRadius(r);
@@ -148,9 +150,9 @@ itkMapMaskedRankImageFilterTest(int ac, char * av[])
 
   // Generate test image
   using WriterType = itk::ImageFileWriter<ImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(filter->GetOutput());
-  writer->SetFileName(av[3]);
+  writer->SetFileName(argv[3]);
   writer->Update();
 
   return EXIT_SUCCESS;

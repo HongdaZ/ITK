@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,8 +42,8 @@ itkTriangleMeshToSimplexMeshFilter2Test(int, char *[])
   // Declare the type of the gradient image
   using SimplexFilterType = itk::TriangleMeshToSimplexMeshFilter<TriangleMeshType, SimplexMeshType>;
 
-  SphereMeshSourceType::Pointer mySphereMeshSource = SphereMeshSourceType::New();
-  PointType                     center;
+  auto      mySphereMeshSource = SphereMeshSourceType::New();
+  PointType center;
   center.Fill(0);
   PointType::ValueType scaleInit[3] = { 10, 10, 10 };
   VectorType           scale = scaleInit;
@@ -52,7 +52,7 @@ itkTriangleMeshToSimplexMeshFilter2Test(int, char *[])
   mySphereMeshSource->SetResolution(2);
   mySphereMeshSource->SetScale(scale);
 
-  SimplexFilterType::Pointer simplexFilter = SimplexFilterType::New();
+  auto simplexFilter = SimplexFilterType::New();
   simplexFilter->SetInput(mySphereMeshSource->GetOutput());
   simplexFilter->Update();
 
@@ -61,14 +61,14 @@ itkTriangleMeshToSimplexMeshFilter2Test(int, char *[])
 
   using NeighborsListType = SimplexMeshType::NeighborListType;
 
-  for (int i = 0; i < 7; i++)
+  for (int i = 0; i < 7; ++i)
   {
     itk::TimeProbe      timeProbe;
     NeighborsListType * neighbors = nullptr;
 
     timeProbe.Start();
     const unsigned int lastIndex = simplexMesh->GetPoints()->Size();
-    for (unsigned int pointIndex = 0; pointIndex < lastIndex; pointIndex++)
+    for (unsigned int pointIndex = 0; pointIndex < lastIndex; ++pointIndex)
     {
       neighbors = simplexMesh->GetNeighbors(pointIndex, i);
       if (pointIndex != (lastIndex - 1))

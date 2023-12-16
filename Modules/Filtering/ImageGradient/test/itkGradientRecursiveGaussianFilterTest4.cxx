@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,17 +47,17 @@ itkGradientRecursiveGaussianFilterTest4(int argc, char * argv[])
   using myGradientImageType = itk::VectorImage<FloatType, myDimension>;
 
   // Create the image
-  myImageType::Pointer inputImage = myImageType::New();
+  auto inputImage = myImageType::New();
 
   using myReaderType = itk::ImageFileReader<myImageType>;
-  myReaderType::Pointer reader = myReaderType::New();
+  auto reader = myReaderType::New();
   reader->SetFileName(inFileName);
 
   // Declare the type for the
   using myFilterType = itk::GradientRecursiveGaussianImageFilter<myImageType, myGradientImageType>;
 
   // Create a  Filter
-  myFilterType::Pointer filter = myFilterType::New();
+  auto filter = myFilterType::New();
 
   // Connect the input images
   filter->SetInput(reader->GetOutput());
@@ -66,7 +66,7 @@ itkGradientRecursiveGaussianFilterTest4(int argc, char * argv[])
   filter->SetSigma(2.5);
 
   using myWriterType = itk::ImageFileWriter<myGradientImageType>;
-  myWriterType::Pointer writer = myWriterType::New();
+  auto writer = myWriterType::New();
   writer->SetInput(filter->GetOutput());
   writer->SetFileName(outFileName);
   writer->Update();

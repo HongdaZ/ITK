@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -283,6 +283,41 @@ testDeleteEventThrow()
   return EXIT_SUCCESS;
 }
 
+int
+testLambdaCommand()
+{
+  // NOTE: cnt needs to be defined BEFORE "o" because it MUST exist when the "DeleteEvent()" is causes the
+  //      FIRST OBSERVER LAMBDA to be called.  If 'cnt' is defined after 'o' then when the scope
+  //      ends, 'cnt' is deleted first, followed by deleting 'o' which tries to increment 'cnt' when
+  //      the 'DeleteEvent' tries to be processed.
+  int cnt = 0;
+  int name_of_class_cnt = 0;
+
+  {
+    // check the case where an exception in thrown in the DeleteEvent
+    itk::Object::Pointer o = itk::Object::New();
+    /*----- FIRST OBSERVER LAMBDA */
+    o->AddObserver(itk::AnyEvent(), [&cnt](const itk::EventObject &) { ++cnt; });
+
+    auto & objRef = *o.GetPointer();
+    /*----- SECOND OBSERVER LAMBDA */
+    o->AddObserver(itk::AnyEvent(), [&objRef, &name_of_class_cnt](const itk::EventObject & event) {
+      ++name_of_class_cnt;
+      std::cout << "Invocation # " << name_of_class_cnt << "\nObject: " << objRef.GetNameOfClass()
+                << " Event: " << event << std::endl;
+    });
+
+    o->InvokeEvent(itk::AnyEvent());
+    ITK_TEST_EXPECT_EQUAL(1, cnt);
+    ITK_TEST_EXPECT_EQUAL(1, name_of_class_cnt);
+
+  }                              // A DeleteEvent is called here! as object "o" is deleted
+  ITK_TEST_EXPECT_EQUAL(2, cnt); // Verify that cnt really was incremented during DeleteEvent!
+  ITK_TEST_EXPECT_EQUAL(2, name_of_class_cnt);
+  return EXIT_SUCCESS;
+}
+
+
 } // end namespace
 
 
@@ -295,6 +330,7 @@ itkCommandObserverObjectTest(int, char *[])
   ret &= (testCommandConstObject() == EXIT_SUCCESS);
   ret &= (testCommandRecursiveObject() == EXIT_SUCCESS);
   ret &= (testDeleteEventThrow() == EXIT_SUCCESS);
+  ret &= (testLambdaCommand() == EXIT_SUCCESS);
 
   return ret ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ itkObjectMorphologyImageFilterTest(int, char *[])
   using myRegionType = itk::ImageRegion<myDimension>;
 
   // Create an image
-  myImageType::Pointer inputImage = myImageType::New();
+  auto inputImage = myImageType::New();
 
   // Define their size, and start index
   mySizeType size;
@@ -122,10 +122,10 @@ itkObjectMorphologyImageFilterTest(int, char *[])
   using binErodeFilterType = itk::BinaryErodeImageFilter<myImageType, myImageType, myKernelType>;
 
   // Create the filter
-  myDilateFilterType::Pointer  dilateFilter = myDilateFilterType::New();
-  myErodeFilterType::Pointer   erodeFilter = myErodeFilterType::New();
-  binDilateFilterType::Pointer binDilateFilter = binDilateFilterType::New();
-  binErodeFilterType::Pointer  binErodeFilter = binErodeFilterType::New();
+  auto dilateFilter = myDilateFilterType::New();
+  auto erodeFilter = myErodeFilterType::New();
+  auto binDilateFilter = binDilateFilterType::New();
+  auto binErodeFilter = binErodeFilterType::New();
 
   // Create the structuring element
   myKernelType           ball;
@@ -153,7 +153,7 @@ itkObjectMorphologyImageFilterTest(int, char *[])
     dilateFilter->Update();
     end = clock();
 
-    elapsedTime = (end - start) / (double)CLOCKS_PER_SEC;
+    elapsedTime = (end - start) / static_cast<double>(CLOCKS_PER_SEC);
 
     //  Print the content of the result image
     std::cout << "  Success: " << std::endl;
@@ -177,7 +177,7 @@ itkObjectMorphologyImageFilterTest(int, char *[])
     binDilateFilter->Update();
     end = clock();
 
-    elapsedTime = (end - start) / (double)CLOCKS_PER_SEC;
+    elapsedTime = (end - start) / static_cast<double>(CLOCKS_PER_SEC);
 
     //  Print the content of the result image
     std::cout << "  Success: " << std::endl;
@@ -206,10 +206,10 @@ itkObjectMorphologyImageFilterTest(int, char *[])
       unsigned int  x, y;
       itk::Index<3> i;
       i[2] = count / (size[1] * size[0]);
-      for (y = 0; y < size[1]; y++)
+      for (y = 0; y < size[1]; ++y)
       {
         i[1] = y;
-        for (x = 0; x < size[0]; x++)
+        for (x = 0; x < size[0]; ++x)
         {
           i[0] = x;
           std::cerr << outputImage->GetPixel(i) << outputBinImage->GetPixel(i) << " ";
@@ -223,7 +223,7 @@ itkObjectMorphologyImageFilterTest(int, char *[])
     ++count;
   }
   end = clock();
-  elapsedTime = (end - start) / (double)CLOCKS_PER_SEC;
+  elapsedTime = (end - start) / static_cast<double>(CLOCKS_PER_SEC);
   std::cout << "  Success: " << std::endl;
   std::cout << "    Time = " << elapsedTime << std::endl;
 
@@ -248,7 +248,7 @@ itkObjectMorphologyImageFilterTest(int, char *[])
     erodeFilter->Update();
     end = clock();
 
-    elapsedTime = (end - start) / (double)CLOCKS_PER_SEC;
+    elapsedTime = (end - start) / static_cast<double>(CLOCKS_PER_SEC);
 
     //  Print the content of the result image
     std::cout << "  Success: " << std::endl;
@@ -273,7 +273,7 @@ itkObjectMorphologyImageFilterTest(int, char *[])
     binErodeFilter->Update();
     end = clock();
 
-    elapsedTime = (end - start) / (double)CLOCKS_PER_SEC;
+    elapsedTime = (end - start) / static_cast<double>(CLOCKS_PER_SEC);
 
     //  Print the content of the result image
     std::cout << "  Success: " << std::endl;
@@ -302,10 +302,10 @@ itkObjectMorphologyImageFilterTest(int, char *[])
       unsigned int  x, y;
       itk::Index<3> i;
       i[2] = count / (size[1] * size[0]);
-      for (y = 0; y < size[1]; y++)
+      for (y = 0; y < size[1]; ++y)
       {
         i[1] = y;
-        for (x = 0; x < size[0]; x++)
+        for (x = 0; x < size[0]; ++x)
         {
           i[0] = x;
           std::cout << output2Image->GetPixel(i) << outputBin2Image->GetPixel(i) << " ";
@@ -319,7 +319,7 @@ itkObjectMorphologyImageFilterTest(int, char *[])
     ++count;
   }
   end = clock();
-  elapsedTime = (end - start) / (double)CLOCKS_PER_SEC;
+  elapsedTime = (end - start) / static_cast<double>(CLOCKS_PER_SEC);
   std::cout << "  Success: " << std::endl;
   std::cout << "    Time = " << elapsedTime << std::endl;
 

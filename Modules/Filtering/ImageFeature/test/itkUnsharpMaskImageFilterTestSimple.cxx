@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ itkUnsharpMaskImageFilterTestSimple(int, char *[])
   using RegionType = itk::ImageRegion<Dimension>;
 
   // Create the input image
-  InputImageType::Pointer inputImage = InputImageType::New();
+  auto inputImage = InputImageType::New();
 
   // Define its size, and start index
   SizeType size;
@@ -57,9 +57,7 @@ itkUnsharpMaskImageFilterTestSimple(int, char *[])
   region.SetSize(size);
 
   // Initialize the input image
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetRegions(region);
   inputImage->Allocate();
 
   // Declare an Iterator type for the input image
@@ -89,7 +87,7 @@ itkUnsharpMaskImageFilterTestSimple(int, char *[])
   using GradientImageType = UnsharpMaskImageFilterFilterType::OutputImageType;
 
   // Create the filter
-  UnsharpMaskImageFilterFilterType::Pointer filter = UnsharpMaskImageFilterFilterType::New();
+  auto filter = UnsharpMaskImageFilterFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, UnsharpMaskImageFilter, ImageToImageFilter);
 
@@ -134,7 +132,7 @@ itkUnsharpMaskImageFilterTestSimple(int, char *[])
   filter->SetThreshold(threshold);
   ITK_TEST_SET_GET_VALUE(threshold, filter->GetThreshold());
 
-  bool clamp = itk::NumericTraits<UnsharpMaskImageFilterFilterType::OutputPixelType>::IsInteger;
+  const bool clamp = std::is_integral<UnsharpMaskImageFilterFilterType::OutputPixelType>::value;
   filter->SetClamp(clamp);
   ITK_TEST_SET_GET_VALUE(clamp, filter->GetClamp());
 
@@ -162,7 +160,7 @@ itkUnsharpMaskImageFilterTestSimple(int, char *[])
   start[0] = 9;
   float mins[4] = { -0.21f, -0.33f, 1.32f, 1.20f };
   float maxs[4] = { -0.20f, -0.32f, 1.33f, 1.21f };
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     if (outputImage->GetPixel(start) < mins[i] || outputImage->GetPixel(start) > maxs[i])
     {

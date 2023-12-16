@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,8 +53,7 @@ testMetaArray(int argc, char * argv[])
   ITK_TEST_SET_GET_VALUE(precision, arrayWriter->GetPrecision());
 
   bool binary = false;
-  arrayWriter->SetBinary(binary);
-  ITK_TEST_SET_GET_VALUE(binary, arrayWriter->GetBinary());
+  ITK_TEST_SET_GET_BOOLEAN(arrayWriter, Binary, binary);
 
   arrayWriter->SetInput(MET_SHORT, &arr);
   arrayWriter->Update();
@@ -91,8 +90,7 @@ testMetaArray(int argc, char * argv[])
   ITK_TEST_SET_GET_VALUE(precision, arrayWriter->GetPrecision());
 
   binary = true;
-  arrayWriter->SetBinary(binary);
-  ITK_TEST_SET_GET_VALUE(binary, arrayWriter->GetBinary());
+  ITK_TEST_SET_GET_BOOLEAN(arrayWriter, Binary, binary);
 
   arrayWriter->SetInput(MET_FLOAT, &vec);
   arrayWriter->Update();
@@ -163,5 +161,7 @@ testMetaArray(int argc, char * argv[])
   arrayReader->GetOutput(MET_FLOAT, &rcovec);
   std::cout << "  covariant vector float = " << rcovec << std::endl;
 
+
+  std::cout << "Test finished." << std::endl;
   return EXIT_SUCCESS;
 }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class GaussianMembershipFunction
+ * \class GaussianMembershipFunction
  * \brief GaussianMembershipFunction models class membership through a
  * multivariate Gaussian function.
  *
@@ -56,7 +56,7 @@ template <typename TMeasurementVector>
 class ITK_TEMPLATE_EXPORT GaussianMembershipFunction : public MembershipFunctionBase<TMeasurementVector>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianMembershipFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(GaussianMembershipFunction);
 
   /** Standard class type aliases */
   using Self = GaussianMembershipFunction;
@@ -65,7 +65,7 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Standard macros */
-  itkTypeMacro(GaussianMembershipFunction, MembershipFunction);
+  itkTypeMacro(GaussianMembershipFunction, MembershipFunctionBase);
   itkNewMacro(Self);
 
   /** SmartPointer class for superclass */
@@ -75,7 +75,7 @@ public:
   using MeasurementVectorType = TMeasurementVector;
 
   /** Length of each measurement vector */
-  using MeasurementVectorSizeType = typename Superclass::MeasurementVectorSizeType;
+  using typename Superclass::MeasurementVectorSizeType;
 
   /** Type of the mean vector. RealType on a vector-type is the same
    * vector-type but with a real element type.  */
@@ -130,11 +130,11 @@ private:
   CovarianceMatrixType m_Covariance; // covariance matrix
 
   // inverse covariance matrix. automatically calculated
-  // when covariance matirx is set.
+  // when covariance matrix is set.
   CovarianceMatrixType m_InverseCovariance;
 
   // pre_factor (normalization term). automatically calculated
-  // when covariance matirx is set.
+  // when covariance matrix is set.
   double m_PreFactor;
 
   /** Boolean to cache whether the covariance is singular or nearly singular */

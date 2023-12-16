@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class ImageFunction
+ * \class ImageFunction
  * \brief Evaluates a function of an image at specified position.
  *
  * ImageFunction is a baseclass for all objects that evaluates
@@ -55,7 +55,7 @@ template <typename TInputImage, typename TOutput, typename TCoordRep = float>
 class ITK_TEMPLATE_EXPORT ImageFunction : public FunctionBase<Point<TCoordRep, TInputImage::ImageDimension>, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageFunction);
 
   /** Dimension underlying input image. */
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
@@ -134,7 +134,7 @@ public:
   virtual bool
   IsInsideBuffer(const IndexType & index) const
   {
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       if (index[j] < m_StartIndex[j])
       {
@@ -154,7 +154,7 @@ public:
   virtual bool
   IsInsideBuffer(const ContinuousIndexType & index) const
   {
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       /* Test for negative of a positive so we can catch NaN's. */
       if (!(index[j] >= m_StartContinuousIndex[j] && index[j] < m_EndContinuousIndex[j]))
@@ -171,8 +171,7 @@ public:
   virtual bool
   IsInsideBuffer(const PointType & point) const
   {
-    ContinuousIndexType index;
-    m_Image->TransformPhysicalPointToContinuousIndex(point, index);
+    const ContinuousIndexType index = m_Image->template TransformPhysicalPointToContinuousIndex<TCoordRep>(point);
     /* Call IsInsideBuffer to test against BufferedRegion bounds.
      * TransformPhysicalPointToContinuousIndex tests against
      * LargestPossibleRegion */
@@ -184,9 +183,7 @@ public:
   void
   ConvertPointToNearestIndex(const PointType & point, IndexType & index) const
   {
-    ContinuousIndexType cindex;
-
-    m_Image->TransformPhysicalPointToContinuousIndex(point, cindex);
+    const ContinuousIndexType cindex = m_Image->template TransformPhysicalPointToContinuousIndex<TCoordRep>(point);
     this->ConvertContinuousIndexToNearestIndex(cindex, index);
   }
 

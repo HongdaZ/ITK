@@ -1,4 +1,4 @@
-#==========================================================================
+# ==========================================================================
 #
 #   Copyright NumFOCUS
 #
@@ -6,7 +6,7 @@
 #   you may not use this file except in compliance with the License.
 #   You may obtain a copy of the License at
 #
-#          http://www.apache.org/licenses/LICENSE-2.0.txt
+#          https://www.apache.org/licenses/LICENSE-2.0.txt
 #
 #   Unless required by applicable law or agreed to in writing, software
 #   distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,22 +14,17 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-#==========================================================================*/
+# ==========================================================================*/
 
 import itk
-have_numpy = True
-try:
-    import numpy as np
-except ImportError:
-    have_numpy = False
+import numpy as np
 
-if have_numpy:
-    Dimension = 2
-    PixelType = itk.UC
-    ImageType = itk.Image[PixelType, Dimension]
-    image = ImageType.New()
+Dimension = 2
+PixelType = itk.UC
+ImageType = itk.Image[PixelType, Dimension]
+image = ImageType.New()
 
-    new_direction = np.rot90(np.eye(Dimension))
-    image.SetDirection(new_direction)
-    direction = itk.array_from_matrix(image.GetDirection())
-    assert(np.array_equal(new_direction, direction))
+new_direction = np.rot90(np.eye(Dimension))
+image.SetDirection(new_direction)
+direction = itk.array_from_matrix(image.GetDirection())
+assert np.array_equal(new_direction, direction)

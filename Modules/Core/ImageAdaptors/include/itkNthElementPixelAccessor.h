@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class NthElementPixelAccessor
+ * \class NthElementPixelAccessor
  * \brief Give access to the N-th of a Container type
  *
  * This class is intended to be used as parameter of
@@ -91,13 +91,15 @@ public:
     m_ElementNumber = nth;
   }
 
-  /** operator!=. This is needed to convert a pixel accessor to a functor.
+  /** This is needed to convert a pixel accessor to a functor.
    * \sa AdaptImageFilter */
   bool
-  operator!=(const Self & accessor) const
+  operator==(const Self & accessor) const
   {
-    return (m_ElementNumber != accessor.m_ElementNumber);
+    return m_ElementNumber == accessor.m_ElementNumber;
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
 
   /** Assignment operator */
   NthElementPixelAccessor &
@@ -197,13 +199,15 @@ public:
 
   NthElementPixelAccessor(unsigned int length = 1) { Superclass::SetVectorLength(length); }
 
-  /** operator!=. This is needed to convert a pixel accessor to a functor.
+  /** This is needed to convert a pixel accessor to a functor.
    * \sa AdaptImageFilter */
   bool
-  operator!=(const Self & accessor) const
+  operator==(const Self & accessor) const
   {
-    return (m_ElementNumber != accessor.m_ElementNumber);
+    return m_ElementNumber == accessor.m_ElementNumber;
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
 
   /** Assignment operator */
   NthElementPixelAccessor &

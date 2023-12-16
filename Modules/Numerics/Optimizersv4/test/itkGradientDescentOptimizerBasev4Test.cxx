@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ template <typename TFixedObject, typename TMovingObject>
 class GradientDescentOptimizerBasev4TestMetric : public itk::ObjectToObjectMetricBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GradientDescentOptimizerBasev4TestMetric);
+  ITK_DISALLOW_COPY_AND_MOVE(GradientDescentOptimizerBasev4TestMetric);
 
   /** Standard class type aliases. */
   using Self = GradientDescentOptimizerBasev4TestMetric;
@@ -32,10 +32,10 @@ public:
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::ParametersValueType;
 
   itkTypeMacro(GradientDescentOptimizerBasev4TestMetric, ObjectToObjectMetricBase);
 
@@ -94,7 +94,7 @@ public:
   }
 
   void
-  Initialize() throw(itk::ExceptionObject) override
+  Initialize() override
   {}
 
   void
@@ -116,7 +116,7 @@ private:
 class GradientDescentOptimizerBasev4TestOptimizer : public itk::GradientDescentOptimizerBasev4
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GradientDescentOptimizerBasev4TestOptimizer);
+  ITK_DISALLOW_COPY_AND_MOVE(GradientDescentOptimizerBasev4TestOptimizer);
 
   /** Standard "Self" type alias. */
   using Self = GradientDescentOptimizerBasev4TestOptimizer;
@@ -170,8 +170,8 @@ itkGradientDescentOptimizerBasev4Test(int, char *[])
 
   using MetricType = GradientDescentOptimizerBasev4TestMetric<ImageType, ImageType>;
 
-  MetricType::Pointer                                  metric = MetricType::New();
-  GradientDescentOptimizerBasev4TestOptimizer::Pointer optimizer = GradientDescentOptimizerBasev4TestOptimizer::New();
+  auto metric = MetricType::New();
+  auto optimizer = GradientDescentOptimizerBasev4TestOptimizer::New();
 
   /* exercise some methods */
   optimizer->SetMetric(metric);

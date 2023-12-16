@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkUpdateShiSparseLevelSet_hxx
 #define itkUpdateShiSparseLevelSet_hxx
 
-#include "itkUpdateShiSparseLevelSet.h"
 #include "itkConnectedImageNeighborhoodShape.h"
 
 namespace itk
@@ -56,7 +55,7 @@ UpdateShiSparseLevelSet<VDimension, TEquationContainer>::Update()
   this->m_OutputLevelSet->SetDomainOffset(this->m_Offset);
 
   using LabelMapToLabelImageFilterType = LabelMapToLabelImageFilter<LevelSetLabelMapType, LabelImageType>;
-  typename LabelMapToLabelImageFilterType::Pointer labelMapToLabelImageFilter = LabelMapToLabelImageFilterType::New();
+  auto labelMapToLabelImageFilter = LabelMapToLabelImageFilterType::New();
   labelMapToLabelImageFilter->SetInput(this->m_InputLevelSet->GetLabelMap());
   labelMapToLabelImageFilter->Update();
 
@@ -72,7 +71,7 @@ UpdateShiSparseLevelSet<VDimension, TEquationContainer>::Update()
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&spNBC);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   // Step 2.1.1
   this->UpdateLayerPlusOne();
@@ -166,7 +165,7 @@ UpdateShiSparseLevelSet<VDimension, TEquationContainer>::Update()
   }
 
   using LabelImageToLabelMapFilterType = LabelImageToLabelMapFilter<LabelImageType, LevelSetLabelMapType>;
-  typename LabelImageToLabelMapFilterType::Pointer labelImageToLabelMapFilter = LabelImageToLabelMapFilterType::New();
+  auto labelImageToLabelMapFilter = LabelImageToLabelMapFilterType::New();
   labelImageToLabelMapFilter->SetInput(this->m_InternalImage);
   labelImageToLabelMapFilter->SetBackgroundValue(LevelSetType::PlusThreeLayer());
   labelImageToLabelMapFilter->Update();
@@ -192,7 +191,7 @@ UpdateShiSparseLevelSet<VDimension, TEquationContainer>::UpdateLayerPlusOne()
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&spNBC);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   LevelSetLayerType insertListIn;
   LevelSetLayerType insertListOut;
@@ -292,7 +291,7 @@ UpdateShiSparseLevelSet<VDimension, TEquationContainer>::UpdateLayerMinusOne()
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&spNBC);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
 
   LevelSetLayerType insertListIn;
   LevelSetLayerType insertListOut;
@@ -389,7 +388,7 @@ UpdateShiSparseLevelSet<VDimension, TEquationContainer>::Con(const LevelSetInput
   NeighborhoodIteratorType neighIt(radius, this->m_InternalImage, this->m_InternalImage->GetLargestPossibleRegion());
 
   neighIt.OverrideBoundaryCondition(&spNBC);
-  neighIt.ActivateOffsets(Experimental::GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
+  neighIt.ActivateOffsets(GenerateConnectedImageNeighborhoodShapeOffsets<ImageDimension, 1, false>());
   neighIt.SetLocation(idx);
 
   const LevelSetOutputType oppositeStatus =

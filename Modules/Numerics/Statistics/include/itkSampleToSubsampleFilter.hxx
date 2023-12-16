@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSampleToSubsampleFilter_hxx
 #define itkSampleToSubsampleFilter_hxx
 
-#include "itkSampleToSubsampleFilter.h"
 
 namespace itk
 {
@@ -42,8 +41,8 @@ SampleToSubsampleFilter<TSample>::SetInput(const SampleType * sample)
 }
 
 template <typename TSample>
-const typename SampleToSubsampleFilter<TSample>::SampleType *
-SampleToSubsampleFilter<TSample>::GetInput() const
+auto
+SampleToSubsampleFilter<TSample>::GetInput() const -> const SampleType *
 {
   const auto * input = static_cast<const SampleType *>(this->ProcessObject::GetInput(0));
 
@@ -58,8 +57,8 @@ typename SampleToSubsampleFilter<TSample>::DataObjectPointer SampleToSubsampleFi
 }
 
 template <typename TSample>
-const typename SampleToSubsampleFilter<TSample>::OutputType *
-SampleToSubsampleFilter<TSample>::GetOutput() const
+auto
+SampleToSubsampleFilter<TSample>::GetOutput() const -> const OutputType *
 {
   const auto * output = static_cast<const SubsampleType *>(this->ProcessObject::GetOutput(0));
 

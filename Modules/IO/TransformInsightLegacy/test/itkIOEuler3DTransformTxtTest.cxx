@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,10 +39,10 @@ itkIOEuler3DTransformTxtTest(int argc, char * argv[])
   TransformType::Pointer oldStyleInput, newStyleInput;
 
   using ReaderType = itk::TransformFileReaderTemplate<double>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
 
   using WriterType = itk::TransformFileWriterTemplate<double>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   // read old style format in
   reader->SetFileName(argv[1]);

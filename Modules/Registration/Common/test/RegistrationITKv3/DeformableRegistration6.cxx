@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -61,7 +61,7 @@
 // NOTE: the LBFGSOptimizer does not invoke events
 
 
-#include "itkTestDriverIncludeRequiredIOFactories.h"
+#include "itkTestDriverIncludeRequiredFactories.h"
 int
 main(int argc, char * argv[])
 {
@@ -157,7 +157,7 @@ main(int argc, char * argv[])
   TransformType::MeshSizeType           meshSize;
   TransformType::OriginType             fixedOrigin;
 
-  for (unsigned int i = 0; i < SpaceDimension; i++)
+  for (unsigned int i = 0; i < SpaceDimension; ++i)
   {
     fixedOrigin[i] = fixedImage->GetOrigin()[i];
     fixedPhysicalDimensions[i] =
@@ -220,7 +220,7 @@ main(int argc, char * argv[])
 
   numberOfGridNodes = 12;
 
-  for (unsigned int i = 0; i < SpaceDimension; i++)
+  for (unsigned int i = 0; i < SpaceDimension; ++i)
   {
     fixedOrigin[i] = fixedImage->GetOrigin()[i];
     fixedPhysicalDimensions[i] =
@@ -246,7 +246,7 @@ main(int argc, char * argv[])
 
   unsigned int counter = 0;
 
-  for (unsigned int k = 0; k < SpaceDimension; k++)
+  for (unsigned int k = 0; k < SpaceDimension; ++k)
   {
     using ParametersImageType = TransformType::ImageType;
     using ResamplerType = itk::ResampleImageFilter<ParametersImageType, ParametersImageType>;

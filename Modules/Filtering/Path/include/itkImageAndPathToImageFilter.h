@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class ImageAndPathToImageFilter
+ * \class ImageAndPathToImageFilter
  * \brief Base class for filters that take both a path and an image as input and produce a path as output.
  *
  * This class is the base class for filters that take both an image and a path
@@ -40,7 +40,7 @@ template <typename TInputImage, typename TInputPath, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT ImageAndPathToImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageAndPathToImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageAndPathToImageFilter);
 
   /** Standard class type aliases. */
   using Self = ImageAndPathToImageFilter;

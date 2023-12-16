@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkWarpImageFilter_hxx
 #define itkWarpImageFilter_hxx
-#include "itkWarpImageFilter.h"
 
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionIteratorWithIndex.h"
@@ -46,7 +45,7 @@ WarpImageFilter<TInputImage, TOutputImage, TDisplacementField>::WarpImageFilter(
   m_EdgePaddingValue = NumericTraits<PixelType>::ZeroValue(m_EdgePaddingValue);
   m_OutputStartIndex.Fill(0);
 
-  typename DefaultInterpolatorType::Pointer interp = DefaultInterpolatorType::New();
+  auto interp = DefaultInterpolatorType::New();
   m_Interpolator = static_cast<InterpolatorType *>(interp.GetPointer());
 
   m_DefFieldSameInformation = false;
@@ -128,7 +127,7 @@ WarpImageFilter<TInputImage, TOutputImage, TDisplacementField>::BeforeThreadedGe
 
   if (numberOfComponents != this->GetInput()->GetNumberOfComponentsPerPixel())
   {
-    PixelComponentType zeroComponent = NumericTraits<PixelComponentType>::ZeroValue(zeroComponent);
+    PixelComponentType zeroComponent = NumericTraits<PixelComponentType>::ZeroValue(PixelComponentType{});
     numberOfComponents = this->GetInput()->GetNumberOfComponentsPerPixel();
     NumericTraits<PixelType>::SetLength(m_EdgePaddingValue, numberOfComponents);
 
@@ -152,7 +151,7 @@ WarpImageFilter<TInputImage, TOutputImage, TDisplacementField>::BeforeThreadedGe
   if (!m_DefFieldSameInformation)
   {
     m_StartIndex = fieldPtr->GetBufferedRegion().GetIndex();
-    for (unsigned i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       m_EndIndex[i] = m_StartIndex[i] + fieldPtr->GetBufferedRegion().GetSize()[i] - 1;
     }
@@ -184,8 +183,8 @@ WarpImageFilter<TInputImage, TOutputImage, TDisplacementField>::EvaluateDisplace
   const DisplacementFieldType * fieldPtr,
   DisplacementType &            output)
 {
-  ContinuousIndex<double, ImageDimension> index;
-  fieldPtr->TransformPhysicalPointToContinuousIndex(point, index);
+  const ContinuousIndex<double, ImageDimension> index =
+    fieldPtr->template TransformPhysicalPointToContinuousIndex<double>(point);
   unsigned int dim; // index over dimension
   /**
    * Compute base index = closest index below point
@@ -195,7 +194,7 @@ WarpImageFilter<TInputImage, TOutputImage, TDisplacementField>::EvaluateDisplace
   IndexType neighIndex;
   double    distance[ImageDimension];
 
-  for (dim = 0; dim < ImageDimension; dim++)
+  for (dim = 0; dim < ImageDimension; ++dim)
   {
     baseIndex[dim] = Math::Floor<IndexValueType>(index[dim]);
 
@@ -228,13 +227,13 @@ WarpImageFilter<TInputImage, TOutputImage, TDisplacementField>::EvaluateDisplace
   double       totalOverlap = 0.0;
   unsigned int numNeighbors(1 << TInputImage::ImageDimension);
 
-  for (unsigned int counter = 0; counter < numNeighbors; counter++)
+  for (unsigned int counter = 0; counter < numNeighbors; ++counter)
   {
     double       overlap = 1.0;   // fraction overlap
     unsigned int upper = counter; // each bit indicates upper/lower neighbour
 
     // get neighbor index and overlap fraction
-    for (dim = 0; dim < ImageDimension; dim++)
+    for (dim = 0; dim < ImageDimension; ++dim)
     {
       if (upper & 1)
       {
@@ -289,6 +288,7 @@ WarpImageFilter<TInputImage, TOutputImage, TDisplacementField>::DynamicThreadedG
   PointType                                     point;
   DisplacementType                              displacement;
   NumericTraits<DisplacementType>::SetLength(displacement, ImageDimension);
+  static_assert(PointType::Dimension == ImageDimension, "ERROR: Point type and ImageDimension must be the same!");
   if (this->m_DefFieldSameInformation)
   {
     // iterator for the deformation field
@@ -304,7 +304,7 @@ WarpImageFilter<TInputImage, TOutputImage, TDisplacementField>::DynamicThreadedG
       displacement = fieldIt.Get();
 
       // compute the required input image point
-      for (unsigned int j = 0; j < ImageDimension; j++)
+      for (unsigned int j = 0; j < ImageDimension; ++j)
       {
         point[j] += displacement[j];
       }
@@ -334,7 +334,7 @@ WarpImageFilter<TInputImage, TOutputImage, TDisplacementField>::DynamicThreadedG
 
       this->EvaluateDisplacementAtPhysicalPoint(point, fieldPtr, displacement);
       // compute the required input image point
-      for (unsigned int j = 0; j < ImageDimension; j++)
+      for (unsigned int j = 0; j < ImageDimension; ++j)
       {
         point[j] += displacement[j];
       }

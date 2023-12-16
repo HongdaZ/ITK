@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -75,7 +75,7 @@ itkRecursiveMultiResolutionPyramidImageFilterTest(int argc, char * argv[])
   //------------------------------------------------------------
 
   // Allocate Images
-  using PixelType = signed short;
+  using PixelType = short;
   using InputImageType = itk::Image<PixelType, 3>;
   using OutputImageType = itk::Image<float, 3>;
   enum
@@ -104,10 +104,8 @@ itkRecursiveMultiResolutionPyramidImageFilterTest(int argc, char * argv[])
   region.SetSize(size);
   region.SetIndex(index);
 
-  InputImageType::Pointer imgTarget = InputImageType::New();
-  imgTarget->SetLargestPossibleRegion(region);
-  imgTarget->SetBufferedRegion(region);
-  imgTarget->SetRequestedRegion(region);
+  auto imgTarget = InputImageType::New();
+  imgTarget->SetRegions(region);
   imgTarget->Allocate();
 
   // Fill images with a 3D gaussian with some directional pattern
@@ -115,9 +113,9 @@ itkRecursiveMultiResolutionPyramidImageFilterTest(int argc, char * argv[])
   using Iterator = itk::ImageRegionIterator<InputImageType>;
 
   itk::Point<double, 3> center;
-  center[0] = (double)region.GetSize()[0] / 2.0;
-  center[1] = (double)region.GetSize()[1] / 2.0;
-  center[2] = (double)region.GetSize()[2] / 2.0;
+  center[0] = static_cast<double>(region.GetSize()[0]) / 2.0;
+  center[1] = static_cast<double>(region.GetSize()[1]) / 2.0;
+  center[2] = static_cast<double>(region.GetSize()[2]) / 2.0;
 
   itk::Point<double, 3>  p;
   itk::Vector<double, 3> d;
@@ -140,9 +138,9 @@ itkRecursiveMultiResolutionPyramidImageFilterTest(int argc, char * argv[])
 
   // set image origin to be center of the image
   double transCenter[3];
-  for (unsigned int j = 0; j < 3; j++)
+  for (unsigned int j = 0; j < 3; ++j)
   {
-    transCenter[j] = -0.5 * double(size[j]);
+    transCenter[j] = -0.5 * static_cast<double>(size[j]);
   }
 
   imgTarget->SetOrigin(transCenter);
@@ -153,7 +151,7 @@ itkRecursiveMultiResolutionPyramidImageFilterTest(int argc, char * argv[])
    */
   using PyramidType = itk::RecursiveMultiResolutionPyramidImageFilter<InputImageType, OutputImageType>;
   using ScheduleType = PyramidType::ScheduleType;
-  PyramidType::Pointer pyramid = PyramidType::New();
+  auto pyramid = PyramidType::New();
   pyramid->SetUseShrinkImageFilter(useShrinkFilter);
 
   pyramid->SetInput(imgTarget);
@@ -171,10 +169,10 @@ itkRecursiveMultiResolutionPyramidImageFilterTest(int argc, char * argv[])
   ScheduleType schedule(numLevels, ImageDimension);
   unsigned int j, k;
 
-  for (k = 0; k < numLevels; k++)
+  for (k = 0; k < numLevels; ++k)
   {
     unsigned int denominator = 1 << k;
-    for (j = 0; j < ImageDimension; j++)
+    for (j = 0; j < ImageDimension; ++j)
     {
       schedule[k][j] = factors[j] / denominator;
       if (schedule[k][j] == 0)
@@ -203,10 +201,10 @@ itkRecursiveMultiResolutionPyramidImageFilterTest(int argc, char * argv[])
 
   // check the schedule;
   schedule = ScheduleType(numLevels, ImageDimension);
-  for (k = 0; k < numLevels; k++)
+  for (k = 0; k < numLevels; ++k)
   {
     unsigned int denominator = 1 << k;
-    for (j = 0; j < ImageDimension; j++)
+    for (j = 0; j < ImageDimension; ++j)
     {
       schedule[k][j] = factors[j] / denominator;
       if (schedule[k][j] == 0)
@@ -227,7 +225,7 @@ itkRecursiveMultiResolutionPyramidImageFilterTest(int argc, char * argv[])
 
   // test start factors
   const unsigned int * ss = pyramid->GetStartingShrinkFactors();
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     if (ss[j] != factors[j])
     {
@@ -271,9 +269,9 @@ itkRecursiveMultiResolutionPyramidImageFilterTest(int argc, char * argv[])
   OutputImageType::SizeType            outputSize = pyramid->GetOutput(testLevel)->GetLargestPossibleRegion().GetSize();
   const OutputImageType::SpacingType & outputSpacing = pyramid->GetOutput(testLevel)->GetSpacing();
 
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
-    if (itk::Math::NotAlmostEquals(outputSpacing[j], inputSpacing[j] * (double)schedule[testLevel][j]))
+    if (itk::Math::NotAlmostEquals(outputSpacing[j], inputSpacing[j] * static_cast<double>(schedule[testLevel][j])))
     {
       break;
     }
@@ -299,18 +297,18 @@ itkRecursiveMultiResolutionPyramidImageFilterTest(int argc, char * argv[])
   std::cout << std::endl;
 
   using CasterType = itk::CastImageFilter<InputImageType, InputImageType>;
-  CasterType::Pointer caster = CasterType::New();
+  auto caster = CasterType::New();
 
   caster->SetInput(pyramid->GetInput());
 
-  PyramidType::Pointer pyramid2 = PyramidType::New();
+  auto pyramid2 = PyramidType::New();
   pyramid2->SetInput(caster->GetOutput());
   pyramid2->SetUseShrinkImageFilter(useShrinkFilter);
   pyramid2->SetNumberOfLevels(pyramid->GetNumberOfLevels());
   pyramid2->SetSchedule(pyramid->GetSchedule());
 
   using StreamerType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-  StreamerType::Pointer streamer = StreamerType::New();
+  auto streamer = StreamerType::New();
   streamer->SetInput(pyramid2->GetOutput(testLevel));
   streamer->Update();
 

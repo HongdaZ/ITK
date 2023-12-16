@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,8 +41,8 @@ itkTriangleMeshToBinaryImageFilterTest(int argc, char * argv[])
   using PointType = SphereMeshSourceType::PointType;
   using VectorType = SphereMeshSourceType::VectorType;
 
-  SphereMeshSourceType::Pointer mySphereMeshSource = SphereMeshSourceType::New();
-  PointType                     center;
+  auto      mySphereMeshSource = SphereMeshSourceType::New();
+  PointType center;
   center[0] = 50;
   center[1] = 50;
   center[2] = 50;
@@ -62,7 +62,7 @@ itkTriangleMeshToBinaryImageFilterTest(int argc, char * argv[])
   using ImageType = itk::Image<unsigned char, 3>;
 
   using TriangleMeshToBinaryImageFilterType = itk::TriangleMeshToBinaryImageFilter<TriangleMeshType, ImageType>;
-  TriangleMeshToBinaryImageFilterType::Pointer imageFilter = TriangleMeshToBinaryImageFilterType::New();
+  auto imageFilter = TriangleMeshToBinaryImageFilterType::New();
   imageFilter->SetInput(mySphereMeshSource->GetOutput());
   ImageType::SizeType size;
 
@@ -87,7 +87,7 @@ itkTriangleMeshToBinaryImageFilterTest(int argc, char * argv[])
 
   imageFilter->Update();
 
-  ImageType::Pointer  im = ImageType::New();
+  auto                im = ImageType::New();
   ImageType::SizeType imSize;
   imSize[0] = imSize[1] = imSize[2] = 100;
   im->SetRegions(imSize);
@@ -101,12 +101,7 @@ itkTriangleMeshToBinaryImageFilterTest(int argc, char * argv[])
 
   if (argc > 1)
   {
-    using WriterType = itk::ImageFileWriter<ImageType>;
-
-    WriterType::Pointer ImageWriter = WriterType::New();
-    ImageWriter->SetInput(imageFilter->GetOutput());
-    ImageWriter->SetFileName(argv[1]);
-    ImageWriter->Update();
+    itk::WriteImage(imageFilter->GetOutput(), argv[1]);
   }
 
   std::cout << "Test [DONE]" << std::endl;

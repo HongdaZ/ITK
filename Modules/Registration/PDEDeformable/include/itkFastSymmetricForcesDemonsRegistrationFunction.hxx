@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkFastSymmetricForcesDemonsRegistrationFunction_hxx
 #define itkFastSymmetricForcesDemonsRegistrationFunction_hxx
 
-#include "itkFastSymmetricForcesDemonsRegistrationFunction.h"
 #include "itkMacro.h"
 #include "itkMath.h"
 
@@ -34,7 +33,7 @@ FastSymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDispla
   RadiusType   r;
   unsigned int j;
 
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     r[j] = 0;
   }
@@ -48,7 +47,7 @@ FastSymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDispla
   m_Normalizer = 0.0;
   m_FixedImageGradientCalculator = GradientCalculatorType::New();
 
-  typename DefaultInterpolatorType::Pointer interp = DefaultInterpolatorType::New();
+  auto interp = DefaultInterpolatorType::New();
 
   m_MovingImageInterpolator = static_cast<InterpolatorType *>(interp.GetPointer());
 
@@ -134,7 +133,7 @@ FastSymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDispla
 
   // compute the normalizer
   m_Normalizer = 0.0;
-  for (unsigned int k = 0; k < ImageDimension; k++)
+  for (unsigned int k = 0; k < ImageDimension; ++k)
   {
     m_Normalizer += fixedImageSpacing[k] * fixedImageSpacing[k];
   }
@@ -180,12 +179,12 @@ FastSymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDispla
   // Get fixed image related information
   // Note: no need to check the index is within
   // fixed image buffer. This is done by the external filter.
-  const auto                fixedValue = (double)this->GetFixedImage()->GetPixel(index);
+  const auto                fixedValue = static_cast<double>(this->GetFixedImage()->GetPixel(index));
   const CovariantVectorType fixedGradient = m_FixedImageGradientCalculator->EvaluateAtIndex(index);
 
   // Get moving image related information
   // use warped moving image to get moving value and gradient fast(er).
-  const auto                movingValue = (double)m_MovingImageWarper->GetOutput()->GetPixel(index);
+  const auto                movingValue = static_cast<double>(m_MovingImageWarper->GetOutput()->GetPixel(index));
   const CovariantVectorType movingGradient = m_WarpedMovingImageGradientCalculator->EvaluateAtIndex(index);
 
   // unfortunately (since it's a little redundant) we still need the mapped
@@ -193,7 +192,7 @@ FastSymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDispla
   PointType mappedCenterPoint;
 
   this->GetFixedImage()->TransformIndexToPhysicalPoint(index, mappedCenterPoint);
-  for (unsigned int dim = 0; dim < ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < ImageDimension; ++dim)
   {
     mappedCenterPoint[dim] += it.GetCenterPixel()[dim];
   }
@@ -213,7 +212,7 @@ FastSymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDispla
    * where K = mean square spacing to compensate for the mismatch in units.
    */
   double fixedPlusMovingGradientSquaredMagnitude = 0;
-  for (unsigned int dim = 0; dim < ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < ImageDimension; ++dim)
   {
     fixedPlusMovingGradientSquaredMagnitude += itk::Math::sqr(fixedGradient[dim] + movingGradient[dim]);
   }
@@ -228,7 +227,7 @@ FastSymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDispla
   }
   else
   {
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       update[j] = 2 * speedValue * (movingGradient[j] + fixedGradient[j]) / denominator;
     }
@@ -237,7 +236,7 @@ FastSymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDispla
   // update the squared change value
   PointType newMappedCenterPoint;
   bool      IsOutsideRegion = false;
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     if (globalData)
     {

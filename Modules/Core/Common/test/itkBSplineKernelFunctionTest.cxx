@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -61,26 +61,27 @@ itkBSplineKernelFunctionTest(int, char *[])
 
 
   // Testing the output of BSplineKernelFunction
-#define TEST_BSPLINE_KERNEL(ORDERNUM)                                                                                  \
-  {                                                                                                                    \
-    using FunctionType = itk::BSplineKernelFunction<ORDERNUM>;                                                         \
-    FunctionType::Pointer function = FunctionType::New();                                                              \
-                                                                                                                       \
-    function->Print(std::cout);                                                                                        \
-    for (unsigned j = 0; j < npoints; j++)                                                                             \
-    {                                                                                                                  \
-      double results = function->Evaluate(x[j]);                                                                       \
-      /* compare with external results */                                                                              \
-      if (itk::Math::abs(results - b##ORDERNUM[j]) > 1e-6)                                                             \
-      {                                                                                                                \
-        std::cout << "Error with " << ORDERNUM << " order BSplineKernelFunction" << std::endl;                         \
-        std::cout << "Expected: " << b##ORDERNUM[j] << " but got " << results;                                         \
-        std::cout << " at x = " << x[j] << std::endl;                                                                  \
-        std::cout << "Test failed" << std::endl;                                                                       \
-        return EXIT_FAILURE;                                                                                           \
-      }                                                                                                                \
-    }                                                                                                                  \
-  }
+#define TEST_BSPLINE_KERNEL(ORDERNUM)                                                          \
+  {                                                                                            \
+    using FunctionType = itk::BSplineKernelFunction<ORDERNUM>;                                 \
+    auto function = FunctionType::New();                                                       \
+                                                                                               \
+    function->Print(std::cout);                                                                \
+    for (unsigned int j = 0; j < npoints; ++j)                                                 \
+    {                                                                                          \
+      double results = function->Evaluate(x[j]);                                               \
+      /* compare with external results */                                                      \
+      if (itk::Math::abs(results - b##ORDERNUM[j]) > 1e-6)                                     \
+      {                                                                                        \
+        std::cout << "Error with " << ORDERNUM << " order BSplineKernelFunction" << std::endl; \
+        std::cout << "Expected: " << b##ORDERNUM[j] << " but got " << results;                 \
+        std::cout << " at x = " << x[j] << std::endl;                                          \
+        std::cout << "Test failed" << std::endl;                                               \
+        return EXIT_FAILURE;                                                                   \
+      }                                                                                        \
+    }                                                                                          \
+  }                                                                                            \
+  ITK_MACROEND_NOOP_STATEMENT
 
   TEST_BSPLINE_KERNEL(0);
   TEST_BSPLINE_KERNEL(1);
@@ -91,7 +92,7 @@ itkBSplineKernelFunctionTest(int, char *[])
   {
     constexpr unsigned int SplineOrder = 0;
     using DerivativeFunctionType = itk::BSplineDerivativeKernelFunction<SplineOrder>;
-    DerivativeFunctionType::Pointer derivFunction = DerivativeFunctionType::New();
+    auto derivFunction = DerivativeFunctionType::New();
     derivFunction->Print(std::cout);
 
     double xx = -0.25;
@@ -112,10 +113,10 @@ itkBSplineKernelFunctionTest(int, char *[])
   {
     constexpr unsigned int SplineOrder = 1;
     using DerivativeFunctionType = itk::BSplineDerivativeKernelFunction<SplineOrder>;
-    DerivativeFunctionType::Pointer derivFunction = DerivativeFunctionType::New();
+    auto derivFunction = DerivativeFunctionType::New();
 
     using FunctionType = itk::BSplineKernelFunction<SplineOrder - 1>;
-    FunctionType::Pointer function = FunctionType::New();
+    auto function = FunctionType::New();
 
     for (double xx = -3.0; xx <= 3.0; xx += 0.1)
     {
@@ -137,11 +138,11 @@ itkBSplineKernelFunctionTest(int, char *[])
   {
     constexpr unsigned int SplineOrder = 2;
     using DerivativeFunctionType = itk::BSplineDerivativeKernelFunction<SplineOrder>;
-    DerivativeFunctionType::Pointer derivFunction = DerivativeFunctionType::New();
+    auto derivFunction = DerivativeFunctionType::New();
     derivFunction->Print(std::cout);
 
     using FunctionType = itk::BSplineKernelFunction<SplineOrder - 1>;
-    FunctionType::Pointer function = FunctionType::New();
+    auto function = FunctionType::New();
 
     for (double xx = -3.0; xx <= 3.0; xx += 0.1)
     {
@@ -163,11 +164,11 @@ itkBSplineKernelFunctionTest(int, char *[])
   {
     constexpr unsigned int SplineOrder = 3;
     using DerivativeFunctionType = itk::BSplineDerivativeKernelFunction<SplineOrder>;
-    DerivativeFunctionType::Pointer derivFunction = DerivativeFunctionType::New();
+    auto derivFunction = DerivativeFunctionType::New();
     derivFunction->Print(std::cout);
 
     using FunctionType = itk::BSplineKernelFunction<SplineOrder - 1>;
-    FunctionType::Pointer function = FunctionType::New();
+    auto function = FunctionType::New();
 
     for (double xx = -3.0; xx <= 3.0; xx += 0.1)
     {
@@ -189,7 +190,7 @@ itkBSplineKernelFunctionTest(int, char *[])
   {
 
     using FunctionType = itk::BSplineKernelFunction<7>;
-    FunctionType::Pointer function = FunctionType::New();
+    auto function = FunctionType::New();
 
     bool pass = false;
     try
@@ -215,7 +216,7 @@ itkBSplineKernelFunctionTest(int, char *[])
   {
 
     using FunctionType = itk::BSplineDerivativeKernelFunction<5>;
-    FunctionType::Pointer function = FunctionType::New();
+    auto function = FunctionType::New();
 
     bool pass = false;
     try

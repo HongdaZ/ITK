@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -76,7 +76,7 @@ template <typename TInputImage, typename TOutputImage = Image<double, TInputImag
 class ITK_TEMPLATE_EXPORT ImagePCAShapeModelEstimator : public ImageShapeModelEstimatorBase<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImagePCAShapeModelEstimator);
+  ITK_DISALLOW_COPY_AND_MOVE(ImagePCAShapeModelEstimator);
 
   /** Standard class type aliases. */
   using Self = ImagePCAShapeModelEstimator;
@@ -130,7 +130,7 @@ public:
 
   itkGetConstMacro(NumberOfPrincipalComponentsRequired, unsigned int);
 
-  /** Set/Get the number of training images in the input. */
+  /** Set/Get the number of training images in the input for the PCA. */
   virtual void
   SetNumberOfTrainingImages(unsigned int n);
 
@@ -147,7 +147,7 @@ protected:
 
   /** This filter must produce all of the outputs at once, as such it
    * must override the EnlargeOutputRequestedRegion method to enlarge the
-   * output request region. */
+   * output request region to the largest possible region. */
   void
   EnlargeOutputRequestedRegion(DataObject *) override;
 
@@ -172,24 +172,26 @@ private:
   /** Set up the vector to store the image  data. */
   using InputPixelType = typename TInputImage::PixelType;
 
-  /** Local functions */
-
-  /** A function that generates the cluster centers (model) corresponding to the
-   * estimates of the cluster centers (in the initial codebook).
+  /** Generates the cluster centers (model) corresponding to the estimates of
+   * the cluster centers (in the initial codebook).
    * If no codebook is provided, then use the number of classes to
    * determine the cluster centers or the Shape model. This is the
-   * the base function to call the K-means classifier. */
-
+   * the base function to call the K-means classifier.
+   * Takes the set of training images and internally computes the means and
+   * variance of the various classes defined in the training set.
+   */
   void
   EstimateShapeModels() override;
 
+  /** Estimate shape model parameters using PCA. */
   void
   EstimatePCAShapeModelParameters();
 
+  /** Calculate the inner product between the input training vector
+   * where each image is treated as a vector of n-elements. */
   void
   CalculateInnerProduct();
 
-  /** Local storage variables */
   InputImageIteratorArray m_InputImageIteratorArray;
 
   VectorOfDoubleType m_Means;
@@ -202,17 +204,16 @@ private:
 
   VectorOfDoubleType m_EigenVectorNormalizedEnergy;
 
-  ImageSizeType m_InputImageSize;
+  ImageSizeType m_InputImageSize{ {} };
 
   unsigned int m_NumberOfPixels{ 0 };
 
-  // The number of input images for PCA
   unsigned int m_NumberOfTrainingImages{ 0 };
 
-  // The number of output Principal Components
   unsigned int m_NumberOfPrincipalComponentsRequired;
-}; // class ImagePCAShapeModelEstimator
-} // namespace itk
+};
+
+} // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkImagePCAShapeModelEstimator.hxx"

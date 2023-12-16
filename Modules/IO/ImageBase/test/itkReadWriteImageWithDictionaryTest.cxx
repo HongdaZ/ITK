@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ itkReadWriteImageWithDictionaryTest(int argc, char * argv[])
   using WriterType = itk::ImageFileWriter<ImageType>;
 
   // Create the 16x16 input image
-  ImageType::Pointer inputImage = ImageType::New();
+  auto inputImage = ImageType::New();
 
   ImageType::SizeType size;
   size.Fill(16);
@@ -49,8 +49,8 @@ itkReadWriteImageWithDictionaryTest(int argc, char * argv[])
   inputImage->Allocate();
   inputImage->FillBuffer(0);
 
-  inputImage->SetDirection(
-    itk::SpatialOrientationAdapter().ToDirectionCosines(itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIP));
+  inputImage->SetDirection(itk::SpatialOrientationAdapter().ToDirectionCosines(
+    itk::SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RIP));
 
   // Add some metadata in the dictionary
   itk::MetaDataDictionary & inputDictionary = inputImage->GetMetaDataDictionary();
@@ -64,14 +64,14 @@ itkReadWriteImageWithDictionaryTest(int argc, char * argv[])
   itk::EncapsulateMetaData<std::string>(inputDictionary, itk::ITK_PatientID, patientstr);
 
   // Write the image down
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   writer->SetInput(inputImage);
   writer->SetFileName(argv[1]);
   writer->Update();
 
   // Read the image back
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
 
   reader->SetFileName(argv[1]);
   reader->Update();

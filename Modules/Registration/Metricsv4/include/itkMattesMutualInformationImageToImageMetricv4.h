@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -104,7 +104,7 @@ class ITK_TEMPLATE_EXPORT MattesMutualInformationImageToImageMetricv4
   : public ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputationValueType, TMetricTraits>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MattesMutualInformationImageToImageMetricv4);
+  ITK_DISALLOW_COPY_AND_MOVE(MattesMutualInformationImageToImageMetricv4);
 
   /** Standard class type aliases. */
   using Self = MattesMutualInformationImageToImageMetricv4;
@@ -120,29 +120,29 @@ public:
   itkTypeMacro(MattesMutualInformationImageToImageMetricv4, ImageToImageMetricv4);
 
   /** Superclass types */
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
   using DerivativeValueType = typename DerivativeType::ValueType;
 
-  using FixedImageType = typename Superclass::FixedImageType;
-  using FixedImagePointType = typename Superclass::FixedImagePointType;
-  using FixedImageIndexType = typename Superclass::FixedImageIndexType;
-  using FixedImagePixelType = typename Superclass::FixedImagePixelType;
-  using FixedImageGradientType = typename Superclass::FixedImageGradientType;
+  using typename Superclass::FixedImageType;
+  using typename Superclass::FixedImagePointType;
+  using typename Superclass::FixedImageIndexType;
+  using typename Superclass::FixedImagePixelType;
+  using typename Superclass::FixedImageGradientType;
 
-  using MovingImagePointType = typename Superclass::MovingImagePointType;
-  using MovingImagePixelType = typename Superclass::MovingImagePixelType;
-  using MovingImageGradientType = typename Superclass::MovingImageGradientType;
+  using typename Superclass::MovingImagePointType;
+  using typename Superclass::MovingImagePixelType;
+  using typename Superclass::MovingImageGradientType;
 
-  using MovingTransformType = typename Superclass::MovingTransformType;
-  using JacobianType = typename Superclass::JacobianType;
+  using typename Superclass::MovingTransformType;
+  using typename Superclass::JacobianType;
   using VirtualImageType = typename Superclass::VirtualImageType;
-  using VirtualIndexType = typename Superclass::VirtualIndexType;
-  using VirtualPointType = typename Superclass::VirtualPointType;
-  using VirtualPointSetType = typename Superclass::VirtualPointSetType;
+  using typename Superclass::VirtualIndexType;
+  using typename Superclass::VirtualPointType;
+  using typename Superclass::VirtualPointSetType;
 
   /** Types inherited from Superclass. */
-  using FixedSampledPointSetPointer = typename Superclass::FixedSampledPointSetPointer;
+  using typename Superclass::FixedSampledPointSetPointer;
 
   /* Image dimension accessors */
   static constexpr typename TVirtualImage::ImageDimensionType VirtualImageDimension = TVirtualImage::ImageDimension;
@@ -254,10 +254,6 @@ protected:
   PDFValueType  m_MovingImageTrueMax;
   PDFValueType  m_FixedImageBinSize;
   PDFValueType  m_MovingImageBinSize;
-
-  /** Cubic BSpline kernel for computing Parzen histograms. */
-  typename CubicBSplineFunctionType::Pointer           m_CubicBSplineKernel;
-  typename CubicBSplineDerivativeFunctionType::Pointer m_CubicBSplineDerivativeKernel;
 
   /** Helper array for storing the values of the JointPDF ratios. */
   using PRatioType = PDFValueType;

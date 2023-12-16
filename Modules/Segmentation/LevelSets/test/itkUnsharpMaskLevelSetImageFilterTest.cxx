@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,11 +26,11 @@ const unsigned int WIDTH = (128);
 
 // Distance transform function for square
 float
-square(unsigned x, unsigned y)
+square(unsigned int x, unsigned int y)
 {
   float X, Y;
-  X = itk::Math::abs(x - (float)WIDTH / 2.0);
-  Y = itk::Math::abs(y - (float)HEIGHT / 2.0);
+  X = itk::Math::abs(x - static_cast<float>(WIDTH) / 2.0);
+  Y = itk::Math::abs(y - static_cast<float>(HEIGHT) / 2.0);
   float dis;
   if (!((X > RADIUS) && (Y > RADIUS)))
   {
@@ -65,7 +65,7 @@ itkUnsharpMaskLevelSetImageFilterTest(int, char *[])
 {
   using ImageType = itk::Image<float, 2>;
 
-  ImageType::Pointer im_init = ImageType::New();
+  auto im_init = ImageType::New();
 
   ImageType::RegionType r;
   ImageType::SizeType   sz = { { HEIGHT, WIDTH } };
@@ -73,14 +73,12 @@ itkUnsharpMaskLevelSetImageFilterTest(int, char *[])
   r.SetSize(sz);
   r.SetIndex(idx);
 
-  im_init->SetLargestPossibleRegion(r);
-  im_init->SetBufferedRegion(r);
-  im_init->SetRequestedRegion(r);
+  im_init->SetRegions(r);
   im_init->Allocate();
 
   evaluate_function(im_init, square);
   using FilterType = itk::UnsharpMaskLevelSetImageFilter<ImageType, ImageType>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
   filter->SetMaxFilterIteration(99);
   filter->SetNormalProcessUnsharpWeight(1);
 

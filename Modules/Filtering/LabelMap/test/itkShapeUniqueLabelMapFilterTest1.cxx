@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,8 @@ itkShapeUniqueLabelMapFilterTest1(int argc, char * argv[])
 {
   if (argc != 5)
   {
-    std::cerr << "Usage: " << argv[0];
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
     std::cerr << " input output";
     std::cerr << " reverseOrdering(0/1) attribute";
     std::cerr << std::endl;
@@ -47,15 +48,15 @@ itkShapeUniqueLabelMapFilterTest1(int argc, char * argv[])
   using LabelMapType = itk::LabelMap<ShapeLabelObjectType>;
 
   using ReaderType = itk::ImageFileReader<ImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
   using I2LType = itk::LabelImageToShapeLabelMapFilter<ImageType, LabelMapType>;
-  I2LType::Pointer i2l = I2LType::New();
+  auto i2l = I2LType::New();
   i2l->SetInput(reader->GetOutput());
 
   using LabelUniqueType = itk::ShapeUniqueLabelMapFilter<LabelMapType>;
-  LabelUniqueType::Pointer Unique = LabelUniqueType::New();
+  auto Unique = LabelUniqueType::New();
 
   // testing get and set macros for ReverseOrdering
   bool reverseOrdering = std::stoi(argv[3]);
@@ -79,12 +80,12 @@ itkShapeUniqueLabelMapFilterTest1(int argc, char * argv[])
   itk::SimpleFilterWatcher watcher(Unique, "filter");
 
   using L2IType = itk::LabelMapToLabelImageFilter<LabelMapType, ImageType>;
-  L2IType::Pointer l2i = L2IType::New();
+  auto l2i = L2IType::New();
   l2i->SetInput(Unique->GetOutput());
 
   using WriterType = itk::ImageFileWriter<ImageType>;
 
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(l2i->GetOutput());
   writer->SetFileName(argv[2]);
   writer->UseCompressionOn();

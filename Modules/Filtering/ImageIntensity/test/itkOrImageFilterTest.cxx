@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,8 +55,8 @@ itkOrImageFilterTest(int argc, char * argv[])
   using OrImageFilterType = itk::OrImageFilter<InputImage1Type, InputImage2Type, OutputImageType>;
 
   // Create the two input images
-  InputImage1Type::Pointer inputImageA = InputImage1Type::New();
-  InputImage2Type::Pointer inputImageB = InputImage2Type::New();
+  auto inputImageA = InputImage1Type::New();
+  auto inputImageB = InputImage2Type::New();
 
   // Define their size, and start index
   SizeType size;
@@ -74,15 +74,11 @@ itkOrImageFilterTest(int argc, char * argv[])
   region.SetSize(size);
 
   // Initialize Image A
-  inputImageA->SetLargestPossibleRegion(region);
-  inputImageA->SetBufferedRegion(region);
-  inputImageA->SetRequestedRegion(region);
+  inputImageA->SetRegions(region);
   inputImageA->Allocate();
 
   // Initialize Image B
-  inputImageB->SetLargestPossibleRegion(region);
-  inputImageB->SetBufferedRegion(region);
-  inputImageB->SetRequestedRegion(region);
+  inputImageB->SetRegions(region);
   inputImageB->Allocate();
 
   // Declare appropriate Iterator types for each image
@@ -114,7 +110,7 @@ itkOrImageFilterTest(int argc, char * argv[])
   }
 
   // Create the filter
-  OrImageFilterType::Pointer filter = OrImageFilterType::New();
+  auto filter = OrImageFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, OrImageFilter, BinaryGeneratorImageFilter);
 
@@ -132,7 +128,7 @@ itkOrImageFilterTest(int argc, char * argv[])
   // Write the result image
   using WriterType = itk::ImageFileWriter<OutputImageType>;
 
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   writer->SetFileName(argv[1]);
 

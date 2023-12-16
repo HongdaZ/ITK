@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,14 +19,13 @@
 #ifndef itkLevelSetSparseImage_hxx
 #define itkLevelSetSparseImage_hxx
 
-#include "itkLevelSetSparseImage.h"
 
 namespace itk
 {
 
 template <typename TOutput, unsigned int VDimension>
-typename LevelSetSparseImage<TOutput, VDimension>::LayerIdType
-LevelSetSparseImage<TOutput, VDimension>::Status(const InputType & inputIndex) const
+auto
+LevelSetSparseImage<TOutput, VDimension>::Status(const InputType & inputIndex) const -> LayerIdType
 {
   InputType mapIndex = inputIndex - this->m_DomainOffset;
   return this->m_LabelMap->GetPixel(mapIndex);
@@ -89,8 +88,8 @@ LevelSetSparseImage<TOutput, VDimension>::Graft(const DataObject * data)
 
 
 template <typename TOutput, unsigned int VDimension>
-const typename LevelSetSparseImage<TOutput, VDimension>::LayerType &
-LevelSetSparseImage<TOutput, VDimension>::GetLayer(LayerIdType value) const
+auto
+LevelSetSparseImage<TOutput, VDimension>::GetLayer(LayerIdType value) const -> const LayerType &
 {
   auto it = m_Layers.find(value);
   if (it == m_Layers.end())
@@ -102,8 +101,8 @@ LevelSetSparseImage<TOutput, VDimension>::GetLayer(LayerIdType value) const
 
 
 template <typename TOutput, unsigned int VDimension>
-typename LevelSetSparseImage<TOutput, VDimension>::LayerType &
-LevelSetSparseImage<TOutput, VDimension>::GetLayer(LayerIdType value)
+auto
+LevelSetSparseImage<TOutput, VDimension>::GetLayer(LayerIdType value) -> LayerType &
 {
   auto it = m_Layers.find(value);
   if (it == m_Layers.end())
@@ -165,7 +164,7 @@ typename LabelObject<TLabel, VDimension>::Pointer
 LevelSetSparseImage<TOutput, VDimension>::GetAsLabelObject()
 {
   using OutputLabelObjectType = LabelObject<TLabel, Dimension>;
-  typename OutputLabelObjectType::Pointer object = OutputLabelObjectType::New();
+  auto object = OutputLabelObjectType::New();
 
   if (this->m_InternalLabelList.empty())
   {

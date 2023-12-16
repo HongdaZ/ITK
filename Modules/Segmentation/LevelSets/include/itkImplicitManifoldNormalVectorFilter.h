@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -74,7 +74,7 @@ class ITK_TEMPLATE_EXPORT ImplicitManifoldNormalVectorFilter
   : public FiniteDifferenceSparseImageFilter<TInputImage, TSparseOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImplicitManifoldNormalVectorFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ImplicitManifoldNormalVectorFilter);
 
   /** Standard class type alias */
   using Self = ImplicitManifoldNormalVectorFilter;
@@ -93,15 +93,15 @@ public:
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Typedefs from the superclass */
-  using InputImageType = typename Superclass::InputImageType;
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::IndexType;
   using NormalVectorType = typename Superclass::NodeDataType;
-  using NodeValueType = typename Superclass::NodeValueType;
-  using FiniteDifferenceFunctionType = typename Superclass::FiniteDifferenceFunctionType;
+  using typename Superclass::NodeValueType;
+  using typename Superclass::FiniteDifferenceFunctionType;
 
-  using SparseOutputImageType = typename Superclass::SparseOutputImageType;
+  using typename Superclass::SparseOutputImageType;
   using NormalBandNodeType = typename Superclass::OutputNodeType;
-  using NodeListType = typename Superclass::NodeListType;
+  using typename Superclass::NodeListType;
 
   /** The iterator for the input image. */
   using InputImageIteratorType = ConstNeighborhoodIterator<InputImageType>;

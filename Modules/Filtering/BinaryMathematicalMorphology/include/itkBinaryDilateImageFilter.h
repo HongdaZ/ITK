@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ namespace itk
  * by the intensity value "SetForegroundValue()" (alias as SetDilateValue()) is considered
  * as foreground, and other intensity values are considered background.
  *
- * Gray scale images can be processed as binary images by selecting a
+ * Grayscale images can be processed as binary images by selecting a
  * "ForegroundValue" (alias "DilateValue").  Pixel values matching the dilate value are
  * considered the "foreground" and all other pixels are
  * "background". This is useful in processing segmented images where
@@ -71,7 +71,7 @@ class ITK_TEMPLATE_EXPORT BinaryDilateImageFilter
   : public BinaryMorphologyImageFilter<TInputImage, TOutputImage, TKernel>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryDilateImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BinaryDilateImageFilter);
 
   /** Extract dimension from input and output image. */
   static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
@@ -140,7 +140,7 @@ protected:
   GenerateData() override;
 
   // type inherited from the superclass
-  using NeighborIndexContainer = typename Superclass::NeighborIndexContainer;
+  using typename Superclass::NeighborIndexContainer;
 };
 } // end namespace itk
 

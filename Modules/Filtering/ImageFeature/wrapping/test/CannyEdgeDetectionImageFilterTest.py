@@ -1,4 +1,4 @@
-#==========================================================================
+# ==========================================================================
 #
 #   Copyright NumFOCUS
 #
@@ -6,7 +6,7 @@
 #   you may not use this file except in compliance with the License.
 #   You may obtain a copy of the License at
 #
-#          http://www.apache.org/licenses/LICENSE-2.0.txt
+#          https://www.apache.org/licenses/LICENSE-2.0.txt
 #
 #   Unless required by applicable law or agreed to in writing, software
 #   distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,18 +14,23 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-#==========================================================================*/
+# ==========================================================================*/
 
 #  Example on the use of the CannyEdgeDetectionImageFilter
 
 import itk
 from sys import argv, stderr, exit
+
 itk.auto_progress(2)
 
 if len(argv) < 3:
-    print((
-        "Usage: CannyEdgeDetectionImageFilter.py inputImage outputImage "
-        "[variance]"), file=stderr)
+    print(
+        (
+            "Usage: CannyEdgeDetectionImageFilter.py inputImage outputImage "
+            "[variance]"
+        ),
+        file=stderr,
+    )
     exit(1)
 
 variance = 2.0
@@ -34,11 +39,8 @@ if len(argv) > 3:
     print(variance)
 
 reader = itk.ImageFileReader.IF2.New(FileName=argv[1])
-filter = itk.CannyEdgeDetectionImageFilter.IF2IF2.New(
-    reader,
-    Variance=variance)
+filter = itk.CannyEdgeDetectionImageFilter.IF2IF2.New(reader, Variance=variance)
 outputCast = itk.RescaleIntensityImageFilter.IF2IUC2.New(
-    filter,
-    OutputMinimum=0,
-    OutputMaximum=255)
+    filter, OutputMinimum=0, OutputMaximum=255
+)
 itk.imwrite(outputCast, argv[2])

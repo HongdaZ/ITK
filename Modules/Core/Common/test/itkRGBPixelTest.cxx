@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,7 +43,7 @@ itkRGBPixelTest(int, char *[])
   std::cout << "pixel.GetNumberOfComponents = " << pixel.GetNumberOfComponents() << std::endl;
   std::cout << "pixel.GetScalarValue() = " << pixel.GetScalarValue() << std::endl;
   std::cout << "pixel.GetNthComponent()" << std::endl;
-  for (unsigned int i = 0; i < pixel.GetNumberOfComponents(); i++)
+  for (unsigned int i = 0; i < pixel.GetNumberOfComponents(); ++i)
   {
     std::cout << "\tpixel[" << i << "] = " << pixel.GetNthComponent(i) << std::endl;
   }
@@ -51,7 +51,7 @@ itkRGBPixelTest(int, char *[])
   pixel.SetGreen(22.0);
   pixel.SetBlue(33.0);
   std::cout << "pixel.SetRed (11.0); pixel.SetGreen (22.0); pixel.SetBlue (33.0);" << std::endl;
-  for (unsigned int i = 0; i < pixel.GetNumberOfComponents(); i++)
+  for (unsigned int i = 0; i < pixel.GetNumberOfComponents(); ++i)
   {
     std::cout << "\tpixel[" << i << "] = " << pixel.GetNthComponent(i) << std::endl;
   }
@@ -64,7 +64,7 @@ itkRGBPixelTest(int, char *[])
   pixel[0] = 111;
   pixel[1] = 222;
   pixel[2] = 333;
-  for (unsigned int i = 0; i < pixel.GetNumberOfComponents(); i++)
+  for (unsigned int i = 0; i < pixel.GetNumberOfComponents(); ++i)
   {
     std::cout << "\tpixel[" << i << "] = " << pixel.GetNthComponent(i) << std::endl;
   }
@@ -72,14 +72,14 @@ itkRGBPixelTest(int, char *[])
   std::cout << "std::cout << pixel << std::endl;" << std::endl;
   std::cout << "\t" << pixel << std::endl;
 
-  for (unsigned int j = 0; j < 2; j++)
+  for (unsigned int j = 0; j < 2; ++j)
   {
     std::cout << "pixelArray[" << j << "].GetNumberOfComponents = " << pixelArray[j].GetNumberOfComponents()
               << std::endl;
     std::cout << "pixelArray[" << j << "].GetScalarValue() = " << static_cast<int>(pixelArray[j].GetScalarValue())
               << std::endl;
     std::cout << "pixelArray[" << j << "].GetNthComponent()" << std::endl;
-    for (unsigned int i = 0; i < pixelArray[j].GetNumberOfComponents(); i++)
+    for (unsigned int i = 0; i < pixelArray[j].GetNumberOfComponents(); ++i)
     {
       std::cout << "\tpixelArray[" << j << "].GetNthComponent(" << i
                 << ") = " << static_cast<int>(pixelArray[j].GetNthComponent(i)) << std::endl;
@@ -127,7 +127,7 @@ itkRGBPixelTest(int, char *[])
   const float realLuminance = rgbl[0] * 0.30 + rgbl[1] * 0.59 + rgbl[2] * 0.11;
   const float tolerance = 1e-4;
 
-  if (std::fabs(luminance - realLuminance) > tolerance)
+  if (itk::Math::abs(luminance - realLuminance) > tolerance)
   {
     std::cerr << "Error in luminance conversion" << std::endl;
     return EXIT_FAILURE;

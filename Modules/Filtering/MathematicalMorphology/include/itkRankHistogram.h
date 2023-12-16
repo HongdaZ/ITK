@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,8 +43,7 @@ namespace Function
  * This code was contributed in the Insight Journal paper:
  * "Efficient implementation of kernel filtering"
  * by Beare R., Lehmann G
- * https://hdl.handle.net/1926/555
- * http://www.insight-journal.org/browse/publication/160
+ * https://www.insight-journal.org/browse/publication/160
  *
  * /sa VectorRankHistogram
  */
@@ -141,8 +140,8 @@ public:
   GetValueBruteForce()
   {
     SizeValueType count = 0;
-    SizeValueType target = (int)(m_Rank * (m_Entries - 1)) + 1;
-    for (typename MapType::iterator it = m_Map.begin(); it != m_Map.end(); it++)
+    SizeValueType target = static_cast<int>(m_Rank * (m_Entries - 1)) + 1;
+    for (typename MapType::iterator it = m_Map.begin(); it != m_Map.end(); ++it)
     {
       count += it->second;
       if (count >= target)
@@ -308,7 +307,7 @@ public:
   {
     SizeValueType count = 0;
     SizeValueType target = (SizeValueType)(m_Rank * (m_Entries - 1)) + 1;
-    for (SizeValueType i = 0; i < m_Size; i++)
+    for (SizeValueType i = 0; i < m_Size; ++i)
     {
       count += m_Vec[i];
       if (count >= target)
@@ -344,7 +343,7 @@ public:
     const OffsetValueType q = (OffsetValueType)p - NumericTraits<TInputPixel>::NonpositiveMin();
 
     itkAssertInDebugAndIgnoreInReleaseMacro(q >= 0);
-    itkAssertInDebugAndIgnoreInReleaseMacro(q < (int)m_Vec.size());
+    itkAssertInDebugAndIgnoreInReleaseMacro(q < static_cast<int>(m_Vec.size()));
     itkAssertInDebugAndIgnoreInReleaseMacro(m_Entries >= 1);
     itkAssertInDebugAndIgnoreInReleaseMacro(m_Vec[q] > 0);
 
@@ -406,7 +405,7 @@ class RankHistogram<signed char> : public VectorRankHistogram<signed char>
 {};
 
 template <>
-class RankHistogram<bool> : public VectorRankHistogram<bool>
+class ITK_TEMPLATE_EXPORT RankHistogram<bool> : public VectorRankHistogram<bool>
 {};
 
 /// \endcond

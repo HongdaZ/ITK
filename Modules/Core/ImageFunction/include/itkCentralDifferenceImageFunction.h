@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -76,7 +76,7 @@ template <typename TInputImage,
 class ITK_TEMPLATE_EXPORT CentralDifferenceImageFunction : public ImageFunction<TInputImage, TOutputType, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CentralDifferenceImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(CentralDifferenceImageFunction);
 
   /** Dimension underlying input image. */
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
@@ -103,7 +103,7 @@ public:
   using InputPixelConvertType = DefaultConvertPixelTraits<InputPixelType>;
 
   /** OutputType typdef support. */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** Output convert type alias support */
   using OutputConvertType = DefaultConvertPixelTraits<OutputType>;
@@ -115,13 +115,13 @@ public:
   using ScalarDerivativeType = CovariantVector<OutputValueType, Self::ImageDimension>;
 
   /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
 
   /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** Spacing type alias support */
   using SpacingType = typename TInputImage::SpacingType;
@@ -210,18 +210,18 @@ protected:
   PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
-  /** Structure for specialization of Evaulate* methods on OutputType */
+  /** Structure for specialization of Evaluate* methods on OutputType */
   template <typename T>
   struct OutputTypeSpecializationStructType
   {
     using Type = T;
   };
 
-  /** Specialized versions of EvaluteAtIndex() method to handle scalar or vector pixel types.*/
+  /** Specialized versions of EvaluateAtIndex() method to handle scalar or vector pixel types.*/
   template <typename Type>
   inline void
   EvaluateAtIndexSpecialized(const IndexType & index,
-                             OutputType &      derivative,
+                             OutputType &      orientedDerivative,
                              OutputTypeSpecializationStructType<OutputType>) const;
   template <typename Type>
   inline void
@@ -229,24 +229,24 @@ private:
                              OutputType &      derivative,
                              OutputTypeSpecializationStructType<Type>) const;
 
-  /** Specialized versions of EvaluteAtContinuousIndex() method to handle scalar or vector pixel types.*/
+  /** Specialized versions of EvaluateAtContinuousIndex() method to handle scalar or vector pixel types.*/
   template <typename Type>
   inline void
-  EvaluateAtContinuousIndexSpecialized(const ContinuousIndexType & index,
-                                       OutputType &                derivative,
+  EvaluateAtContinuousIndexSpecialized(const ContinuousIndexType & cindex,
+                                       OutputType &                orientedDerivative,
                                        OutputTypeSpecializationStructType<OutputType>) const;
   template <typename Type>
   inline void
-  EvaluateAtContinuousIndexSpecialized(const ContinuousIndexType & index,
+  EvaluateAtContinuousIndexSpecialized(const ContinuousIndexType & cindex,
                                        OutputType &                derivative,
                                        OutputTypeSpecializationStructType<Type>) const;
 
-  /** Specialized versions of Evalute() method to handle scalar or vector pixel types.*/
+  /** Specialized versions of Evaluate() method to handle scalar or vector pixel types.*/
   // NOTE: for some unknown reason, making these methods inline (as those above are inlined) makes them run *slower*.
   template <typename Type>
   void
   EvaluateSpecialized(const PointType & point,
-                      OutputType &      derivative,
+                      OutputType &      orientedDerivative,
                       OutputTypeSpecializationStructType<OutputType>) const;
   template <typename Type>
   void

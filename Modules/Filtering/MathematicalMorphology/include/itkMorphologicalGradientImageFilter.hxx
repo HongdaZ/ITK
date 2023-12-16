@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMorphologicalGradientImageFilter_hxx
 #define itkMorphologicalGradientImageFilter_hxx
 
-#include "itkMorphologicalGradientImageFilter.h"
 #include "itkNumericTraits.h"
 #include "itkProgressAccumulator.h"
 #include <string>
@@ -35,7 +34,7 @@ MorphologicalGradientImageFilter<TInputImage, TOutputImage, TKernel>::Morphologi
   m_AnchorErodeFilter = AnchorErodeFilterType::New();
   m_VanHerkGilWermanDilateFilter = VHGWDilateFilterType::New();
   m_VanHerkGilWermanErodeFilter = VHGWErodeFilterType::New();
-  m_Algorithm = HISTO;
+  m_Algorithm = AlgorithmEnum::HISTO;
 }
 
 template <typename TInputImage, typename TOutputImage, typename TKernel>
@@ -48,13 +47,13 @@ MorphologicalGradientImageFilter<TInputImage, TOutputImage, TKernel>::SetKernel(
   {
     m_AnchorDilateFilter->SetKernel(*flatKernel);
     m_AnchorErodeFilter->SetKernel(*flatKernel);
-    m_Algorithm = ANCHOR;
+    m_Algorithm = AlgorithmEnum::ANCHOR;
   }
   else if (m_HistogramFilter->GetUseVectorBasedAlgorithm())
   {
     // histogram based filter is as least as good as the basic one, so always
     // use it
-    m_Algorithm = HISTO;
+    m_Algorithm = AlgorithmEnum::HISTO;
     m_HistogramFilter->SetKernel(kernel);
   }
   else
@@ -71,11 +70,11 @@ MorphologicalGradientImageFilter<TInputImage, TOutputImage, TKernel>::SetKernel(
     {
       m_BasicDilateFilter->SetKernel(kernel);
       m_BasicErodeFilter->SetKernel(kernel);
-      m_Algorithm = BASIC;
+      m_Algorithm = AlgorithmEnum::BASIC;
     }
     else
     {
-      m_Algorithm = HISTO;
+      m_Algorithm = AlgorithmEnum::HISTO;
     }
   }
 
@@ -84,27 +83,27 @@ MorphologicalGradientImageFilter<TInputImage, TOutputImage, TKernel>::SetKernel(
 
 template <typename TInputImage, typename TOutputImage, typename TKernel>
 void
-MorphologicalGradientImageFilter<TInputImage, TOutputImage, TKernel>::SetAlgorithm(int algo)
+MorphologicalGradientImageFilter<TInputImage, TOutputImage, TKernel>::SetAlgorithm(AlgorithmEnum algo)
 {
   const auto * flatKernel = dynamic_cast<const FlatKernelType *>(&this->GetKernel());
 
   if (m_Algorithm != algo)
   {
-    if (algo == BASIC)
+    if (algo == AlgorithmEnum::BASIC)
     {
       m_BasicDilateFilter->SetKernel(this->GetKernel());
       m_BasicErodeFilter->SetKernel(this->GetKernel());
     }
-    else if (algo == HISTO)
+    else if (algo == AlgorithmEnum::HISTO)
     {
       m_HistogramFilter->SetKernel(this->GetKernel());
     }
-    else if (flatKernel != nullptr && flatKernel->GetDecomposable() && algo == ANCHOR)
+    else if (flatKernel != nullptr && flatKernel->GetDecomposable() && algo == AlgorithmEnum::ANCHOR)
     {
       m_AnchorDilateFilter->SetKernel(*flatKernel);
       m_AnchorErodeFilter->SetKernel(*flatKernel);
     }
-    else if (flatKernel != nullptr && flatKernel->GetDecomposable() && algo == VHGW)
+    else if (flatKernel != nullptr && flatKernel->GetDecomposable() && algo == AlgorithmEnum::VHGW)
     {
       m_VanHerkGilWermanDilateFilter->SetKernel(*flatKernel);
       m_VanHerkGilWermanErodeFilter->SetKernel(*flatKernel);
@@ -124,7 +123,7 @@ void
 MorphologicalGradientImageFilter<TInputImage, TOutputImage, TKernel>::GenerateData()
 {
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
 
   progress->SetMiniPipelineFilter(this);
 
@@ -132,16 +131,16 @@ MorphologicalGradientImageFilter<TInputImage, TOutputImage, TKernel>::GenerateDa
   this->AllocateOutputs();
 
   // Delegate to a dilate filter.
-  if (m_Algorithm == BASIC)
+  if (m_Algorithm == AlgorithmEnum::BASIC)
   {
-    //     std::cout << "BasicDilateImageFilter" << std::endl;
+    // Use itk::BasicDilateImageFilter
     m_BasicDilateFilter->SetInput(this->GetInput());
     progress->RegisterInternalFilter(m_BasicDilateFilter, 0.4f);
 
     m_BasicErodeFilter->SetInput(this->GetInput());
     progress->RegisterInternalFilter(m_BasicErodeFilter, 0.4f);
 
-    typename SubtractFilterType::Pointer sub = SubtractFilterType::New();
+    auto sub = SubtractFilterType::New();
     sub->SetInput1(m_BasicDilateFilter->GetOutput());
     sub->SetInput2(m_BasicErodeFilter->GetOutput());
     progress->RegisterInternalFilter(sub, 0.1f);
@@ -150,9 +149,9 @@ MorphologicalGradientImageFilter<TInputImage, TOutputImage, TKernel>::GenerateDa
     sub->Update();
     this->GraftOutput(sub->GetOutput());
   }
-  else if (m_Algorithm == HISTO)
+  else if (m_Algorithm == AlgorithmEnum::HISTO)
   {
-    //     std::cout << "MovingHistogramDilateImageFilter" << std::endl;
+    // Use itk::MovingHistogramDilateImageFilter
     m_HistogramFilter->SetInput(this->GetInput());
     progress->RegisterInternalFilter(m_HistogramFilter, 1.0f);
 
@@ -160,16 +159,16 @@ MorphologicalGradientImageFilter<TInputImage, TOutputImage, TKernel>::GenerateDa
     m_HistogramFilter->Update();
     this->GraftOutput(m_HistogramFilter->GetOutput());
   }
-  else if (m_Algorithm == ANCHOR)
+  else if (m_Algorithm == AlgorithmEnum::ANCHOR)
   {
-    // std::cout << "AnchorDilateImageFilter" << std::endl;
+    // Use itk::AnchorDilateImageFilter
     m_AnchorDilateFilter->SetInput(this->GetInput());
     progress->RegisterInternalFilter(m_AnchorDilateFilter, 0.4f);
 
     m_AnchorErodeFilter->SetInput(this->GetInput());
     progress->RegisterInternalFilter(m_AnchorErodeFilter, 0.4f);
 
-    typename SubtractFilterType::Pointer sub = SubtractFilterType::New();
+    auto sub = SubtractFilterType::New();
     sub->SetInput1(m_AnchorDilateFilter->GetOutput());
     sub->SetInput2(m_AnchorErodeFilter->GetOutput());
     progress->RegisterInternalFilter(sub, 0.1f);
@@ -178,16 +177,16 @@ MorphologicalGradientImageFilter<TInputImage, TOutputImage, TKernel>::GenerateDa
     sub->Update();
     this->GraftOutput(sub->GetOutput());
   }
-  else if (m_Algorithm == VHGW)
+  else if (m_Algorithm == AlgorithmEnum::VHGW)
   {
-    //     std::cout << "VanHerkGilWermanDilateImageFilter" << std::endl;
+    // Use itk::VanHerkGilWermanDilateImageFilter
     m_VanHerkGilWermanDilateFilter->SetInput(this->GetInput());
     progress->RegisterInternalFilter(m_VanHerkGilWermanDilateFilter, 0.4f);
 
     m_VanHerkGilWermanErodeFilter->SetInput(this->GetInput());
     progress->RegisterInternalFilter(m_VanHerkGilWermanErodeFilter, 0.4f);
 
-    typename SubtractFilterType::Pointer sub = SubtractFilterType::New();
+    auto sub = SubtractFilterType::New();
     sub->SetInput1(m_VanHerkGilWermanDilateFilter->GetOutput());
     sub->SetInput2(m_VanHerkGilWermanErodeFilter->GetOutput());
     progress->RegisterInternalFilter(sub, 0.1f);

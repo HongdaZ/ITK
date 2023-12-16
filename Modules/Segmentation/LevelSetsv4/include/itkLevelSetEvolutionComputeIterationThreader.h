@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ namespace itk
 {
 
 /**
- *\class LevelSetEvolutionComputeIterationThreader
+ * \class LevelSetEvolutionComputeIterationThreader
  * \brief Thread the ComputeIteration method.
  *
  * Thread the \c ComputeIteration method of the LevelSetEvolution class
@@ -50,7 +50,7 @@ class ITK_TEMPLATE_EXPORT
   : public DomainThreader<ThreadedImageRegionPartitioner<TImage::ImageDimension>, TLevelSetEvolution>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolutionComputeIterationThreader);
+  ITK_DISALLOW_COPY_AND_MOVE(LevelSetEvolutionComputeIterationThreader);
 
   /** Standard class type aliases. */
   using Self = LevelSetEvolutionComputeIterationThreader;
@@ -65,8 +65,8 @@ public:
   itkNewMacro(Self);
 
   /** Superclass types. */
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  using typename Superclass::DomainType;
+  using typename Superclass::AssociateType;
 
   /** Types of the associate class. */
   using LevelSetEvolutionType = TLevelSetEvolution;
@@ -103,7 +103,7 @@ class ITK_TEMPLATE_EXPORT LevelSetEvolutionComputeIterationThreader<
                           TLevelSetEvolution>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolutionComputeIterationThreader);
+  ITK_DISALLOW_COPY_AND_MOVE(LevelSetEvolutionComputeIterationThreader);
 
   using DomainMapConstIteratorType =
     typename TLevelSetEvolution::DomainMapImageFilterType::DomainMapType::const_iterator;
@@ -122,8 +122,8 @@ public:
   itkNewMacro(Self);
 
   /** Superclass types. */
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  using typename Superclass::DomainType;
+  using typename Superclass::AssociateType;
 
   /** Types of the associate class. */
   using LevelSetEvolutionType = TLevelSetEvolution;
@@ -145,7 +145,7 @@ protected:
   LevelSetEvolutionComputeIterationThreader() = default;
 
   void
-  ThreadedExecution(const DomainType & imageSubRegion, const ThreadIdType threadId) override;
+  ThreadedExecution(const DomainType & imageSubDomain, const ThreadIdType threadId) override;
 };
 
 // For Whitaker sparse level set split by putting part of the level set in each
@@ -160,7 +160,7 @@ class ITK_TEMPLATE_EXPORT LevelSetEvolutionComputeIterationThreader<
       TLevelSetEvolution>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEvolutionComputeIterationThreader);
+  ITK_DISALLOW_COPY_AND_MOVE(LevelSetEvolutionComputeIterationThreader);
 
   /** Standard class type aliases. */
   using Self = LevelSetEvolutionComputeIterationThreader;
@@ -177,8 +177,8 @@ public:
   itkNewMacro(Self);
 
   /** Superclass types. */
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  using typename Superclass::DomainType;
+  using typename Superclass::AssociateType;
 
   /** Types of the associate class. */
   using LevelSetEvolutionType = TLevelSetEvolution;

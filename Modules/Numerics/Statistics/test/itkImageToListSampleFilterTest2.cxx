@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ itkImageToListSampleFilterTest2(int, char *[])
 
   using MaskImageType = itk::Image<unsigned char, ImageDimension>;
 
-  ImageType::Pointer   image = ImageType::New();
+  auto                 image = ImageType::New();
   ImageType::IndexType start;
   ImageType::SizeType  size;
 
@@ -51,7 +51,7 @@ itkImageToListSampleFilterTest2(int, char *[])
   while (!it.IsAtEnd())
   {
     PixelType value;
-    for (unsigned int i = 0; i < MeasurementVectorSize; i++)
+    for (unsigned int i = 0; i < MeasurementVectorSize; ++i)
     {
       value[i] = i + it.GetIndex()[0];
     }
@@ -59,7 +59,7 @@ itkImageToListSampleFilterTest2(int, char *[])
     ++it;
   }
 
-  MaskImageType::Pointer maskImage = MaskImageType::New();
+  auto maskImage = MaskImageType::New();
   maskImage->SetRegions(region);
   maskImage->Allocate(true); // initialize
                              // buffer to zero
@@ -80,13 +80,13 @@ itkImageToListSampleFilterTest2(int, char *[])
   mit.GoToBegin();
   while (!mit.IsAtEnd())
   {
-    mit.Set((unsigned char)255);
+    mit.Set(static_cast<unsigned char>(255));
     ++mit;
   }
 
   // Generate a list sample from "image" confined to the mask, "maskImage".
   using ImageToListSampleFilterType = itk::Statistics::ImageToListSampleFilter<ImageType, MaskImageType>;
-  ImageToListSampleFilterType::Pointer filter = ImageToListSampleFilterType::New();
+  auto filter = ImageToListSampleFilterType::New();
 
   filter->SetInput(image);
   filter->SetMaskImage(maskImage);

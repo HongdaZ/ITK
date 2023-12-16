@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,7 +53,7 @@ ReadWrite(const std::string & inputImage, const std::string & outputImage)
   return EXIT_SUCCESS;
 }
 
-template <unsigned Dimension>
+template <unsigned int Dimension>
 int
 internalMain(const std::string &       inputImage,
              const std::string &       outputImage,
@@ -108,7 +108,7 @@ itkGDCMImageReadWriteTest(int argc, char * argv[])
 
   std::cout << gdcmImageIO << std::endl;
 
-  unsigned dimension = gdcmImageIO->GetNumberOfDimensions();
+  unsigned int dimension = gdcmImageIO->GetNumberOfDimensions();
 
   switch (dimension)
   {

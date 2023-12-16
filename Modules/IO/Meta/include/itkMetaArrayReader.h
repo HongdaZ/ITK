@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -142,7 +142,7 @@ public:
     if (static_cast<int>(VLength) <= m_MetaArray.Length())
     {
       unsigned int i;
-      for (i = 0; i < VLength; i++)
+      for (i = 0; i < VLength; ++i)
       {
         this->GetElement((*_array)[i], i);
       }
@@ -161,7 +161,7 @@ public:
     if (static_cast<int>(VLength) <= m_MetaArray.Length())
     {
       unsigned int i;
-      for (i = 0; i < VLength; i++)
+      for (i = 0; i < VLength; ++i)
       {
         this->GetElement((*_vector)[i], i);
       }
@@ -181,7 +181,7 @@ public:
     if (static_cast<int>(VLength) <= m_MetaArray.Length())
     {
       unsigned int i;
-      for (i = 0; i < VLength; i++)
+      for (i = 0; i < VLength; ++i)
       {
         this->GetElement((*_vector)[i], i);
       }
@@ -232,10 +232,10 @@ public:
     int rows = m_MetaArray.Length();
     int cols = m_MetaArray.ElementNumberOfChannels();
     _array->SetSize(rows);
-    for (int i = 0; i < rows; i++)
+    for (int i = 0; i < rows; ++i)
     {
       (*_array)[i].SetSize(cols);
-      for (int j = 0; j < cols; j++)
+      for (int j = 0; j < cols; ++j)
       {
         (*_array)[i][j] = static_cast<typename TValue::ValueType>(m_MetaArray.ElementData(i * cols + j));
       }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,13 +19,16 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkBinaryImageToLevelSetImageAdaptor.h"
+#include "itkTestingMacros.h"
 
 int
 itkBinaryImageToShiSparseLevelSetAdaptorTest(int argc, char * argv[])
 {
   if (argc < 3)
   {
-    std::cerr << "Missing Arguments" << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage:" << std::endl;
+    std::cerr << itkNameOfTestExecutableMacro(argv) << " inputFilename outputFilename" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -36,7 +39,7 @@ itkBinaryImageToShiSparseLevelSetAdaptorTest(int argc, char * argv[])
   using InputImageType = itk::Image<InputPixelType, Dimension>;
   using InputReaderType = itk::ImageFileReader<InputImageType>;
 
-  InputReaderType::Pointer reader = InputReaderType::New();
+  auto reader = InputReaderType::New();
   reader->SetFileName(argv[1]);
   try
   {
@@ -54,7 +57,7 @@ itkBinaryImageToShiSparseLevelSetAdaptorTest(int argc, char * argv[])
 
   using BinaryToSparseAdaptorType = itk::BinaryImageToLevelSetImageAdaptor<InputImageType, LevelSetType>;
 
-  BinaryToSparseAdaptorType::Pointer adaptor = BinaryToSparseAdaptorType::New();
+  auto adaptor = BinaryToSparseAdaptorType::New();
   adaptor->SetInputImage(input);
   adaptor->Initialize();
   std::cout << "Finished converting to sparse format" << std::endl;
@@ -64,7 +67,7 @@ itkBinaryImageToShiSparseLevelSetAdaptorTest(int argc, char * argv[])
   LevelSetType::Pointer sparseLevelSet = adaptor->GetModifiableLevelSet();
 
   using StatusImageType = itk::Image<char, Dimension>;
-  StatusImageType::Pointer statusImage = StatusImageType::New();
+  auto statusImage = StatusImageType::New();
   statusImage->SetRegions(input->GetLargestPossibleRegion());
   statusImage->CopyInformation(input);
   statusImage->Allocate();
@@ -84,7 +87,7 @@ itkBinaryImageToShiSparseLevelSetAdaptorTest(int argc, char * argv[])
   }
 
   using StatusWriterType = itk::ImageFileWriter<StatusImageType>;
-  StatusWriterType::Pointer writer = StatusWriterType::New();
+  auto writer = StatusWriterType::New();
   writer->SetFileName(argv[2]);
   writer->SetInput(statusImage);
 
@@ -107,7 +110,7 @@ itkBinaryImageToShiSparseLevelSetAdaptorTest(int argc, char * argv[])
 
     while (lIt != layer.end())
     {
-      std::cout << lIt->first << ' ' << int(lIt->second) << std::endl;
+      std::cout << lIt->first << ' ' << static_cast<int>(lIt->second) << std::endl;
       ++lIt;
     }
     std::cout << std::endl;

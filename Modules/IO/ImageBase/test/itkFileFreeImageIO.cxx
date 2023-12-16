@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ namespace itk
 
 FileFreeImageIO ::FileFreeImageIO() {}
 
-FileFreeImageIO ::~FileFreeImageIO() {}
+FileFreeImageIO::~FileFreeImageIO() {}
 
 bool
 FileFreeImageIO ::CanReadFile(const char * filename)
@@ -65,7 +65,7 @@ FileFreeImageIO ::ReadImageInformation()
     std::vector<std::string> tempVector;
     std::cout << "Size is: " << findSize.match(1) << std::endl;
     this->SplitString(findSize.match(1), ",", tempVector);
-    for (std::vector<std::string>::size_type i = 0; i < tempVector.size(); i++)
+    for (std::vector<std::string>::size_type i = 0; i < tempVector.size(); ++i)
     {
       sizeVector.push_back(std::stoi(tempVector[i].c_str()));
     }
@@ -77,7 +77,7 @@ FileFreeImageIO ::ReadImageInformation()
     std::vector<std::string> tempVector;
     std::cout << "Spacing is: " << findSpacing.match(1) << std::endl;
     this->SplitString(findSpacing.match(1), ",", tempVector);
-    for (std::vector<std::string>::size_type i = 0; i < tempVector.size(); i++)
+    for (std::vector<std::string>::size_type i = 0; i < tempVector.size(); ++i)
     {
       spacingVector.push_back(std::stod(tempVector[i].c_str()));
     }
@@ -89,7 +89,7 @@ FileFreeImageIO ::ReadImageInformation()
     std::vector<std::string> tempVector;
     std::cout << "Origin is: " << findOrigin.match(1) << std::endl;
     this->SplitString(findOrigin.match(1), ",", tempVector);
-    for (std::vector<std::string>::size_type i = 0; i < tempVector.size(); i++)
+    for (std::vector<std::string>::size_type i = 0; i < tempVector.size(); ++i)
     {
       originVector.push_back(std::stod(tempVector[i].c_str()));
     }
@@ -103,9 +103,9 @@ FileFreeImageIO ::ReadImageInformation()
     this->SplitString(findDirection.match(1), ",", tempVector);
     std::vector<std::string>::size_type ii = 0;
     directionVector.resize(sizeVector.size());
-    for (std::vector<std::string>::size_type i = 0; i < tempVector.size() / 2; i++)
+    for (std::vector<std::string>::size_type i = 0; i < tempVector.size() / 2; ++i)
     {
-      for (std::vector<std::string>::size_type j = 0; j < tempVector.size() / 2; j++)
+      for (std::vector<std::string>::size_type j = 0; j < tempVector.size() / 2; ++j)
       {
 
         directionVector[i].push_back(std::stod(tempVector[ii].c_str()));
@@ -115,7 +115,7 @@ FileFreeImageIO ::ReadImageInformation()
   }
   if (originVector.empty())
   {
-    for (std::vector<std::string>::size_type i = 0; i < sizeVector.size(); i++)
+    for (std::vector<std::string>::size_type i = 0; i < sizeVector.size(); ++i)
     {
       originVector.push_back(0.0);
     }
@@ -123,7 +123,7 @@ FileFreeImageIO ::ReadImageInformation()
 
   if (spacingVector.empty())
   {
-    for (std::vector<std::string>::size_type i = 0; i < sizeVector.size(); i++)
+    for (std::vector<std::string>::size_type i = 0; i < sizeVector.size(); ++i)
     {
       spacingVector.push_back(1.0);
     }
@@ -132,9 +132,9 @@ FileFreeImageIO ::ReadImageInformation()
   if (directionVector.empty())
   {
     directionVector.resize(sizeVector.size());
-    for (std::vector<std::string>::size_type i = 0; i < sizeVector.size(); i++)
+    for (std::vector<std::string>::size_type i = 0; i < sizeVector.size(); ++i)
     {
-      for (std::vector<std::string>::size_type j = 0; j < sizeVector.size(); j++)
+      for (std::vector<std::string>::size_type j = 0; j < sizeVector.size(); ++j)
       {
         if (i == j)
         {
@@ -152,7 +152,7 @@ FileFreeImageIO ::ReadImageInformation()
   this->SetNumberOfComponents(1);
   this->SetPixelType(IOPixelEnum::SCALAR);
   this->SetComponentType(IOComponentEnum::UCHAR);
-  for (std::vector<std::string>::size_type i = 0; i < sizeVector.size(); i++)
+  for (std::vector<std::string>::size_type i = 0; i < sizeVector.size(); ++i)
   {
     this->SetDimensions(i, sizeVector[i]);
     this->SetSpacing(i, spacingVector[i]);
@@ -168,7 +168,7 @@ FileFreeImageIO ::ReadImageInformation()
 void
 FileFreeImageIO ::Read(void * buffer)
 {
-  memset(buffer, (unsigned char)175, this->GetImageSizeInBytes());
+  memset(buffer, static_cast<unsigned char>(175), this->GetImageSizeInBytes());
 }
 
 bool

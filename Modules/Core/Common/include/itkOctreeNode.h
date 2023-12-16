@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -93,17 +93,17 @@ public:
    * member function.  Behavior is undefined when the child is another Octree.
    * \return A value between 0 and 255 to indicate the color of the Desired child.
    */
-  long int
+  long
   GetColor() const;
 
   /**
    * Sets the color value of the specified Child for this OctreeNode
-   * \param NodeColor The desired color of this node.
+   * \param color The desired color of this node.
    * \post All children of the specified child are removed, and the child is set to
    * the desired value.
    */
   void
-  SetColor(int NodeColor);
+  SetColor(int color);
 
   /**
    * Sets the color value of the specified Child for this OctreeNode

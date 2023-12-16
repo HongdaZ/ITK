@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -310,7 +310,7 @@ AddToTransformList(typename TInputTransformType::ConstPointer &             tran
     for (; it != inputTransformList.end(); ++it)
     {
       // get the input sub transform
-      const auto * inSub = dynamic_cast<const InputTransformType *>((*it).GetPointer());
+      const InputTransformType * const inSub = it->GetPointer();
       // convert each sub transform and push them to the output transform list
       std::string            inSubName = inSub->GetTransformTypeAsString();
       OutputTransformPointer convertedSub = IOhelper::CreateNewTypeTransform(inSubName);

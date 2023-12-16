@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class FastMarchingQuadEdgeMeshFilterBase
+ * \class FastMarchingQuadEdgeMeshFilterBase
   \brief Fast Marching Method on QuadEdgeMesh
 
   The speed function is specified by the input mesh. Data associated to each
@@ -45,13 +45,13 @@ template <typename TInput, typename TOutput>
 class ITK_TEMPLATE_EXPORT FastMarchingQuadEdgeMeshFilterBase : public FastMarchingBase<TInput, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingQuadEdgeMeshFilterBase);
+  ITK_DISALLOW_COPY_AND_MOVE(FastMarchingQuadEdgeMeshFilterBase);
 
   using Self = FastMarchingQuadEdgeMeshFilterBase;
   using Superclass = FastMarchingBase<TInput, TOutput>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
-  using Traits = typename Superclass::Traits;
+  using typename Superclass::Traits;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -61,13 +61,13 @@ public:
 
   using InputMeshType = typename Superclass::InputDomainType;
   using InputMeshPointer = typename Superclass::InputDomainPointer;
-  using InputPixelType = typename Superclass::InputPixelType;
+  using typename Superclass::InputPixelType;
   using InputPointType = typename InputMeshType::PointType;
   using InputPointIdentifierType = typename InputMeshType::PointIdentifier;
 
   using OutputMeshType = typename Superclass::OutputDomainType;
   using OutputMeshPointer = typename Superclass::OutputDomainPointer;
-  using OutputPixelType = typename Superclass::OutputPixelType;
+  using typename Superclass::OutputPixelType;
   using OutputPointType = typename OutputMeshType::PointType;
   using OutputVectorType = typename OutputPointType::VectorType;
   using OutputVectorRealType = typename OutputVectorType::RealValueType;
@@ -95,7 +95,7 @@ public:
   //  using NodeContainerPointer = typename Traits::NodeContainerPointer;
   //  using NodeContainerConstIterator = typename Traits::NodeContainerConstIterator;
 
-  using LabelType = typename Superclass::LabelType;
+  using typename Superclass::LabelType;
 
   using NodeLabelMapType = std::map<NodeType, LabelType>;
   using NodeLabelMapIterator = typename NodeLabelMapType::iterator;
@@ -135,11 +135,11 @@ protected:
         const OutputVectorRealType & iF,
         const NodeType &             iId1,
         const OutputPointType &      iP1,
-        const bool &                 iIsFar1,
+        const bool                   iIsFar1,
         const OutputVectorRealType   iVal1,
         const NodeType &             iId2,
         const OutputPointType &      iP2,
-        const bool &                 iIsFar2,
+        const bool                   iIsFar2,
         const OutputVectorRealType & iVal2) const;
 
 

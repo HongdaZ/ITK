@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkGaborImageSource_hxx
 
 #include "itkGaborKernelFunction.h"
-#include "itkGaborImageSource.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkProgressReporter.h"
 #include "itkObjectFactory.h"
@@ -49,7 +48,7 @@ GaborImageSource<TOutputImage>::GenerateData()
 
   // Create and initialize a new Gaussian function
   using KernelFunctionType = GaborKernelFunction<double>;
-  typename KernelFunctionType::Pointer gabor = KernelFunctionType::New();
+  auto gabor = KernelFunctionType::New();
 
   gabor->SetSigma(this->m_Sigma[0]);
   gabor->SetFrequency(this->m_Frequency);

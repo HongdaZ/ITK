@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class BayesianClassifierInitializationImageFilter
+ * \class BayesianClassifierInitializationImageFilter
  *
  * \brief This filter is intended to be used as a helper class to
  * initialize the BayesianClassifierImageFilter.
@@ -78,7 +78,7 @@ class ITK_TEMPLATE_EXPORT BayesianClassifierInitializationImageFilter
   : public ImageToImageFilter<TInputImage, VectorImage<TProbabilityPrecisionType, TInputImage::ImageDimension>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BayesianClassifierInitializationImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BayesianClassifierInitializationImageFilter);
 
   /** Standard class type aliases. */
   using Self = BayesianClassifierInitializationImageFilter;
@@ -86,7 +86,7 @@ public:
   using ProbabilityPrecisionType = TProbabilityPrecisionType;
 
   /** Dimension of the input image */
-  static constexpr unsigned int Dimension = InputImageType ::ImageDimension;
+  static constexpr unsigned int Dimension = InputImageType::ImageDimension;
 
   using OutputImageType = VectorImage<ProbabilityPrecisionType, Self::Dimension>;
   using Superclass = ImageToImageFilter<InputImageType, OutputImageType>;
@@ -131,7 +131,7 @@ public:
    * are Gaussian density functions centered around the K-means of the
    * input image.  */
   virtual void
-  SetMembershipFunctions(MembershipFunctionContainerType * densityFunctionContainer);
+  SetMembershipFunctions(MembershipFunctionContainerType * membershipFunction);
   itkGetModifiableObjectMacro(MembershipFunctionContainer, MembershipFunctionContainerType);
 
   /** Set/Get methods for the number of classes. The user must supply this. */

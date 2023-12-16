@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@ itkBinaryMorphologicalClosingImageFilterTest(int argc, char * argv[])
   using OutputImageType = itk::Image<OutputPixelType, dim>;
 
   using ReaderType = itk::ImageFileReader<InputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
   using KernelType = itk::BinaryBallStructuringElement<InputPixelType, dim>;
@@ -55,10 +55,10 @@ itkBinaryMorphologicalClosingImageFilterTest(int argc, char * argv[])
   ball.CreateStructuringElement();
 
   using FilterType = itk::BinaryMorphologicalClosingImageFilter<InputImageType, OutputImageType, KernelType>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
   filter->SetInput(reader->GetOutput());
   filter->SetKernel(ball);
-  // test the default attribute values, and exercise the accesors
+  // test the default attribute values, and exercise the accessors
   if (!filter->GetSafeBorder())
   {
     std::cerr << "Wrong SafeBorder default value" << std::endl;
@@ -78,7 +78,7 @@ itkBinaryMorphologicalClosingImageFilterTest(int argc, char * argv[])
   itk::SimpleFilterWatcher watcher(filter, "filter");
 
   using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(filter->GetOutput());
   writer->SetFileName(argv[2]);
 

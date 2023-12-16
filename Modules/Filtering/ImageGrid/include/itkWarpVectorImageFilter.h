@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class WarpVectorImageFilter
+ * \class WarpVectorImageFilter
  * \brief Warps an image using an input displacement field.
  *
  * WarpVectorImageFilter warps an existing image with respect to
@@ -89,7 +89,7 @@ template <typename TInputImage, typename TOutputImage, typename TDisplacementFie
 class ITK_TEMPLATE_EXPORT WarpVectorImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WarpVectorImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(WarpVectorImageFilter);
 
   /** Standard class type aliases. */
   using Self = WarpVectorImageFilter;
@@ -107,11 +107,11 @@ public:
   using OutputImageRegionType = typename TOutputImage::RegionType;
 
   /** Inherit some types from the superclass. */
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
+  using typename Superclass::InputImageType;
+  using typename Superclass::InputImagePointer;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::OutputImagePointer;
+  using typename Superclass::InputImageConstPointer;
 
   using IndexType = typename OutputImageType::IndexType;
   using SizeType = typename OutputImageType::SizeType;
@@ -161,7 +161,7 @@ public:
   /** Set the output image spacing. */
   itkSetMacro(OutputSpacing, SpacingType);
   virtual void
-  SetOutputSpacing(const double * values);
+  SetOutputSpacing(const double * spacing);
 
   /** Get the output image spacing. */
   itkGetConstReferenceMacro(OutputSpacing, SpacingType);
@@ -169,7 +169,7 @@ public:
   /** Set the output image origin. */
   itkSetMacro(OutputOrigin, PointType);
   virtual void
-  SetOutputOrigin(const double * values);
+  SetOutputOrigin(const double * origin);
 
   /** Get the output image origin. */
   itkGetConstReferenceMacro(OutputOrigin, PointType);

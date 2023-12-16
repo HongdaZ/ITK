@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,9 @@
 #ifndef itkImageToImageMetric_hxx
 #define itkImageToImageMetric_hxx
 
-#include "itkImageToImageMetric.h"
 #include "itkImageRandomConstIteratorWithIndex.h"
 #include "itkMath.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 namespace itk
 {
@@ -37,8 +37,6 @@ ImageToImageMetric<TFixedImage, TMovingImage>::ImageToImageMetric()
   m_MovingImage(nullptr)
   , // has to be provided by the user.
   m_Transform(nullptr)
-  , // has to be provided by the user.
-  m_ThreaderTransform(nullptr)
   , // constructed at initialization.
   m_Interpolator(nullptr)
   , // metric computes gradient by default
@@ -55,13 +53,11 @@ ImageToImageMetric<TFixedImage, TMovingImage>::ImageToImageMetric()
   , m_BSplineParametersOffset()
   , m_BSplineTransformWeights()
   , m_BSplineTransformIndices()
-  , m_ThreaderBSplineTransformWeights(nullptr)
-  , m_ThreaderBSplineTransformIndices(nullptr)
   , m_BSplineInterpolator(nullptr)
   , m_DerivativeCalculator(nullptr)
   , m_Threader(MultiThreaderType::New())
 {
-  m_ConstSelfWrapper = new ConstantPointerWrapper(this);
+  m_ConstSelfWrapper = std::make_unique<ConstantPointerWrapper>(this);
   this->m_NumberOfWorkUnits = this->m_Threader->GetNumberOfWorkUnits();
 
   /* if 100% backward compatible, we should include this...but...
@@ -75,23 +71,6 @@ ImageToImageMetric<TFixedImage, TMovingImage>::ImageToImageMetric()
   */
 }
 
-template <typename TFixedImage, typename TMovingImage>
-ImageToImageMetric<TFixedImage, TMovingImage>::~ImageToImageMetric()
-{
-  delete m_ConstSelfWrapper;
-
-  delete[] m_ThreaderNumberOfMovingImageSamples;
-  m_ThreaderNumberOfMovingImageSamples = nullptr;
-
-  delete[] m_ThreaderTransform;
-  m_ThreaderTransform = nullptr;
-
-  delete[] this->m_ThreaderBSplineTransformWeights;
-  this->m_ThreaderBSplineTransformWeights = nullptr;
-
-  delete[] this->m_ThreaderBSplineTransformIndices;
-  this->m_ThreaderBSplineTransformIndices = nullptr;
-}
 
 /**
  * Set the number of work units. This will be clamped by the
@@ -99,9 +78,9 @@ ImageToImageMetric<TFixedImage, TMovingImage>::~ImageToImageMetric()
  */
 template <typename TFixedImage, typename TMovingImage>
 void
-ImageToImageMetric<TFixedImage, TMovingImage>::SetNumberOfWorkUnits(ThreadIdType numberOfThreads)
+ImageToImageMetric<TFixedImage, TMovingImage>::SetNumberOfWorkUnits(ThreadIdType numberOfWorkUnits)
 {
-  m_Threader->SetNumberOfWorkUnits(numberOfThreads);
+  m_Threader->SetNumberOfWorkUnits(numberOfWorkUnits);
   m_NumberOfWorkUnits = m_Threader->GetNumberOfWorkUnits();
 }
 
@@ -141,7 +120,7 @@ ImageToImageMetric<TFixedImage, TMovingImage>::SetFixedImageIndexes(const FixedI
   this->SetUseFixedImageIndexes(true);
   m_NumberOfFixedImageSamples = indexes.size();
   m_FixedImageIndexes.resize(m_NumberOfFixedImageSamples);
-  for (unsigned int i = 0; i < m_NumberOfFixedImageSamples; i++)
+  for (unsigned int i = 0; i < m_NumberOfFixedImageSamples; ++i)
   {
     m_FixedImageIndexes[i] = indexes[i];
   }
@@ -278,16 +257,10 @@ ImageToImageMetric<TFixedImage, TMovingImage>::Initialize()
   }
 
   // If the image is provided by a source, update the source.
-  if (m_MovingImage->GetSource())
-  {
-    m_MovingImage->GetSource()->Update();
-  }
+  m_MovingImage->UpdateSource();
 
   // If the image is provided by a source, update the source.
-  if (m_FixedImage->GetSource())
-  {
-    m_FixedImage->GetSource()->Update();
-  }
+  m_FixedImage->UpdateSource();
 
   // The use of FixedImageIndexes and the use of FixedImageRegion
   // are mutually exclusive, so they should not both be checked.
@@ -333,12 +306,10 @@ ImageToImageMetric<TFixedImage, TMovingImage>::MultiThreadingInitialize()
 {
   this->SetNumberOfWorkUnits(m_NumberOfWorkUnits);
 
-  delete[] m_ThreaderNumberOfMovingImageSamples;
-  m_ThreaderNumberOfMovingImageSamples = new unsigned int[m_NumberOfWorkUnits - 1];
+  m_ThreaderNumberOfMovingImageSamples = make_unique_for_overwrite<unsigned int[]>(m_NumberOfWorkUnits - 1);
 
   // Allocate the array of transform clones to be used in every thread
-  delete[] m_ThreaderTransform;
-  m_ThreaderTransform = new TransformPointer[m_NumberOfWorkUnits - 1];
+  m_ThreaderTransform = make_unique_for_overwrite<TransformPointer[]>(m_NumberOfWorkUnits - 1);
   for (ThreadIdType ithread = 0; ithread < m_NumberOfWorkUnits - 1; ++ithread)
   {
     this->m_ThreaderTransform[ithread] = this->m_Transform->Clone();
@@ -426,7 +397,7 @@ ImageToImageMetric<TFixedImage, TMovingImage>::MultiThreadingInitialize()
   else
   {
     m_BSplineTransform = testPtr2;
-    m_NumBSplineWeights = m_BSplineTransform->GetNumberOfWeights();
+    m_NumBSplineWeights = BSplineTransformType::NumberOfWeights;
     itkDebugMacro("Transform is BSplineDeformable");
   }
 
@@ -437,14 +408,9 @@ ImageToImageMetric<TFixedImage, TMovingImage>::MultiThreadingInitialize()
     this->m_BSplineTransformIndicesArray.SetSize(1, 1);
     this->m_BSplinePreTransformPointsArray.resize(1);
     this->m_WithinBSplineSupportRegionArray.resize(1);
-    this->m_BSplineTransformWeights.SetSize(1);
-    this->m_BSplineTransformIndices.SetSize(1);
 
-    delete[] this->m_ThreaderBSplineTransformWeights;
-    this->m_ThreaderBSplineTransformWeights = nullptr;
-
-    delete[] this->m_ThreaderBSplineTransformIndices;
-    this->m_ThreaderBSplineTransformIndices = nullptr;
+    this->m_ThreaderBSplineTransformWeights.reset();
+    this->m_ThreaderBSplineTransformIndices.reset();
 
     if (this->m_UseCachingOfBSplineWeights)
     {
@@ -457,20 +423,13 @@ ImageToImageMetric<TFixedImage, TMovingImage>::MultiThreadingInitialize()
     }
     else
     {
-      this->m_BSplineTransformWeights.SetSize(this->m_NumBSplineWeights);
-      this->m_BSplineTransformIndices.SetSize(this->m_NumBSplineWeights);
-
-      this->m_ThreaderBSplineTransformWeights = new BSplineTransformWeightsType[m_NumberOfWorkUnits - 1];
-      this->m_ThreaderBSplineTransformIndices = new BSplineTransformIndexArrayType[m_NumberOfWorkUnits - 1];
-
-      for (ThreadIdType ithread = 0; ithread < m_NumberOfWorkUnits - 1; ++ithread)
-      {
-        this->m_ThreaderBSplineTransformWeights[ithread].SetSize(this->m_NumBSplineWeights);
-        this->m_ThreaderBSplineTransformIndices[ithread].SetSize(this->m_NumBSplineWeights);
-      }
+      this->m_ThreaderBSplineTransformWeights =
+        make_unique_for_overwrite<BSplineTransformWeightsType[]>(m_NumberOfWorkUnits - 1);
+      this->m_ThreaderBSplineTransformIndices =
+        make_unique_for_overwrite<BSplineTransformIndexArrayType[]>(m_NumberOfWorkUnits - 1);
     }
 
-    for (unsigned int j = 0; j < FixedImageDimension; j++)
+    for (unsigned int j = 0; j < FixedImageDimension; ++j)
     {
       this->m_BSplineParametersOffset[j] = j * this->m_BSplineTransform->GetNumberOfParametersPerDimension();
     }
@@ -493,16 +452,16 @@ ImageToImageMetric<TFixedImage, TMovingImage>::SampleFixedImageIndexes(FixedImag
   }
 
   iter = samples.begin();
-  for (SizeValueType i = 0; i < len; i++)
+  for (SizeValueType i = 0; i < len; ++i)
   {
     // Get sampled index
     FixedImageIndexType index = m_FixedImageIndexes[i];
     // Translate index to point
-    m_FixedImage->TransformIndexToPhysicalPoint(index, (*iter).point);
+    m_FixedImage->TransformIndexToPhysicalPoint(index, iter->point);
 
     // Get sampled fixed image value
-    (*iter).value = m_FixedImage->GetPixel(index);
-    (*iter).valueIndex = 0;
+    iter->value = m_FixedImage->GetPixel(index);
+    iter->valueIndex = 0;
 
     ++iter;
   }
@@ -554,9 +513,9 @@ ImageToImageMetric<TFixedImage, TMovingImage>::SampleFixedImageRegion(FixedImage
         SizeValueType count = 0;
         while (iter != end)
         {
-          (*iter).point = samples[count].point;
-          (*iter).value = samples[count].value;
-          (*iter).valueIndex = 0;
+          iter->point = samples[count].point;
+          iter->value = samples[count].value;
+          iter->valueIndex = 0;
           ++count;
           if (count >= samplesFound)
           {
@@ -597,10 +556,10 @@ ImageToImageMetric<TFixedImage, TMovingImage>::SampleFixedImageRegion(FixedImage
       }
 
       // Translate index to point
-      (*iter).point = inputPoint;
+      iter->point = inputPoint;
       // Get sampled fixed image value
-      (*iter).value = randIter.Get();
-      (*iter).valueIndex = 0;
+      iter->value = randIter.Get();
+      iter->valueIndex = 0;
 
       ++samplesFound;
       ++randIter;
@@ -616,10 +575,10 @@ ImageToImageMetric<TFixedImage, TMovingImage>::SampleFixedImageRegion(FixedImage
       // Get sampled index
       FixedImageIndexType index = randIter.GetIndex();
       // Translate index to point
-      m_FixedImage->TransformIndexToPhysicalPoint(index, (*iter).point);
+      m_FixedImage->TransformIndexToPhysicalPoint(index, iter->point);
       // Get sampled fixed image value
-      (*iter).value = randIter.Get();
-      (*iter).valueIndex = 0;
+      iter->value = randIter.Get();
+      iter->valueIndex = 0;
 
       // Jump to random position
       ++randIter;
@@ -686,10 +645,10 @@ ImageToImageMetric<TFixedImage, TMovingImage>::SampleFullFixedImageRegion(FixedI
       }
 
       // Translate index to point
-      (*iter).point = inputPoint;
+      iter->point = inputPoint;
       // Get sampled fixed image value
-      (*iter).value = regionIter.Get();
-      (*iter).valueIndex = 0;
+      iter->value = regionIter.Get();
+      iter->valueIndex = 0;
 
       ++regionIter;
       if (regionIter.IsAtEnd())
@@ -707,10 +666,10 @@ ImageToImageMetric<TFixedImage, TMovingImage>::SampleFullFixedImageRegion(FixedI
       FixedImageIndexType index = regionIter.GetIndex();
 
       // Translate index to point
-      m_FixedImage->TransformIndexToPhysicalPoint(index, (*iter).point);
+      m_FixedImage->TransformIndexToPhysicalPoint(index, iter->point);
       // Get sampled fixed image value
-      (*iter).value = regionIter.Get();
-      (*iter).valueIndex = 0;
+      iter->value = regionIter.Get();
+      iter->valueIndex = 0;
 
       ++regionIter;
       if (regionIter.IsAtEnd())
@@ -734,7 +693,7 @@ ImageToImageMetric<TFixedImage, TMovingImage>::ComputeGradient()
 
   const typename MovingImageType::SpacingType & spacing = m_MovingImage->GetSpacing();
   double                                        maximumSpacing = 0.0;
-  for (unsigned int i = 0; i < MovingImageDimension; i++)
+  for (unsigned int i = 0; i < MovingImageDimension; ++i)
   {
     if (spacing[i] > maximumSpacing)
     {
@@ -797,8 +756,8 @@ ImageToImageMetric<TFixedImage, TMovingImage>::PreComputeTransformValues()
   m_Transform->SetParameters(dummyParameters);
 
   // Cycle through each sampled fixed image point
-  BSplineTransformWeightsType    weights(m_NumBSplineWeights);
-  BSplineTransformIndexArrayType indices(m_NumBSplineWeights);
+  BSplineTransformWeightsType    weights;
+  BSplineTransformIndexArrayType indices;
   bool                           valid;
   MovingImagePointType           mappedPoint;
 
@@ -811,7 +770,7 @@ ImageToImageMetric<TFixedImage, TMovingImage>::PreComputeTransformValues()
   {
     m_BSplineTransform->TransformPoint(m_FixedImageSamples[counter].point, mappedPoint, weights, indices, valid);
 
-    for (SizeValueType k = 0; k < m_NumBSplineWeights; k++)
+    for (SizeValueType k = 0; k < m_NumBSplineWeights; ++k)
     {
       m_BSplineTransformWeightsArray[counter][k] = weights[k];
       m_BSplineTransformIndicesArray[counter][k] = indices[k];
@@ -868,15 +827,15 @@ ImageToImageMetric<TFixedImage, TMovingImage>::TransformPoint(unsigned int      
         const WeightsValueType * weights = m_BSplineTransformWeightsArray[sampleNumber];
         const IndexValueType *   indices = m_BSplineTransformIndicesArray[sampleNumber];
 
-        for (unsigned int j = 0; j < FixedImageDimension; j++)
+        for (unsigned int j = 0; j < FixedImageDimension; ++j)
         {
           mappedPoint[j] = m_BSplinePreTransformPointsArray[sampleNumber][j];
         }
 
         const ParametersType & LocalParameters = m_Transform->GetParameters();
-        for (unsigned int k = 0; k < m_NumBSplineWeights; k++)
+        for (unsigned int k = 0; k < m_NumBSplineWeights; ++k)
         {
-          for (unsigned int j = 0; j < FixedImageDimension; j++)
+          for (unsigned int j = 0; j < FixedImageDimension; ++j)
           {
             mappedPoint[j] += weights[k] * LocalParameters[indices[k] + m_BSplineParametersOffset[j]];
           }
@@ -983,14 +942,14 @@ ImageToImageMetric<TFixedImage, TMovingImage>::TransformPointWithDerivatives(uns
         const IndexValueType *   indices = m_BSplineTransformIndicesArray[sampleNumber];
 
         const ParametersType & Local_Parameters = this->m_Transform->GetParameters();
-        for (unsigned int j = 0; j < FixedImageDimension; j++)
+        for (unsigned int j = 0; j < FixedImageDimension; ++j)
         {
           mappedPoint[j] = m_BSplinePreTransformPointsArray[sampleNumber][j];
         }
 
-        for (unsigned int k = 0; k < m_NumBSplineWeights; k++)
+        for (unsigned int k = 0; k < m_NumBSplineWeights; ++k)
         {
-          for (unsigned int j = 0; j < FixedImageDimension; j++)
+          for (unsigned int j = 0; j < FixedImageDimension; ++j)
           {
             mappedPoint[j] += weights[k] * Local_Parameters[indices[k] + m_BSplineParametersOffset[j]];
           }
@@ -1075,8 +1034,8 @@ ImageToImageMetric<TFixedImage, TMovingImage>::ComputeImageDerivatives(const Mov
   {
     if (m_ComputeGradient)
     {
-      ContinuousIndex<double, MovingImageDimension> tempIndex;
-      m_MovingImage->TransformPhysicalPointToContinuousIndex(mappedPoint, tempIndex);
+      const ContinuousIndex<double, MovingImageDimension> tempIndex =
+        m_MovingImage->template TransformPhysicalPointToContinuousIndex<double>(mappedPoint);
       MovingImageIndexType mappedIndex;
       mappedIndex.CopyWithRound(tempIndex);
       gradient = m_GradientImage->GetPixel(mappedIndex);
@@ -1095,10 +1054,10 @@ ImageToImageMetric<TFixedImage, TMovingImage>::GetValueMultiThreadedInitiate() c
 {
   this->SynchronizeTransforms();
 
-  m_Threader->SetSingleMethod(GetValueMultiThreaded, static_cast<void *>(m_ConstSelfWrapper));
+  m_Threader->SetSingleMethod(GetValueMultiThreaded, static_cast<void *>(m_ConstSelfWrapper.get()));
   m_Threader->SingleMethodExecute();
 
-  for (ThreadIdType threadId = 0; threadId < m_NumberOfWorkUnits - 1; threadId++)
+  for (ThreadIdType threadId = 0; threadId < m_NumberOfWorkUnits - 1; ++threadId)
   {
     this->m_NumberOfPixelsCounted += m_ThreaderNumberOfMovingImageSamples[threadId];
   }
@@ -1108,7 +1067,7 @@ template <typename TFixedImage, typename TMovingImage>
 void
 ImageToImageMetric<TFixedImage, TMovingImage>::GetValueMultiThreadedPostProcessInitiate() const
 {
-  m_Threader->SetSingleMethod(GetValueMultiThreadedPostProcess, static_cast<void *>(m_ConstSelfWrapper));
+  m_Threader->SetSingleMethod(GetValueMultiThreadedPostProcess, static_cast<void *>(m_ConstSelfWrapper.get()));
   m_Threader->SingleMethodExecute();
 }
 
@@ -1200,10 +1159,10 @@ ImageToImageMetric<TFixedImage, TMovingImage>::GetValueAndDerivativeMultiThreade
 {
   this->SynchronizeTransforms();
 
-  m_Threader->SetSingleMethod(GetValueAndDerivativeMultiThreaded, static_cast<void *>(m_ConstSelfWrapper));
+  m_Threader->SetSingleMethod(GetValueAndDerivativeMultiThreaded, static_cast<void *>(m_ConstSelfWrapper.get()));
   m_Threader->SingleMethodExecute();
 
-  for (ThreadIdType threadId = 0; threadId < m_NumberOfWorkUnits - 1; threadId++)
+  for (ThreadIdType threadId = 0; threadId < m_NumberOfWorkUnits - 1; ++threadId)
   {
     this->m_NumberOfPixelsCounted += m_ThreaderNumberOfMovingImageSamples[threadId];
   }
@@ -1213,7 +1172,8 @@ template <typename TFixedImage, typename TMovingImage>
 void
 ImageToImageMetric<TFixedImage, TMovingImage>::GetValueAndDerivativeMultiThreadedPostProcessInitiate() const
 {
-  m_Threader->SetSingleMethod(GetValueAndDerivativeMultiThreadedPostProcess, static_cast<void *>(m_ConstSelfWrapper));
+  m_Threader->SetSingleMethod(GetValueAndDerivativeMultiThreadedPostProcess,
+                              static_cast<void *>(m_ConstSelfWrapper.get()));
   m_Threader->SingleMethodExecute();
 }
 
@@ -1352,9 +1312,10 @@ ImageToImageMetric<TFixedImage, TMovingImage>::PrintSelf(std::ostream & os, Inde
   os << indent << "ThreaderNumberOfMovingImageSamples: " << std::endl;
   if (m_ThreaderNumberOfMovingImageSamples)
   {
-    for (ThreadIdType i = 0; i < m_NumberOfWorkUnits - 1; i++)
+    for (ThreadIdType i = 0; i < m_NumberOfWorkUnits - 1; ++i)
     {
-      os << "  Thread[" << i << "]= " << (unsigned int)m_ThreaderNumberOfMovingImageSamples[i] << std::endl;
+      os << "  Thread[" << i << "]= " << static_cast<unsigned int>(m_ThreaderNumberOfMovingImageSamples[i])
+         << std::endl;
     }
   }
 
@@ -1382,7 +1343,7 @@ template <typename TFixedImage, typename TMovingImage>
 void
 ImageToImageMetric<TFixedImage, TMovingImage>::SynchronizeTransforms() const
 {
-  for (ThreadIdType threadId = 0; threadId < m_NumberOfWorkUnits - 1; threadId++)
+  for (ThreadIdType threadId = 0; threadId < m_NumberOfWorkUnits - 1; ++threadId)
   {
     /** Set the fixed parameters first. Some transforms have parameters which depend on
         the values of the fixed parameters. For instance, the BSplineTransform

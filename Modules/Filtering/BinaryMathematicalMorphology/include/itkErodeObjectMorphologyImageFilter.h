@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class ErodeObjectMorphologyImageFilter
+ * \class ErodeObjectMorphologyImageFilter
  * \brief Erosion of an object in an image
  *
  * Erosion of an image using binary morphology.
@@ -48,7 +48,7 @@ class ITK_TEMPLATE_EXPORT ErodeObjectMorphologyImageFilter
   : public ObjectMorphologyImageFilter<TInputImage, TOutputImage, TKernel>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ErodeObjectMorphologyImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ErodeObjectMorphologyImageFilter);
 
   /** Standard class type aliases. */
   using Self = ErodeObjectMorphologyImageFilter;
@@ -63,7 +63,7 @@ public:
   itkTypeMacro(ErodeObjectMorphologyImageFilter, ObjectMorphologyImageFilter);
 
   /** Declaration of Pixel Type */
-  using PixelType = typename Superclass::PixelType;
+  using typename Superclass::PixelType;
 
   /** Kernel type alias */
   using KernelType = TKernel;
@@ -74,7 +74,7 @@ public:
   using OutputNeighborhoodIteratorType = NeighborhoodIterator<TOutputImage>;
 
   /** Default boundary condition type */
-  using DefaultBoundaryConditionType = typename Superclass::DefaultBoundaryConditionType;
+  using typename Superclass::DefaultBoundaryConditionType;
 
   /** Set the object's value. Added for API consistency with itkBinaryErode
     filter */

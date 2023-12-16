@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,9 @@ itkCannyEdgeDetectionImageFilterTest2(int argc, char * argv[])
 {
   if (argc < 4)
   {
-    std::cerr << "Usage: " << argv[0] << " InputImage OutputImage1 OutputImage2" << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " InputImage OutputImage1 OutputImage2" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -44,7 +46,7 @@ itkCannyEdgeDetectionImageFilterTest2(int argc, char * argv[])
   reader->SetFileName(argv[1]);
 
   // Set up the filter
-  CannyEdgeDetectionImageFilterType::Pointer filter = CannyEdgeDetectionImageFilterType::New();
+  auto filter = CannyEdgeDetectionImageFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, CannyEdgeDetectionImageFilter, ImageToImageFilter);
 
@@ -58,11 +60,11 @@ itkCannyEdgeDetectionImageFilterTest2(int argc, char * argv[])
   filter->SetLowerThreshold(lowerThreshold);
   ITK_TEST_SET_GET_VALUE(lowerThreshold, filter->GetLowerThreshold());
 
-  CannyEdgeDetectionImageFilterType::ArrayType variance = 1.0f;
+  CannyEdgeDetectionImageFilterType::ArrayType variance(1.0f);
   filter->SetVariance(variance);
   ITK_TEST_SET_GET_VALUE(variance, filter->GetVariance());
 
-  CannyEdgeDetectionImageFilterType::ArrayType maximumError = .01f;
+  CannyEdgeDetectionImageFilterType::ArrayType maximumError(.01f);
   filter->SetMaximumError(maximumError);
   ITK_TEST_SET_GET_VALUE(maximumError, filter->GetMaximumError());
 

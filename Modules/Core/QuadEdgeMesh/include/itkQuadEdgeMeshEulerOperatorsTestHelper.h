@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ AssertTopologicalInvariants(TMesh *        mesh,
                             IdentifierType Genus)
 {
   using CheckerType = itk::QuadEdgeMeshTopologyChecker<TMesh>;
-  typename CheckerType::Pointer check = CheckerType::New();
+  auto check = CheckerType::New();
   check->SetMesh(mesh);
   check->SetExpectedNumberOfPoints(NumVertices);
   check->SetExpectedNumberOfEdges(NumFaces);
@@ -46,15 +46,15 @@ AssertTopologicalInvariants(TMesh *        mesh,
 //----------------------------------------------------------------------------
 template <typename TMesh>
 std::vector<typename TMesh::PointType>
-GeneratePointCoordinates(const unsigned int & iN)
+GeneratePointCoordinates(const unsigned int iN)
 {
   using PointType = typename TMesh::PointType;
   using CoordRepType = typename PointType::CoordRepType;
   std::vector<PointType> oPt(iN * iN);
 
-  for (unsigned int i = 0; i < iN; i++)
+  for (unsigned int i = 0; i < iN; ++i)
   {
-    for (unsigned int j = 0; j < iN; j++)
+    for (unsigned int j = 0; j < iN; ++j)
     {
       oPt[i * iN + j][0] = static_cast<CoordRepType>(j);
       oPt[i * iN + j][1] = static_cast<CoordRepType>(i);
@@ -92,7 +92,7 @@ CreateSquareQuadMesh(typename TMesh::Pointer mesh)
 
   std::vector<PointType> pts = GeneratePointCoordinates<MeshType>(5);
 
-  for (int i = 0; i < expectedNumPts; i++)
+  for (int i = 0; i < expectedNumPts; ++i)
   {
     mesh->SetPoint(i, pts[i]);
   }
@@ -100,7 +100,7 @@ CreateSquareQuadMesh(typename TMesh::Pointer mesh)
   typename CellType::CellAutoPointer cellpointer;
   QEPolygonCellType *                poly;
 
-  for (int i = 0; i < expectedNumCells; i++)
+  for (int i = 0; i < expectedNumCells; ++i)
   {
     poly = new QEPolygonCellType(4);
     cellpointer.TakeOwnership(poly);
@@ -140,7 +140,7 @@ CreateSquareTriangularMesh(typename TMesh::Pointer mesh)
   using PointType = typename TMesh::PointType;
   std::vector<PointType> pts = GeneratePointCoordinates<TMesh>(5);
 
-  for (int i = 0; i < expectedNumPts; i++)
+  for (int i = 0; i < expectedNumPts; ++i)
   {
     mesh->SetPoint(i, pts[i]);
   }
@@ -148,7 +148,7 @@ CreateSquareTriangularMesh(typename TMesh::Pointer mesh)
   typename CellType::CellAutoPointer cellpointer;
   QEPolygonCellType *                poly;
 
-  for (int i = 0; i < expectedNumCells; i++)
+  for (int i = 0; i < expectedNumCells; ++i)
   {
     poly = new QEPolygonCellType(3);
     cellpointer.TakeOwnership(poly);
@@ -196,7 +196,7 @@ CreateTetraedronMesh(typename TMesh::Pointer mesh)
   pts[i][1] = 0.;
   pts[i++][2] = 1.;
 
-  for (i = 0; i < expectedNumPts; i++)
+  for (i = 0; i < expectedNumPts; ++i)
   {
     mesh->SetPoint(i, pts[i]);
   }
@@ -204,7 +204,7 @@ CreateTetraedronMesh(typename TMesh::Pointer mesh)
   typename CellType::CellAutoPointer cellpointer;
   QEPolygonCellType *                poly;
 
-  for (i = 0; i < expectedNumCells; i++)
+  for (i = 0; i < expectedNumCells; ++i)
   {
     poly = new QEPolygonCellType(3);
     cellpointer.TakeOwnership(poly);
@@ -250,7 +250,7 @@ CreateSamosa(typename TMesh::Pointer mesh)
   pts[i][1] = 0.;
   pts[i++][2] = 0.;
 
-  for (i = 0; i < expectedNumPts; i++)
+  for (i = 0; i < expectedNumPts; ++i)
   {
     mesh->SetPoint(i, pts[i]);
   }
@@ -258,7 +258,7 @@ CreateSamosa(typename TMesh::Pointer mesh)
   typename CellType::CellAutoPointer cellpointer;
   QEPolygonCellType *                poly;
 
-  for (i = 0; i < expectedNumCells; i++)
+  for (i = 0; i < expectedNumCells; ++i)
   {
     poly = new QEPolygonCellType(3);
     cellpointer.TakeOwnership(poly);

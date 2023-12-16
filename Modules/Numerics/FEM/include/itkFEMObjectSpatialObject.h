@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ template <unsigned int TDimension = 3>
 class ITK_TEMPLATE_EXPORT FEMObjectSpatialObject : public SpatialObject<TDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FEMObjectSpatialObject);
+  ITK_DISALLOW_COPY_AND_MOVE(FEMObjectSpatialObject);
 
   using Self = FEMObjectSpatialObject<TDimension>;
   using Superclass = SpatialObject<TDimension>;
@@ -57,11 +57,11 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(FEMObjectSpatialObject, SpatialObject);
 
-  /** Set the femobject. */
+  /** Set the FEM object in the spatial object. */
   void
   SetFEMObject(FEMObjectType * femobject);
 
-  /** Get a pointer to the femobject currently attached to the object. */
+  /** Get a pointer to the FEM object currently attached to the object. */
   FEMObjectType *
   GetFEMObject()
   {
@@ -72,7 +72,6 @@ public:
   {
     return m_FEMObject.GetPointer();
   }
-
 
   /** Returns the latest modified time of the object and its component. */
   ModifiedTimeType

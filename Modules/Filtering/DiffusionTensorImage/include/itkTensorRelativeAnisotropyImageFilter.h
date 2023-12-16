@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,16 +35,12 @@ public:
   TensorRelativeAnisotropyFunction() = default;
   ~TensorRelativeAnisotropyFunction() = default;
   bool
-  operator!=(const TensorRelativeAnisotropyFunction &) const
+  operator==(const TensorRelativeAnisotropyFunction &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const TensorRelativeAnisotropyFunction & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(TensorRelativeAnisotropyFunction);
 
   inline RealValueType
   operator()(const TInput & x) const
@@ -57,7 +53,7 @@ public:
 /** \class TensorRelativeAnisotropyImageFilter
  * \brief Computes the Relative Anisotropy for every pixel of a input tensor image.
  *
- * TensorRelativeAnisotropyImageFilter applies pixel-wise the invokation for
+ * TensorRelativeAnisotropyImageFilter applies pixel-wise the invocation for
  * computing the relative anisotropy of every pixel. The pixel type of the
  * input image is expected to implement a method GetRelativeAnisotropy(), and
  * to specify its return type as  RealValueType.
@@ -78,7 +74,7 @@ class TensorRelativeAnisotropyImageFilter
                                    Functor::TensorRelativeAnisotropyFunction<typename TInputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TensorRelativeAnisotropyImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(TensorRelativeAnisotropyImageFilter);
 
   /** Standard class type aliases. */
   using Self = TensorRelativeAnisotropyImageFilter;
@@ -90,7 +86,7 @@ public:
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
-  using OutputImageType = typename Superclass::OutputImageType;
+  using typename Superclass::OutputImageType;
   using OutputPixelType = typename TOutputImage::PixelType;
   using InputPixelType = typename TInputImage::PixelType;
   using InputValueType = typename InputPixelType::ValueType;

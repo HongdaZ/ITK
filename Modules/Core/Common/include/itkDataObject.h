@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@ class ITK_FORWARD_EXPORT DataObject;
 /*--------------------Data Object Exceptions---------------------------*/
 
 /**
- *\class DataObjectError
+ * \class DataObjectError
  * \brief Exception object for DataObject exceptions.
  * \ingroup ITKCommon
  */
@@ -100,7 +100,7 @@ private:
 };
 
 /**
- *\class InvalidRequestRegionError
+ * \class InvalidRequestRegionError
  *  \brief Exception object for invalid requested region.
  *
  * Exception object for invalid requested region.
@@ -144,7 +144,7 @@ protected:
 /*----------------------------Data Object--------------------------------*/
 
 /**
- *\class DataObject
+ * \class DataObject
  * \brief Base class for all data objects in ITK.
  *
  * This is the base class for all data objects in the Insight data
@@ -290,7 +290,7 @@ protected:
 class ITK_FORCE_EXPORT_MACRO(ITKCommon) DataObject : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DataObject);
+  ITK_DISALLOW_COPY_AND_MOVE(DataObject);
 
   /** Standard class type aliases. */
   using Self = DataObject;
@@ -332,6 +332,10 @@ public:
   using DataObjectPointerArraySizeType = std::vector<Pointer>::size_type;
   DataObjectPointerArraySizeType
   GetSourceOutputIndex() const;
+
+  /** Does an Update() of its source, if it has one. Does nothing, otherwise. */
+  void
+  UpdateSource() const;
 
   /** Restore the data object to its initial state. This means releasing
    * memory. */
@@ -408,7 +412,7 @@ public:
    * a derived class is assumed to call its source's
    * ProcessObject::UpdateOutputInformation() which determines modified
    * times, LargestPossibleRegions, and any extra meta data like spacing,
-   * origin, etc. Default implementation simply call's it's source's
+   * origin, etc. Default implementation simply calls its source's
    * UpdateOutputInformation(). */
   virtual void
   UpdateOutputInformation();
@@ -579,7 +583,7 @@ private:
    * indicates which of the source's outputs corresponds to this data
    * object. */
   bool
-  ConnectSource(ProcessObject * s, const DataObjectIdentifierType & name);
+  ConnectSource(ProcessObject * arg, const DataObjectIdentifierType & name);
 
   /** Disconnect the specified process object from the data
    * object. This should only be called from a process object. An
@@ -590,7 +594,7 @@ private:
    * match the name cached when the data object was connected to the
    * pipeline (see ConnectSource), then nothing is done. */
   bool
-  DisconnectSource(ProcessObject * s, const DataObjectIdentifierType & name);
+  DisconnectSource(ProcessObject * arg, const DataObjectIdentifierType & name);
 
   /** Only used to synchronize the global variable across static libraries.*/
   itkGetGlobalDeclarationMacro(bool, GlobalReleaseDataFlag);

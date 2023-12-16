@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,7 +51,7 @@ template <typename TMeasurementVector>
 class ITK_TEMPLATE_EXPORT ListSample : public Sample<TMeasurementVector>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ListSample);
+  ITK_DISALLOW_COPY_AND_MOVE(ListSample);
 
   /** Standard class type alias. */
   using Self = ListSample;
@@ -66,12 +66,12 @@ public:
   itkNewMacro(Self);
 
   /** Typedefs inherited from the superclass */
-  using MeasurementVectorType = typename Superclass::MeasurementVectorType;
-  using MeasurementVectorSizeType = typename Superclass::MeasurementVectorSizeType;
-  using MeasurementType = typename Superclass::MeasurementType;
-  using AbsoluteFrequencyType = typename Superclass::AbsoluteFrequencyType;
-  using TotalAbsoluteFrequencyType = typename Superclass::TotalAbsoluteFrequencyType;
-  using InstanceIdentifier = typename Superclass::InstanceIdentifier;
+  using typename Superclass::MeasurementVectorType;
+  using typename Superclass::MeasurementVectorSizeType;
+  using typename Superclass::MeasurementType;
+  using typename Superclass::AbsoluteFrequencyType;
+  using typename Superclass::TotalAbsoluteFrequencyType;
+  using typename Superclass::InstanceIdentifier;
 
   /** Value type of a measurement (component of the measurement
    * vector) */
@@ -81,7 +81,7 @@ public:
   using InternalDataContainerType = std::vector<MeasurementVectorType>;
 
   /** Resize the container. Using Resize() and then SetMeasurementVector() is
-   * about nine times faster than usign PushBack() continuously. Which means that
+   * about nine times faster than using PushBack() continuously. Which means that
    * whenever the total number of Measurement vectors is known, the users
    * should prefer calling Resize() first and then set the values by calling
    * SetMeasurementVector(). On the other hand, if the number of measurement
@@ -105,20 +105,20 @@ public:
   /** Get the measurement associated with the specified
    * InstanceIdentifier */
   const MeasurementVectorType &
-  GetMeasurementVector(InstanceIdentifier id) const override;
+  GetMeasurementVector(InstanceIdentifier instanceId) const override;
 
   /** Set a component a measurement to a particular value. */
   void
-  SetMeasurement(InstanceIdentifier id, unsigned int dim, const MeasurementType & value);
+  SetMeasurement(InstanceIdentifier instanceId, unsigned int dim, const MeasurementType & value);
 
   /** Replace a measurement with a different measurement */
   void
-  SetMeasurementVector(InstanceIdentifier id, const MeasurementVectorType & mv);
+  SetMeasurementVector(InstanceIdentifier instanceId, const MeasurementVectorType & mv);
 
   /** Get the frequency of a measurement. Returns 1 if the measurement
    * exist. */
   AbsoluteFrequencyType
-  GetFrequency(InstanceIdentifier id) const override;
+  GetFrequency(InstanceIdentifier instanceId) const override;
 
   /** Get the total frequency of the sample.  This is equivalent to
    * the size of the sample. */
@@ -183,16 +183,12 @@ public:
     }
 
     bool
-    operator!=(const ConstIterator & it)
-    {
-      return (m_Iter != it.m_Iter);
-    }
-
-    bool
-    operator==(const ConstIterator & it)
+    operator==(const ConstIterator & it) const
     {
       return (m_Iter == it.m_Iter);
     }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
 
   protected:
     // This method should only be available to the ListSample class

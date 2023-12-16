@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,6 @@
 
 #include <cmath>
 #include "itkProgressReporter.h"
-#include "itkDifferenceOfGaussiansGradientImageFilter.h"
 #include "itkImageRegionIterator.h"
 
 namespace itk
@@ -99,10 +98,10 @@ DifferenceOfGaussiansGradientImageFilter<TInputImage, TDataType>::GenerateData()
     {
       // We're in a safe position, so calculate the gradient for
       // each dimension
-      for (unsigned int i = 0; i < NDimensions; i++)
+      for (unsigned int i = 0; i < NDimensions; ++i)
       {
         // Build the indices for each pixel
-        for (unsigned int j = 0; j < NDimensions; j++)
+        for (unsigned int j = 0; j < NDimensions; ++j)
         {
           if (j == i)
           {

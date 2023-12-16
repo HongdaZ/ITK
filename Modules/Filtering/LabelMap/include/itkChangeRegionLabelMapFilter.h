@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@
 namespace itk
 {
 /**
- *\class ChangeRegionLabelMapFilter
+ * \class ChangeRegionLabelMapFilter
  * \brief Change the region of a label map.
  *
  * Change the region of a label map. If the output can't contain some of the objects' lines
@@ -43,8 +43,7 @@ namespace itk
  * This code was contributed in the Insight Journal paper:
  * "Label object representation and manipulation with ITK"
  * by Lehmann G.
- * https://hdl.handle.net/1926/584
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  *
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
@@ -57,7 +56,7 @@ template <typename TInputImage>
 class ITK_TEMPLATE_EXPORT ChangeRegionLabelMapFilter : public InPlaceLabelMapFilter<TInputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ChangeRegionLabelMapFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ChangeRegionLabelMapFilter);
 
   /** Standard class type aliases. */
   using Self = ChangeRegionLabelMapFilter;
@@ -72,10 +71,10 @@ public:
   itkNewMacro(Self);
 
   /** Superclass type alias. */
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::OutputImagePointer;
+  using typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImagePixelType;
 
   /** Some convenient type alias. */
   using InputImageType = TInputImage;

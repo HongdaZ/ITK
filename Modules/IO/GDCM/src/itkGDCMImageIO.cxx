@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,6 +37,7 @@
 
 #include "itksys/SystemTools.hxx"
 #include "itksys/Base64.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 #include "gdcmImageHelper.h"
 #include "gdcmFileExplicitFilter.h"
@@ -53,6 +54,7 @@
 #include "gdcmAttribute.h"
 #include "gdcmGlobal.h"
 #include "gdcmMediaStorage.h"
+#include "gdcmDirectionCosines.h"
 
 #include <fstream>
 #include <sstream>
@@ -100,6 +102,9 @@ GDCMImageIO::GDCMImageIO()
   // This number is updated according the information
   // received through the MetaDataDictionary
   m_GlobalNumberOfDimensions = 2;
+
+  m_SingleBit = false;
+
   // By default use JPEG2000. For legacy system, one should prefer JPEG since
   // JPEG2000 was only recently added to the DICOM standard
   this->Self::SetCompressor("");
@@ -187,7 +192,7 @@ readNoPreambleDicom(std::ifstream & file) // NOTE: This file is duplicated in it
   std::ostringstream itkmsg;
   itkmsg << "No DICOM magic number found, but the file appears to be DICOM without a preamble.\n"
          << "Proceeding without caution.";
-  ::itk::OutputWindowDisplayDebugText(itkmsg.str().c_str());
+  itk::OutputWindowDisplayDebugText(itkmsg.str().c_str());
 #endif
   return true;
 }
@@ -212,7 +217,7 @@ GDCMImageIO::CanReadFile(const char * filename)
   {
     this->OpenFileForReading(file, filename);
   }
-  catch (ExceptionObject &)
+  catch (const ExceptionObject &)
   {
     return false;
   }
@@ -225,7 +230,7 @@ GDCMImageIO::CanReadFile(const char * filename)
   // There isn't a definitive way to check for DICOM files;
   // This was actually cribbed from DICOMParser in VTK
   bool dicomsig(false);
-  for (long int off = 128; off >= 0; off -= 128)
+  for (long off = 128; off >= 0; off -= 128)
   {
     file.seekg(off, std::ios_base::beg);
     if (file.fail() || file.eof())
@@ -247,7 +252,7 @@ GDCMImageIO::CanReadFile(const char * filename)
   }
 // Do not allow CanRead to return true for non-compliant DICOM files
 #define GDCMPARSER_IGNORE_MAGIC_NUMBER
-#if defined(GDCMPARSER_IGNORE_MAGIC_NUMBER) && !defined(__EMSCRIPTEN__)
+#if defined(GDCMPARSER_IGNORE_MAGIC_NUMBER)
   //
   // Try it anyways...
   //
@@ -295,8 +300,7 @@ GDCMImageIO::Read(void * pointer)
 #endif
   SizeValueType len = image.GetBufferLength();
 
-  // Decompress the Pixel Data buffer when needed. This is required here in the
-  // pipeline to make sure to decompress JPEGBaseline1 into YBR_FULL.
+  // Decompress the Pixel Data buffer.
   if (image.GetTransferSyntax().IsEncapsulated())
   {
     gdcm::ImageChangeTransferSyntax icts;
@@ -323,7 +327,17 @@ GDCMImageIO::Read(void * pointer)
   }
 
   gdcm::PhotometricInterpretation pi = image.GetPhotometricInterpretation();
-  if (pi == gdcm::PhotometricInterpretation::PALETTE_COLOR)
+
+  if (m_SingleBit)
+  {
+    const size_t x = m_Dimensions[0] * m_Dimensions[1] * m_Dimensions[2];
+    if (x > len * 8)
+    {
+      itkExceptionMacro(<< "Failed to load SINGLEBIT image, buffer size " << len);
+    }
+    len = x;
+  }
+  else if (pi == gdcm::PhotometricInterpretation::PALETTE_COLOR)
   {
     gdcm::ImageApplyLookupTable ialut;
     ialut.SetInput(image);
@@ -352,44 +366,66 @@ GDCMImageIO::Read(void * pointer)
     itkExceptionMacro(<< "Failed to get the buffer!");
   }
 
-  const gdcm::PixelFormat & pixeltype = image.GetPixelFormat();
-#ifndef NDEBUG
-  // ImageApplyLookupTable is meant to change the pixel type for PALETTE_COLOR images
-  // (from single values to triple values per pixel)
-  if (pi != gdcm::PhotometricInterpretation::PALETTE_COLOR)
+  if (m_SingleBit)
   {
-    itkAssertInDebugAndIgnoreInReleaseMacro(pixeltype_debug == pixeltype);
+    const auto      copy = make_unique_for_overwrite<unsigned char[]>(len);
+    unsigned char * t = reinterpret_cast<unsigned char *>(pointer);
+    size_t          j = 0;
+    for (size_t i = 0; i < len / 8; ++i)
+    {
+      const unsigned char c = t[i];
+      copy[j + 0] = (c & 0x01) ? 255 : 0;
+      copy[j + 1] = (c & 0x02) ? 255 : 0;
+      copy[j + 2] = (c & 0x04) ? 255 : 0;
+      copy[j + 3] = (c & 0x08) ? 255 : 0;
+      copy[j + 4] = (c & 0x10) ? 255 : 0;
+      copy[j + 5] = (c & 0x20) ? 255 : 0;
+      copy[j + 6] = (c & 0x40) ? 255 : 0;
+      copy[j + 7] = (c & 0x80) ? 255 : 0;
+      j += 8;
+    }
+    memcpy((char *)pointer, copy.get(), len);
   }
+  else
+  {
+    const gdcm::PixelFormat & pixeltype = image.GetPixelFormat();
+#ifndef NDEBUG
+    // ImageApplyLookupTable is meant to change the pixel type for PALETTE_COLOR images
+    // (from single values to triple values per pixel)
+    if (pi != gdcm::PhotometricInterpretation::PALETTE_COLOR)
+    {
+      itkAssertInDebugAndIgnoreInReleaseMacro(pixeltype_debug == pixeltype);
+    }
 #endif
 
-  if (m_RescaleSlope != 1.0 || m_RescaleIntercept != 0.0)
-  {
-    gdcm::Rescaler r;
-    r.SetIntercept(m_RescaleIntercept);
-    r.SetSlope(m_RescaleSlope);
-    r.SetPixelFormat(pixeltype);
-    gdcm::PixelFormat outputpt = r.ComputeInterceptSlopePixelType();
-    auto *            copy = new char[len];
-    memcpy(copy, (char *)pointer, len);
-    r.Rescale((char *)pointer, copy, len);
-    delete[] copy;
-    // WARNING: sizeof(Real World Value) != sizeof(Stored Pixel)
-    len = len * outputpt.GetPixelSize() / pixeltype.GetPixelSize();
-  }
-
-  // Y'CbCr to RGB
-  // GDCM 3.0.3
-  const bool ybr =
-    m_NumberOfComponents == 3 &&
-    (pi == gdcm::PhotometricInterpretation::YBR_FULL || pi == gdcm::PhotometricInterpretation::YBR_FULL_422) &&
-    (pixeltype == gdcm::PixelFormat::UINT8 || pixeltype == gdcm::PixelFormat::INT8);
-  if (ybr && m_ReadYBRtoRGB)
-  {
-    if (len % 3 != 0)
+    if (m_RescaleSlope != 1.0 || m_RescaleIntercept != 0.0)
     {
-      itkExceptionMacro(<< "Buffer size " << len << " is not valid");
+      gdcm::Rescaler r;
+      r.SetIntercept(m_RescaleIntercept);
+      r.SetSlope(m_RescaleSlope);
+      r.SetPixelFormat(pixeltype);
+      gdcm::PixelFormat outputpt = r.ComputeInterceptSlopePixelType();
+      const auto        copy = make_unique_for_overwrite<char[]>(len);
+      memcpy(copy.get(), (char *)pointer, len);
+      r.Rescale((char *)pointer, copy.get(), len);
+      // WARNING: sizeof(Real World Value) != sizeof(Stored Pixel)
+      len = len * outputpt.GetPixelSize() / pixeltype.GetPixelSize();
     }
-    YCbCr_to_RGB(reinterpret_cast<unsigned char *>(pointer), static_cast<size_t>(len));
+
+    // Y'CbCr to RGB
+    // GDCM 3.0.3
+    const bool ybr =
+      m_NumberOfComponents == 3 &&
+      (pi == gdcm::PhotometricInterpretation::YBR_FULL || pi == gdcm::PhotometricInterpretation::YBR_FULL_422) &&
+      (pixeltype == gdcm::PixelFormat::UINT8 || pixeltype == gdcm::PixelFormat::INT8);
+    if (ybr && m_ReadYBRtoRGB)
+    {
+      if (len % 3 != 0)
+      {
+        itkExceptionMacro(<< "Buffer size " << len << " is not valid");
+      }
+      YCbCr_to_RGB(reinterpret_cast<unsigned char *>(pointer), static_cast<size_t>(len));
+    }
   }
 
 #ifndef NDEBUG
@@ -405,6 +441,11 @@ GDCMImageIO::Read(void * pointer)
 void
 GDCMImageIO::InternalReadImageInformation()
 {
+  // Reset, a user can re-use IO.
+  m_RescaleIntercept = 0.0;
+  m_RescaleSlope = 1.0;
+  m_SingleBit = false;
+
   // ensure file can be opened for reading, before doing any more work
   std::ifstream inputFileStream;
   // let any exceptions propagate
@@ -461,23 +502,37 @@ GDCMImageIO::InternalReadImageInformation()
     case gdcm::PixelFormat::FLOAT64:
       m_InternalComponentType = IOComponentEnum::DOUBLE;
       break;
+    case gdcm::PixelFormat::SINGLEBIT:
+      m_SingleBit = true;
+      m_InternalComponentType = IOComponentEnum::UCHAR;
+      break;
     default:
       itkExceptionMacro("Unhandled PixelFormat: " << pixeltype);
   }
 
   gdcm::PixelFormat::ScalarType outputpt = pixeltype.GetScalarType();
-  m_RescaleIntercept = image.GetIntercept();
-  m_RescaleSlope = image.GetSlope();
-  if (m_RescaleSlope != 1.0 || m_RescaleIntercept != 0.0)
+  if (!m_SingleBit)
   {
-    gdcm::Rescaler r;
-    r.SetIntercept(m_RescaleIntercept);
-    r.SetSlope(m_RescaleSlope);
-    r.SetPixelFormat(pixeltype);
-    outputpt = r.ComputeInterceptSlopePixelType();
-  }
+    m_RescaleIntercept = image.GetIntercept();
+    m_RescaleSlope = image.GetSlope();
+    if (m_RescaleSlope != 1.0 || m_RescaleIntercept != 0.0)
+    {
+      gdcm::Rescaler r;
+      r.SetIntercept(m_RescaleIntercept);
+      r.SetSlope(m_RescaleSlope);
+      r.SetPixelFormat(pixeltype);
+      outputpt = r.ComputeInterceptSlopePixelType();
+    }
 
-  itkAssertInDebugAndIgnoreInReleaseMacro(pixeltype <= outputpt);
+    if (pixeltype > outputpt)
+    {
+      itkAssertInDebugOrThrowInReleaseMacro("Pixel type larger than output type")
+    }
+  }
+  else
+  {
+    outputpt = gdcm::PixelFormat::UINT8;
+  }
 
   m_ComponentType = IOComponentEnum::UNKNOWNCOMPONENTTYPE;
   switch (outputpt)
@@ -626,7 +681,7 @@ GDCMImageIO::InternalReadImageInformation()
   }
 
   const double * origin = image.GetOrigin();
-  for (unsigned i = 0; i < 3; ++i)
+  for (unsigned int i = 0; i < 3; ++i)
   {
     m_Spacing[i] = spacing[i];
     m_Origin[i] = origin[i];
@@ -700,15 +755,14 @@ GDCMImageIO::InternalReadImageInformation()
           int encodedLengthEstimate = 2 * bv->GetLength();
           encodedLengthEstimate = ((encodedLengthEstimate / 4) + 1) * 4;
 
-          auto * bin = new char[encodedLengthEstimate];
-          auto   encodedLengthActual =
+          const auto bin = make_unique_for_overwrite<char[]>(encodedLengthEstimate);
+          auto       encodedLengthActual =
             static_cast<unsigned int>(itksysBase64_Encode((const unsigned char *)bv->GetPointer(),
                                                           static_cast<SizeValueType>(bv->GetLength()),
-                                                          (unsigned char *)bin,
-                                                          static_cast<int>(0)));
-          std::string encodedValue(bin, encodedLengthActual);
+                                                          (unsigned char *)bin.get(),
+                                                          0));
+          std::string encodedValue(bin.get(), encodedLengthActual);
           EncapsulateMetaData<std::string>(dico, tag.PrintAsPipeSeparatedString(), encodedValue);
-          delete[] bin;
         }
       }
     }
@@ -827,16 +881,16 @@ GDCMImageIO::Write(const void * buffer)
       {
         // Custom VR::VRBINARY
         // convert value from Base64
-        auto * bin = new uint8_t[value.size()];
-        auto   decodedLengthActual =
+        const auto bin = make_unique_for_overwrite<uint8_t[]>(value.size());
+        auto       decodedLengthActual =
           static_cast<unsigned int>(itksysBase64_Decode((const unsigned char *)value.c_str(),
                                                         static_cast<SizeValueType>(0),
-                                                        (unsigned char *)bin,
+                                                        (unsigned char *)bin.get(),
                                                         static_cast<SizeValueType>(value.size())));
         if (/*tag.GetGroup() != 0 ||*/ tag.GetElement() != 0) // ?
         {
           gdcm::DataElement de(tag);
-          de.SetByteValue((char *)bin, decodedLengthActual);
+          de.SetByteValue((char *)bin.get(), decodedLengthActual);
           de.SetVR(dictEntry.GetVR());
           if (tag.GetGroup() == 0x2)
           {
@@ -847,7 +901,6 @@ GDCMImageIO::Write(const void * buffer)
             header.Insert(de);
           }
         }
-        delete[] bin;
       }
       else // VRASCII
       {
@@ -906,7 +959,7 @@ GDCMImageIO::Write(const void * buffer)
         m_Origin.resize(m_GlobalNumberOfDimensions);
         m_Spacing.resize(m_GlobalNumberOfDimensions);
         m_Direction.resize(m_GlobalNumberOfDimensions);
-        for (unsigned int i = 0; i < m_GlobalNumberOfDimensions; i++)
+        for (unsigned int i = 0; i < m_GlobalNumberOfDimensions; ++i)
         {
           m_Direction[i].resize(m_GlobalNumberOfDimensions);
         }
@@ -936,9 +989,9 @@ GDCMImageIO::Write(const void * buffer)
         using DoubleMatrixType = Matrix<double>;
         DoubleMatrixType directionMatrix;
         ExposeMetaData<DoubleMatrixType>(dict, key, directionMatrix);
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; ++i)
         {
-          for (int j = 0; j < 3; j++)
+          for (int j = 0; j < 3; ++j)
           {
             m_Direction[i][j] = directionMatrix[i][j];
           }
@@ -972,7 +1025,11 @@ GDCMImageIO::Write(const void * buffer)
   if (hasIPP)
   {
     double origin3D[3];
+    // save and reset old locale
+    std::locale currentLocale = std::locale::global(std::locale::classic());
     sscanf(tempString.c_str(), "%lf\\%lf\\%lf", &(origin3D[0]), &(origin3D[1]), &(origin3D[2]));
+    // reset locale
+    std::locale::global(currentLocale);
     image.SetOrigin(0, origin3D[0]);
     image.SetOrigin(1, origin3D[1]);
     image.SetOrigin(2, origin3D[2]);
@@ -1003,6 +1060,8 @@ GDCMImageIO::Write(const void * buffer)
   if (hasIOP)
   {
     double directions[6];
+    // save and reset old locale
+    std::locale currentLocale = std::locale::global(std::locale::classic());
     sscanf(tempString.c_str(),
            "%lf\\%lf\\%lf\\%lf\\%lf\\%lf",
            &(directions[0]),
@@ -1011,6 +1070,8 @@ GDCMImageIO::Write(const void * buffer)
            &(directions[3]),
            &(directions[4]),
            &(directions[5]));
+    // reset locale
+    std::locale::global(currentLocale);
     image.SetDirectionCosines(0, directions[0]);
     image.SetDirectionCosines(1, directions[1]);
     image.SetDirectionCosines(2, directions[2]);
@@ -1040,6 +1101,11 @@ GDCMImageIO::Write(const void * buffer)
     {
       image.SetDirectionCosines(5, 0);
     }
+  }
+  gdcm::DirectionCosines gdcmDirection(image.GetDirectionCosines());
+  if (!gdcmDirection.IsValid())
+  {
+    itkExceptionMacro("Invalid direction cosines, non-orthogonal or unit length.");
   }
 
   // reset any previous value:
@@ -1104,7 +1170,6 @@ GDCMImageIO::Write(const void * buffer)
     case IOComponentEnum::UINT:
       pixeltype = gdcm::PixelFormat::UINT32;
       break;
-    // Disabling FLOAT and DOUBLE for now...
     case IOComponentEnum::FLOAT:
       pixeltype = gdcm::PixelFormat::FLOAT32;
       break;
@@ -1138,10 +1203,10 @@ GDCMImageIO::Write(const void * buffer)
   {
     if (!bitsAllocated.empty() && !bitsStored.empty() && !highBit.empty() && !pixelRep.empty())
     {
-      outpixeltype.SetBitsAllocated(static_cast<unsigned short int>(std::stoi(bitsAllocated.c_str())));
-      outpixeltype.SetBitsStored(static_cast<unsigned short int>(std::stoi(bitsStored.c_str())));
-      outpixeltype.SetHighBit(static_cast<unsigned short int>(std::stoi(highBit.c_str())));
-      outpixeltype.SetPixelRepresentation(static_cast<unsigned short int>(std::stoi(pixelRep.c_str())));
+      outpixeltype.SetBitsAllocated(static_cast<unsigned short>(std::stoi(bitsAllocated.c_str())));
+      outpixeltype.SetBitsStored(static_cast<unsigned short>(std::stoi(bitsStored.c_str())));
+      outpixeltype.SetHighBit(static_cast<unsigned short>(std::stoi(highBit.c_str())));
+      outpixeltype.SetPixelRepresentation(static_cast<unsigned short>(std::stoi(pixelRep.c_str())));
       if (this->GetNumberOfComponents() != 1)
       {
         itkExceptionMacro(<< "Sorry Dave I can't do that");
@@ -1229,11 +1294,10 @@ GDCMImageIO::Write(const void * buffer)
 
     image.SetIntercept(m_RescaleIntercept);
     image.SetSlope(m_RescaleSlope);
-    auto *       copyBuffer = new char[len];
+    const auto   copyBuffer = make_unique_for_overwrite<char[]>(len);
     const auto * inputBuffer = static_cast<const char *>(buffer);
-    ir.InverseRescale(copyBuffer, inputBuffer, numberOfBytes);
-    pixeldata.SetByteValue(copyBuffer, static_cast<uint32_t>(len));
-    delete[] copyBuffer;
+    ir.InverseRescale(copyBuffer.get(), inputBuffer, numberOfBytes);
+    pixeldata.SetByteValue(copyBuffer.get(), static_cast<uint32_t>(len));
   }
   else
   {

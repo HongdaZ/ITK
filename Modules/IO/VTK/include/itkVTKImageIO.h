@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,12 +36,12 @@
 namespace itk
 {
 /**
- *\class VTKImageIO
+ * \class VTKImageIO
  *
  *  \brief ImageIO class for reading VTK images
  *
- * This implementation was taken fron the Insight Joural:
- * https://hdl.handle.net/10380/3171
+ * This implementation was taken fron the Insight Journal:
+ * https://www.insight-journal.org/browse/publication/729
  *
  * \ingroup IOFilters
  *
@@ -50,7 +50,7 @@ namespace itk
 class ITKIOVTK_EXPORT VTKImageIO : public StreamingImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VTKImageIO);
+  ITK_DISALLOW_COPY_AND_MOVE(VTKImageIO);
 
   /** Standard class type aliases. */
   using Self = VTKImageIO;
@@ -139,19 +139,16 @@ protected:
 
   /** Convenient method to read a buffer as ASCII text. */
   void
-  ReadBufferAsASCII(std::istream & os, void * buffer, IOComponentEnum ctype, SizeType numberOfBytesToBeRead) override;
+  ReadBufferAsASCII(std::istream & is, void * buffer, IOComponentEnum ctype, SizeType numComp) override;
 
   /** Convenient method to write a buffer as ASCII text. */
   void
-  WriteBufferAsASCII(std::ostream &  os,
-                     const void *    buffer,
-                     IOComponentEnum ctype,
-                     SizeType        numberOfBytesToWrite) override;
+  WriteBufferAsASCII(std::ostream & os, const void * buffer, IOComponentEnum ctype, SizeType numComp) override;
 
   /** We have a special method to read symmetric second rank tensors because
    * the VTK file format expands the symmetry and only supports 3D tensors. */
   virtual void
-  ReadSymmetricTensorBufferAsBinary(std::istream & os, void * buffer, StreamingImageIOBase::SizeType num);
+  ReadSymmetricTensorBufferAsBinary(std::istream & is, void * buffer, StreamingImageIOBase::SizeType num);
 
   /** We have a special method to write symmetric second rank tensors because
    * the VTK file format expands the symmetry and only supports 3D tensors. */

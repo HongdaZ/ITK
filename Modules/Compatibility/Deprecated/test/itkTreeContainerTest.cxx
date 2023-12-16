@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ itkTreeContainerTest(int, char *[])
 {
   using NodeType = int;
   using TreeType = itk::TreeContainer<NodeType>;
-  TreeType::Pointer tree = TreeType::New();
+  auto tree = TreeType::New();
   tree->SetRoot(0);
   tree->Add(1, 0);
   tree->Add(2, 0);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +38,7 @@ template <typename T>
 void
 RandomPix(vnl_random & randgen, itk::Vector<T, 3> & pix, double _max = itk::NumericTraits<T>::max())
 {
-  for (unsigned int i = 0; i < 3; i++)
+  for (unsigned int i = 0; i < 3; ++i)
   {
     pix[i] = randgen.drand64(_max);
   }
@@ -48,7 +48,7 @@ template <typename T>
 void
 RandomPoint(vnl_random & randgen, itk::Point<T, 3> & pix, double _max = itk::NumericTraits<T>::max())
 {
-  for (unsigned int i = 0; i < 3; i++)
+  for (unsigned int i = 0; i < 3; ++i)
   {
     pix[i] = randgen.drand64(_max);
   }
@@ -61,16 +61,16 @@ check_linear(const char * linear_transform)
   using AffineTransformType = itk::AffineTransform<double, 3>;
   const double tolerance = 1e-5;
 
-  AffineTransformType::Pointer affine = AffineTransformType::New();
+  auto affine = AffineTransformType::New();
 
   itk::ObjectFactoryBase::RegisterFactory(itk::MINCTransformIOFactory::New());
 
-  // Set it's parameters
+  // Set its parameters
   AffineTransformType::OutputVectorType rot_axis;
   rot_axis[0] = 0.0;
   rot_axis[1] = 1.0;
   rot_axis[2] = 0.0;
-  // Set it's parameters
+  // Set its parameters
   affine->Rotate3D(rot_axis, itk::Math::pi / 6);
 
   AffineTransformType::OutputVectorType offset;
@@ -129,7 +129,7 @@ check_linear(const char * linear_transform)
     AffineTransformType::InputPointType pnt, pnt2;
 
     std::cout << "Testing that transformations are the same ..." << std::endl;
-    for (int i = 0; i < point_counter; i++)
+    for (int i = 0; i < point_counter; ++i)
     {
       AffineTransformType::OutputPointType v1;
       AffineTransformType::OutputPointType v2;
@@ -167,8 +167,8 @@ check_nonlinear_double(const char * nonlinear_transform)
   using DisplacementFieldTransform = itk::DisplacementFieldTransform<double, 3>;
   using DisplacementFieldType = DisplacementFieldTransform::DisplacementFieldType;
 
-  DisplacementFieldTransform::Pointer disp = DisplacementFieldTransform::New();
-  DisplacementFieldType::Pointer      field = DisplacementFieldType::New();
+  auto disp = DisplacementFieldTransform::New();
+  auto field = DisplacementFieldType::New();
 
   // create zero displacement field
   DisplacementFieldType::SizeType  imageSize3D = { { 10, 10, 10 } };
@@ -181,9 +181,7 @@ check_nonlinear_double(const char * nonlinear_transform)
   region.SetSize(imageSize3D);
   region.SetIndex(startIndex3D);
 
-  field->SetLargestPossibleRegion(region);
-  field->SetBufferedRegion(region);
-  field->SetRequestedRegion(region);
+  field->SetRegions(region);
 
   field->SetSpacing(spacing);
   field->SetOrigin(origin);
@@ -308,8 +306,8 @@ check_nonlinear_float(const char * nonlinear_transform)
   using DisplacementFieldTransform = itk::DisplacementFieldTransform<float, 3>;
   using DisplacementFieldType = DisplacementFieldTransform::DisplacementFieldType;
 
-  DisplacementFieldTransform::Pointer disp = DisplacementFieldTransform::New();
-  DisplacementFieldType::Pointer      field = DisplacementFieldType::New();
+  auto disp = DisplacementFieldTransform::New();
+  auto field = DisplacementFieldType::New();
 
   // create zero displacement field
   DisplacementFieldType::SizeType  imageSize3D = { { 10, 10, 10 } };
@@ -322,9 +320,7 @@ check_nonlinear_float(const char * nonlinear_transform)
   region.SetSize(imageSize3D);
   region.SetIndex(startIndex3D);
 
-  field->SetLargestPossibleRegion(region);
-  field->SetBufferedRegion(region);
-  field->SetRequestedRegion(region);
+  field->SetRegions(region);
 
   field->SetSpacing(spacing);
   field->SetOrigin(origin);
@@ -476,18 +472,18 @@ check_composite(const char * transform_file)
 
   const double tolerance = 1e-5;
 
-  AffineTransformType::Pointer    affine1 = AffineTransformType::New();
-  AffineTransformType::Pointer    affine2 = AffineTransformType::New();
-  CompositeTransformType::Pointer compositeTransform = CompositeTransformType::New();
+  auto affine1 = AffineTransformType::New();
+  auto affine2 = AffineTransformType::New();
+  auto compositeTransform = CompositeTransformType::New();
 
   itk::ObjectFactoryBase::RegisterFactory(itk::MINCTransformIOFactory::New());
 
-  // Set it's parameters
+  // Set its parameters
   AffineTransformType::OutputVectorType rot_axis;
   rot_axis[0] = 0.0;
   rot_axis[1] = 1.0;
   rot_axis[2] = 0.0;
-  // Set it's parameters
+  // Set its parameters
   affine1->Rotate3D(rot_axis, itk::Math::pi / 6);
 
   AffineTransformType::OutputVectorType offset;
@@ -548,7 +544,7 @@ check_composite(const char * transform_file)
     AffineTransformType::InputPointType pnt, pnt2;
 
     std::cout << "Testing that transformations are the same ..." << std::endl;
-    for (int i = 0; i < point_counter; i++)
+    for (int i = 0; i < point_counter; ++i)
     {
       AffineTransformType::OutputPointType v1;
       AffineTransformType::OutputPointType v2;
@@ -609,7 +605,7 @@ check_composite2(const char * transform_file, const char * transform_grid_file)
     using DisplacementFieldTransform = itk::DisplacementFieldTransform<double, 3>;
     using DisplacementFieldType = DisplacementFieldTransform::DisplacementFieldType;
 
-    DisplacementFieldType::Pointer field = DisplacementFieldType::New();
+    auto field = DisplacementFieldType::New();
 
     // create zero displacement field
     DisplacementFieldType::SizeType  imageSize3D = { { 10, 10, 10 } };
@@ -622,9 +618,7 @@ check_composite2(const char * transform_file, const char * transform_grid_file)
     region.SetSize(imageSize3D);
     region.SetIndex(startIndex3D);
 
-    field->SetLargestPossibleRegion(region);
-    field->SetBufferedRegion(region);
-    field->SetRequestedRegion(region);
+    field->SetRegions(region);
 
     field->SetSpacing(spacing);
     field->SetOrigin(origin);
@@ -637,7 +631,7 @@ check_composite2(const char * transform_file, const char * transform_grid_file)
 
     using MincWriterType = itk::ImageFileWriter<DisplacementFieldType>;
 
-    typename MincWriterType::Pointer writer = MincWriterType::New();
+    auto writer = MincWriterType::New();
     // expecting .mnc here
     writer->SetFileName(transform_grid_file);
 
@@ -676,7 +670,7 @@ check_composite2(const char * transform_file, const char * transform_grid_file)
     using CompositeTransformType = itk::CompositeTransform<double, 3>;
     using TransformType = itk::Transform<double, 3>;
 
-    CompositeTransformType::Pointer _xfm = CompositeTransformType::New();
+    auto _xfm = CompositeTransformType::New();
     for (const auto & it : *list)
     {
       it->Print(std::cout);

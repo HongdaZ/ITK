@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@
 namespace itk
 {
 /**
- *\class CSVArray2DDataObject
+ * \class CSVArray2DDataObject
  * \brief Stores parsed data from csv files.
  *
  * CSVArray2DDataObject contains methods for accessing data from the
@@ -47,7 +47,7 @@ template <typename TData>
 class ITK_TEMPLATE_EXPORT CSVArray2DDataObject : public DataObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CSVArray2DDataObject);
+  ITK_DISALLOW_COPY_AND_MOVE(CSVArray2DDataObject);
 
   /* Standard class type aliases */
   using Self = CSVArray2DDataObject;
@@ -103,7 +103,7 @@ public:
 
   /** Returns a Row. Input to the method is a row index. */
   NumericVectorType
-  GetRow(const unsigned int &) const;
+  GetRow(const unsigned int) const;
 
   /** Returns a Column. Input to the method is a column header string. */
   NumericVectorType
@@ -111,7 +111,7 @@ public:
 
   /** Get Column method. Input to the method is a column index. */
   NumericVectorType
-  GetColumn(const unsigned int &) const;
+  GetColumn(const unsigned int) const;
 
   /** Method to access a data field from the Array2D object. Inputs are row and
    *  column header strings in that order. */
@@ -121,17 +121,17 @@ public:
   /** Method to access a data field from the Array2D object. Inputs are row and
    *  column indices in that order. */
   TData
-  GetData(const unsigned int &, const unsigned int &) const;
+  GetData(const unsigned int, const unsigned int) const;
 
   /** Method to access a data field from a particular column. Inputs are the
    *  column header string and the row index. */
   TData
-  GetColumnData(const std::string &, const unsigned int &) const;
+  GetColumnData(const std::string &, const unsigned int) const;
 
   /** Method to access a data field from a particular row. Inputs are the row
    *  header string and the column index. */
   TData
-  GetRowData(const std::string &, const unsigned int &) const;
+  GetRowData(const std::string &, const unsigned int) const;
 
   /** Method to access a data field from the Array2D object using the ()
    *  operator.Inputs are the row and column header strings in that order. */
@@ -141,7 +141,7 @@ public:
   /** Method to access a data field from the Array2D object using the ()
    *  operator. Inputs are the row and column indices in that order. */
   TData
-  operator()(const unsigned int &, const unsigned int &) const;
+  operator()(const unsigned int, const unsigned int) const;
 
   /** Method to set the size of the Array2D object. */
   void
@@ -169,7 +169,7 @@ public:
   EraseFirstColumnHeader();
 
 protected:
-  CSVArray2DDataObject();
+  CSVArray2DDataObject() = default;
   ~CSVArray2DDataObject() override = default;
   /** Print method */
   void
@@ -177,10 +177,10 @@ protected:
 
 private:
   MatrixType       m_Matrix;
-  StringVectorType m_ColumnHeaders;
-  StringVectorType m_RowHeaders;
-  bool             m_HasRowHeaders;
-  bool             m_HasColumnHeaders;
+  StringVectorType m_ColumnHeaders{};
+  StringVectorType m_RowHeaders{};
+  bool             m_HasRowHeaders{ false };
+  bool             m_HasColumnHeaders{ false };
 };
 
 } // end namespace itk

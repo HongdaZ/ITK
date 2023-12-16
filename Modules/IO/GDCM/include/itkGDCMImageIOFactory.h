@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,14 +25,14 @@
 namespace itk
 {
 /**
- *\class GDCMImageIOFactory
+ * \class GDCMImageIOFactory
  * \brief Create instances of GDCMImageIO objects using an object factory.
  * \ingroup ITKIOGDCM
  */
 class ITKIOGDCM_EXPORT GDCMImageIOFactory : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GDCMImageIOFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(GDCMImageIOFactory);
 
   /** Standard class type aliases. */
   using Self = GDCMImageIOFactory;
@@ -57,7 +57,7 @@ public:
   static void
   RegisterOneFactory()
   {
-    GDCMImageIOFactory::Pointer gdcmFactory = GDCMImageIOFactory::New();
+    auto gdcmFactory = GDCMImageIOFactory::New();
 
     ObjectFactoryBase::RegisterFactoryInternal(gdcmFactory);
   }

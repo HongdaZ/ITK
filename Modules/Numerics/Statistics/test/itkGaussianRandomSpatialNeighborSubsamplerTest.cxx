@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,8 +48,8 @@ itkGaussianRandomSpatialNeighborSubsamplerTest(int argc, char * argv[])
   using SamplerType = itk::Statistics::GaussianRandomSpatialNeighborSubsampler<AdaptorType, RegionType>;
   using WriterType = itk::ImageFileWriter<FloatImage>;
 
-  FloatImage::Pointer inImage = FloatImage::New();
-  SizeType            sz;
+  auto     inImage = FloatImage::New();
+  SizeType sz;
   sz.Fill(35);
   IndexType idx;
   idx.Fill(0);
@@ -61,10 +61,10 @@ itkGaussianRandomSpatialNeighborSubsamplerTest(int argc, char * argv[])
   inImage->Allocate(true); // initialize buffer
                            // to zero
 
-  AdaptorType::Pointer sample = AdaptorType::New();
+  auto sample = AdaptorType::New();
   sample->SetImage(inImage);
 
-  SamplerType::Pointer sampler_orig = SamplerType::New();
+  auto sampler_orig = SamplerType::New();
   sampler_orig->SetSample(sample);
   sampler_orig->SetSampleRegion(region);
   sampler_orig->SetRadius(20);
@@ -123,7 +123,7 @@ itkGaussianRandomSpatialNeighborSubsamplerTest(int argc, char * argv[])
 
   if (!outFile.empty())
   {
-    WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
     writer->SetFileName(outFile);
     writer->SetInput(inImage);
     try

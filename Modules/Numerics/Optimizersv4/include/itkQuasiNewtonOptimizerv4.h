@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #define itkQuasiNewtonOptimizerv4_h
 
 #include "itkArray2D.h"
+#include "itkBooleanStdVector.h"
 #include "itkGradientDescentOptimizerv4.h"
 
 #include "vnl/algo/vnl_matrix_inverse.h"
@@ -27,7 +28,7 @@
 namespace itk
 {
 /**
- *\class QuasiNewtonOptimizerv4Template
+ * \class QuasiNewtonOptimizerv4Template
  * \brief Implement a Quasi-Newton optimizer with BFGS Hessian estimation.
  *
  * Second order approximation of the cost function is usually more efficient
@@ -61,7 +62,7 @@ class ITK_TEMPLATE_EXPORT QuasiNewtonOptimizerv4Template
   : public GradientDescentOptimizerv4Template<TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuasiNewtonOptimizerv4Template);
+  ITK_DISALLOW_COPY_AND_MOVE(QuasiNewtonOptimizerv4Template);
 
   /** Standard class type aliases. */
   using Self = QuasiNewtonOptimizerv4Template;
@@ -73,15 +74,15 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(QuasiNewtonOptimizerv4Template, Superclass);
+  itkTypeMacro(QuasiNewtonOptimizerv4Template, GradientDescentOptimizerv4Template);
 
   /** It should be possible to derive the internal computation type from the class object. */
   using InternalComputationValueType = TInternalComputationValueType;
 
-  using ParametersType = typename Superclass::ParametersType;
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using IndexRangeType = typename Superclass::IndexRangeType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::IndexRangeType;
 
   /** Type for Hessian matrix in the Quasi-Newton method */
   using HessianType = itk::Array2D<TInternalComputationValueType>;
@@ -151,8 +152,9 @@ protected:
   /** The Hessian with local support */
   HessianArrayType m_HessianArray;
 
-  /** Valid flag for the Quasi-Newton steps */
-  std::vector<bool> m_NewtonStepValidFlags;
+  /** Valid flag for the Quasi-Newton steps.
+   */
+  BooleanStdVectorType m_NewtonStepValidFlags;
 
   /** Estimate a Newton step */
   virtual void
@@ -160,14 +162,14 @@ protected:
 
   /** Estimate the next Hessian and step with BFGS method.
    *  The details of the method are described at
-   *  http://en.wikipedia.org/wiki/BFGS_method .
+   *  https://en.wikipedia.org/wiki/BFGS_method .
    */
   virtual bool
-  ComputeHessianAndStepWithBFGS(IndexValueType location);
+  ComputeHessianAndStepWithBFGS(IndexValueType loc);
 
   /** Reset the Hessian to identity matrix and the Newton step to zeros. */
   virtual void
-  ResetNewtonStep(IndexValueType location);
+  ResetNewtonStep(IndexValueType loc);
 
   /**
    * Combine a gradient step with a Newton step. The Newton step will be used

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,21 +21,21 @@
 #include "itkNeighborhoodIterator.h"
 #include <iostream>
 
-template <typename T, unsigned int N>
+template <typename TPixelType, unsigned int VDimension>
 void
-FillRegionSequential(itk::SmartPointer<itk::Image<T, N>> I)
+FillRegionSequential(itk::SmartPointer<itk::Image<TPixelType, VDimension>> I)
 {
-  unsigned int      iDim, ArrayLength, i;
-  itk::Size<N>      Index;
-  unsigned long int Location[N];
-  unsigned int      mult;
-  T                 value;
+  unsigned int          iDim, ArrayLength, i;
+  itk::Size<VDimension> Index;
+  unsigned long         Location[VDimension];
+  unsigned int          mult;
+  TPixelType            value;
 
-  itk::ImageRegionIterator<itk::Image<T, N>> data(I, I->GetRequestedRegion());
+  itk::ImageRegionIterator<itk::Image<TPixelType, VDimension>> data(I, I->GetRequestedRegion());
 
   Index = (I->GetRequestedRegion()).GetSize();
 
-  for (ArrayLength = 1, iDim = 0; iDim < N; ++iDim)
+  for (ArrayLength = 1, iDim = 0; iDim < VDimension; ++iDim)
   {
     Location[iDim] = 0;
     ArrayLength *= Index[iDim];
@@ -43,18 +43,18 @@ FillRegionSequential(itk::SmartPointer<itk::Image<T, N>> I)
 
   for (i = 0; i < ArrayLength; ++i, ++data)
   {
-    for (iDim = 0, mult = 1, value = 0; iDim < N; ++iDim, mult *= 10)
+    for (iDim = 0, mult = 1, value = 0; iDim < VDimension; ++iDim, mult *= 10)
     {
-      value += mult * Location[N - iDim - 1];
+      value += mult * Location[VDimension - iDim - 1];
     }
     data.Set(value);
 
-    iDim = N - 1;
+    iDim = VDimension - 1;
     bool done = false;
     while (!done)
     {
       ++Location[iDim];
-      if (Location[iDim] == Index[(N - 1) - iDim])
+      if (Location[iDim] == Index[(VDimension - 1) - iDim])
       {
         Location[iDim] = 0;
       }
@@ -74,9 +74,9 @@ FillRegionSequential(itk::SmartPointer<itk::Image<T, N>> I)
   }
 }
 
-template <typename T, unsigned int VDimension>
+template <typename TPixelType, unsigned int VDimension>
 void
-PrintRegion(itk::SmartPointer<itk::Image<T, VDimension>> I)
+PrintRegion(itk::SmartPointer<itk::Image<TPixelType, VDimension>> I)
 {
   unsigned int iDim;
   long         rsz[VDimension];
@@ -94,7 +94,7 @@ PrintRegion(itk::SmartPointer<itk::Image<T, VDimension>> I)
     std::cout << "\tRegionStartIndex = " << I->GetRequestedRegion().GetIndex()[iDim] << std::endl;
   }
 
-  itk::ImageRegionIterator<itk::Image<T, VDimension>> iter(I, I->GetRequestedRegion());
+  itk::ImageRegionIterator<itk::Image<TPixelType, VDimension>> iter(I, I->GetRequestedRegion());
 
   for (; !iter.IsAtEnd(); ++iter)
   {
@@ -131,7 +131,7 @@ void
 PrintSlice(TContainer s)
 {
   std::cout << "[";
-  for (s = s.Begin(); s < s.End(); s++)
+  for (s = s.Begin(); s < s.End(); ++s)
   {
     std::cout << *s << " ";
   }
@@ -171,9 +171,7 @@ itkSliceIteratorTest(int, char *[])
     idx[0] = idx[1] = 0;
 
     itk::Image<int, 2>::Pointer ip = itk::Image<int, 2>::New();
-    ip->SetRequestedRegion(reg);
-    ip->SetBufferedRegion(reg);
-    ip->SetLargestPossibleRegion(reg);
+    ip->SetRegions(reg);
     ip->Allocate();
 
     FillRegionSequential<int, 2>(ip);
@@ -193,7 +191,7 @@ itkSliceIteratorTest(int, char *[])
   }
   catch (const itk::ExceptionObject & err)
   {
-    (&err)->Print(std::cerr);
+    err.Print(std::cerr);
     return 2;
   }
 

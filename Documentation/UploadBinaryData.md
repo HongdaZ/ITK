@@ -18,7 +18,9 @@ these content link files at **build** time, download them from a list of server
 resources, and create symlinks or copies of the original files at the
 corresponding location in the **build tree**.
 
-See also our [Data](Data.md) guide for more information.
+See also our [Data](Data.md) guide for more information. If you just
+want to browse and download the ITK testing images, see the data.kitware.com
+[ITK collection].
 
 **Note**: for historical reasons, before [SHA512 hash] files were used in ITK,
 [MD5 hash] content link files were used.
@@ -67,7 +69,7 @@ Once files have been uploaded to your account, they will be publicly available
 and accessible since data is content addressed. Specifically, the
 [hashsum_download] plugin in Girder looks through all public (or private if
 authenticated) data for files with the given hash. Thus, so as long as the file
-is publically available somewhere on [data.kitware.com], ITK will be able to
+is publicly available somewhere on [data.kitware.com], ITK will be able to
 retrieve the corresponding file.
 
 At release time, the release manager will upload and archive repository data
@@ -85,7 +87,7 @@ When `./Utilities/SetupForDevelopment.sh` is executed, as described in
 [CONTRIBUTING.md], authentication to Girder is configured in Git. If the Git
 `girder.api-key` config or `GIRDER_API_KEY` environmental variable is not set,
 a prompt will appear for your username and password. The API key can be
-created in the data.kitware.com user account web browser interface.
+created in the [data.kitware.com] user account web browser interface.
 
 To upload new binary testing data:
 
@@ -169,11 +171,11 @@ actual file is desired in the build tree. Stage the new file to your commit:
 [hashsum_download]: https://girder.readthedocs.io/en/latest/plugins.html#hashsum-download
 [ITK collection]: https://data.kitware.com/#collection/57b5c9e58d777f126827f5a1
 [ITK community]: https://discourse.itk.org/
-[ITK Examples]: https://itk.org/ITKExamples/index.html
+[ITK Sphinx Examples]: https://itk.org/ITKExamples/index.html
 [ITK Software Guide]: https://itk.org/ItkSoftwareGuide.pdf
 [solution to this problem]: https://blog.kitware.com/cmake-externaldata-using-large-files-with-distributed-version-control/
 [UploadBinaryData.sh]: ../Utilities/UploadBinaryData.sh
-[CONTRIBUTING.md]: ../../CONTRIBUTING.md
+[CONTRIBUTING.md]: ../CONTRIBUTING.md
 
 [Analyze format]: http://www.grahamwideman.com/gw/brain/analyze/formatdoc.htm
 [MD5 hash]: https://en.wikipedia.org/wiki/MD5

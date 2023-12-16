@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,7 +60,7 @@ namespace itk
 class ITKOptimizers_EXPORT ParticleSwarmOptimizer : public ParticleSwarmOptimizerBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ParticleSwarmOptimizer);
+  ITK_DISALLOW_COPY_AND_MOVE(ParticleSwarmOptimizer);
 
   /** Standard "Self" type alias. */
   using Self = ParticleSwarmOptimizer;
@@ -69,28 +69,32 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(ParticleSwarmOptimizer, ParticleSwarmOptimizerBase)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(ParticleSwarmOptimizer, ParticleSwarmOptimizerBase);
 
-    /** The Particle swarm optimizer uses the following update formula:
-     * v_i(t+1) = w*v_i(t) +
-     *            c_1*uniform(0,1)*(p_i-x_i(t)) +
-     *            c_2*uniform(0,1)*(p_g-x_i(t))
-     * x_i(t+1) = clampToBounds(x_i(t) + v_i(t+1))
-     * where
-     * w - inertia constant
-     * c_1 - personal coefficient
-     * c_2 - global coefficient
-     * p_i - parameters yielding the best function value obtained by this particle
-     * p_g - parameters yielding the best function value obtained by all particles
-     */
-    itkSetMacro(InertiaCoefficient, double) itkGetMacro(InertiaCoefficient, double)
-      itkSetMacro(PersonalCoefficient, double) itkGetMacro(PersonalCoefficient, double)
-        itkSetMacro(GlobalCoefficient, double) itkGetMacro(GlobalCoefficient, double)
+  /** The Particle swarm optimizer uses the following update formula:
+   * v_i(t+1) = w*v_i(t) +
+   *            c_1*uniform(0,1)*(p_i-x_i(t)) +
+   *            c_2*uniform(0,1)*(p_g-x_i(t))
+   * x_i(t+1) = clampToBounds(x_i(t) + v_i(t+1))
+   * where
+   * w - inertia constant
+   * c_1 - personal coefficient
+   * c_2 - global coefficient
+   * p_i - parameters yielding the best function value obtained by this particle
+   * p_g - parameters yielding the best function value obtained by all particles
+   */
+  itkSetMacro(InertiaCoefficient, double);
+  itkGetMacro(InertiaCoefficient, double);
+  itkSetMacro(PersonalCoefficient, double);
+  itkGetMacro(PersonalCoefficient, double);
+  itkSetMacro(GlobalCoefficient, double);
+  itkGetMacro(GlobalCoefficient, double);
 
-          protected : ParticleSwarmOptimizer();
+protected:
+  ParticleSwarmOptimizer();
   ~ParticleSwarmOptimizer() override;
   void
   PrintSelf(std::ostream & os, Indent indent) const override;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkConformalFlatteningMeshFilter_hxx
 #define itkConformalFlatteningMeshFilter_hxx
 
-#include "itkConformalFlatteningMeshFilter.h"
 
 #include "itkMath.h"
 
@@ -29,7 +28,7 @@
  * "Conformal Flattening ITK Filter"
  * by Gao Y., Melonakos J., Tannenbaum A.
  * https://hdl.handle.net/1926/225
- * http://www.insight-journal.org/browse/publication/112
+ * https://www.insight-journal.org/browse/publication/112
  *
  */
 
@@ -162,9 +161,9 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
   PointIdIterator pointIditer = cell->PointIdsBegin();
 
   unsigned int boundaryId0 = *pointIditer;
-  pointIditer++;
+  ++pointIditer;
   unsigned int boundaryId1 = *pointIditer;
-  pointIditer++;
+  ++pointIditer;
   unsigned int boundaryId2 = *pointIditer;
 
   InputPointType ptA;
@@ -210,7 +209,6 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
   if (normAB2 < 1e-10)
   {
     itkExceptionMacro("||AB||^2 = " << normAB2 << "\nRisk of division by zero");
-    return;
   }
 
   double E[3];
@@ -293,7 +291,7 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
 
     while (aCellNumberOfPoints < 3) // leave the edges and points untouched
     {
-      cellIterator++;
+      ++cellIterator;
       if (cellIterator != cellEnd)
       {
         aCell = cellIterator.Value();
@@ -308,10 +306,10 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
     pointIditer = aCell->PointIdsBegin();
 
     ptIdA = *pointIditer;
-    pointIditer++;
+    ++pointIditer;
 
     ptIdB = *pointIditer;
-    pointIditer++;
+    ++pointIditer;
 
     ptIdC = *pointIditer;
 
@@ -338,19 +336,16 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
     if (normAB2 < 1e-10)
     {
       itkExceptionMacro("normAB2 " << normAB2);
-      return;
     }
 
     if (normBC2 < 1e-10)
     {
       itkExceptionMacro("normBC2 " << normBC2);
-      return;
     }
 
     if (normCA2 < 1e-10)
     {
       itkExceptionMacro("normCA2 " << normCA2);
-      return;
     }
 
     normAB = std::sqrt(normAB2);
@@ -368,19 +363,16 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
     if (cosABC <= -1.0 || cosABC >= 1.0)
     {
       itkExceptionMacro("cosABC= " << cosABC);
-      return;
     }
 
     if (cosBCA <= -1.0 || cosBCA >= 1.0)
     {
       itkExceptionMacro("cosBCA= " << cosBCA);
-      return;
     }
 
     if (cosCAB <= -1.0 || cosCAB >= 1.0)
     {
       itkExceptionMacro("cosCAB= " << cosCAB);
-      return;
     }
 
     sinABC = std::sqrt(1.0 - cosABC * cosABC);
@@ -390,19 +382,16 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
     if (sinABC < 1e-10)
     {
       itkExceptionMacro("sinABC= " << sinABC);
-      return;
     }
 
     if (sinBCA < 1e-10)
     {
       itkExceptionMacro("sinBCA= " << sinBCA);
-      return;
     }
 
     if (sinCAB < 1e-10)
     {
       itkExceptionMacro("sinCAB= " << sinCAB);
-      return;
     }
 
     cotgABC = cosABC / sinABC;
@@ -421,7 +410,7 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
     D(ptIdC, ptIdB) -= cotgCAB;
     D(ptIdC, ptIdA) -= cotgABC;
 
-    cellIterator++;
+    ++cellIterator;
   }
 
   VectorCoordType x(numberOfPoints, 0.0);
@@ -589,8 +578,8 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
       }
 
       outputPointIterator.Value() = point;
-      outputPointIterator++;
-      i++;
+      ++outputPointIterator;
+      ++i;
     }
   }
   else
@@ -629,8 +618,8 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
       }
 
       outputPointIterator.Value() = point;
-      outputPointIterator++;
-      i++;
+      ++outputPointIterator;
+      ++i;
     }
   }
 
@@ -646,7 +635,7 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
 
   unsigned int maxDimension = TInputMesh::MaxTopologicalDimension;
 
-  for (unsigned int dim = 0; dim < maxDimension; dim++)
+  for (unsigned int dim = 0; dim < maxDimension; ++dim)
   {
     outputMesh->SetBoundaryAssignments(dim, inputMesh->GetBoundaryAssignments(dim));
   }

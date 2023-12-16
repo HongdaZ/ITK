@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,7 +43,7 @@ namespace itk
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
  *
  * This implementation was contributed as a paper to the Insight Journal
- * https://hdl.handle.net/1926/306
+ * https://www.insight-journal.org/browse/publication/122
  *
  * \ingroup ITKQuadEdgeMesh
  */
@@ -53,7 +53,7 @@ template <typename TPixel,
 class ITK_TEMPLATE_EXPORT QuadEdgeMesh : public Mesh<TPixel, VDimension, TTraits>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMesh);
+  ITK_DISALLOW_COPY_AND_MOVE(QuadEdgeMesh);
 
   /** Input template parameters. */
   using Traits = TTraits;
@@ -70,64 +70,64 @@ public:
   static constexpr unsigned int MaxTopologicalDimension = Traits::MaxTopologicalDimension;
 
   /** Types defined in superclass. */
-  using CellPixelType = typename Superclass::CellPixelType;
-  using CoordRepType = typename Superclass::CoordRepType;
-  using PointIdentifier = typename Superclass::PointIdentifier;
-  using PointHashType = typename Superclass::PointHashType;
-  using PointType = typename Superclass::PointType;
-  using CellTraits = typename Superclass::CellTraits;
+  using typename Superclass::CellPixelType;
+  using typename Superclass::CoordRepType;
+  using typename Superclass::PointIdentifier;
+  using typename Superclass::PointHashType;
+  using typename Superclass::PointType;
+  using typename Superclass::CellTraits;
 
   using PointIdInternalIterator = typename CellTraits::PointIdInternalIterator;
   using PointIdIterator = typename CellTraits::PointIdIterator;
 
   // Point section:
-  using PointsContainer = typename Superclass::PointsContainer;
-  using PointsContainerPointer = typename Superclass::PointsContainerPointer;
+  using typename Superclass::PointsContainer;
+  using typename Superclass::PointsContainerPointer;
   using CoordRepArrayType = CoordRepType[Self::PointDimension];
 
   // Point data section:
-  using PointDataContainer = typename Superclass::PointDataContainer;
-  using PointDataContainerPointer = typename Superclass::PointDataContainerPointer;
-  using PointDataContainerIterator = typename Superclass::PointDataContainerIterator;
-  using PointsContainerConstIterator = typename Superclass::PointsContainerConstIterator;
-  using PointsContainerIterator = typename Superclass::PointsContainerIterator;
+  using typename Superclass::PointDataContainer;
+  using typename Superclass::PointDataContainerPointer;
+  using typename Superclass::PointDataContainerIterator;
+  using typename Superclass::PointsContainerConstIterator;
+  using typename Superclass::PointsContainerIterator;
 
   // Cell section:
-  using CellIdentifier = typename Superclass::CellIdentifier;
-  using CellType = typename Superclass::CellType;
-  using CellAutoPointer = typename Superclass::CellAutoPointer;
-  using CellFeatureIdentifier = typename Superclass::CellFeatureIdentifier;
-  using CellFeatureCount = typename Superclass::CellFeatureCount;
-  using CellMultiVisitorType = typename Superclass::CellMultiVisitorType;
-  using CellsContainer = typename Superclass::CellsContainer;
-  using CellsContainerPointer = typename Superclass::CellsContainerPointer;
+  using typename Superclass::CellIdentifier;
+  using typename Superclass::CellType;
+  using typename Superclass::CellAutoPointer;
+  using typename Superclass::CellFeatureIdentifier;
+  using typename Superclass::CellFeatureCount;
+  using typename Superclass::CellMultiVisitorType;
+  using typename Superclass::CellsContainer;
+  using typename Superclass::CellsContainerPointer;
 
-  using CellsContainerConstIterator = typename Superclass::CellsContainerConstIterator;
-  using CellsContainerIterator = typename Superclass::CellsContainerIterator;
+  using typename Superclass::CellsContainerConstIterator;
+  using typename Superclass::CellsContainerIterator;
 
-  using CellLinksContainer = typename Superclass::CellLinksContainer;
-  using CellLinksContainerPointer = typename Superclass::CellLinksContainerPointer;
-  using CellLinksContainerIterator = typename Superclass::CellLinksContainerIterator;
+  using typename Superclass::CellLinksContainer;
+  using typename Superclass::CellLinksContainerPointer;
+  using typename Superclass::CellLinksContainerIterator;
 
   // Cell data section:
-  using CellDataContainer = typename Superclass::CellDataContainer;
-  using CellDataContainerPointer = typename Superclass::CellDataContainerPointer;
-  using CellDataContainerIterator = typename Superclass::CellDataContainerIterator;
+  using typename Superclass::CellDataContainer;
+  using typename Superclass::CellDataContainerPointer;
+  using typename Superclass::CellDataContainerIterator;
 
   // Point / Cell correspondence section:
-  using PointCellLinksContainer = typename Superclass::PointCellLinksContainer;
-  using PointCellLinksContainerIterator = typename Superclass::PointCellLinksContainerIterator;
+  using typename Superclass::PointCellLinksContainer;
+  using typename Superclass::PointCellLinksContainerIterator;
 
   // BoundaryAssignMents section:
-  using BoundaryAssignmentsContainer = typename Superclass::BoundaryAssignmentsContainer;
-  using BoundaryAssignmentsContainerPointer = typename Superclass::BoundaryAssignmentsContainerPointer;
-  using BoundaryAssignmentsContainerVector = typename Superclass::BoundaryAssignmentsContainerVector;
+  using typename Superclass::BoundaryAssignmentsContainer;
+  using typename Superclass::BoundaryAssignmentsContainerPointer;
+  using typename Superclass::BoundaryAssignmentsContainerVector;
 
   // Miscellaneous section:
-  using BoundingBoxPointer = typename Superclass::BoundingBoxPointer;
-  using BoundingBoxType = typename Superclass::BoundingBoxType;
-  using RegionType = typename Superclass::RegionType;
-  using InterpolationWeightType = typename Superclass::InterpolationWeightType;
+  using typename Superclass::BoundingBoxPointer;
+  using typename Superclass::BoundingBoxType;
+  using typename Superclass::RegionType;
+  using typename Superclass::InterpolationWeightType;
 
   /** Specific types for a quad-edge structure. */
   using PrimalDataType = typename Traits::PrimalDataType;
@@ -210,9 +210,9 @@ public:
 
   /** Overloaded to avoid a bug in Mesh that prevents proper inheritance
    * Refer to
-   * http://public.kitware.com/pipermail/insight-users/2005-March/012459.html
+   * https://public.kitware.com/pipermail/insight-users/2005-March/012459.html
    * and
-   * http://public.kitware.com/pipermail/insight-users/2005-April/012613.html
+   * https://public.kitware.com/pipermail/insight-users/2005-April/012613.html
    */
   void
   CopyInformation(const DataObject * data) override
@@ -371,7 +371,7 @@ public:
 
   /** Add a polygonal face to the Mesh, suppose QE layer ready */
   virtual void
-  AddFace(QEPrimal * e);
+  AddFace(QEPrimal * entry);
 
   /** Add a polygonal face to the Mesh. The list of points
    * is expected to be ordered counter-clock wise. The inside
@@ -401,7 +401,7 @@ public:
   DeleteEdge(QEPrimal * e);
 
   virtual void
-  LightWeightDeleteEdge(EdgeCellType * e);
+  LightWeightDeleteEdge(EdgeCellType * edgeCell);
 
   virtual void
   LightWeightDeleteEdge(QEPrimal * e);
@@ -437,7 +437,7 @@ public:
   virtual EdgeCellType *
   FindEdgeCell(const PointIdentifier & pid0, const PointIdentifier & pid1) const;
 
-  ///  Compute the euclidian length of argument edge
+  ///  Compute the euclidean length of argument edge
   CoordRepType
   ComputeEdgeLength(QEPrimal * e);
 

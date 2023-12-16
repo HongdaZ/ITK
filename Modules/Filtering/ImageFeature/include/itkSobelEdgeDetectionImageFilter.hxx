@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkSobelEdgeDetectionImageFilter_hxx
 #define itkSobelEdgeDetectionImageFilter_hxx
-#include "itkSobelEdgeDetectionImageFilter.h"
 
 #include "itkNeighborhoodOperatorImageFilter.h"
 #include "itkSobelOperator.h"
@@ -108,8 +107,8 @@ SobelEdgeDetectionImageFilter<TInputImage, TOutputImage>::GenerateData()
   // Setup mini-pipelines along each axis.
   typename OpFilter::Pointer   opFilter[ImageDimension];
   typename MultFilter::Pointer multFilter[ImageDimension];
-  typename AddFilter::Pointer  addFilter = AddFilter::New();
-  typename SqrtFilter::Pointer sqrtFilter = SqrtFilter::New();
+  auto                         addFilter = AddFilter::New();
+  auto                         sqrtFilter = SqrtFilter::New();
   for (i = 0; i < ImageDimension; ++i)
   {
     // Create the filters for this axis.

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  *=========================================================================*/
 
 #include "itkGradientRecursiveGaussianImageFilter.h"
+#include "itkTestingMacros.h"
 
 
 int
@@ -24,7 +25,7 @@ itkGradientRecursiveGaussianFilterSpeedTest(int argc, char * argv[])
 {
   if (argc != 3)
   {
-    std::cerr << "usage: size reps" << std::endl;
+    std::cerr << "usage: " << itkNameOfTestExecutableMacro(argv) << " size reps" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -49,7 +50,7 @@ itkGradientRecursiveGaussianFilterSpeedTest(int argc, char * argv[])
   using myRegionType = itk::ImageRegion<myDimension>;
 
   // Create the image
-  myImageType::Pointer inputImage = myImageType::New();
+  auto inputImage = myImageType::New();
 
 
   // Define their size, and start index
@@ -66,9 +67,7 @@ itkGradientRecursiveGaussianFilterSpeedTest(int argc, char * argv[])
   region.SetSize(size);
 
   // Initialize Image A
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetRegions(region);
   inputImage->Allocate();
 
   // Declare Iterator type for the input image
@@ -110,7 +109,7 @@ itkGradientRecursiveGaussianFilterSpeedTest(int argc, char * argv[])
 
 
   // Create a  Filter
-  myFilterType::Pointer filter = myFilterType::New();
+  auto filter = myFilterType::New();
 
 
   // Connect the input images
@@ -118,7 +117,7 @@ itkGradientRecursiveGaussianFilterSpeedTest(int argc, char * argv[])
 
 
   // loop
-  for (int i = 0; i < reps; i++)
+  for (int i = 0; i < reps; ++i)
   {
     // Select the value of Sigma
     filter->SetSigma(2.5 + reps / 100.0);

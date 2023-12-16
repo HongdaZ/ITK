@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ template <typename TSample>
 class SubsamplerTester : public SampleToSubsampleFilter<TSample>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SubsamplerTester);
+  ITK_DISALLOW_COPY_AND_MOVE(SubsamplerTester);
 
   /** Standard class type aliases. */
   using Self = SubsamplerTester;
@@ -78,9 +78,9 @@ itkSampleToSubsampleFilterTest1(int, char *[])
   using FilterType = itk::Statistics::itkSampleToSubsampleFilter1Namespace::SubsamplerTester<SampleType>;
 
 
-  SampleType::Pointer sample = SampleType::New();
+  auto sample = SampleType::New();
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   // Test GetInput() before setting the input
   if (filter->GetInput() != nullptr)

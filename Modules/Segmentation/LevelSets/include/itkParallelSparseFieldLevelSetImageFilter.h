@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 #ifndef itkParallelSparseFieldLevelSetImageFilter_h
 #define itkParallelSparseFieldLevelSetImageFilter_h
 
+#include "itkBooleanStdVector.h"
 #include "itkFiniteDifferenceImageFilter.h"
 #include "itkSparseFieldLayer.h"
 #include "itkObjectStore.h"
@@ -256,7 +257,7 @@ class ITK_TEMPLATE_EXPORT ParallelSparseFieldLevelSetImageFilter
   : public FiniteDifferenceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ParallelSparseFieldLevelSetImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ParallelSparseFieldLevelSetImageFilter);
 
   /** Standard class type aliases */
   using Self = ParallelSparseFieldLevelSetImageFilter;
@@ -265,10 +266,10 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /**Typedefs from the superclass */
-  using TimeStepType = typename Superclass::TimeStepType;
-  using FiniteDifferenceFunctionType = typename Superclass::FiniteDifferenceFunctionType;
-  using RadiusType = typename Superclass::RadiusType;
-  using NeighborhoodScalesType = typename Superclass::NeighborhoodScalesType;
+  using typename Superclass::TimeStepType;
+  using typename Superclass::FiniteDifferenceFunctionType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::NeighborhoodScalesType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -588,8 +589,8 @@ protected:
    *  out of the active layer. */
   void
   ThreadedUpdateActiveLayerValues(const TimeStepType & dt,
-                                  LayerType *          StatusUpList,
-                                  LayerType *          StatusDownList,
+                                  LayerType *          UpList,
+                                  LayerType *          DownList,
                                   ThreadIdType         ThreadId);
 
   /** Make a copy of the nodes in the FromList and insert them into the ToList.
@@ -605,7 +606,7 @@ protected:
    *  and insert them into the thread's own list. */
   void
   CopyInsertInterNeighborNodeTransferBufferLayers(ThreadIdType     ThreadId,
-                                                  LayerPointerType InputList,
+                                                  LayerPointerType List,
                                                   unsigned int     InOrOut,
                                                   unsigned int     BufferLayerNumber);
 
@@ -660,7 +661,7 @@ protected:
   ThreadedPropagateLayerValues(const StatusType & from,
                                const StatusType & to,
                                const StatusType & promote,
-                               unsigned int       InorOut,
+                               unsigned int       InOrOut,
                                ThreadIdType       ThreadId);
 
   /** Split the volume uniformly along the chosen dimension for post processing
@@ -712,11 +713,11 @@ protected:
 
   /** Thread-specific data */
   std::vector<TimeStepType> m_TimeStepList;
-  std::vector<bool>         m_ValidTimeStepList;
+  BooleanStdVectorType      m_ValidTimeStepList;
   TimeStepType              m_TimeStep;
 
-  /** The number of threads to use. */
-  ThreadIdType m_NumOfThreads{ 0 };
+  /** The number of work units to use. */
+  ThreadIdType m_NumOfWorkUnits{ 0 };
 
   /** The dimension along which to distribute the load. */
   unsigned int m_SplitAxis{ 0 };

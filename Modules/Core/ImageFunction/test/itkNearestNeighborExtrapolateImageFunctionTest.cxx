@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include "itkMath.h"
 #include "itkNearestNeighborExtrapolateImageFunction.h"
 #include "itkImageRegionIterator.h"
+#include "itkTestingMacros.h"
 
 /**
  * This module tests the functionality of the
@@ -41,11 +42,11 @@ itkNearestNeighborExtrapolateImageFunctionTest(int, char *[])
   imageSize[1] = 7;
   ImageType::RegionType imageRegion(imageSize);
 
-  ImageType::Pointer image = ImageType::New();
+  auto image = ImageType::New();
   image->SetRegions(imageRegion);
   image->Allocate();
 
-  VectorImageType::Pointer vectorimage = VectorImageType::New();
+  auto vectorimage = VectorImageType::New();
   vectorimage->SetRegions(imageRegion);
   vectorimage->Allocate();
 
@@ -74,10 +75,13 @@ itkNearestNeighborExtrapolateImageFunctionTest(int, char *[])
 
   // set up the extrapolator
   using FunctionType = itk::NearestNeighborExtrapolateImageFunction<ImageType, CoordRep>;
-  FunctionType::Pointer function = FunctionType::New();
+  auto function = FunctionType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(function, NearestNeighborExtrapolateImageFunction, ExtrapolateImageFunction);
+
 
   using VectorFunctionType = itk::NearestNeighborExtrapolateImageFunction<VectorImageType, CoordRep>;
-  VectorFunctionType::Pointer vectorfunction = VectorFunctionType::New();
+  auto vectorfunction = VectorFunctionType::New();
 
   function->SetInputImage(image);
 

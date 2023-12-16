@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,7 +50,7 @@ itkAbsImageFilterAndAdaptorTest(int, char *[])
   using RegionType = itk::ImageRegion<ImageDimension>;
 
   // Create two images
-  InputImageType::Pointer inputImage = InputImageType::New();
+  auto inputImage = InputImageType::New();
 
   // Define their size, and start index
   SizeType size;
@@ -68,9 +68,7 @@ itkAbsImageFilterAndAdaptorTest(int, char *[])
   region.SetSize(size);
 
   // Initialize Image A
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetRegions(region);
   inputImage->Allocate();
   // Create one iterator for the Input Image (this is a light object)
   InputIteratorType it(inputImage, inputImage->GetBufferedRegion());
@@ -91,7 +89,7 @@ itkAbsImageFilterAndAdaptorTest(int, char *[])
   using FilterType = itk::AbsImageFilter<InputImageType, OutputImageType>;
 
   // Create an Abs Filter
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, AbsImageFilter, UnaryGeneratorImageFilter);
 
@@ -124,7 +122,7 @@ itkAbsImageFilterAndAdaptorTest(int, char *[])
     {
       std::cerr.precision(static_cast<int>(itk::Math::abs(std::log10(epsilon))));
       std::cerr << "Error in itkAbsImageFilterTest " << std::endl;
-      std::cerr << " abs(" << input << ") = " << absolute << std::endl;
+      std::cerr << " itk::Math::abs(" << input << ") = " << absolute << std::endl;
       std::cerr << " differs from " << output;
       std::cerr << " by more than " << epsilon << std::endl;
       testStatus = EXIT_FAILURE;
@@ -139,7 +137,7 @@ itkAbsImageFilterAndAdaptorTest(int, char *[])
 
   using AdaptorType = itk::AbsImageAdaptor<InputImageType, OutputImageType::PixelType>;
 
-  AdaptorType::Pointer absAdaptor = AdaptorType::New();
+  auto absAdaptor = AdaptorType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(absAdaptor, AbsImageAdaptor, ImageAdaptor);
 
@@ -147,7 +145,7 @@ itkAbsImageFilterAndAdaptorTest(int, char *[])
 
   using DiffFilterType = itk::SubtractImageFilter<OutputImageType, AdaptorType, OutputImageType>;
 
-  DiffFilterType::Pointer diffFilter = DiffFilterType::New();
+  auto diffFilter = DiffFilterType::New();
 
   diffFilter->SetInput1(outputImage);
   diffFilter->SetInput2(absAdaptor);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkObjectToObjectMetric_hxx
 #define itkObjectToObjectMetric_hxx
 
-#include "itkObjectToObjectMetric.h"
 #include "itkTransform.h"
 #include "itkIdentityTransform.h"
 #include "itkCompositeTransform.h"
@@ -75,7 +74,7 @@ ObjectToObjectMetric<TFixedDimension, TMovingDimension, TVirtualImage, TParamete
      * if first applied transform is DisplacementFieldTransform */
     this->VerifyDisplacementFieldSizeAndPhysicalSpace();
 
-    /* Verify virtual image pixel type is scalar. This effects the calcualtion
+    /* Verify virtual image pixel type is scalar. This effects the calculation
      * of offsets in ComputeParameterOffsetFromVirtualIndex().
      * NOTE:  Can this be checked at compile time? ConceptChecking has a
      * HasPixelTraits class, but looks like it just verifies that type T
@@ -434,8 +433,9 @@ template <unsigned int TFixedDimension,
           unsigned int TMovingDimension,
           typename TVirtualImage,
           typename TParametersValueType>
-typename ObjectToObjectMetric<TFixedDimension, TMovingDimension, TVirtualImage, TParametersValueType>::VirtualOriginType
+auto
 ObjectToObjectMetric<TFixedDimension, TMovingDimension, TVirtualImage, TParametersValueType>::GetVirtualOrigin() const
+  -> VirtualOriginType
 {
   if (this->m_VirtualImage)
   {

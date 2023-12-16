@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkHMaximaImageFilter_hxx
 
 #include "itkImageRegionIterator.h"
-#include "itkHMaximaImageFilter.h"
 #include "itkShiftScaleImageFilter.h"
 #include "itkCastImageFilter.h"
 #include "itkProgressAccumulator.h"
@@ -66,7 +65,7 @@ HMaximaImageFilter<TInputImage, TOutputImage>::GenerateData()
   // dilation. the marker image is the input image minus the height
   // parameter.
   using ShiftFilterType = ShiftScaleImageFilter<TInputImage, TInputImage>;
-  typename ShiftFilterType::Pointer shift = ShiftFilterType::New();
+  auto shift = ShiftFilterType::New();
   shift->SetInput(this->GetInput());
   shift->SetShift(-1.0 * static_cast<typename ShiftFilterType::RealType>(m_Height));
 
@@ -77,7 +76,7 @@ HMaximaImageFilter<TInputImage, TOutputImage>::GenerateData()
     ReconstructionByDilationImageFilter<TInputImage, TInputImage>::New();
 
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
   progress->RegisterInternalFilter(dilate, 1.0f);
 

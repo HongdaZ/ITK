@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkReinitializeLevelSetImageFilter_hxx
 #define itkReinitializeLevelSetImageFilter_hxx
 
-#include "itkReinitializeLevelSetImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkIndex.h"
 
@@ -190,7 +189,7 @@ ReinitializeLevelSetImageFilter<TLevelSet>::GenerateDataFull()
 
   while (!inputIt.IsAtEnd())
   {
-    value = (double)inputIt.Get();
+    value = static_cast<double>(inputIt.Get());
     if (value - m_LevelSetValue > 0)
     {
       outputIt.Set(tempIt.Get());
@@ -213,10 +212,10 @@ ReinitializeLevelSetImageFilter<TLevelSet>::GenerateDataFull()
 
   while (!inputIt.IsAtEnd())
   {
-    value = (double)inputIt.Get();
+    value = static_cast<double>(inputIt.Get());
     if (value - m_LevelSetValue <= 0)
     {
-      value = (double)tempIt.Get();
+      value = static_cast<double>(tempIt.Get());
       outputIt.Set(-1.0 * value);
     }
 
@@ -257,7 +256,7 @@ ReinitializeLevelSetImageFilter<TLevelSet>::GenerateDataNarrowBand()
 
   while (!inputIt.IsAtEnd())
   {
-    value = (double)inputIt.Get();
+    value = static_cast<double>(inputIt.Get());
     if (value - m_LevelSetValue <= 0)
     {
       outputIt.Set(negInfinity);
@@ -318,7 +317,7 @@ ReinitializeLevelSetImageFilter<TLevelSet>::GenerateDataNarrowBand()
     node = pointsIt.Value();
     inPixel = inputPtr->GetPixel(node.GetIndex());
 
-    value = (double)inPixel;
+    value = static_cast<double>(inPixel);
     if (value - m_LevelSetValue > 0)
     {
       inPixel = tempLevelSet->GetPixel(node.GetIndex());
@@ -342,11 +341,11 @@ ReinitializeLevelSetImageFilter<TLevelSet>::GenerateDataNarrowBand()
     node = pointsIt.Value();
     inPixel = inputPtr->GetPixel(node.GetIndex());
 
-    value = (double)inPixel;
+    value = static_cast<double>(inPixel);
     if (value - m_LevelSetValue <= 0)
     {
       inPixel = tempLevelSet->GetPixel(node.GetIndex());
-      value = (double)inPixel;
+      value = static_cast<double>(inPixel);
       inPixel = -1.0 * value;
       outputPtr->SetPixel(node.GetIndex(), inPixel);
       node.SetValue(node.GetValue() * -1.0);

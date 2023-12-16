@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
-  See Copyright.txt or http://www.kitware.com/Copyright.htm for details.
+  See Copyright.txt or https://www.kitware.com/Copyright.htm for details.
 
      This software is distributed WITHOUT ANY WARRANTY; without even
      the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
@@ -41,7 +41,7 @@ int                            Total = 0;
 itk::uint64_t                  Total64 = 0;
 itk::AtomicInt<itk::uint32_t>  TotalAtomic(0);
 itk::AtomicInt<itk::uint64_t>  TotalAtomic64(0);
-constexpr unsigned             Target = 1000000;
+constexpr unsigned int         Target = 1000000;
 itk::int32_t                   Values32[Target + 2];
 itk::int64_t                   Values64[Target + 2];
 itk::AtomicInt<itk::int32_t *> AtomicPtr(Values32);
@@ -56,7 +56,7 @@ itk::Object::Pointer AnObject;
 ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
 MyFunction(void *)
 {
-  for (unsigned i = 0; i < Target / NumThreads; i++)
+  for (unsigned int i = 0; i < Target / NumThreads; ++i)
   {
     Total++;
     int idx = ++TotalAtomic;
@@ -75,7 +75,7 @@ MyFunction(void *)
 ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
 MyFunction2(void *)
 {
-  for (unsigned i = 0; i < Target / NumThreads; i++)
+  for (unsigned int i = 0; i < Target / NumThreads; ++i)
   {
     --TotalAtomic;
 
@@ -88,7 +88,7 @@ MyFunction2(void *)
 ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
 MyFunction3(void *)
 {
-  for (unsigned i = 0; i < Target / NumThreads; i++)
+  for (unsigned int i = 0; i < Target / NumThreads; ++i)
   {
     int idx = TotalAtomic += 1;
     Values32[idx]++;
@@ -103,7 +103,7 @@ MyFunction3(void *)
 ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
 MyFunction4(void *)
 {
-  for (unsigned i = 0; i < Target / NumThreads; i++)
+  for (unsigned int i = 0; i < Target / NumThreads; ++i)
   {
     TotalAtomic++;
     TotalAtomic += 1;
@@ -122,7 +122,7 @@ MyFunction4(void *)
 ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
 MyFunctionPtr(void *)
 {
-  for (unsigned i = 0; i < Target / NumThreads; i++)
+  for (unsigned int i = 0; i < Target / NumThreads; ++i)
   {
     itk::int32_t * ptr32 = ++AtomicPtr;
     (*ptr32) = 1;
@@ -223,7 +223,7 @@ itkAtomicIntTest(int, char *[])
   Total64 = 0;
   TotalAtomic64 = 0;
 
-  for (unsigned i = 0; i < Target; i++)
+  for (unsigned int i = 0; i < Target; ++i)
   {
     Values32[i] = 0;
     Values64[i] = 0;
@@ -259,7 +259,7 @@ itkAtomicIntTest(int, char *[])
     std::cout << "Expecting Values64[0] to be 0. Got " << Values64[0] << std::endl;
     return 1;
   }
-  for (unsigned i = 1; i < Target; i++)
+  for (unsigned int i = 1; i < Target; ++i)
   {
     if (Values32[i] != 2)
     {
@@ -297,7 +297,7 @@ itkAtomicIntTest(int, char *[])
     std::cout << "Expecting Values64[0] to be 0. Got " << Values64[0] << std::endl;
     return 1;
   }
-  for (unsigned i = 1; i < Target; i++)
+  for (unsigned int i = 1; i < Target; ++i)
   {
     if (Values32[i] != 1)
     {

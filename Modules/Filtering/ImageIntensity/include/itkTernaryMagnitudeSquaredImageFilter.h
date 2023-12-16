@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@
 #ifndef itkTernaryMagnitudeSquaredImageFilter_h
 #define itkTernaryMagnitudeSquaredImageFilter_h
 
-#include "itkTernaryFunctorImageFilter.h"
+#include "itkTernaryGeneratorImageFilter.h"
 
 namespace itk
 {
@@ -36,16 +36,12 @@ public:
   ModulusSquare3() = default;
   ~ModulusSquare3() = default;
   bool
-  operator!=(const ModulusSquare3 &) const
+  operator==(const ModulusSquare3 &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const ModulusSquare3 & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ModulusSquare3);
 
   inline TOutput
   operator()(const TInput1 & A, const TInput2 & B, const TInput3 & C) const
@@ -56,7 +52,7 @@ public:
 } // namespace Functor
 
 /**
- *\class TernaryMagnitudeSquaredImageFilter
+ * \class TernaryMagnitudeSquaredImageFilter
  * \brief Compute the pixel-wise squared magnitude of three images.
  *
  * This class is templated over the types of the three
@@ -68,40 +64,36 @@ public:
  */
 template <typename TInputImage1, typename TInputImage2, typename TInputImage3, typename TOutputImage>
 class TernaryMagnitudeSquaredImageFilter
-  : public TernaryFunctorImageFilter<TInputImage1,
-                                     TInputImage2,
-                                     TInputImage3,
-                                     TOutputImage,
-                                     Functor::ModulusSquare3<typename TInputImage1::PixelType,
-                                                             typename TInputImage2::PixelType,
-                                                             typename TInputImage3::PixelType,
-                                                             typename TOutputImage::PixelType>>
+  : public TernaryGeneratorImageFilter<TInputImage1, TInputImage2, TInputImage3, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TernaryMagnitudeSquaredImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(TernaryMagnitudeSquaredImageFilter);
 
   /** Standard class type aliases. */
   using Self = TernaryMagnitudeSquaredImageFilter;
-  using Superclass = TernaryFunctorImageFilter<TInputImage1,
-                                               TInputImage2,
-                                               TInputImage3,
-                                               TOutputImage,
-                                               Functor::ModulusSquare3<typename TInputImage1::PixelType,
-                                                                       typename TInputImage2::PixelType,
-                                                                       typename TInputImage3::PixelType,
-                                                                       typename TOutputImage::PixelType>>;
+  using Superclass = TernaryGeneratorImageFilter<TInputImage1, TInputImage2, TInputImage3, TOutputImage>;
 
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
+
+  using FunctorType = Functor::ModulusSquare3<typename TInputImage1::PixelType,
+                                              typename TInputImage2::PixelType,
+                                              typename TInputImage3::PixelType,
+                                              typename TOutputImage::PixelType>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(TernaryMagnitudeSquaredImageFilter, TernaryFunctorImageFilter);
+  itkTypeMacro(TernaryMagnitudeSquaredImageFilter, TernaryGeneratorImageFilter);
 
 protected:
-  TernaryMagnitudeSquaredImageFilter() = default;
+  TernaryMagnitudeSquaredImageFilter()
+  {
+#if !defined(ITK_WRAPPING_PARSER)
+    Superclass::SetFunctor(FunctorType());
+#endif
+  }
   ~TernaryMagnitudeSquaredImageFilter() override = default;
 };
 } // end namespace itk

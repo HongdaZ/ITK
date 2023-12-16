@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkFastMarchingImageFilter_hxx
 #define itkFastMarchingImageFilter_hxx
 
-#include "itkFastMarchingImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkNumericTraits.h"
 #include "itkMath.h"
@@ -33,13 +32,8 @@ FastMarchingImageFilter<TLevelSet, TSpeedImage>::FastMarchingImageFilter()
 {
   this->ProcessObject::SetNumberOfRequiredInputs(0);
 
-  OutputSizeType outputSize;
-  outputSize.Fill(16);
-  typename LevelSetImageType::IndexType outputIndex;
-  outputIndex.Fill(0);
-
-  m_OutputRegion.SetSize(outputSize);
-  m_OutputRegion.SetIndex(outputIndex);
+  m_OutputRegion.SetSize(OutputSizeType::Filled(16));
+  m_OutputRegion.SetIndex({ { 0 } });
 
   m_OutputOrigin.Fill(0.0);
   m_OutputSpacing.Fill(1.0);
@@ -352,7 +346,7 @@ FastMarchingImageFilter<TLevelSet, TSpeedImage>::UpdateNeighbors(const IndexType
   IndexType neighIndex = index;
 
 
-  for (unsigned int j = 0; j < SetDimension; j++)
+  for (unsigned int j = 0; j < SetDimension; ++j)
   {
     // update left neighbor
     if (index[j] > m_StartIndex[j])
@@ -401,7 +395,7 @@ FastMarchingImageFilter<TLevelSet, TSpeedImage>::UpdateValue(const IndexType &  
   AxisNodeType node;
   node.SetIndex(index);
 
-  for (unsigned int j = 0; j < SetDimension; j++)
+  for (unsigned int j = 0; j < SetDimension; ++j)
   {
     node.SetValue(m_LargeValue);
 
@@ -457,7 +451,7 @@ FastMarchingImageFilter<TLevelSet, TSpeedImage>::UpdateValue(const IndexType &  
 
   double discrim;
 
-  for (unsigned int j = 0; j < SetDimension; j++)
+  for (unsigned int j = 0; j < SetDimension; ++j)
   {
     node = m_NodesUsed[j];
     const auto value = static_cast<double>(node.GetValue());

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -142,7 +142,7 @@ test2DInterpolateImagePointsFilter()
   }
 
   // Initialize InterpolateImagePointsFilter
-  InterpolatorType2D::Pointer resamp = InterpolatorType2D::New();
+  auto resamp = InterpolatorType2D::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(resamp, InterpolateImagePointsFilter, ImageToImageFilter);
 
@@ -170,7 +170,7 @@ test2DInterpolateImagePointsFilter()
   {
     double value = outIter.Get();
     std::cout.width(10);
-    std::cout.precision(unsigned(itk::Math::abs(std::log10(epsilon))));
+    std::cout.precision(static_cast<unsigned int>(itk::Math::abs(std::log10(epsilon))));
     std::cout << "Checking image value: " << value << std::endl;
     if (!itk::Math::FloatAlmostEqual(value, truth[i], 10, epsilon))
     {
@@ -200,7 +200,7 @@ test3DInterpolateImagePointsFilter()
   ImageTypePtr3D image = set3DData();
 
   // Initialize InterpolateImagePointsFilter and set input image
-  InterpolatorType3D::Pointer resamp = InterpolatorType3D::New();
+  auto resamp = InterpolatorType3D::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(resamp, InterpolateImagePointsFilter, ImageToImageFilter);
 
@@ -223,13 +223,13 @@ test3DInterpolateImagePointsFilter()
   }
 
   CoordIndexType3D index;
-  for (unsigned int i0 = 0; i0 < size[0]; i0++)
+  for (unsigned int i0 = 0; i0 < size[0]; ++i0)
   {
     index[0] = i0;
-    for (unsigned int i1 = 0; i1 < size[1]; i1++)
+    for (unsigned int i1 = 0; i1 < size[1]; ++i1)
     {
       index[1] = i1;
-      for (unsigned int i2 = 0; i2 < size[2]; i2++)
+      for (unsigned int i2 = 0; i2 < size[2]; ++i2)
       {
         index[2] = i2;
         (coord[0])->SetPixel(index, i0);
@@ -238,7 +238,7 @@ test3DInterpolateImagePointsFilter()
       }
     }
   }
-  for (unsigned int i = 0; i < ImageDimension3D; i++)
+  for (unsigned int i = 0; i < ImageDimension3D; ++i)
   {
     resamp->SetInterpolationCoordinate(coord[i], i);
   }
@@ -269,8 +269,8 @@ test3DInterpolateImagePointsFilter()
   // Write home and let mom & dad know how we're doing.
   std::cout << "rmse of image is " << rmse << "\n ";
   double epsilon = 1e-7;
-  std::cout.precision(unsigned(itk::Math::abs(std::log10(epsilon))));
-  if (!itk::Math::FloatAlmostEqual(rmse, (double)0, 10, epsilon))
+  std::cout.precision(static_cast<unsigned int>(itk::Math::abs(std::log10(epsilon))));
+  if (!itk::Math::FloatAlmostEqual(rmse, 0.0, 10, epsilon))
   {
     std::cout << "*** Error: rmse is larger than expected." << std::endl;
     testStatus = EXIT_FAILURE;
@@ -348,7 +348,7 @@ set3DData()
 {
   // Create a Gaussian image source
   using GaussianSourceType = itk::GaussianImageSource<ImageType3D>;
-  GaussianSourceType::Pointer pSource = GaussianSourceType::New();
+  auto pSource = GaussianSourceType::New();
 
   ImageType3D::SpacingValueType spacing[] = { 1.2f, 1.3f, 1.4f };
   ImageType3D::PointValueType   origin[] = { 1.0f, 4.0f, 2.0f };

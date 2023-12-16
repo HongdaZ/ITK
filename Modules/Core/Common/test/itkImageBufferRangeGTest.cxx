@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,17 +30,17 @@
 #include <type_traits> // For std::is_reference.
 
 // Test template instantiations for various ImageDimension values, and const Image:
-template class itk::Experimental::ImageBufferRange<itk::Image<short, 1>>;
-template class itk::Experimental::ImageBufferRange<itk::Image<short, 2>>;
-template class itk::Experimental::ImageBufferRange<itk::Image<short, 3>>;
-template class itk::Experimental::ImageBufferRange<itk::Image<short, 4>>;
-template class itk::Experimental::ImageBufferRange<const itk::Image<short>>;
-template class itk::Experimental::ImageBufferRange<itk::VectorImage<short>>;
-template class itk::Experimental::ImageBufferRange<const itk::VectorImage<short, 4>>;
+template class itk::ImageBufferRange<itk::Image<short, 1>>;
+template class itk::ImageBufferRange<itk::Image<short, 2>>;
+template class itk::ImageBufferRange<itk::Image<short, 3>>;
+template class itk::ImageBufferRange<itk::Image<short, 4>>;
+template class itk::ImageBufferRange<const itk::Image<short>>;
+template class itk::ImageBufferRange<itk::VectorImage<short>>;
+template class itk::ImageBufferRange<const itk::VectorImage<short, 4>>;
 
-using itk::Experimental::ImageBufferRange;
-using itk::Experimental::MakeImageBufferRange;
-using itk::Experimental::RangeGTestUtilities;
+using itk::ImageBufferRange;
+using itk::MakeImageBufferRange;
+using itk::RangeGTestUtilities;
 
 
 namespace
@@ -88,7 +88,7 @@ static_assert(IsIteratorTypeTheSameAsConstIteratorType<const itk::Image<int>>() 
 
 template <typename TImage>
 typename TImage::Pointer
-CreateImage(const unsigned sizeX, const unsigned sizeY)
+CreateImage(const unsigned int sizeX, const unsigned int sizeY)
 {
   const auto                      image = TImage::New();
   const typename TImage::SizeType imageSize = { { sizeX, sizeY } };
@@ -101,16 +101,16 @@ CreateImage(const unsigned sizeX, const unsigned sizeY)
 // Creates a test image, filled with a sequence of natural numbers, 1, 2, 3, ..., N.
 template <typename TImage>
 typename TImage::Pointer
-CreateImageFilledWithSequenceOfNaturalNumbers(const unsigned sizeX, const unsigned sizeY)
+CreateImageFilledWithSequenceOfNaturalNumbers(const unsigned int sizeX, const unsigned int sizeY)
 {
   using PixelType = typename TImage::PixelType;
   const auto image = CreateImage<TImage>(sizeX, sizeY);
 
-  const unsigned numberOfPixels = sizeX * sizeY;
+  const unsigned int numberOfPixels = sizeX * sizeY;
 
   PixelType * const bufferPointer = image->GetBufferPointer();
 
-  for (unsigned i = 0; i < numberOfPixels; ++i)
+  for (unsigned int i = 0; i < numberOfPixels; ++i)
   {
     bufferPointer[i] = static_cast<typename TImage::PixelType>(i + 1);
   }
@@ -118,18 +118,18 @@ CreateImageFilledWithSequenceOfNaturalNumbers(const unsigned sizeX, const unsign
 }
 
 
-template <typename TPixel, unsigned VImageDimension>
+template <typename TPixel, unsigned int VImageDimension>
 void
-SetVectorLengthIfImageIsVectorImage(itk::VectorImage<TPixel, VImageDimension> & image, const unsigned vectorLength)
+SetVectorLengthIfImageIsVectorImage(itk::VectorImage<TPixel, VImageDimension> & image, const unsigned int vectorLength)
 {
   image.SetVectorLength(vectorLength);
 }
 
 
-template <typename TPixel, unsigned VImageDimension>
+template <typename TPixel, unsigned int VImageDimension>
 void
 SetVectorLengthIfImageIsVectorImage(itk::Image<TPixel, VImageDimension> & itkNotUsed(image),
-                                    const unsigned                        itkNotUsed(vectorLength))
+                                    const unsigned int                    itkNotUsed(vectorLength))
 {
   // Do not set the VectorLength. The specified image is not a VectorImage.
 }
@@ -344,7 +344,7 @@ TEST(ImageBufferRange, IteratorsCanBePassedToStdReverseCopy)
 
   ImageBufferRange<ImageType> range{ *image };
 
-  const unsigned numberOfPixels = sizeX * sizeY;
+  const unsigned int numberOfPixels = sizeX * sizeY;
 
   const std::vector<PixelType> stdVector(range.begin(), range.end());
   std::vector<PixelType>       reversedStdVector1(numberOfPixels);
@@ -458,13 +458,13 @@ TEST(ImageBufferRange, DistanceBetweenIteratorsCanBeObtainedBySubtraction)
 
   ImageBufferRange<ImageType>::iterator it1 = range.begin();
 
-  const std::size_t numberOfPixels = range.size();
+  const size_t numberOfPixels = range.size();
 
-  for (std::size_t i1 = 0; i1 < numberOfPixels; ++i1, ++it1)
+  for (size_t i1 = 0; i1 < numberOfPixels; ++i1, ++it1)
   {
     ImageBufferRange<ImageType>::iterator it2 = it1;
 
-    for (std::size_t i2 = 0; i2 < numberOfPixels; ++i2, ++it2)
+    for (size_t i2 = 0; i2 < numberOfPixels; ++i2, ++it2)
     {
       EXPECT_EQ(it2 - it1, std::distance(it1, it2));
     }
@@ -629,19 +629,8 @@ TEST(ImageBufferRange, IteratorsCanBePassedToStdNthElement)
 
 TEST(ImageBufferRange, IteratorIsDefaultConstructible)
 {
-  using RangeType = ImageBufferRange<itk::Image<int>>;
-
-  RangeType::iterator defaultConstructedIterator{};
-
-  // Test that a default-constructed iterator behaves according to C++ proposal
-  // N3644, "Null Forward Iterators" by Alan Talbot, which is accepted with
-  // C++14: "value-initialized iterators may be compared and shall compare
-  // equal to other value-initialized iterators of the same type."
-  // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3644.pdf
-
-  EXPECT_TRUE(defaultConstructedIterator == defaultConstructedIterator);
-  EXPECT_FALSE(defaultConstructedIterator != defaultConstructedIterator);
-  EXPECT_EQ(defaultConstructedIterator, RangeType::iterator{});
+  RangeGTestUtilities::ExpectIteratorIsDefaultConstructible<ImageBufferRange<itk::Image<int>>>();
+  RangeGTestUtilities::ExpectIteratorIsDefaultConstructible<ImageBufferRange<itk::VectorImage<int>>>();
 }
 
 
@@ -784,11 +773,11 @@ TEST(ImageBufferRange, SupportsSubscript)
 
   RangeType range{ *image };
 
-  const std::size_t numberOfNeighbors = range.size();
+  const size_t numberOfNeighbors = range.size();
 
   RangeType::iterator it = range.begin();
 
-  for (std::size_t i = 0; i < numberOfNeighbors; ++i)
+  for (size_t i = 0; i < numberOfNeighbors; ++i)
   {
     std::iterator_traits<RangeType::iterator>::reference neighbor = range[i];
     EXPECT_EQ(neighbor, *it);
@@ -811,7 +800,7 @@ TEST(ImageBufferRange, ProvidesReverseIterators)
 
   RangeType range{ *image };
 
-  const unsigned numberOfPixels = sizeX * sizeY;
+  const unsigned int numberOfPixels = sizeX * sizeY;
 
   const std::vector<PixelType> stdVector(range.begin(), range.end());
   std::vector<PixelType>       reversedStdVector1(numberOfPixels);

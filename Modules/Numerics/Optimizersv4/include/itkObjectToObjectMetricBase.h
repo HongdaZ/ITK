@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 
 namespace itk
 {
-/**\class ObjectToObjectMetricBaseTemplateEnums
+/** \class ObjectToObjectMetricBaseTemplateEnums
  *\brief This class contains all the enum classes used by the ObjectToObjectMetricBaseTemplate class.
  * \ingroup ITKOptimizersv4
  */
@@ -32,7 +32,7 @@ class ObjectToObjectMetricBaseTemplateEnums
 {
 public:
   /**
-   *\class GradientSource
+   * \class GradientSource
    * \ingroup ITKOptimizersv4
    * Source of the gradient(s) used by the metric
    * (e.g. image gradients, in the case of
@@ -45,7 +45,7 @@ public:
   };
 
   /**
-   *\class MetricCategory
+   * \class MetricCategory
    * \ingroup ITKOptimizersv4
    */
   enum class MetricCategory : uint8_t
@@ -63,7 +63,7 @@ extern ITKOptimizersv4_EXPORT std::ostream &
 extern ITKOptimizersv4_EXPORT std::ostream &
                               operator<<(std::ostream & out, const ObjectToObjectMetricBaseTemplateEnums::MetricCategory value);
 /**
- *\class ObjectToObjectMetricBaseTemplate
+ * \class ObjectToObjectMetricBaseTemplate
  * \brief Base class for all object-to-object similarity metrics added in ITKv4.
  *
  * This is the abstract base class for a hierarchy of similarity metrics
@@ -90,7 +90,7 @@ class ITK_TEMPLATE_EXPORT ObjectToObjectMetricBaseTemplate
   : public SingleValuedCostFunctionv4Template<TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ObjectToObjectMetricBaseTemplate);
+  ITK_DISALLOW_COPY_AND_MOVE(ObjectToObjectMetricBaseTemplate);
 
   /** Standard class type aliases. */
   using Self = ObjectToObjectMetricBaseTemplate;
@@ -105,14 +105,14 @@ public:
   using CoordinateRepresentationType = TInternalComputationValueType;
 
   /**  Type of the measure. */
-  using MeasureType = typename Superclass::MeasureType;
+  using typename Superclass::MeasureType;
 
   /**  Type of the derivative. */
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeType;
   using DerivativeValueType = typename DerivativeType::ValueType;
 
   /**  Type of the parameters. */
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
   using ParametersValueType = TInternalComputationValueType;
 
   /**  Type of object. */

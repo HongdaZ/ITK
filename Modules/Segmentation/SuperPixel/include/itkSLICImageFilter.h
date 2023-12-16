@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ namespace itk
  * constrained iterative k-means method.
  *
  * The original algorithm was designed to cluster on the joint
- * domain of the images index space and it's CIELAB color space. This
+ * domain of the images index space and its CIELAB color space. This
  * implementation works with images of arbitrary dimension
  * as well as scalar, single channel, images and most multi-component image
  * types including ITK's arbitrary length VectorImage.
@@ -52,15 +52,16 @@ namespace itk
  * This code was contributed in the Insight Journal paper:
  * "Scalable Simple Linear Iterative Clustering (SSLIC) Using a
  * Generic and Parallel Approach" by Lowekamp B. C., Chen D. T., Yaniv
- * Z., Yoo T. S.  https://hdl.handle.net/1926/3596
+ * Z., Yoo T. S.
+ * https://www.insight-journal.org/browse/publication/989
  *
  * \ingroup Segmentation ITKSuperPixel MultiThreading
  */
 template <typename TInputImage, typename TOutputImage, typename TDistancePixel = float>
-class SLICImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT SLICImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SLICImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SLICImageFilter);
 
   /** Standard class type aliases. */
   using Self = SLICImageFilter;
@@ -177,13 +178,13 @@ protected:
   ThreadedUpdateDistanceAndLabel(const OutputImageRegionType & outputRegionForThread);
 
   void
-  ThreadedUpdateClusters(const OutputImageRegionType & outputRegionForThread);
+  ThreadedUpdateClusters(const OutputImageRegionType & updateRegionForThread);
 
   void
-  ThreadedPerturbClusters(SizeValueType idx);
+  ThreadedPerturbClusters(SizeValueType clusterIndex);
 
   void
-  ThreadedConnectivity(SizeValueType idx);
+  ThreadedConnectivity(SizeValueType clusterIndex);
 
   void
   SingleThreadedConnectivity();
@@ -199,7 +200,7 @@ protected:
   Distance(const ClusterType & cluster1, const ClusterType & cluster2);
 
   DistanceType
-  Distance(const ClusterType & cluster, const InputPixelType & v, const PointType & pt);
+  Distance(const ClusterType & cluster, const InputPixelType & _v, const PointType & pt);
 
 private:
   SuperGridSizeType m_SuperGridSize;

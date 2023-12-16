@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 
 namespace itk
 {
-/**\class FastMarchingReachedTargetNodesStoppingCriterionEnums
+/** \class FastMarchingReachedTargetNodesStoppingCriterionEnums
  * \brief Contains all enum classes used by FastMarchingReachedTargetNodesStoppingCriterion class
  * \ingroup ITKFastMarching
  */
@@ -33,7 +33,7 @@ class FastMarchingReachedTargetNodesStoppingCriterionEnums
 {
 public:
   /**
-   *\class TargetCondition
+   * \class TargetCondition
    * \ingroup ITKFastMarching
    * TargetConditionEnum */
   enum class TargetCondition : uint8_t
@@ -56,16 +56,17 @@ extern ITKFastMarching_EXPORT std::ostream &
  * \ingroup ITKFastMarching
  */
 template <typename TInput, typename TOutput>
-class FastMarchingReachedTargetNodesStoppingCriterion : public FastMarchingStoppingCriterionBase<TInput, TOutput>
+class ITK_TEMPLATE_EXPORT FastMarchingReachedTargetNodesStoppingCriterion
+  : public FastMarchingStoppingCriterionBase<TInput, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingReachedTargetNodesStoppingCriterion);
+  ITK_DISALLOW_COPY_AND_MOVE(FastMarchingReachedTargetNodesStoppingCriterion);
 
   using Self = FastMarchingReachedTargetNodesStoppingCriterion;
   using Superclass = FastMarchingStoppingCriterionBase<TInput, TOutput>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
-  using Traits = typename Superclass::Traits;
+  using typename Superclass::Traits;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -73,8 +74,8 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(FastMarchingReachedTargetNodesStoppingCriterion, FastMarchingStoppingCriterionBase);
 
-  using OutputPixelType = typename Superclass::OutputPixelType;
-  using NodeType = typename Superclass::NodeType;
+  using typename Superclass::OutputPixelType;
+  using typename Superclass::NodeType;
 
   using TargetConditionEnum = FastMarchingReachedTargetNodesStoppingCriterionEnums::TargetCondition;
 #if !defined(ITK_LEGACY_REMOVE)

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,7 +58,7 @@ template <typename TFixedImage, typename TMovingImage>
 class ITK_TEMPLATE_EXPORT GradientDifferenceImageToImageMetric : public ImageToImageMetric<TFixedImage, TMovingImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GradientDifferenceImageToImageMetric);
+  ITK_DISALLOW_COPY_AND_MOVE(GradientDifferenceImageToImageMetric);
 
   /** Standard class type aliases. */
   using Self = GradientDifferenceImageToImageMetric;
@@ -74,18 +74,18 @@ public:
   itkTypeMacro(GradientDifferenceImageToImageMetric, ImageToImageMetric);
 
   /** Types transferred from the base class */
-  using RealType = typename Superclass::RealType;
-  using TransformType = typename Superclass::TransformType;
-  using TransformPointer = typename Superclass::TransformPointer;
-  using TransformParametersType = typename Superclass::TransformParametersType;
-  using TransformJacobianType = typename Superclass::TransformJacobianType;
+  using typename Superclass::RealType;
+  using typename Superclass::TransformType;
+  using typename Superclass::TransformPointer;
+  using typename Superclass::TransformParametersType;
+  using typename Superclass::TransformJacobianType;
 
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using FixedImageType = typename Superclass::FixedImageType;
-  using MovingImageType = typename Superclass::MovingImageType;
-  using FixedImageConstPointer = typename Superclass::FixedImageConstPointer;
-  using MovingImageConstPointer = typename Superclass::MovingImageConstPointer;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::FixedImageType;
+  using typename Superclass::MovingImageType;
+  using typename Superclass::FixedImageConstPointer;
+  using typename Superclass::MovingImageConstPointer;
 
   using FixedImagePixelType = typename TFixedImage::PixelType;
   using MovedImagePixelType = typename TMovingImage::PixelType;
@@ -128,16 +128,12 @@ public:
   void
   GetValueAndDerivative(const TransformParametersType & parameters,
                         MeasureType &                   Value,
-                        DerivativeType &                derivative) const override;
+                        DerivativeType &                Derivative) const override;
 
   /** Initialize the Metric by making sure that all the components
    *  are present and plugged together correctly     */
   void
   Initialize() override;
-
-  /** Write gradient images to a files for debugging purposes. */
-  void
-  WriteGradientImagesToFiles() const;
 
   /** Set/Get the value of Delta used for computing derivatives by finite
    * differences in the GetDerivative() method */

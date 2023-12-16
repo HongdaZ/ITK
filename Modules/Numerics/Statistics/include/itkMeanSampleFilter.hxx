@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMeanSampleFilter_hxx
 #define itkMeanSampleFilter_hxx
 
-#include "itkMeanSampleFilter.h"
 
 #include <vector>
 #include "itkCompensatedSummation.h"
@@ -59,36 +58,36 @@ MeanSampleFilter<TSample>::GetInput() const
 }
 
 template <typename TSample>
-typename MeanSampleFilter<TSample>::DataObjectPointer
-MeanSampleFilter<TSample>::MakeOutput(DataObjectPointerArraySizeType itkNotUsed(idx))
+auto
+MeanSampleFilter<TSample>::MakeOutput(DataObjectPointerArraySizeType itkNotUsed(idx)) -> DataObjectPointer
 {
   MeasurementVectorRealType mean;
   (void)mean; // for complainty pants : valgrind
   NumericTraits<MeasurementVectorRealType>::SetLength(mean, this->GetMeasurementVectorSize());
   // NumericTraits::SetLength also initializes array to zero
-  typename MeasurementVectorDecoratedType::Pointer decoratedMean = MeasurementVectorDecoratedType::New();
+  auto decoratedMean = MeasurementVectorDecoratedType::New();
   decoratedMean->Set(mean);
   return decoratedMean.GetPointer();
 }
 
 template <typename TSample>
-const typename MeanSampleFilter<TSample>::MeasurementVectorDecoratedType *
-MeanSampleFilter<TSample>::GetOutput() const
+auto
+MeanSampleFilter<TSample>::GetOutput() const -> const MeasurementVectorDecoratedType *
 {
   return itkDynamicCastInDebugMode<const MeasurementVectorDecoratedType *>(this->ProcessObject::GetOutput(0));
 }
 
 template <typename TSample>
-const typename MeanSampleFilter<TSample>::MeasurementVectorRealType
-MeanSampleFilter<TSample>::GetMean() const
+auto
+MeanSampleFilter<TSample>::GetMean() const -> const MeasurementVectorRealType
 {
   const MeasurementVectorDecoratedType * decorator = this->GetOutput();
   return decorator->Get();
 }
 
 template <typename TSample>
-typename MeanSampleFilter<TSample>::MeasurementVectorSizeType
-MeanSampleFilter<TSample>::GetMeasurementVectorSize() const
+auto
+MeanSampleFilter<TSample>::GetMeasurementVectorSize() const -> MeasurementVectorSizeType
 {
   const SampleType * input = this->GetInput();
 
@@ -98,8 +97,7 @@ MeanSampleFilter<TSample>::GetMeasurementVectorSize() const
   }
 
   // Test if the Vector type knows its length
-  MeasurementVectorType     vector;
-  MeasurementVectorSizeType measurementVectorSize = NumericTraits<MeasurementVectorType>::GetLength(vector);
+  MeasurementVectorSizeType measurementVectorSize = NumericTraits<MeasurementVectorType>::GetLength({});
 
   if (measurementVectorSize)
   {
@@ -145,7 +143,7 @@ MeanSampleFilter<TSample>::GenerateData()
     const typename SampleType::AbsoluteFrequencyType frequency = iter.GetFrequency();
     totalFrequency += frequency;
 
-    for (unsigned int dim = 0; dim < measurementVectorSize; dim++)
+    for (unsigned int dim = 0; dim < measurementVectorSize; ++dim)
     {
       const auto component = static_cast<MeasurementRealType>(measurement[dim]);
 
@@ -156,7 +154,7 @@ MeanSampleFilter<TSample>::GenerateData()
   // compute the mean if the total frequency is different from zero
   if (totalFrequency > itk::Math::eps)
   {
-    for (unsigned int dim = 0; dim < measurementVectorSize; dim++)
+    for (unsigned int dim = 0; dim < measurementVectorSize; ++dim)
     {
       output[dim] = (sum[dim].GetSum() / static_cast<MeasurementRealType>(totalFrequency));
     }

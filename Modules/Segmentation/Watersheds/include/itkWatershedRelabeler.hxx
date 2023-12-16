@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkWatershedRelabeler_hxx
 
 #include "itkImageRegionIterator.h"
-#include "itkWatershedRelabeler.h"
 
 namespace itk
 {
@@ -34,8 +33,8 @@ Relabeler<TScalar, TImageDimension>::Relabeler()
 }
 
 template <typename TScalar, unsigned int TImageDimension>
-typename Relabeler<TScalar, TImageDimension>::DataObjectPointer
-Relabeler<TScalar, TImageDimension>::MakeOutput(DataObjectPointerArraySizeType itkNotUsed(idx))
+auto
+Relabeler<TScalar, TImageDimension>::MakeOutput(DataObjectPointerArraySizeType itkNotUsed(idx)) -> DataObjectPointer
 {
   return ImageType::New().GetPointer();
 }
@@ -50,7 +49,7 @@ Relabeler<TScalar, TImageDimension>::GenerateData()
 
   typename SegmentTreeType::Pointer  tree = this->GetInputSegmentTree();
   typename SegmentTreeType::Iterator it;
-  EquivalencyTable::Pointer          eqT = EquivalencyTable::New();
+  auto                               eqT = EquivalencyTable::New();
 
   output->SetBufferedRegion(output->GetRequestedRegion());
   output->Allocate();
@@ -83,10 +82,10 @@ Relabeler<TScalar, TImageDimension>::GenerateData()
   this->UpdateProgress(0.5);
 
   it = tree->Begin();
-  while (it != tree->End() && (*it).saliency <= mergeLimit)
+  while (it != tree->End() && it->saliency <= mergeLimit)
   {
-    eqT->Add((*it).from, (*it).to);
-    it++;
+    eqT->Add(it->from, it->to);
+    ++it;
   }
 
   SegmenterType::RelabelImage(output, output->GetRequestedRegion(), eqT);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMovingHistogramImageFilterBase_hxx
 #define itkMovingHistogramImageFilterBase_hxx
 
-#include "itkMovingHistogramImageFilterBase.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkOffset.h"
 #include "itkProgressReporter.h"
@@ -49,7 +48,7 @@ MovingHistogramImageFilterBase<TInputImage, TOutputImage, TKernel>::SetKernel(co
   // transform the structuring element in an image for an easier
   // access to the data
   using BoolImageType = Image<bool, TInputImage::ImageDimension>;
-  typename BoolImageType::Pointer tmpSEImage = BoolImageType::New();
+  auto tmpSEImage = BoolImageType::New();
   tmpSEImage->SetRegions(kernel.GetSize());
   tmpSEImage->Allocate();
   RegionType                                  tmpSEImageRegion = tmpSEImage->GetRequestedRegion();
@@ -61,7 +60,7 @@ MovingHistogramImageFilterBase<TInputImage, TOutputImage, TKernel>::SetKernel(co
 
   // create a center index to compute the offset
   IndexType centerIndex;
-  for (unsigned axis = 0; axis < ImageDimension; axis++)
+  for (unsigned int axis = 0; axis < ImageDimension; ++axis)
   {
     centerIndex[axis] = kernel.GetSize()[axis] / 2;
   }
@@ -81,7 +80,7 @@ MovingHistogramImageFilterBase<TInputImage, TOutputImage, TKernel>::SetKernel(co
     {
       kernelImageIt.Set(true);
       kernelOffsets.push_front(kernelImageIt.GetIndex() - centerIndex);
-      count++;
+      ++count;
     }
     else
     {
@@ -113,7 +112,7 @@ MovingHistogramImageFilterBase<TInputImage, TOutputImage, TKernel>::SetKernel(co
   FixedArray<SizeValueType, ImageDimension> axisCount;
   axisCount.Fill(0);
 
-  for (unsigned axis = 0; axis < ImageDimension; axis++)
+  for (unsigned int axis = 0; axis < ImageDimension; ++axis)
   {
     OffsetType refOffset;
     refOffset.Fill(0);
@@ -165,7 +164,7 @@ MovingHistogramImageFilterBase<TInputImage, TOutputImage, TKernel>::SetKernel(co
   using MapCountType = typename std::set<DirectionCost>;
   MapCountType invertedCount;
   unsigned int i;
-  for (i = 0; i < ImageDimension; i++)
+  for (i = 0; i < ImageDimension; ++i)
   {
     invertedCount.insert(DirectionCost(i, axisCount[i]));
   }
@@ -199,7 +198,7 @@ MovingHistogramImageFilterBase<TInputImage, TOutputImage, TKernel>::GetDirAndOff
   // 1 non zero (positive) entry in LineOffset.
   // When moving between planes there will be some negative ones too.
   LineOffset = Changes = LineStart - PrevLineStart;
-  for (unsigned int y = 0; y < ImageDimension; y++)
+  for (unsigned int y = 0; y < ImageDimension; ++y)
   {
     if (LineOffset[y] > 0)
     {

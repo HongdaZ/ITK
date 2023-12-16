@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class MembershipSample
+ * \class MembershipSample
  * \brief Container for storing the instance-identifiers of other sample with
  * their associated class labels.
  *
@@ -57,7 +57,7 @@ template <typename TSample>
 class ITK_TEMPLATE_EXPORT MembershipSample : public DataObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MembershipSample);
+  ITK_DISALLOW_COPY_AND_MOVE(MembershipSample);
 
   /** Standard class type aliases. */
   using Self = MembershipSample;
@@ -136,7 +136,7 @@ public:
   /** returns the measurement element which is the 'n'-th element
    * in the 'd' dimension of the measurement vector */
   MeasurementType
-  GetMeasurement(const InstanceIdentifier & id, const unsigned int & dimension);
+  GetMeasurement(const InstanceIdentifier & id, const unsigned int dimension);
 
   /** returns the frequency of the instance which is identified by the 'id' */
   AbsoluteFrequencyType
@@ -176,16 +176,12 @@ public:
     }
 
     bool
-    operator!=(const ConstIterator & it)
-    {
-      return (m_InstanceIdentifier != it.m_InstanceIdentifier);
-    }
-
-    bool
-    operator==(const ConstIterator & it)
+    operator==(const ConstIterator & it) const
     {
       return (m_InstanceIdentifier == it.m_InstanceIdentifier);
     }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
 
     ConstIterator &
     operator++()

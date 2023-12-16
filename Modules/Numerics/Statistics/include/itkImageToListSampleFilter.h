@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class ImageToListSampleFilter
+ * \class ImageToListSampleFilter
  *  \brief The class takes an image as input and generates a list sample as
  *  output.
  *
@@ -56,7 +56,7 @@ template <typename TImage, typename TMaskImage = TImage>
 class ITK_TEMPLATE_EXPORT ImageToListSampleFilter : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToListSampleFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageToListSampleFilter);
 
   /** Standard class type aliases */
   using Self = ImageToListSampleFilter;

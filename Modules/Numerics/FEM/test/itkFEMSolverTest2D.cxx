@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ itkFEMSolverTest2D(int argc, char * argv[])
   itk::FEMFactoryBase::GetFactory()->RegisterDefaultTypes();
 
   using Solver2DType = itk::fem::Solver<2>;
-  Solver2DType::Pointer solver = Solver2DType::New();
+  auto solver = Solver2DType::New();
 
   using SpatialObjectType = itk::SpatialObject<2>;
   using SpatialObjectPointer = SpatialObjectType::Pointer;
@@ -83,7 +83,7 @@ itkFEMSolverTest2D(int argc, char * argv[])
 
   int               numDOF = femSO->GetFEMObject()->GetNumberOfDegreesOfFreedom();
   vnl_vector<float> soln(numDOF);
-  for (int i = 0; i < numDOF; i++)
+  for (int i = 0; i < numDOF; ++i)
   {
     soln[i] = femSO->GetFEMObject()->GetSolution(i);
     std::cout << "Solution[" << i << "]:" << soln[i] << std::endl;

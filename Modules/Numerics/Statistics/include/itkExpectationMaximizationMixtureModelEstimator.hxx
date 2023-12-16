@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkExpectationMaximizationMixtureModelEstimator_hxx
 #define itkExpectationMaximizationMixtureModelEstimator_hxx
 
-#include "../include/itkExpectationMaximizationMixtureModelEstimator.h"
 #include "itkNumericTraits.h"
 #include "itkMath.h"
 
@@ -41,7 +40,7 @@ ExpectationMaximizationMixtureModelEstimator<TSample>::PrintSelf(std::ostream & 
   os << indent << "Maximum Iteration: " << this->GetMaximumIteration() << std::endl;
   os << indent << "Sample: " << this->GetSample() << std::endl;
   os << indent << "Number Of Components: " << this->GetNumberOfComponents() << std::endl;
-  for (unsigned int i = 0; i < this->GetNumberOfComponents(); i++)
+  for (unsigned int i = 0; i < this->GetNumberOfComponents(); ++i)
   {
     os << indent << "Component Membership Function[" << i << "]: " << this->GetComponentMembershipFunction(i)
        << std::endl;
@@ -74,15 +73,15 @@ ExpectationMaximizationMixtureModelEstimator<TSample>::SetInitialProportions(Pro
 }
 
 template <typename TSample>
-const typename ExpectationMaximizationMixtureModelEstimator<TSample>::ProportionVectorType &
-ExpectationMaximizationMixtureModelEstimator<TSample>::GetInitialProportions() const
+auto
+ExpectationMaximizationMixtureModelEstimator<TSample>::GetInitialProportions() const -> const ProportionVectorType &
 {
   return m_InitialProportions;
 }
 
 template <typename TSample>
-const typename ExpectationMaximizationMixtureModelEstimator<TSample>::ProportionVectorType &
-ExpectationMaximizationMixtureModelEstimator<TSample>::GetProportions() const
+auto
+ExpectationMaximizationMixtureModelEstimator<TSample>::GetProportions() const -> const ProportionVectorType &
 {
   return m_Proportions;
 }
@@ -117,15 +116,16 @@ ExpectationMaximizationMixtureModelEstimator<TSample>::GetNumberOfComponents() c
 }
 
 template <typename TSample>
-typename ExpectationMaximizationMixtureModelEstimator<TSample>::TERMINATION_CODE_ENUM
-ExpectationMaximizationMixtureModelEstimator<TSample>::GetTerminationCode() const
+auto
+ExpectationMaximizationMixtureModelEstimator<TSample>::GetTerminationCode() const -> TERMINATION_CODE_ENUM
 {
   return m_TerminationCode;
 }
 
 template <typename TSample>
-typename ExpectationMaximizationMixtureModelEstimator<TSample>::ComponentMembershipFunctionType *
+auto
 ExpectationMaximizationMixtureModelEstimator<TSample>::GetComponentMembershipFunction(int componentIndex) const
+  -> ComponentMembershipFunctionType *
 {
   return (m_ComponentVector[componentIndex])->GetMembershipFunction();
 }
@@ -136,7 +136,7 @@ ExpectationMaximizationMixtureModelEstimator<TSample>::CalculateDensities()
 {
   bool componentModified = false;
 
-  for (size_t i = 0; i < m_ComponentVector.size(); i++)
+  for (size_t i = 0; i < m_ComponentVector.size(); ++i)
   {
     if ((m_ComponentVector[i])->AreParametersModified())
     {
@@ -239,7 +239,7 @@ ExpectationMaximizationMixtureModelEstimator<TSample>::CalculateExpectation() co
       {
         logProportion = NumericTraits<double>::NonpositiveMin();
       }
-      for (measurementVectorIndex = 0; measurementVectorIndex < size; measurementVectorIndex++)
+      for (measurementVectorIndex = 0; measurementVectorIndex < size; ++measurementVectorIndex)
       {
         temp = m_ComponentVector[componentIndex]->GetWeight(measurementVectorIndex);
         if (temp > NumericTraits<double>::epsilon())
@@ -342,8 +342,8 @@ ExpectationMaximizationMixtureModelEstimator<TSample>::GenerateData()
 }
 
 template <typename TSample>
-const typename ExpectationMaximizationMixtureModelEstimator<TSample>::MembershipFunctionVectorObjectType *
-ExpectationMaximizationMixtureModelEstimator<TSample>::GetOutput() const
+auto
+ExpectationMaximizationMixtureModelEstimator<TSample>::GetOutput() const -> const MembershipFunctionVectorObjectType *
 {
   size_t                         numberOfComponents = m_ComponentVector.size();
   MembershipFunctionVectorType & membershipFunctionsVector = m_MembershipFunctionsObject->Get();
@@ -361,10 +361,10 @@ ExpectationMaximizationMixtureModelEstimator<TSample>::GetOutput() const
   for (size_t i = 0; i < numberOfComponents; ++i)
   {
     parameters = m_ComponentVector[i]->GetFullParameters();
-    typename GaussianMembershipFunctionType::Pointer membershipFunction = GaussianMembershipFunctionType::New();
+    auto membershipFunction = GaussianMembershipFunctionType::New();
     membershipFunction->SetMeasurementVectorSize(measurementVectorSize);
     unsigned int parameterIndex = 0;
-    for (unsigned int j = 0; j < measurementVectorSize; j++)
+    for (unsigned int j = 0; j < measurementVectorSize; ++j)
     {
       mean[j] = parameters[j];
       ++parameterIndex;
@@ -388,8 +388,9 @@ ExpectationMaximizationMixtureModelEstimator<TSample>::GetOutput() const
 }
 
 template <typename TSample>
-const typename ExpectationMaximizationMixtureModelEstimator<TSample>::MembershipFunctionsWeightsArrayObjectType *
+auto
 ExpectationMaximizationMixtureModelEstimator<TSample>::GetMembershipFunctionsWeightsArray() const
+  -> const MembershipFunctionsWeightsArrayObjectType *
 {
   size_t                 numberOfComponents = m_ComponentVector.size();
   ProportionVectorType & membershipFunctionsWeightVector = m_MembershipFunctionsWeightArrayObject->Get();

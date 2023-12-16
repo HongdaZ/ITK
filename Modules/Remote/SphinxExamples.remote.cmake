@@ -27,12 +27,12 @@
 #--   - [X] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -49,6 +49,6 @@
 itk_fetch_module(SphinxExamples
   "This module builds the examples found at https://itk.org/ITKExamples/"
   MODULE_COMPLIANCE_LEVEL 5
-  GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKExamples.git
-  GIT_TAG c33ac8ba4cc45cb18981be369be368df61052638
+  GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKSphinxExamples.git
+  GIT_TAG ffdabca2f41e91a062b6b616f300f55ef088eddc
   )

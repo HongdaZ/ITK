@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -232,7 +232,8 @@ OpenCVVideoIO::ReadImageInformation()
         itkExceptionMacro(<< " I-Frame spacing for this video is zero! Please check input data.");
       }
 
-      this->m_LastIFrame = (OpenCVVideoIO::FrameOffsetType)((float)this->m_FrameTotal / (float)this->m_IFrameInterval) *
+      this->m_LastIFrame = (OpenCVVideoIO::FrameOffsetType)(static_cast<float>(this->m_FrameTotal) /
+                                                            static_cast<float>(this->m_IFrameInterval)) *
                              this->m_IFrameInterval -
                            1; // Frame index should be 0-based index
 
@@ -436,7 +437,7 @@ OpenCVVideoIO::SetWriterParameters(TemporalRatioType                  fps,
                                    const std::vector<SizeValueType> & dim,
                                    const char *                       fourCC,
                                    unsigned int                       nChannels,
-                                   IOComponentType                    componentType)
+                                   IOComponentEnum                    componentType)
 {
   if (this->m_ReaderOpen || this->m_WriterOpen)
   {
@@ -444,7 +445,7 @@ OpenCVVideoIO::SetWriterParameters(TemporalRatioType                  fps,
   }
 
   // Make sure componentType is acceptable (right now we only support char)
-  if (componentType != UCHAR)
+  if (componentType != IOComponentEnum::UCHAR)
   {
     itkExceptionMacro("OpenCV IO only supports writing video with pixels of UCHAR");
   }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ template <unsigned int VDimension = 3, typename TInput = Point<double, VDimensio
 class ITK_TEMPLATE_EXPORT FiniteCylinderSpatialFunction : public InteriorExteriorSpatialFunction<VDimension, TInput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FiniteCylinderSpatialFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(FiniteCylinderSpatialFunction);
 
   /** Standard class type aliases. */
   using Self = FiniteCylinderSpatialFunction;
@@ -54,10 +54,10 @@ public:
   itkNewMacro(Self);
 
   /** Input type for the function */
-  using InputType = typename Superclass::InputType;
+  using typename Superclass::InputType;
 
   /** Output type for the function */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** Set/Get and set the center of the cylinder. */
   itkGetConstMacro(Center, InputType);

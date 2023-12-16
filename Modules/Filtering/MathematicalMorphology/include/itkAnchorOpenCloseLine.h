@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ public:
   /** Single-threaded version of GenerateData.  This filter delegates
    * to GrayscaleGeodesicErodeImageFilter. */
   void
-  DoLine(std::vector<InputImagePixelType> & buffer, unsigned bufflength);
+  DoLine(std::vector<InputImagePixelType> & buffer, unsigned int bufflength);
 
   void
   SetSize(unsigned int size)
@@ -63,14 +63,14 @@ private:
   bool
   StartLine(std::vector<InputImagePixelType> & buffer,
             InputImagePixelType &              Extreme,
-            unsigned &                         outLeftP,
-            unsigned &                         outRightP);
+            unsigned int &                     outLeftP,
+            unsigned int &                     outRightP);
 
   void
   FinishLine(std::vector<InputImagePixelType> & buffer,
              InputImagePixelType &              Extreme,
-             unsigned &                         outLeftP,
-             unsigned &                         outRightP);
+             unsigned int &                     outLeftP,
+             unsigned int &                     outRightP);
 
   inline bool
   Compare1(const InputImagePixelType & a, const InputImagePixelType & b)

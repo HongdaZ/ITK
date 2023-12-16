@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSparseFieldLevelSetImageFilter_hxx
 #define itkSparseFieldLevelSetImageFilter_hxx
 
-#include "itkSparseFieldLevelSetImageFilter.h"
 #include "itkZeroCrossingImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkShiftScaleImageFilter.h"
@@ -31,7 +30,7 @@ template <typename TNeighborhoodType>
 SparseFieldCityBlockNeighborList<TNeighborhoodType>::SparseFieldCityBlockNeighborList()
 {
   using ImageType = typename NeighborhoodType::ImageType;
-  typename ImageType::Pointer dummy_image = ImageType::New();
+  auto dummy_image = ImageType::New();
 
   unsigned int i, nCenter;
   int          d;
@@ -76,7 +75,7 @@ void
 SparseFieldCityBlockNeighborList<TNeighborhoodType>::Print(std::ostream & os) const
 {
   os << "SparseFieldCityBlockNeighborList: " << std::endl;
-  for (unsigned i = 0; i < this->GetSize(); ++i)
+  for (unsigned int i = 0; i < this->GetSize(); ++i)
   {
     os << "m_ArrayIndex[" << i << "]: " << m_ArrayIndex[i] << std::endl;
     os << "m_NeighborhoodOffset[" << i << "]: " << m_NeighborhoodOffset[i] << std::endl;
@@ -375,7 +374,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::UpdateActiveLayerValu
           // Keep the smallest possible value for the new active node.  This
           // places the new active layer node closest to the zero level-set.
           if (outputIt.GetPixel(idx) < LOWER_ACTIVE_THRESHOLD ||
-              ::itk::Math::abs(temp_value) < ::itk::Math::abs(outputIt.GetPixel(idx)))
+              itk::Math::abs(temp_value) < itk::Math::abs(outputIt.GetPixel(idx)))
           {
             outputIt.SetPixel(idx, temp_value, bounds_status);
           }
@@ -426,7 +425,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::UpdateActiveLayerValu
           // Keep the smallest magnitude value for this active set node.  This
           // places the node closest to the active layer.
           if (outputIt.GetPixel(idx) >= UPPER_ACTIVE_THRESHOLD ||
-              ::itk::Math::abs(temp_value) < ::itk::Math::abs(outputIt.GetPixel(idx)))
+              itk::Math::abs(temp_value) < itk::Math::abs(outputIt.GetPixel(idx)))
           {
             outputIt.SetPixel(idx, temp_value, bounds_status);
           }
@@ -462,7 +461,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::UpdateActiveLayerValu
   else
   {
     this->SetRMSChange(
-      static_cast<double>(std::sqrt((double)(rms_change_accumulator / static_cast<ValueType>(counter)))));
+      static_cast<double>(std::sqrt(static_cast<double>(rms_change_accumulator / static_cast<ValueType>(counter)))));
   }
 }
 
@@ -479,7 +478,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::CopyInputToOutput()
 
   // First need to subtract the iso-surface value from the input image.
   using ShiftScaleFilterType = ShiftScaleImageFilter<InputImageType, OutputImageType>;
-  typename ShiftScaleFilterType::Pointer shiftScaleFilter = ShiftScaleFilterType::New();
+  auto shiftScaleFilter = ShiftScaleFilterType::New();
   shiftScaleFilter->SetInput(this->GetInput());
   shiftScaleFilter->SetShift(-m_IsoSurfaceValue);
   // keep a handle to the shifted output
@@ -507,7 +506,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::Initialize()
   if (this->GetUseImageSpacing())
   {
     SpacePrecisionType minSpacing = NumericTraits<SpacePrecisionType>::max();
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       minSpacing = std::min(minSpacing, this->GetInput()->GetSpacing()[i]);
     }
@@ -681,7 +680,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::ConstructActiveLayer(
 
       // Check to see if any of the sparse field touches a boundary.  If so,
       // then activate bounds checking.
-      for (unsigned int i = 0; i < ImageDimension; i++)
+      for (unsigned int i = 0; i < ImageDimension; ++i)
       {
         if (center_index[i] + static_cast<OffsetValueType>(m_NumberOfLayers) >= (upperBounds[i] - 1) ||
             center_index[i] - static_cast<OffsetValueType>(m_NumberOfLayers) <= lowerBounds[i])
@@ -780,7 +779,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::InitializeActiveLayer
   if (this->GetUseImageSpacing())
   {
     SpacePrecisionType minSpacing = NumericTraits<SpacePrecisionType>::max();
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       minSpacing = std::min(minSpacing, this->GetInput()->GetSpacing()[i]);
     }
@@ -824,7 +823,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::InitializeActiveLayer
         length += dx_backward * dx_backward;
       }
     }
-    length = std::sqrt((double)length) + MIN_NORM;
+    length = std::sqrt(static_cast<double>(length)) + MIN_NORM;
     distance = shiftedIt.GetCenterPixel() / length;
 
     output->SetPixel(activeIt->m_Value, std::min(std::max(-CHANGE_FACTOR, distance), CHANGE_FACTOR));
@@ -845,18 +844,18 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::AllocateUpdateBuffer(
 }
 
 template <typename TInputImage, typename TOutputImage>
-typename SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::TimeStepType
-SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::CalculateChange()
+auto
+SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::CalculateChange() -> TimeStepType
 {
   const typename Superclass::FiniteDifferenceFunctionType::Pointer   df = this->GetDifferenceFunction();
   typename Superclass::FiniteDifferenceFunctionType::FloatOffsetType offset;
-  ValueType norm_grad_phi_squared, dx_forward, dx_backward, forwardValue, backwardValue, centerValue;
-  unsigned  i;
-  ValueType MIN_NORM = 1.0e-6;
+  ValueType    norm_grad_phi_squared, dx_forward, dx_backward, forwardValue, backwardValue, centerValue;
+  unsigned int i;
+  ValueType    MIN_NORM = 1.0e-6;
   if (this->GetUseImageSpacing())
   {
     SpacePrecisionType minSpacing = NumericTraits<SpacePrecisionType>::max();
-    for (i = 0; i < ImageDimension; i++)
+    for (i = 0; i < ImageDimension; ++i)
     {
       minSpacing = std::min(minSpacing, this->GetInput()->GetSpacing()[i]);
     }
@@ -907,7 +906,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::CalculateChange()
           dx_backward = centerValue - backwardValue;
 
           // Pick the larger magnitude derivative.
-          if (::itk::Math::abs(dx_forward) > ::itk::Math::abs(dx_backward))
+          if (itk::Math::abs(dx_forward) > itk::Math::abs(dx_backward))
           {
             offset[i] = dx_forward;
           }
@@ -1139,7 +1138,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostrea
   os << indent << "m_IsoSurfaceValue: " << m_IsoSurfaceValue << std::endl;
   itkPrintSelfObjectMacro(LayerNodeStore);
   os << indent << "m_BoundsCheckingActive: " << m_BoundsCheckingActive;
-  for (i = 0; i < m_Layers.size(); i++)
+  for (i = 0; i < m_Layers.size(); ++i)
   {
     os << indent << "m_Layers[" << i << "]: size=" << m_Layers[i]->Size() << std::endl;
     os << indent << m_Layers[i];

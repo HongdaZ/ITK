@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class GradientDescentOptimizerBasev4
+ * \class GradientDescentOptimizerBasev4
  *  \brief Abstract base class for gradient descent-style optimizers.
  *
  * Gradient modification is threaded in \c ModifyGradient.
@@ -41,7 +41,7 @@ class ITK_TEMPLATE_EXPORT GradientDescentOptimizerBasev4Template
   : public ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GradientDescentOptimizerBasev4Template);
+  ITK_DISALLOW_COPY_AND_MOVE(GradientDescentOptimizerBasev4Template);
 
   /** Standard class type aliases. */
   using Self = GradientDescentOptimizerBasev4Template;
@@ -50,7 +50,7 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GradientDescentOptimizerBasev4Template, Superclass);
+  itkTypeMacro(GradientDescentOptimizerBasev4Template, ObjectToObjectOptimizerBaseTemplate);
 
 #if !defined(ITK_LEGACY_REMOVE)
   /**Exposes enums values for backwards compatibility*/
@@ -71,27 +71,27 @@ public:
 #endif
 
   /** Stop condition return string type */
-  using StopConditionReturnStringType = typename Superclass::StopConditionReturnStringType;
+  using typename Superclass::StopConditionReturnStringType;
 
   /** Stop condition internal string type */
-  using StopConditionDescriptionType = typename Superclass::StopConditionDescriptionType;
+  using typename Superclass::StopConditionDescriptionType;
 
   /** It should be possible to derive the internal computation type from the class object. */
   using InternalComputationValueType = TInternalComputationValueType;
 
   /** Metric type over which this class is templated */
-  using MetricType = typename Superclass::MetricType;
+  using typename Superclass::MetricType;
   using MetricTypePointer = typename MetricType::Pointer;
 
   /** Derivative type */
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeType;
 
   /** Measure type */
-  using MeasureType = typename Superclass::MeasureType;
+  using typename Superclass::MeasureType;
 
-  using ScalesType = typename Superclass::ScalesType;
+  using typename Superclass::ScalesType;
 
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
 
   /** Type for the convergence checker */
   using ConvergenceMonitoringType = itk::Function::WindowConvergenceMonitoringFunction<TInternalComputationValueType>;
@@ -101,32 +101,6 @@ public:
 
   /** Get stop condition enum */
   itkGetConstReferenceMacro(StopCondition, StopConditionObjectToObjectOptimizerEnum);
-
-  /** Set the number of iterations. */
-  void
-  SetNumberOfIterations(const SizeValueType numberOfIterations) override
-  {
-    itkDebugMacro("setting NumberOfIterations to " << numberOfIterations);
-    if (this->m_NumberOfIterations != numberOfIterations)
-    {
-      this->m_NumberOfIterations = numberOfIterations;
-      this->Modified();
-    }
-  }
-
-  /** Get the number of iterations. */
-  SizeValueType
-  GetNumberOfIterations() const override
-  {
-    return this->m_NumberOfIterations;
-  }
-
-  /** Get the current iteration number. */
-  SizeValueType
-  GetCurrentIteration() const override
-  {
-    return this->m_CurrentIteration;
-  }
 
   /** Start and run the optimization */
   void

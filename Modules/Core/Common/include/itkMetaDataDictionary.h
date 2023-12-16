@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #define itkMetaDataDictionary_h
 
 #include "itkMetaDataObjectBase.h"
+#include <algorithm> // For std::equal
 #include <vector>
 #include <map>
 #include <string>
@@ -81,13 +82,42 @@ public:
   // Destructor
   virtual ~MetaDataDictionary();
 
+  /** Returns (metaDataDictionary1 == metaDataDictionary2). */
+  friend bool
+  operator==(const Self & lhs, const Self & rhs)
+  {
+    using KeyValuePair = MetaDataDictionaryMapType::value_type;
+
+    return (lhs.m_Dictionary == rhs.m_Dictionary) ||
+           ((lhs.m_Dictionary != nullptr) && (rhs.m_Dictionary != nullptr) &&
+            (lhs.m_Dictionary->size() == rhs.m_Dictionary->size()) &&
+            std::equal(lhs.m_Dictionary->cbegin(),
+                       lhs.m_Dictionary->cend(),
+                       rhs.m_Dictionary->cbegin(),
+                       [](const KeyValuePair & keyValuePair1, const KeyValuePair & keyValuePair2) {
+                         const auto & value1 = keyValuePair1.second;
+                         const auto & value2 = keyValuePair2.second;
+                         return (keyValuePair1.first == keyValuePair2.first) &&
+                                ((value1 == value2) ||
+                                 ((value1 != nullptr) && (value2 != nullptr) && (*value1 == *value2)));
+                       }));
+  }
+
+  /** Returns (metaDataDictionary1 != metaDataDictionary2). */
+  friend bool
+  operator!=(const Self & lhs, const Self & rhs)
+  {
+    return !(lhs == rhs);
+  }
+
+
   /** Returns a vector of keys to the key/value entries in the
    * dictionary.  Iterate through the dictionary using these keys.
    */
   std::vector<std::string>
   GetKeys() const;
 
-  // Implement map's api. On some Micorsoft compilers, stl containers
+  // Implement map's api. On some Microsoft compilers, stl containers
   // cannot be exported. This causes problems when building DLL's.
   // Here we inherit privately from std::map and provide a simple
   // API. The implementation will be in the DLL.

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,7 @@
  *=========================================================================*/
 #ifndef itkQuadrilateralCell_hxx
 #define itkQuadrilateralCell_hxx
-#include "itkQuadrilateralCell.h"
+#include "itkMath.h"
 #include "vnl/algo/vnl_determinant.h"
 
 namespace itk
@@ -61,8 +61,8 @@ QuadrilateralCell<TCellInterface>::GetNumberOfPoints() const
  * Get the number of boundary features of the given dimension.
  */
 template <typename TCellInterface>
-typename QuadrilateralCell<TCellInterface>::CellFeatureCount
-QuadrilateralCell<TCellInterface>::GetNumberOfBoundaryFeatures(int dimension) const
+auto
+QuadrilateralCell<TCellInterface>::GetNumberOfBoundaryFeatures(int dimension) const -> CellFeatureCount
 {
   switch (dimension)
   {
@@ -170,8 +170,8 @@ QuadrilateralCell<TCellInterface>::SetPointId(int localId, PointIdentifier ptId)
  * Get a begin iterator to the list of point identifiers used by the cell.
  */
 template <typename TCellInterface>
-typename QuadrilateralCell<TCellInterface>::PointIdIterator
-QuadrilateralCell<TCellInterface>::PointIdsBegin()
+auto
+QuadrilateralCell<TCellInterface>::PointIdsBegin() -> PointIdIterator
 {
   return &m_PointIds[0];
 }
@@ -182,8 +182,8 @@ QuadrilateralCell<TCellInterface>::PointIdsBegin()
  * by the cell.
  */
 template <typename TCellInterface>
-typename QuadrilateralCell<TCellInterface>::PointIdConstIterator
-QuadrilateralCell<TCellInterface>::PointIdsBegin() const
+auto
+QuadrilateralCell<TCellInterface>::PointIdsBegin() const -> PointIdConstIterator
 {
   return &m_PointIds[0];
 }
@@ -193,8 +193,8 @@ QuadrilateralCell<TCellInterface>::PointIdsBegin() const
  * Get an end iterator to the list of point identifiers used by the cell.
  */
 template <typename TCellInterface>
-typename QuadrilateralCell<TCellInterface>::PointIdIterator
-QuadrilateralCell<TCellInterface>::PointIdsEnd()
+auto
+QuadrilateralCell<TCellInterface>::PointIdsEnd() -> PointIdIterator
 {
   return &m_PointIds[Self::NumberOfPoints - 1] + 1;
 }
@@ -205,8 +205,8 @@ QuadrilateralCell<TCellInterface>::PointIdsEnd()
  * by the cell.
  */
 template <typename TCellInterface>
-typename QuadrilateralCell<TCellInterface>::PointIdConstIterator
-QuadrilateralCell<TCellInterface>::PointIdsEnd() const
+auto
+QuadrilateralCell<TCellInterface>::PointIdsEnd() const -> PointIdConstIterator
 {
   return &m_PointIds[Self::NumberOfPoints - 1] + 1;
 }
@@ -216,8 +216,8 @@ QuadrilateralCell<TCellInterface>::PointIdsEnd() const
  * Get the number of vertices defining the quadrilateral.
  */
 template <typename TCellInterface>
-typename QuadrilateralCell<TCellInterface>::CellFeatureCount
-QuadrilateralCell<TCellInterface>::GetNumberOfVertices() const
+auto
+QuadrilateralCell<TCellInterface>::GetNumberOfVertices() const -> CellFeatureCount
 {
   return NumberOfVertices;
 }
@@ -227,8 +227,8 @@ QuadrilateralCell<TCellInterface>::GetNumberOfVertices() const
  * Get the number of edges defined for the quadrilateral.
  */
 template <typename TCellInterface>
-typename QuadrilateralCell<TCellInterface>::CellFeatureCount
-QuadrilateralCell<TCellInterface>::GetNumberOfEdges() const
+auto
+QuadrilateralCell<TCellInterface>::GetNumberOfEdges() const -> CellFeatureCount
 {
   return Self::NumberOfEdges;
 }
@@ -304,7 +304,7 @@ QuadrilateralCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
   // See vtkQuad for this:  ComputeNormal (this, pt1, pt2, pt3, n);  vtkPlane::ProjectPoint(x,pt1,n,cp);
 
   //  enter iteration loop
-  for (iteration = converged = 0; !converged && (iteration < ITK_QUAD_MAX_ITERATION); iteration++)
+  for (iteration = converged = 0; !converged && (iteration < ITK_QUAD_MAX_ITERATION); ++iteration)
   {
     //  calculate element interpolation functions and derivatives
     this->InterpolationFunctions(pcoords, weights);
@@ -344,7 +344,7 @@ QuadrilateralCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
 
     d = vnl_determinant(mat);
     // d=vtkMath::Determinant2x2(rcol,scol);
-    if (std::abs(d) < 1.e-20)
+    if (itk::Math::abs(d) < 1.e-20)
     {
       return false;
     }
@@ -373,14 +373,14 @@ QuadrilateralCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
     }
 
     //  check for convergence
-    if (((std::abs(pcoords[0] - params[0])) < ITK_QUAD_CONVERGED) &&
-        ((std::abs(pcoords[1] - params[1])) < ITK_QUAD_CONVERGED))
+    if (((itk::Math::abs(pcoords[0] - params[0])) < ITK_QUAD_CONVERGED) &&
+        ((itk::Math::abs(pcoords[1] - params[1])) < ITK_QUAD_CONVERGED))
     {
       converged = 1;
     }
 
     // Test for bad divergence (S.Hirschberg 11.12.2001)
-    else if ((std::abs(pcoords[0]) > ITK_DIVERGED) || (std::abs(pcoords[1]) > ITK_DIVERGED))
+    else if ((itk::Math::abs(pcoords[0]) > ITK_DIVERGED) || (itk::Math::abs(pcoords[1]) > ITK_DIVERGED))
     {
       return -1;
     }

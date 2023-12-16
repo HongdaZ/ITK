@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -69,7 +69,7 @@ class ITK_TEMPLATE_EXPORT ImageSource
   , private ImageSourceCommon
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageSource);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageSource);
 
   /** Standard class type aliases. */
   using Self = ImageSource;
@@ -164,7 +164,7 @@ public:
      \code
         // Setup the mini-pipeline to process the input to this filter
         // The input is not connected to the pipeline.
-        typename InputImageType::Pointer input = InputImageType::New();
+        auto input = InputImageType::New();
         input->Graft( const_cast< InputImageType * >( this->GetInput() );
         firstFilterInMiniPipeline->SetInput( input );
 
@@ -189,7 +189,7 @@ public:
    * mini-pipeline will do).
    *  */
   virtual void
-  GraftOutput(DataObject * output);
+  GraftOutput(DataObject * graft);
 
   /** Graft the specified data object onto this ProcessObject's named
    * output. This is similar to the GraftOutput method except it
@@ -197,7 +197,7 @@ public:
    * See the GraftOutput for general usage information.
    */
   virtual void
-  GraftOutput(const DataObjectIdentifierType & key, DataObject * output);
+  GraftOutput(const DataObjectIdentifierType & key, DataObject * graft);
 
   /** Graft the specified data object onto this ProcessObject's idx'th
    * output. This is similar to the GraftOutput method except it
@@ -206,7 +206,7 @@ public:
    * ProcessObject::GetNumberOfIndexedOutputs()). See the GraftOutput for
    * general usage information. */
   virtual void
-  GraftNthOutput(unsigned int idx, DataObject * output);
+  GraftNthOutput(unsigned int idx, DataObject * graft);
 
   /** Make a DataObject of the correct type to used as the specified
    * output.  Every ProcessObject subclass must be able to create a
@@ -296,7 +296,7 @@ protected:
    *
    * \sa GenerateData(), SplitRequestedRegion() */
   virtual void
-  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId);
+  ThreadedGenerateData(const OutputImageRegionType & region, ThreadIdType threadId);
   virtual void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread);
 

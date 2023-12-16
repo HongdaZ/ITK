@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,43 +72,43 @@ public:
   static const Self
   max(const Self &)
   {
-    return Self(NumericTraits<T>::max());
+    return MakeFilled<Self>(NumericTraits<T>::max());
   }
 
   static const Self
   min(const Self &)
   {
-    return Self(NumericTraits<T>::min());
+    return MakeFilled<Self>(NumericTraits<T>::min());
   }
 
   static const Self
   max()
   {
-    return Self(NumericTraits<T>::max());
+    return MakeFilled<Self>(NumericTraits<T>::max());
   }
 
   static const Self
   min()
   {
-    return Self(NumericTraits<T>::min());
+    return MakeFilled<Self>(NumericTraits<T>::min());
   }
 
   static const Self
   NonpositiveMin()
   {
-    return Self(NumericTraits<T>::NonpositiveMin());
+    return MakeFilled<Self>(NumericTraits<T>::NonpositiveMin());
   }
 
   static const Self
   ZeroValue()
   {
-    return Self(NumericTraits<T>::ZeroValue());
+    return MakeFilled<Self>(NumericTraits<T>::ZeroValue());
   }
 
   static const Self
   OneValue()
   {
-    return Self(NumericTraits<T>::OneValue());
+    return MakeFilled<Self>(NumericTraits<T>::OneValue());
   }
 
   static const Self
@@ -133,7 +133,7 @@ public:
   IsPositive(const Self & a)
   {
     bool flag = false;
-    for (unsigned int i = 0; i < GetLength(a); i++)
+    for (unsigned int i = 0; i < GetLength(a); ++i)
     {
       if (a[i] > NumericTraits<ValueType>::ZeroValue())
       {
@@ -147,7 +147,7 @@ public:
   IsNonpositive(const Self & a)
   {
     bool flag = false;
-    for (unsigned int i = 0; i < GetLength(a); i++)
+    for (unsigned int i = 0; i < GetLength(a); ++i)
     {
       if (!(a[i] > 0.0))
       {
@@ -161,7 +161,7 @@ public:
   IsNegative(const Self & a)
   {
     bool flag = false;
-    for (unsigned int i = 0; i < GetLength(a); i++)
+    for (unsigned int i = 0; i < GetLength(a); ++i)
     {
       if (a[i] < 0.0)
       {
@@ -175,7 +175,7 @@ public:
   IsNonnegative(const Self & a)
   {
     bool flag = false;
-    for (unsigned int i = 0; i < GetLength(a); i++)
+    for (unsigned int i = 0; i < GetLength(a); ++i)
     {
       if (!(a[i] < 0.0))
       {
@@ -185,8 +185,8 @@ public:
     return flag;
   }
 
-  static constexpr bool IsSigned = NumericTraits<ValueType>::IsSigned;
-  static constexpr bool IsInteger = NumericTraits<ValueType>::IsInteger;
+  static constexpr bool IsSigned = std::is_signed<ValueType>::value;
+  static constexpr bool IsInteger = std::is_integral<ValueType>::value;
   static constexpr bool IsComplex = NumericTraits<ValueType>::IsComplex;
 
   /** Fixed length vectors cannot be resized, so an exception will
@@ -226,7 +226,7 @@ public:
   static void
   AssignToArray(const Self & v, TArray & mv)
   {
-    for (unsigned int i = 0; i < D; i++)
+    for (unsigned int i = 0; i < D; ++i)
     {
       mv[i] = v[i];
     }

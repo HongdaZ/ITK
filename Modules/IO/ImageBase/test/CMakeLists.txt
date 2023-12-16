@@ -37,6 +37,7 @@ itkMatrixImageWriteReadTest.cxx
 itkReadWriteImageWithDictionaryTest.cxx
 itkVectorImageReadWriteTest.cxx
 itk64bitTest.cxx
+itkImageFileReaderManyComponentVectorTest.cxx
 )
 
 
@@ -303,12 +304,12 @@ itk_add_test(NAME itkImageSeriesReaderVectorImageTest1
   COMMAND ITKIOImageBaseTestDriver itkImageSeriesReaderVectorTest
   DATA{${ITK_DATA_ROOT}/Input/RGBTestImage.tif}
   DATA{${ITK_DATA_ROOT}/Input/RGBTestImage.tif}
-  DATA{${ITK_DATA_ROOT}/Input/RGBTestImage.tif} )
+  DATA{${ITK_DATA_ROOT}/Input/RGBTestImage.tif})
 
 itk_add_test(NAME itkImageSeriesReaderVectorImageTest2
    COMMAND ITKIOImageBaseTestDriver itkImageSeriesReaderVectorTest
    DATA{${ITK_DATA_ROOT}/Input/48BitTestImage.tif}
-   DATA{${ITK_DATA_ROOT}/Input/48BitTestImage.tif} DATA{${ITK_DATA_ROOT}/Input/48BitTestImage.tif} )
+   DATA{${ITK_DATA_ROOT}/Input/48BitTestImage.tif} DATA{${ITK_DATA_ROOT}/Input/48BitTestImage.tif})
 itk_add_test(NAME itkImageSeriesWriterTest
       COMMAND ITKIOImageBaseTestDriver itkImageSeriesWriterTest
               DATA{${ITK_DATA_ROOT}/Input/DicomSeries/,REGEX:Image[0-9]+.dcm}
@@ -352,6 +353,18 @@ itk_add_test(NAME itkVectorImageReadWriteTest2
       COMMAND ITKIOImageBaseTestDriver itkVectorImageReadWriteTest
               ${ITK_TEST_OUTPUT_DIR}/VectorImageReadWriteTest.nrrd)
 
+itk_add_test(NAME itkImageFileReaderManyComponentVectorTest
+      COMMAND ITKIOImageBaseTestDriver itkImageFileReaderManyComponentVectorTest
+              DATA{Input/rf_voltage_15_freq_0005000000_2017-5-31_12-36-44_ReferenceSpectrum_side_lines_03_fft1d_size_128.mha})
+
 add_executable(itkUnicodeIOTest itkUnicodeIOTest.cxx)
 itk_module_target_label(itkUnicodeIOTest)
 itk_add_test(NAME itkUnicodeIOTest COMMAND itkUnicodeIOTest)
+
+
+set(ITKIOImageBaseGTests
+        itkWriteImageFunctionGTest.cxx
+        )
+CreateGoogleTestDriver(ITKIOImageBase  "${ITKIOImageBase-Test_LIBRARIES}" "${ITKIOImageBaseGTests}")
+
+target_compile_definitions(ITKIOImageBaseGTestDriver PRIVATE "-DITK_TEST_OUTPUT_DIR=${ITK_TEST_OUTPUT_DIR}")

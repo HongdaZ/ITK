@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,16 +15,13 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkPowellOptimizer_cxx
-#define _itkPowellOptimizer_cxx
 
 #include "itkPowellOptimizer.h"
-#include "itkMath.h"
 #include "itkMath.h"
 
 namespace itk
 {
-PowellOptimizer ::PowellOptimizer()
+PowellOptimizer::PowellOptimizer()
 {
   m_CatchGetValueException = false;
   m_MetricWorstPossibleValue = 0;
@@ -49,10 +46,10 @@ PowellOptimizer ::PowellOptimizer()
   m_StopConditionDescription << this->GetNameOfClass() << ": ";
 }
 
-PowellOptimizer ::~PowellOptimizer() = default;
+PowellOptimizer::~PowellOptimizer() = default;
 
 void
-PowellOptimizer ::SetLine(const PowellOptimizer::ParametersType & origin, const vnl_vector<double> & direction)
+PowellOptimizer::SetLine(const PowellOptimizer::ParametersType & origin, const vnl_vector<double> & direction)
 {
   const Optimizer::ScalesType & inv_scales = this->GetInverseScales();
   for (unsigned int i = 0; i < m_SpaceDimension; ++i)
@@ -63,7 +60,7 @@ PowellOptimizer ::SetLine(const PowellOptimizer::ParametersType & origin, const 
 }
 
 double
-PowellOptimizer ::GetLineValue(double x) const
+PowellOptimizer::GetLineValue(double x) const
 {
   PowellOptimizer::ParametersType tempCoord(m_SpaceDimension);
 
@@ -71,9 +68,9 @@ PowellOptimizer ::GetLineValue(double x) const
 }
 
 double
-PowellOptimizer ::GetLineValue(double x, ParametersType & tempCoord) const
+PowellOptimizer::GetLineValue(double x, ParametersType & tempCoord) const
 {
-  for (unsigned int i = 0; i < m_SpaceDimension; i++)
+  for (unsigned int i = 0; i < m_SpaceDimension; ++i)
   {
     tempCoord[i] = this->m_LineOrigin[i] + x * this->m_LineDirection[i];
   }
@@ -103,9 +100,9 @@ PowellOptimizer ::GetLineValue(double x, ParametersType & tempCoord) const
 }
 
 void
-PowellOptimizer ::SetCurrentLinePoint(double x, double fx)
+PowellOptimizer::SetCurrentLinePoint(double x, double fx)
 {
-  for (unsigned int i = 0; i < m_SpaceDimension; i++)
+  for (unsigned int i = 0; i < m_SpaceDimension; ++i)
   {
     this->m_CurrentPosition[i] = this->m_LineOrigin[i] + x * this->m_LineDirection[i];
   }
@@ -121,7 +118,7 @@ PowellOptimizer ::SetCurrentLinePoint(double x, double fx)
 }
 
 void
-PowellOptimizer ::Swap(double * a, double * b) const
+PowellOptimizer::Swap(double * a, double * b) const
 {
   double tf;
 
@@ -131,7 +128,7 @@ PowellOptimizer ::Swap(double * a, double * b) const
 }
 
 void
-PowellOptimizer ::Shift(double * a, double * b, double * c, double d) const
+PowellOptimizer::Shift(double * a, double * b, double * c, double d) const
 {
   *a = *b;
   *b = *c;
@@ -142,7 +139,7 @@ PowellOptimizer ::Shift(double * a, double * b, double * c, double d) const
 // This code was implemented from the description of
 // the Golden section search available in the Wikipedia
 //
-// http://en.wikipedia.org/wiki/Golden_section_search
+// https://en.wikipedia.org/wiki/Golden_section_search
 //
 //
 // The inputs to this function are
@@ -157,7 +154,7 @@ PowellOptimizer ::Shift(double * a, double * b, double * c, double d) const
 // the end of the iterations.
 //
 void
-PowellOptimizer ::LineBracket(double * x1, double * x2, double * x3, double * f1, double * f2, double * f3)
+PowellOptimizer::LineBracket(double * x1, double * x2, double * x3, double * f1, double * f2, double * f3)
 {
   PowellOptimizer::ParametersType tempCoord(m_SpaceDimension);
 
@@ -165,13 +162,13 @@ PowellOptimizer ::LineBracket(double * x1, double * x2, double * x3, double * f1
 }
 
 void
-PowellOptimizer ::LineBracket(double *         x1,
-                              double *         x2,
-                              double *         x3,
-                              double *         f1,
-                              double *         f2,
-                              double *         f3,
-                              ParametersType & tempCoord)
+PowellOptimizer::LineBracket(double *         x1,
+                             double *         x2,
+                             double *         x3,
+                             double *         f1,
+                             double *         f2,
+                             double *         f3,
+                             ParametersType & tempCoord)
 {
   //
   // Compute the golden ratio as a constant to be
@@ -218,14 +215,14 @@ PowellOptimizer ::LineBracket(double *         x1,
 }
 
 void
-PowellOptimizer ::BracketedLineOptimize(double   ax,
-                                        double   bx,
-                                        double   cx,
-                                        double   fa,
-                                        double   functionValueOfb,
-                                        double   fc,
-                                        double * extX,
-                                        double * extVal)
+PowellOptimizer::BracketedLineOptimize(double   ax,
+                                       double   bx,
+                                       double   cx,
+                                       double   fa,
+                                       double   functionValueOfb,
+                                       double   fc,
+                                       double * extX,
+                                       double * extVal)
 {
   PowellOptimizer::ParametersType tempCoord(m_SpaceDimension);
 
@@ -233,15 +230,15 @@ PowellOptimizer ::BracketedLineOptimize(double   ax,
 }
 
 void
-PowellOptimizer ::BracketedLineOptimize(double           ax,
-                                        double           bx,
-                                        double           cx,
-                                        double           itkNotUsed(fa),
-                                        double           functionValueOfb,
-                                        double           itkNotUsed(fc),
-                                        double *         extX,
-                                        double *         extVal,
-                                        ParametersType & tempCoord)
+PowellOptimizer::BracketedLineOptimize(double           ax,
+                                       double           bx,
+                                       double           cx,
+                                       double           itkNotUsed(fa),
+                                       double           functionValueOfb,
+                                       double           itkNotUsed(fc),
+                                       double *         extX,
+                                       double *         extVal,
+                                       ParametersType & tempCoord)
 {
   double x;
   double v = 0.0;
@@ -268,7 +265,7 @@ PowellOptimizer ::BracketedLineOptimize(double           ax,
   functionValueOfX = functionValueOfV;
   functionValueOfW = functionValueOfV;
 
-  for (m_CurrentLineIteration = 0; m_CurrentLineIteration < m_MaximumLineIteration; m_CurrentLineIteration++)
+  for (m_CurrentLineIteration = 0; m_CurrentLineIteration < m_MaximumLineIteration; ++m_CurrentLineIteration)
   {
     double middle_range = (a + b) / 2;
 
@@ -277,10 +274,10 @@ PowellOptimizer ::BracketedLineOptimize(double           ax,
     double tolerance1;
     double tolerance2;
 
-    tolerance1 = m_StepTolerance * std::fabs(x) + POWELL_TINY;
+    tolerance1 = m_StepTolerance * itk::Math::abs(x) + POWELL_TINY;
     tolerance2 = 2.0 * tolerance1;
 
-    if (std::fabs(x - middle_range) <= (tolerance2 - 0.5 * (b - a)) || 0.5 * (b - a) < m_StepTolerance)
+    if (itk::Math::abs(x - middle_range) <= (tolerance2 - 0.5 * (b - a)) || 0.5 * (b - a) < m_StepTolerance)
     {
       *extX = x;
       *extVal = functionValueOfX;
@@ -295,7 +292,7 @@ PowellOptimizer ::BracketedLineOptimize(double           ax,
     new_step = goldenSectionRatio * (x < middle_range ? b - x : a - x);
 
     /* Decide if the interpolation can be tried  */
-    if (std::fabs(x - w) >= tolerance1) /* If x and w are distinct      */
+    if (itk::Math::abs(x - w) >= tolerance1) /* If x and w are distinct      */
     {
       double t;
       t = (x - w) * (functionValueOfX - functionValueOfV);
@@ -308,7 +305,7 @@ PowellOptimizer ::BracketedLineOptimize(double           ax,
 
       q = 2 * (q - t);
 
-      if (q > (double)0) /* q was calculated with the op-*/
+      if (q > 0.0) /* q was calculated with the op-*/
       {
         p = -p; /* posite sign; make q positive  */
       }
@@ -317,9 +314,9 @@ PowellOptimizer ::BracketedLineOptimize(double           ax,
         q = -q; /* p        */
       }
 
-      /* Chec if x+p/q falls in [a,b] and  not too close to a and b
+      /* Check if x+p/q falls in [a,b] and  not too close to a and b
            and isn't too large */
-      if (std::fabs(p) < std::fabs(new_step * q) && p > q * (a - x + 2 * tolerance1) &&
+      if (itk::Math::abs(p) < itk::Math::abs(new_step * q) && p > q * (a - x + 2 * tolerance1) &&
           p < q * (b - x - 2 * tolerance1))
       {
         new_step = p / q; /* it is accepted         */
@@ -330,7 +327,7 @@ PowellOptimizer ::BracketedLineOptimize(double           ax,
     }
 
     /* Adjust the step to be not less than tolerance*/
-    if (std::fabs(new_step) < tolerance1)
+    if (itk::Math::abs(new_step) < tolerance1)
     {
       if (new_step > 0.0)
       {
@@ -361,7 +358,7 @@ PowellOptimizer ::BracketedLineOptimize(double           ax,
         a = x;
       }
 
-      /* assing the best approximation to x */
+      /* assign the best approximation to x */
       v = w;
       w = x;
       x = t;
@@ -406,7 +403,7 @@ PowellOptimizer ::BracketedLineOptimize(double           ax,
 }
 
 void
-PowellOptimizer ::StartOptimization()
+PowellOptimizer::StartOptimization()
 {
   if (m_CostFunction.IsNull())
   {
@@ -447,13 +444,13 @@ PowellOptimizer ::StartOptimization()
   this->SetLine(p, xit);
   fx = this->GetLineValue(0, tempCoord);
 
-  for (m_CurrentIteration = 0; m_CurrentIteration <= m_MaximumIteration; m_CurrentIteration++)
+  for (m_CurrentIteration = 0; m_CurrentIteration <= m_MaximumIteration; ++m_CurrentIteration)
   {
     fp = fx;
     ibig = 0;
     del = 0.0;
 
-    for (unsigned int i = 0; i < m_SpaceDimension; i++)
+    for (unsigned int i = 0; i < m_SpaceDimension; ++i)
     {
       for (unsigned int j = 0; j < m_SpaceDimension; ++j)
       {
@@ -471,14 +468,14 @@ PowellOptimizer ::StartOptimization()
       this->SetCurrentLinePoint(xx, fx);
       p = this->GetCurrentPosition();
 
-      if (std::fabs(fptt - fx) > del)
+      if (itk::Math::abs(fptt - fx) > del)
       {
-        del = std::fabs(fptt - fx);
+        del = itk::Math::abs(fptt - fx);
         ibig = i;
       }
     }
 
-    if (2.0 * std::fabs(fp - fx) <= m_ValueTolerance * (std::fabs(fp) + std::fabs(fx)))
+    if (2.0 * itk::Math::abs(fp - fx) <= m_ValueTolerance * (itk::Math::abs(fp) + itk::Math::abs(fx)))
     {
       m_StopConditionDescription << "Cost function values at the current parameter (" << fx
                                  << ") and at the local extrema (" << fp << ") are within Value Tolerance ("
@@ -512,7 +509,7 @@ PowellOptimizer ::StartOptimization()
         this->SetCurrentLinePoint(xx, fx);
         p = this->GetCurrentPosition();
 
-        for (unsigned int j = 0; j < m_SpaceDimension; j++)
+        for (unsigned int j = 0; j < m_SpaceDimension; ++j)
         {
           xi[j][ibig] = xx * xit[j];
         }
@@ -531,7 +528,7 @@ PowellOptimizer ::StartOptimization()
  *
  */
 const std::string
-PowellOptimizer ::GetStopConditionDescription() const
+PowellOptimizer::GetStopConditionDescription() const
 {
   return m_StopConditionDescription.str();
 }
@@ -540,7 +537,7 @@ PowellOptimizer ::GetStopConditionDescription() const
  *
  */
 void
-PowellOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
+PowellOptimizer::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
@@ -561,4 +558,3 @@ PowellOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
   os << indent << "Stop              " << m_Stop << std::endl;
 }
 } // end of namespace itk
-#endif

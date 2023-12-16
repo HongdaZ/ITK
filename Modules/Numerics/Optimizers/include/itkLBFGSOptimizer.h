@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkSingleValuedNonLinearVnlOptimizer.h"
 #include "vnl/algo/vnl_lbfgs.h"
 #include "ITKOptimizersExport.h"
+#include <memory> // For unique_ptr.
 
 namespace itk
 {
@@ -85,7 +86,7 @@ namespace itk
 class ITKOptimizers_EXPORT LBFGSOptimizer : public SingleValuedNonLinearVnlOptimizer
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LBFGSOptimizer);
+  ITK_DISALLOW_COPY_AND_MOVE(LBFGSOptimizer);
 
   /** Standard "Self" type alias. */
   using Self = LBFGSOptimizer;
@@ -138,7 +139,7 @@ public:
    * ||G|| < gtol max(1,||X||) where ||.|| denotes the Euclidean norm.
    */
   virtual void
-  SetGradientConvergenceTolerance(double gtol);
+  SetGradientConvergenceTolerance(double f);
 
   itkGetMacro(GradientConvergenceTolerance, double);
 
@@ -149,7 +150,7 @@ public:
    * the value to a small value (say 0.1).
    */
   virtual void
-  SetLineSearchAccuracy(double tol);
+  SetLineSearchAccuracy(double f);
 
   itkGetMacro(LineSearchAccuracy, double);
 
@@ -158,7 +159,7 @@ public:
    * search.
    */
   virtual void
-  SetDefaultStepLength(double stp);
+  SetDefaultStepLength(double f);
 
   itkGetMacro(DefaultStepLength, double);
 
@@ -179,9 +180,9 @@ protected:
   using CostFunctionAdaptorType = Superclass::CostFunctionAdaptorType;
 
 private:
-  bool                       m_OptimizerInitialized;
-  InternalOptimizerType *    m_VnlOptimizer;
-  mutable std::ostringstream m_StopConditionDescription;
+  bool                                   m_OptimizerInitialized;
+  std::unique_ptr<InternalOptimizerType> m_VnlOptimizer;
+  mutable std::ostringstream             m_StopConditionDescription;
 
   bool         m_Trace;
   unsigned int m_MaximumNumberOfFunctionEvaluations;

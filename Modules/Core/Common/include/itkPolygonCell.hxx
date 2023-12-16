@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,6 @@
  *=========================================================================*/
 #ifndef itkPolygonCell_hxx
 #define itkPolygonCell_hxx
-#include "itkPolygonCell.h"
 
 namespace itk
 {
@@ -80,8 +79,8 @@ PolygonCell<TCellInterface>::GetNumberOfPoints() const
  * Get the number of boundary features of the given dimension.
  */
 template <typename TCellInterface>
-typename PolygonCell<TCellInterface>::CellFeatureCount
-PolygonCell<TCellInterface>::GetNumberOfBoundaryFeatures(int dimension) const
+auto
+PolygonCell<TCellInterface>::GetNumberOfBoundaryFeatures(int dimension) const -> CellFeatureCount
 {
   switch (dimension)
   {
@@ -166,7 +165,7 @@ PolygonCell<TCellInterface>::BuildEdges()
   {
     m_Edges.resize(m_PointIds.size());
     const auto numberOfPoints = static_cast<unsigned int>(m_PointIds.size());
-    for (unsigned int i = 1; i < numberOfPoints; i++)
+    for (unsigned int i = 1; i < numberOfPoints; ++i)
     {
       m_Edges[i - 1][0] = i - 1;
       m_Edges[i - 1][1] = i;
@@ -223,7 +222,7 @@ PolygonCell<TCellInterface>::RemovePointId(PointIdentifier ptID)
 }
 
 /**
- * clear all the point and edge informations
+ * clear all the point and edge information
  */
 template <typename TCellInterface>
 void
@@ -263,7 +262,7 @@ template <typename TCellInterface>
 void
 PolygonCell<TCellInterface>::SetPointId(int localId, PointIdentifier ptId)
 {
-  if (m_PointIds.size() < (unsigned int)(localId + 1))
+  if (m_PointIds.size() < static_cast<unsigned int>(localId + 1))
   {
     m_PointIds.resize(localId + 1);
   }
@@ -275,8 +274,8 @@ PolygonCell<TCellInterface>::SetPointId(int localId, PointIdentifier ptId)
  * Get a begin iterator to the list of point identifiers used by the cell.
  */
 template <typename TCellInterface>
-typename PolygonCell<TCellInterface>::PointIdIterator
-PolygonCell<TCellInterface>::PointIdsBegin()
+auto
+PolygonCell<TCellInterface>::PointIdsBegin() -> PointIdIterator
 {
   if (!m_PointIds.empty())
   {
@@ -294,8 +293,8 @@ PolygonCell<TCellInterface>::PointIdsBegin()
  * by the cell.
  */
 template <typename TCellInterface>
-typename PolygonCell<TCellInterface>::PointIdConstIterator
-PolygonCell<TCellInterface>::PointIdsBegin() const
+auto
+PolygonCell<TCellInterface>::PointIdsBegin() const -> PointIdConstIterator
 {
   if (!m_PointIds.empty())
   {
@@ -312,12 +311,12 @@ PolygonCell<TCellInterface>::PointIdsBegin() const
  * Get an end iterator to the list of point identifiers used by the cell.
  */
 template <typename TCellInterface>
-typename PolygonCell<TCellInterface>::PointIdIterator
-PolygonCell<TCellInterface>::PointIdsEnd()
+auto
+PolygonCell<TCellInterface>::PointIdsEnd() -> PointIdIterator
 {
   if (!m_PointIds.empty())
   {
-    return &m_PointIds[m_PointIds.size() - 1] + 1;
+    return &m_PointIds.back() + 1;
   }
   else
   {
@@ -331,12 +330,12 @@ PolygonCell<TCellInterface>::PointIdsEnd()
  * by the cell.
  */
 template <typename TCellInterface>
-typename PolygonCell<TCellInterface>::PointIdConstIterator
-PolygonCell<TCellInterface>::PointIdsEnd() const
+auto
+PolygonCell<TCellInterface>::PointIdsEnd() const -> PointIdConstIterator
 {
   if (!m_PointIds.empty())
   {
-    return &m_PointIds[m_PointIds.size() - 1] + 1;
+    return &m_PointIds.back() + 1;
   }
   else
   {
@@ -349,8 +348,8 @@ PolygonCell<TCellInterface>::PointIdsEnd() const
  * Get the number of vertices defining the Polygon.
  */
 template <typename TCellInterface>
-typename PolygonCell<TCellInterface>::CellFeatureCount
-PolygonCell<TCellInterface>::GetNumberOfVertices() const
+auto
+PolygonCell<TCellInterface>::GetNumberOfVertices() const -> CellFeatureCount
 {
   return static_cast<CellFeatureCount>(m_PointIds.size());
 }
@@ -360,8 +359,8 @@ PolygonCell<TCellInterface>::GetNumberOfVertices() const
  * Get the number of edges defined for the Polygon.
  */
 template <typename TCellInterface>
-typename PolygonCell<TCellInterface>::CellFeatureCount
-PolygonCell<TCellInterface>::GetNumberOfEdges() const
+auto
+PolygonCell<TCellInterface>::GetNumberOfEdges() const -> CellFeatureCount
 {
   return static_cast<CellFeatureCount>(m_Edges.size());
 }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,14 +25,14 @@
 namespace itk
 {
 /**
- *\class Path
+ * \class Path
  * \brief  Represent a path through ND Space
  *
  * This base class is intended to represent a path through an image.   As a
  * path, it maps a 1D parameter (such as time or arc length, etc) to an index
  * (or possibly an offset or a point) in ND space.  This mapping is done via the
  * abstract Evaluate() method, which must be overridden in all instantiable
- * subclasses. The only geometric requirement for a gerneral path is that it be
+ * subclasses. The only geometric requirement for a general path is that it be
  * continuous. A path may be open or closed, and may cross itself several
  * times.  A classic application of this class is the representation of contours
  * in 2D images using chaincodes or freeman codes.  Another use of a path is to
@@ -54,7 +54,7 @@ template <typename TInput, typename TOutput, unsigned int VDimension>
 class ITK_TEMPLATE_EXPORT Path : public DataObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Path);
+  ITK_DISALLOW_COPY_AND_MOVE(Path);
 
   /** Standard class type aliases. */
   using Self = Path;
@@ -74,7 +74,7 @@ public:
   /** Output type */
   using OutputType = TOutput;
 
-  /** All paths must be mapable to index space */
+  /** All paths must be mappable to index space */
   using IndexType = Index<VDimension>;
   using OffsetType = Offset<VDimension>;
 

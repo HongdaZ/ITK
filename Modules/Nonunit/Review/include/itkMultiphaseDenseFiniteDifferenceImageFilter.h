@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -77,19 +77,19 @@ namespace itk
  *  This code was taken from the Insight Journal paper:
  *
  *      "Cell Tracking using Coupled Active Surfaces for Nuclei and Membranes"
- *      http://www.insight-journal.org/browse/publication/642
+ *      https://www.insight-journal.org/browse/publication/642
  *      https://hdl.handle.net/10380/3055
  *
  *  That is based on the papers:
  *
  *      "Level Set Segmentation: Active Contours without edge"
- *      http://www.insight-journal.org/browse/publication/322
+ *      https://www.insight-journal.org/browse/publication/322
  *      https://hdl.handle.net/1926/1532
  *
  *      and
  *
  *      "Level set segmentation using coupled active surfaces"
- *      http://www.insight-journal.org/browse/publication/323
+ *      https://www.insight-journal.org/browse/publication/323
  *      https://hdl.handle.net/1926/1533
  *
  *
@@ -106,7 +106,7 @@ class ITK_TEMPLATE_EXPORT MultiphaseDenseFiniteDifferenceImageFilter
   : public MultiphaseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputImage, TFunction, TIdCell>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiphaseDenseFiniteDifferenceImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MultiphaseDenseFiniteDifferenceImageFilter);
 
   /** Standard class type aliases */
   using Self = MultiphaseDenseFiniteDifferenceImageFilter;
@@ -116,43 +116,43 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods) */
-  itkTypeMacro(MultiphaseDenseFiniteDifferenceImageFilter, ImageToImageFilter);
+  itkTypeMacro(MultiphaseDenseFiniteDifferenceImageFilter, MultiphaseFiniteDifferenceImageFilter);
 
   /** Dimensionality of input and output data is assumed to be the same.
    * It is inherited from the superclass. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Convenient type alias */
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using InputRegionType = typename Superclass::InputRegionType;
-  using InputSizeType = typename Superclass::InputSizeType;
-  using InputSizeValueType = typename Superclass::InputSizeValueType;
-  using InputIndexType = typename Superclass::InputIndexType;
-  using InputIndexValueType = typename Superclass::InputIndexValueType;
-  using InputPixelType = typename Superclass::InputPixelType;
-  using InputPointType = typename Superclass::InputPointType;
-  using InputSpacingType = typename Superclass::InputSpacingType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::InputImagePointer;
+  using typename Superclass::InputRegionType;
+  using typename Superclass::InputSizeType;
+  using typename Superclass::InputSizeValueType;
+  using typename Superclass::InputIndexType;
+  using typename Superclass::InputIndexValueType;
+  using typename Superclass::InputPixelType;
+  using typename Superclass::InputPointType;
+  using typename Superclass::InputSpacingType;
   using ValueType = typename InputImageType::ValueType;
 
-  using FeatureImageType = typename Superclass::FeatureImageType;
-  using FeatureSizeType = typename Superclass::FeatureSizeType;
-  using FeatureImagePointer = typename Superclass::FeatureImagePointer;
-  using FeatureRegionType = typename Superclass::FeatureRegionType;
-  using FeatureSpacingType = typename Superclass::FeatureSpacingType;
-  using FeaturePointType = typename Superclass::FeaturePointType;
-  using FeaturePixelType = typename Superclass::FeaturePixelType;
+  using typename Superclass::FeatureImageType;
+  using typename Superclass::FeatureSizeType;
+  using typename Superclass::FeatureImagePointer;
+  using typename Superclass::FeatureRegionType;
+  using typename Superclass::FeatureSpacingType;
+  using typename Superclass::FeaturePointType;
+  using typename Superclass::FeaturePixelType;
 
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputRegionType = typename Superclass::OutputRegionType;
-  using OutputSizeType = typename Superclass::OutputSizeType;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::OutputImagePointer;
+  using typename Superclass::OutputRegionType;
+  using typename Superclass::OutputSizeType;
   using SizeValueType = typename Superclass::OutputSizeValueType;
-  using OutputIndexType = typename Superclass::OutputIndexType;
-  using OutputIndexValueType = typename Superclass::OutputIndexValueType;
+  using typename Superclass::OutputIndexType;
+  using typename Superclass::OutputIndexValueType;
   using OutputPixelType = typename OutputImageType::PixelType;
 
-  using IdCellType = typename Superclass::IdCellType;
+  using typename Superclass::IdCellType;
 
   using ThresholdFilterType = BinaryThresholdImageFilter<InputImageType, InputImageType>;
   using ThresholdFilterPointer = typename ThresholdFilterType::Pointer;
@@ -160,12 +160,12 @@ public:
   using MaurerType = SignedMaurerDistanceMapImageFilter<InputImageType, InputImageType>;
   using MaurerPointer = typename MaurerType::Pointer;
 
-  using FiniteDifferenceFunctionType = typename Superclass::FiniteDifferenceFunctionType;
-  using FiniteDifferenceFunctionPointer = typename Superclass::FiniteDifferenceFunctionPointer;
+  using typename Superclass::FiniteDifferenceFunctionType;
+  using typename Superclass::FiniteDifferenceFunctionPointer;
   using NeighborhoodIteratorType = typename FiniteDifferenceFunctionType::NeighborhoodType;
 
   /** The value type of a time step.  Inherited from the superclass. */
-  using TimeStepType = typename Superclass::TimeStepType;
+  using typename Superclass::TimeStepType;
 
   using FaceCalculatorType = NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<InputImageType>;
   using FaceListType = typename FaceCalculatorType::FaceListType;

@@ -56,62 +56,8 @@ EM_ASM(
   set(CMAKE_TESTDRIVER_AFTER_TESTMAIN "#include \"itkTestDriverAfterTest.inc\"${emscripten_after}")
   create_test_sourcelist(Tests ${KIT}TestDriver.cxx
     ${KitTests}
-    EXTRA_INCLUDE itkTestDriverIncludeRequiredIOFactories.h
+    EXTRA_INCLUDE itkTestDriverIncludeRequiredFactories.h
     FUNCTION  ProcessArgumentsAndRegisterRequiredFactories
-    )
-  add_executable(${KIT}TestDriver ${KIT}TestDriver.cxx ${Tests} ${ADDITIONAL_SRC})
-  target_link_libraries(${KIT}TestDriver LINK_PUBLIC ${KIT_LIBS} ${ITKTestKernel_LIBRARIES})
-  itk_module_target_label(${KIT}TestDriver)
-endmacro()
-
-
-macro(CreateTestDriver_SupportBuildInIOFactories KIT KIT_LIBS KitTests)
-  set(ADDITIONAL_SRC ${ARGN} )
-  if(EMSCRIPTEN)
-    set(emscripten_before "
-EM_ASM(
-  var cmake_source_dir = '${CMAKE_SOURCE_DIR}'.split('/');
-  // This is intentionally global so it can be unmounted at the end.
-  source_mount_dir = null;
-  if(cmake_source_dir[1] === 'home') {
-    source_mount_dir = cmake_source_dir.slice(0, 3).join('/');
-    }
-  else {
-    source_mount_dir = cmake_source_dir.slice(0, 2).join('/');
-    }
-  FS.mkdir(source_mount_dir);
-  FS.mount(NODEFS, { root: source_mount_dir }, source_mount_dir);
-
-  // This is intentionally global so it can be unmounted at the end.
-  binary_mount_dir = null;
-  var cmake_binary_dir = '${CMAKE_BINARY_DIR}'.split('/');
-  if(cmake_binary_dir[1] === 'home') {
-    binary_mount_dir = cmake_binary_dir.slice(0, 3).join('/');
-    }
-  else {
-    binary_mount_dir = cmake_binary_dir.slice(0, 2).join('/');
-    }
-  if(source_mount_dir != binary_mount_dir) {
-    FS.mkdir(binary_mount_dir);
-    FS.mount(NODEFS, { root: binary_mount_dir }, binary_mount_dir);
-    }
-  );
-")
-    set(emscripten_after "
-EM_ASM(
-  FS.unmount(source_mount_dir);
-  if(source_mount_dir != binary_mount_dir) {
-    FS.unmount(binary_mount_dir);
-    }
-  );
-")
-  endif()
-  set(CMAKE_TESTDRIVER_BEFORE_TESTMAIN "${emscripten_before}#include \"itkTestDriverBeforeTest.inc\"")
-  set(CMAKE_TESTDRIVER_AFTER_TESTMAIN "#include \"itkTestDriverAfterTest.inc\"${emscripten_after}")
-  create_test_sourcelist(Tests ${KIT}TestDriver.cxx
-    ${KitTests}
-    EXTRA_INCLUDE  itkTestDriverIncludeBuiltInIOFactories.h
-    FUNCTION  ProcessArgumentsAndRegisterBuiltInFactories
     )
   add_executable(${KIT}TestDriver ${KIT}TestDriver.cxx ${Tests} ${ADDITIONAL_SRC})
   target_link_libraries(${KIT}TestDriver LINK_PUBLIC ${KIT_LIBS} ${ITKTestKernel_LIBRARIES})
@@ -171,7 +117,7 @@ function(itk_python_add_test)
     endif()
   endif()
 
-  set(options )
+  set(options)
   set(oneValueArgs NAME)
   set(multiValueArgs TEST_DRIVER_ARGS COMMAND)
   cmake_parse_arguments(PYTHON_ADD_TEST "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -188,22 +134,25 @@ function(itk_python_add_test)
   else()
     set(itk_wrap_python_binary_dir "${ITK_BINARY_DIR}/Wrapping/Generators/Python")
   endif()
+  # itk_wrap_python_binary_dir *MUST* contain the WrapITK.pth file
+  # Final installed version of ITK will leverage the WrapITK.pth paths, so
+  # the test environment should also use those same paths.
+  set(WrapITK_PTH_FILE "${itk_wrap_python_binary_dir}/WrapITK.pth")
+  if(NOT EXISTS ${WrapITK_PTH_FILE})
+    message(FATAL_ERROR "${WrapITK_PTH_FILE} must exist.")
+  endif()
+  unset(WrapITK_PTH_FILE)
 
   itk_add_test(NAME ${PYTHON_ADD_TEST_NAME}
     COMMAND itkTestDriver
-    --add-before-env PYTHONPATH "${itk_wrap_python_binary_dir}/$<CONFIGURATION>"
-    --add-before-env PYTHONPATH "${itk_wrap_python_binary_dir}"
-    --add-before-env PYTHONPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIGURATION>"
-    --add-before-env PYTHONPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
-    --add-before-libpath "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/$<CONFIGURATION>"
-    --add-before-libpath "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
-    --add-before-libpath "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIGURATION>"
-    --add-before-libpath "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-    ${PYTHON_ADD_TEST_TEST_DRIVER_ARGS}
-    ${command}
-    ${PYTHON_ADD_TEST_COMMAND}
+      --add-before-env PYTHONPATH "${itk_wrap_python_binary_dir}"  # parent directory of the itk package
+      --add-before-env PYTHONPATH "${ITK_PYTHON_PACKAGE_DIR}"      # package directory and shared libraries + swig artifacts
+      --add-before-libpath "${ITK_PYTHON_PACKAGE_DIR}"             # itk non-wrapping shared libs
+      ${PYTHON_ADD_TEST_TEST_DRIVER_ARGS}
+      ${command}
+      ${PYTHON_ADD_TEST_COMMAND}
     WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-    )
+  )
   set_property(TEST ${PYTHON_ADD_TEST_NAME} APPEND PROPERTY LABELS Python)
 endfunction()
 
@@ -232,9 +181,9 @@ function(itk_python_expression_add_test)
     endif()
   endif()
 
-  set(options )
+  set(options)
   set(oneValueArgs NAME EXPRESSION)
-  set(multiValueArgs )
+  set(multiValueArgs)
   cmake_parse_arguments(PYTHON_EXPRESSION_ADD_TEST "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   itk_python_add_test(NAME ${PYTHON_EXPRESSION_ADD_TEST_NAME}
@@ -244,19 +193,17 @@ endfunction()
 
 function(CreateGoogleTestDriver KIT KIT_LIBS KitTests)
   set(exe "${KIT}GTestDriver")
-  add_executable(${exe} ${KitTests} )
+  add_executable(${exe} ${KitTests})
   target_link_libraries(${exe} ${KIT_LIBS} GTest::GTest GTest::Main)
   itk_module_target_label(${exe})
 
   include(GoogleTest)
 
-  # CMake 3.10 added this method, to avoid configure time introspection.
-  # Verion 3.10.3 is needed for the DISCOVERY_TIMEOUT method
-  if(NOT CMAKE_CROSSCOMPILING AND NOT ${CMAKE_VERSION} VERSION_LESS "3.10.3" )
-    gtest_discover_tests( ${exe} DISCOVERY_TIMEOUT 15 )
+  if(NOT CMAKE_CROSSCOMPILING)
+    gtest_discover_tests(${exe} DISCOVERY_TIMEOUT 15)
   else()
     set(_skip_dependency)
-    if( ITK_SKIP_GTEST_DEPENDANCY_AUTO_CHECK )
+    if(ITK_SKIP_GTEST_DEPENDANCY_AUTO_CHECK)
       # This advanced behavior is only available through the
       # command line.  It is intended to be used only when writing GoogleTests,
       # to require the developer to explicitly ask for introspection of

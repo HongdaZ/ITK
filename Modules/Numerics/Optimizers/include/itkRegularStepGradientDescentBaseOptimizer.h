@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 
 namespace itk
 {
-/**\class RegularStepGradientDescentBaseOptimizerEnums
+/** \class RegularStepGradientDescentBaseOptimizerEnums
  *\brief Contains all enum classes for RegularStepGradientDescentBaseOptimizer class.
  * \ingroup ITKOptimizers
  */
@@ -58,7 +58,7 @@ extern ITKOptimizers_EXPORT std::ostream &
 class ITKOptimizers_EXPORT RegularStepGradientDescentBaseOptimizer : public SingleValuedNonLinearOptimizer
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegularStepGradientDescentBaseOptimizer);
+  ITK_DISALLOW_COPY_AND_MOVE(RegularStepGradientDescentBaseOptimizer);
 
   /** Standard "Self" type alias. */
   using Self = RegularStepGradientDescentBaseOptimizer;

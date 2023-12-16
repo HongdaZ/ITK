@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,9 @@
 #ifndef itkScalarImageToRunLengthFeaturesFilter_hxx
 #define itkScalarImageToRunLengthFeaturesFilter_hxx
 
-#include "itkScalarImageToRunLengthFeaturesFilter.h"
 #include "itkNeighborhood.h"
 #include "itkMath.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 namespace itk
 {
@@ -75,7 +75,7 @@ ScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>::Scal
   // connected to the current pixel. do not include the center pixel.
   unsigned int        centerIndex = hood.GetCenterNeighborhoodIndex();
   OffsetVectorPointer offsets = OffsetVector::New();
-  for (unsigned int d = 0; d < centerIndex; d++)
+  for (unsigned int d = 0; d < centerIndex; ++d)
   {
     OffsetType offset = hood.GetOffset(d);
     offsets->push_back(offset);
@@ -115,7 +115,7 @@ ScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>::Full
   double ** features;
 
   features = new double *[numOffsets];
-  for (size_t i = 0; i < numOffsets; i++)
+  for (size_t i = 0; i < numOffsets; ++i)
   {
     features[i] = new double[numFeatures];
   }
@@ -129,7 +129,7 @@ ScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>::Full
   {
     this->m_RunLengthMatrixGenerator->SetOffset(offsetIt.Value());
     this->m_RunLengthMatrixGenerator->Update();
-    typename RunLengthFeaturesFilterType::Pointer runLengthMatrixCalculator = RunLengthFeaturesFilterType::New();
+    auto runLengthMatrixCalculator = RunLengthFeaturesFilterType::New();
     runLengthMatrixCalculator->SetInput(this->m_RunLengthMatrixGenerator->GetOutput());
     runLengthMatrixCalculator->Update();
 
@@ -145,8 +145,8 @@ ScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>::Full
   // Now get the mean and deviaton of each feature across the offsets.
   this->m_FeatureMeans->clear();
   this->m_FeatureStandardDeviations->clear();
-  auto * tempFeatureMeans = new double[numFeatures];
-  auto * tempFeatureDevs = new double[numFeatures];
+  const auto tempFeatureMeans = make_unique_for_overwrite<double[]>(numFeatures);
+  const auto tempFeatureDevs = std::make_unique<double[]>(numFeatures);
 
   /*Compute incremental mean and SD, a la Knuth, "The  Art of Computer
     Programming, Volume 2: Seminumerical Algorithms",  section 4.2.2.
@@ -159,16 +159,15 @@ ScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>::Full
   */
 
   // Set up the initial conditions (k = 1)
-  for (featureNum = 0; featureNum < numFeatures; featureNum++)
+  for (featureNum = 0; featureNum < numFeatures; ++featureNum)
   {
     tempFeatureMeans[featureNum] = features[0][featureNum];
-    tempFeatureDevs[featureNum] = 0;
   }
   // Run through the recurrence (k = 2 ... N)
-  for (offsetNum = 1; offsetNum < numOffsets; offsetNum++)
+  for (offsetNum = 1; offsetNum < numOffsets; ++offsetNum)
   {
     int k = offsetNum + 1;
-    for (featureNum = 0; featureNum < numFeatures; featureNum++)
+    for (featureNum = 0; featureNum < numFeatures; ++featureNum)
     {
       double M_k_minus_1 = tempFeatureMeans[featureNum];
       double S_k_minus_1 = tempFeatureDevs[featureNum];
@@ -181,7 +180,7 @@ ScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>::Full
       tempFeatureDevs[featureNum] = S_k;
     }
   }
-  for (featureNum = 0; featureNum < numFeatures; featureNum++)
+  for (featureNum = 0; featureNum < numFeatures; ++featureNum)
   {
     tempFeatureDevs[featureNum] = std::sqrt(tempFeatureDevs[featureNum] / numOffsets);
 
@@ -197,9 +196,7 @@ ScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>::Full
     itkDynamicCastInDebugMode<FeatureValueVectorDataObjectType *>(this->ProcessObject::GetOutput(1));
   standardDeviationOutputObject->Set(this->m_FeatureStandardDeviations);
 
-  delete[] tempFeatureMeans;
-  delete[] tempFeatureDevs;
-  for (size_t i = 0; i < numOffsets; i++)
+  for (size_t i = 0; i < numOffsets; ++i)
   {
     delete[] features[i];
   }
@@ -215,7 +212,7 @@ ScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>::Fast
   this->m_RunLengthMatrixGenerator->SetOffset(offsetIt.Value());
 
   this->m_RunLengthMatrixGenerator->Update();
-  typename RunLengthFeaturesFilterType::Pointer runLengthMatrixCalculator = RunLengthFeaturesFilterType::New();
+  auto runLengthMatrixCalculator = RunLengthFeaturesFilterType::New();
   runLengthMatrixCalculator->SetInput(this->m_RunLengthMatrixGenerator->GetOutput());
   runLengthMatrixCalculator->Update();
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,16 +37,12 @@ public:
   Exp() = default;
   ~Exp() = default;
   bool
-  operator!=(const Exp &) const
+  operator==(const Exp &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const Exp & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Exp);
 
   inline TOutput
   operator()(const TInput & A) const
@@ -57,7 +53,7 @@ public:
 } // namespace Functor
 
 /**
- *\class ExpImageFilter
+ * \class ExpImageFilter
  * \brief Computes the exponential function of each pixel.
  *
  * The computation is performed using std::exp(x).
@@ -68,10 +64,10 @@ public:
  * \ingroup ITKImageIntensity
  */
 template <typename TInputImage, typename TOutputImage>
-class ExpImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT ExpImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExpImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ExpImageFilter);
 
   /** Standard class type aliases. */
   using Self = ExpImageFilter;

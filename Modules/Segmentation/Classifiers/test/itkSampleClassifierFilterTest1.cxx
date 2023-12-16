@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,9 +42,9 @@ itkSampleClassifierFilterTest1(int, char *[])
 
   using FilterType = itk::Statistics::SampleClassifierFilter<SampleType>;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
-  SampleType::Pointer sample = SampleType::New();
+  auto sample = SampleType::New();
   sample->SetMeasurementVectorSize(numberOfComponents);
 
   // Test GetInput() before setting the input
@@ -106,10 +106,10 @@ itkSampleClassifierFilterTest1(int, char *[])
 
   using MembershipFunctionPointer = MembershipFunctionType::Pointer;
 
-  ClassLabelVectorObjectType::Pointer classLabelsObject = ClassLabelVectorObjectType::New();
+  auto classLabelsObject = ClassLabelVectorObjectType::New();
   filter->SetClassLabels(classLabelsObject);
 
-  MembershipFunctionVectorObjectType::Pointer membershipFunctionsObject = MembershipFunctionVectorObjectType::New();
+  auto membershipFunctionsObject = MembershipFunctionVectorObjectType::New();
   filter->SetMembershipFunctions(membershipFunctionsObject);
 
   // Run the filter without specifying any membership functions. An exception
@@ -187,8 +187,8 @@ itkSampleClassifierFilterTest1(int, char *[])
   try
   {
     filter->Update();
-    std::cerr << "Attempting to run a classification without setting"
-              << "decision rule, should throw an exception" << std::endl;
+    std::cerr << "Attempting to run a classification without setting decision rule, should throw an exception"
+              << std::endl;
     return EXIT_FAILURE;
   }
   catch (const itk::ExceptionObject & excp)
@@ -199,7 +199,7 @@ itkSampleClassifierFilterTest1(int, char *[])
   // Set a decision rule type
   using DecisionRuleType = itk::Statistics::MaximumDecisionRule;
 
-  DecisionRuleType::Pointer decisionRule = DecisionRuleType::New();
+  auto decisionRule = DecisionRuleType::New();
   filter->SetDecisionRule(decisionRule);
 
   if (filter->GetDecisionRule() != decisionRule)

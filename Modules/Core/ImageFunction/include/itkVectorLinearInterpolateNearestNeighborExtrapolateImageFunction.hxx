@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkVectorLinearInterpolateNearestNeighborExtrapolateImageFunction_hxx
 #define itkVectorLinearInterpolateNearestNeighborExtrapolateImageFunction_hxx
 
-#include "itkVectorLinearInterpolateNearestNeighborExtrapolateImageFunction.h"
 
 #include "itkMath.h"
 
@@ -60,7 +59,7 @@ VectorLinearInterpolateNearestNeighborExtrapolateImageFunction<TInputImage, TCoo
   IndexType neighIndex;
   double    distance[ImageDimension];
 
-  for (dim = 0; dim < ImageDimension; dim++)
+  for (dim = 0; dim < ImageDimension; ++dim)
   {
     baseIndex[dim] = Math::Floor<IndexValueType>(index[dim]);
 
@@ -94,13 +93,13 @@ VectorLinearInterpolateNearestNeighborExtrapolateImageFunction<TInputImage, TCoo
 
   RealType totalOverlap = 0.0;
 
-  for (unsigned int counter = 0; counter < m_Neighbors; counter++)
+  for (unsigned int counter = 0; counter < m_Neighbors; ++counter)
   {
     double       overlap = 1.0;   // fraction overlap
     unsigned int upper = counter; // each bit indicates upper/lower neighbour
 
     // get neighbor index and overlap fraction
-    for (dim = 0; dim < ImageDimension; dim++)
+    for (dim = 0; dim < ImageDimension; ++dim)
     {
       if (upper & 1)
       {
@@ -120,7 +119,7 @@ VectorLinearInterpolateNearestNeighborExtrapolateImageFunction<TInputImage, TCoo
     if (overlap)
     {
       const PixelType input = this->GetInputImage()->GetPixel(neighIndex);
-      for (unsigned int k = 0; k < this->GetInputImage()->GetNumberOfComponentsPerPixel(); k++)
+      for (unsigned int k = 0; k < this->GetInputImage()->GetNumberOfComponentsPerPixel(); ++k)
       {
         output[k] += overlap * static_cast<RealType>(input[k]);
       }
@@ -149,7 +148,7 @@ VectorLinearInterpolateNearestNeighborExtrapolateImageFunction<TInputImage, TCoo
   // but that lies within the image
   IndexType insideIndex;
 
-  for (unsigned int dim = 0; dim < ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < ImageDimension; ++dim)
   {
     if (index[dim] >= this->m_StartIndex[dim])
     {

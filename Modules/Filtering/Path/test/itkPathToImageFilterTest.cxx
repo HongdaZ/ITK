@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ itkPathToImageFilterTest(int, char *[])
 
 
   // Set up the path
-  PolyLineParametricPathType::Pointer path = PolyLineParametricPathType::New();
+  auto path = PolyLineParametricPathType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(path, PolyLineParametricPath, ParametricPath);
 
@@ -55,7 +55,7 @@ itkPathToImageFilterTest(int, char *[])
   path->AddVertex(v);
 
 
-  PathToImageFilterType::Pointer pathToImageFilter = PathToImageFilterType::New();
+  auto pathToImageFilter = PathToImageFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(pathToImageFilter, PathToImageFilter, ImageSource);
 

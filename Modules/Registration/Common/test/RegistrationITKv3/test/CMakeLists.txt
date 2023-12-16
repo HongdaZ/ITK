@@ -289,11 +289,11 @@ itk_add_test(NAME  ITKv3DeformableRegistration12Test4 COMMAND ${ITK_TEST_DRIVER}
         ${TEMP}/DeformableRegistration12Test4FinalTransformParameters.txt
 )
 
-if( ITK_USE_BRAINWEB_DATA )
+if(ITK_USE_BRAINWEB_DATA)
 
-  set( NUMBER_OF_BSPLINE_GRID_NODES 5 )
+  set(NUMBER_OF_BSPLINE_GRID_NODES 5)
 
-  if( CTEST_TEST_TIMEOUT GREATER 3000 )
+  if(CTEST_TEST_TIMEOUT GREATER 3000)
 
     itk_add_test(NAME  ITKv3DeformableRegistration8Test1 COMMAND ${ITK_TEST_DRIVER}
         --compare DATA{${ITK_EXAMPLE_DATA_ROOT}/BrainWeb/brainweb1e1a10f20.mha}
@@ -377,7 +377,7 @@ if( ITK_USE_BRAINWEB_DATA )
 
   endif() # CTEST_TEST_TIMEOUT GREATER 3000
 
-  if( "${ITK_COMPUTER_MEMORY_SIZE}" GREATER 6 )
+  if("${ITK_COMPUTER_MEMORY_SIZE}" GREATER 6)
 
     set(NUMBER_OF_BSPLINE_GRID_NODES 32)
     itk_add_test(NAME ITKv3DeformableRegistration8Test5 COMMAND ${ITK_TEST_DRIVER}
@@ -394,6 +394,7 @@ if( ITK_USE_BRAINWEB_DATA )
     )
     set_property(TEST ITKv3DeformableRegistration8Test5 PROPERTY DEPENDS BSplineWarping2Test)
     set_property(TEST ITKv3DeformableRegistration8Test5 APPEND PROPERTY LABELS RUNS_LONG)
+    set_property(TEST ITKv3DeformableRegistration8Test5 APPEND PROPERTY RUN_SERIAL True)
 
     itk_add_test(NAME ITKv3DeformableRegistration8Test6 COMMAND ${ITK_TEST_DRIVER}
       $<TARGET_FILE:ITKv3DeformableRegistration8>
@@ -455,6 +456,7 @@ if( ITK_USE_BRAINWEB_DATA )
     )
     set_property(TEST ITKv3DeformableRegistration8Test9 PROPERTY DEPENDS BSplineWarping2Test)
     set_property(TEST ITKv3DeformableRegistration8Test9 APPEND PROPERTY LABELS RUNS_LONG)
+    set_property(TEST ITKv3DeformableRegistration8Test9 APPEND PROPERTY RUN_SERIAL True)
 
     itk_add_test(NAME ITKv3DeformableRegistration8Test10 COMMAND ${ITK_TEST_DRIVER}
       $<TARGET_FILE:ITKv3DeformableRegistration8>
@@ -483,7 +485,7 @@ if( ITK_USE_BRAINWEB_DATA )
       RESOURCE_LOCK MEMORY_SIZE
       )
 
-    if( "${ITK_COMPUTER_MEMORY_SIZE}" GREATER 16 )
+    if("${ITK_COMPUTER_MEMORY_SIZE}" GREATER 16)
 
       itk_add_test(NAME ITKv3DeformableRegistration8Test11 COMMAND ${ITK_TEST_DRIVER}
         $<TARGET_FILE:ITKv3DeformableRegistration8>

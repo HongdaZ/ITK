@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,7 +49,7 @@ template <typename TInputImage, // Input image
 class ITK_TEMPLATE_EXPORT LevelSetEquationTermBase : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEquationTermBase);
+  ITK_DISALLOW_COPY_AND_MOVE(LevelSetEquationTermBase);
 
   using Self = LevelSetEquationTermBase;
   using Pointer = SmartPointer<Self>;
@@ -97,7 +97,7 @@ public:
   itkGetModifiableObjectMacro(CurrentLevelSetPointer, LevelSetType);
 
   virtual void
-  SetLevelSetContainer(LevelSetContainerType * ptr);
+  SetLevelSetContainer(LevelSetContainerType * iContainer);
   itkGetModifiableObjectMacro(LevelSetContainer, LevelSetContainerType);
 
   /** Returns the weighted term contribution at the given location iP, i.e.

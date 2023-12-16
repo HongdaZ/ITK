@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkRandomImageSource.h"
 #include "itkMetaDataObject.h"
 #include "itkMetaImageIO.h"
+#include "itkTestingMacros.h"
 
 
 // Specific ImageIO test
@@ -32,7 +33,7 @@ ReadImage(const std::string & fileName)
 {
   typename TImage::Pointer image;
   using ReaderType = itk::ImageFileReader<TImage>;
-  typename ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(fileName.c_str());
 
   itk::MetaImageIO::Pointer io = itk::MetaImageIO::New();
@@ -63,7 +64,7 @@ void
 WriteImage(typename ImageType::Pointer & image, const std::string & fileName)
 {
   using WriterType = itk::ImageFileWriter<ImageType>;
-  typename WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   writer->SetFileName(fileName.c_str());
 
@@ -142,7 +143,6 @@ TestMatch(itk::MetaDataDictionary & dict, const char * const key, TValue expecte
     std::cerr << "Key " << key << " found with unexpected value " << nativeValue << std::endl;
     return false;
   }
-  std::cout << "Key " << key << " found with expected value " << nativeValue << std::endl;
   return true;
 }
 
@@ -151,7 +151,7 @@ itkMetaImageIOMetaDataTest(int argc, char * argv[])
 {
   if (argc < 2)
   {
-    std::cerr << "Usage: metadatatest outputimage" << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " metadatatest outputimage" << std::endl;
     return 1;
   }
   // write out an image -- using a random image source, but
@@ -162,7 +162,7 @@ itkMetaImageIOMetaDataTest(int argc, char * argv[])
   using ImageType = itk::Image<PixelType, Dim>;
   using SourceType = itk::RandomImageSource<ImageType>;
 
-  SourceType::Pointer      source = SourceType::New();
+  auto                     source = SourceType::New();
   ImageType::SizeValueType size[Dim] = { 32, 32 };
   source->SetSize(size);
   source->SetMin(itk::NumericTraits<PixelType>::min());
@@ -178,6 +178,16 @@ itkMetaImageIOMetaDataTest(int argc, char * argv[])
     // Add string key
     std::string key("hello");
     std::string value("world");
+    itk::EncapsulateMetaData<std::string>(dict, key, value);
+  }
+
+  const auto maxSupportedStringSize = (MET_MAX_NUMBER_OF_FIELD_VALUES * sizeof(double)) - 1;
+  static_assert(maxSupportedStringSize == std::numeric_limits<int16_t>::max(), "Assert that this max value is 32767");
+
+  {
+    // Add string of the maximum supported size.
+    const std::string key("max_string");
+    const std::string value(maxSupportedStringSize, 'x');
     itk::EncapsulateMetaData<std::string>(dict, key, value);
   }
   {
@@ -236,8 +246,8 @@ itkMetaImageIOMetaDataTest(int argc, char * argv[])
   }
   {
     // Add short
-    std::string key("unsigned_short");
-    unsigned    value(8192);
+    std::string  key("unsigned_short");
+    unsigned int value(8192);
     itk::EncapsulateMetaData<unsigned short>(dict, key, value);
   }
   {
@@ -263,6 +273,10 @@ itkMetaImageIOMetaDataTest(int argc, char * argv[])
 
   std::string value("world");
   if (!TestMatch<std::string>(dict, "hello", value))
+  {
+    return 1; // error
+  }
+  if (!TestMatch<std::string>(dict, "max_string", std::string(maxSupportedStringSize, 'x')))
   {
     return 1; // error
   }
@@ -312,7 +326,7 @@ itkMetaImageIOMetaDataTest(int argc, char * argv[])
     return 1; // error
   }
   // Add short
-  if (!TestMatch<unsigned>(dict, "unsigned_short", 8192))
+  if (!TestMatch<unsigned int>(dict, "unsigned_short", 8192))
   {
     return 1; // error
   }

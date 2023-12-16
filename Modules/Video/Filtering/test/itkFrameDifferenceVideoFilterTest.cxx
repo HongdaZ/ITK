@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkVideoFileReader.h"
 #include "itkVideoFileWriter.h"
 #include "itkFileListVideoIOFactory.h"
+#include "itkTestingMacros.h"
 
 
 // Set up type alias for test
@@ -48,7 +49,7 @@ namespace FrameDifferenceVideoFilterTest
 InputFrameType::Pointer
 CreateInputFrame(InputPixelType val)
 {
-  InputFrameType::Pointer out = InputFrameType::New();
+  auto out = InputFrameType::New();
 
   InputFrameType::RegionType largestRegion;
   InputFrameType::SizeType   sizeLR;
@@ -85,12 +86,14 @@ itkFrameDifferenceVideoFilterTest(int itkNotUsed(argc), char * itkNotUsed(argv)[
 {
   // Instantiate the filter
   using FilterType = itk::FrameDifferenceVideoFilter<InputVideoType, OutputVideoType>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, FrameDifferenceVideoFilter, VideoToVideoFilter);
 
 
   // Set up an input VideoStream
-  InputVideoType::Pointer inputVideo = InputVideoType::New();
-  SizeValueType           numInputFrames = 50;
+  auto          inputVideo = InputVideoType::New();
+  SizeValueType numInputFrames = 50;
   inputVideo->SetNumberOfBuffers(numInputFrames);
   itk::TemporalRegion inputTempRegion;
   inputTempRegion.SetFrameStart(0);

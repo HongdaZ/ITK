@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,6 +37,7 @@
 #include "itkScaleLogarithmicTransform.h"
 #include "itkScaleVersor3DTransform.h"
 #include "itkScaleSkewVersor3DTransform.h"
+#include "itkComposeScaleSkewVersor3DTransform.h"
 #include "itkSimilarity2DTransform.h"
 #include "itkSimilarity3DTransform.h"
 #include "itkTranslationTransform.h"
@@ -147,6 +148,7 @@ TransformFactoryBase::RegisterTransformFactory()
   TransformFactory<ScalableAffineTransform<TParameterType, 3>>::RegisterTransform();
   TransformFactory<ScaleLogarithmicTransform<TParameterType, 3>>::RegisterTransform();
   TransformFactory<ScaleSkewVersor3DTransform<TParameterType>>::RegisterTransform();
+  TransformFactory<ComposeScaleSkewVersor3DTransform<TParameterType>>::RegisterTransform();
   TransformFactory<ScaleTransform<TParameterType, 2>>::RegisterTransform();
   TransformFactory<ScaleTransform<TParameterType, 3>>::RegisterTransform();
   TransformFactory<ScaleTransform<TParameterType, 4>>::RegisterTransform();

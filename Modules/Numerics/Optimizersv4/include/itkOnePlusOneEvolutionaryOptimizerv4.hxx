@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkOnePlusOneEvolutionaryOptimizerv4_hxx
 
 #include "itkMath.h"
-#include "itkOnePlusOneEvolutionaryOptimizerv4.h"
 #include "vnl/vnl_matrix.h"
 namespace itk
 {
@@ -29,7 +28,7 @@ OnePlusOneEvolutionaryOptimizerv4<TInternalComputationValueType>::OnePlusOneEvol
   m_CatchGetValueException = false;
   m_MetricWorstPossibleValue = 0;
 
-  m_Epsilon = (double)1.5e-4;
+  m_Epsilon = 1.5e-4;
   m_RandomGenerator = nullptr;
 
   m_Initialized = false;
@@ -105,7 +104,7 @@ OnePlusOneEvolutionaryOptimizerv4<TInternalComputationValueType>::StartOptimizat
   ParametersType parentPosition(spaceDimension);
   ParametersType childPosition(spaceDimension);
 
-  for (unsigned int i = 0; i < spaceDimension; i++)
+  for (unsigned int i = 0; i < spaceDimension; ++i)
   {
     parentPosition[i] = parent[i];
   }
@@ -142,7 +141,7 @@ OnePlusOneEvolutionaryOptimizerv4<TInternalComputationValueType>::StartOptimizat
   }
 
   A.set_identity();
-  for (unsigned int i = 0; i < spaceDimension; i++)
+  for (unsigned int i = 0; i < spaceDimension; ++i)
   {
     A(i, i) = m_InitialRadius / scales[i];
   }
@@ -157,7 +156,7 @@ OnePlusOneEvolutionaryOptimizerv4<TInternalComputationValueType>::StartOptimizat
       break;
     }
 
-    for (unsigned int i = 0; i < spaceDimension; i++)
+    for (unsigned int i = 0; i < spaceDimension; ++i)
     {
       if (!m_RandomGenerator)
       {
@@ -169,7 +168,7 @@ OnePlusOneEvolutionaryOptimizerv4<TInternalComputationValueType>::StartOptimizat
     delta = A * f_norm;
     child = parent + delta;
 
-    for (unsigned int i = 0; i < spaceDimension; i++)
+    for (unsigned int i = 0; i < spaceDimension; ++i)
     {
       childPosition[i] = child[i];
     }
@@ -212,7 +211,7 @@ OnePlusOneEvolutionaryOptimizerv4<TInternalComputationValueType>::StartOptimizat
       pvalue = cvalue;
       parent.swap(child);
       adjust = m_GrowthFactor;
-      for (unsigned int i = 0; i < spaceDimension; i++)
+      for (unsigned int i = 0; i < spaceDimension; ++i)
       {
         parentPosition[i] = parent[i];
       }
@@ -254,9 +253,9 @@ OnePlusOneEvolutionaryOptimizerv4<TInternalComputationValueType>::StartOptimizat
 
     // A = A + (adjust - 1.0) * A;
     double alpha = ((adjust - 1.0) / dot_product(f_norm, f_norm));
-    for (unsigned int c = 0; c < spaceDimension; c++)
+    for (unsigned int c = 0; c < spaceDimension; ++c)
     {
-      for (unsigned int r = 0; r < spaceDimension; r++)
+      for (unsigned int r = 0; r < spaceDimension; ++r)
       {
         A(r, c) += alpha * delta[r] * f_norm[c];
       }
@@ -265,9 +264,12 @@ OnePlusOneEvolutionaryOptimizerv4<TInternalComputationValueType>::StartOptimizat
     this->InvokeEvent(IterationEvent());
     itkDebugMacro(<< "Current position: " << this->GetCurrentPosition());
   }
-  m_StopConditionDescription.str("");
-  m_StopConditionDescription << this->GetNameOfClass() << ": ";
-  m_StopConditionDescription << "Maximum number of iterations (" << m_MaximumIteration << ") exceeded. ";
+  if (this->m_CurrentIteration >= m_MaximumIteration)
+  {
+    m_StopConditionDescription.str("");
+    m_StopConditionDescription << this->GetNameOfClass() << ": ";
+    m_StopConditionDescription << "Maximum number of iterations (" << m_MaximumIteration << ") exceeded. ";
+  }
   this->InvokeEvent(EndEvent());
 }
 
@@ -279,8 +281,8 @@ OnePlusOneEvolutionaryOptimizerv4<TInternalComputationValueType>::GetStopConditi
 }
 
 template <typename TInternalComputationValueType>
-const typename OnePlusOneEvolutionaryOptimizerv4<TInternalComputationValueType>::MeasureType &
-OnePlusOneEvolutionaryOptimizerv4<TInternalComputationValueType>::GetValue() const
+auto
+OnePlusOneEvolutionaryOptimizerv4<TInternalComputationValueType>::GetValue() const -> const MeasureType &
 {
   return this->GetCurrentCost();
 }

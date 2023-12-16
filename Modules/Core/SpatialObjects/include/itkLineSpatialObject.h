@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,6 +34,9 @@ namespace itk
  * \sa LineSpatialObjectPoint
  * \ingroup ITKSpatialObjects
  *
+ * \sphinx
+ * \sphinxexample{Core/SpatialObjects/LineSpatialObject,Line Spatial Object}
+ * \endsphinx
  */
 
 template <unsigned int TDimension = 3>
@@ -41,7 +44,7 @@ class ITK_TEMPLATE_EXPORT LineSpatialObject
   : public PointBasedSpatialObject<TDimension, LineSpatialObjectPoint<TDimension>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LineSpatialObject);
+  ITK_DISALLOW_COPY_AND_MOVE(LineSpatialObject);
 
   using Self = LineSpatialObject;
   using Superclass = PointBasedSpatialObject<TDimension, LineSpatialObjectPoint<TDimension>>;
@@ -53,10 +56,10 @@ public:
   using LinePointType = LineSpatialObjectPoint<TDimension>;
   using LinePointListType = std::vector<LinePointType>;
 
-  using SpatialObjectPointType = typename Superclass::SpatialObjectPointType;
-  using PointType = typename Superclass::PointType;
-  using TransformType = typename Superclass::TransformType;
-  using BoundingBoxType = typename Superclass::BoundingBoxType;
+  using typename Superclass::SpatialObjectPointType;
+  using typename Superclass::PointType;
+  using typename Superclass::TransformType;
+  using typename Superclass::BoundingBoxType;
   using PointContainerType = VectorContainer<IdentifierType, PointType>;
   using PointContainerPointer = SmartPointer<PointContainerType>;
 

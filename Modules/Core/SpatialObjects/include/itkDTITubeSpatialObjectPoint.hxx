@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkDTITubeSpatialObjectPoint_hxx
 #define itkDTITubeSpatialObjectPoint_hxx
 
-#include "itkDTITubeSpatialObjectPoint.h"
 #include "itksys/SystemTools.hxx"
 
 namespace itk
@@ -35,6 +34,25 @@ DTITubeSpatialObjectPoint<TPointDimension>::DTITubeSpatialObjectPoint()
   m_TensorMatrix[0] = 1;
   m_TensorMatrix[3] = 1;
   m_TensorMatrix[5] = 1;
+}
+
+/** Copy Constructor */
+template <unsigned int TPointDimension>
+DTITubeSpatialObjectPoint<TPointDimension>::DTITubeSpatialObjectPoint(const DTITubeSpatialObjectPoint & other)
+  : Superclass(other)
+{
+  m_Fields.clear();
+  const FieldListType & fields = other.GetFields();
+  auto                  it = fields.begin();
+  while (it != fields.end())
+  {
+    this->AddField(it->first.c_str(), it->second);
+    ++it;
+  }
+  for (unsigned int i = 0; i < 6; ++i)
+  {
+    m_TensorMatrix[i] = other.m_TensorMatrix[i];
+  }
 }
 
 template <unsigned int TPointDimension>
@@ -84,11 +102,11 @@ DTITubeSpatialObjectPoint<TPointDimension>::SetField(const char * name, float va
 
   while (it != m_Fields.end())
   {
-    if (!strcmp((*it).first.c_str(), itksys::SystemTools::LowerCase(name).c_str()))
+    if (!strcmp(it->first.c_str(), itksys::SystemTools::LowerCase(name).c_str()))
     {
-      (*it).second = value;
+      it->second = value;
     }
-    it++;
+    ++it;
   }
 }
 
@@ -136,11 +154,11 @@ DTITubeSpatialObjectPoint<TPointDimension>::GetField(const char * name) const
 
   while (it != m_Fields.end())
   {
-    if (!strcmp((*it).first.c_str(), itksys::SystemTools::LowerCase(name).c_str()))
+    if (!strcmp(it->first.c_str(), itksys::SystemTools::LowerCase(name).c_str()))
     {
-      return (*it).second;
+      return it->second;
     }
-    it++;
+    ++it;
   }
   return -1;
 }
@@ -160,40 +178,21 @@ DTITubeSpatialObjectPoint<TPointDimension>::GetField(DTITubeSpatialObjectPointFi
 }
 
 template <unsigned int TPointDimension>
-typename DTITubeSpatialObjectPoint<TPointDimension>::Self &
-DTITubeSpatialObjectPoint<TPointDimension>::operator=(const DTITubeSpatialObjectPoint & rhs)
+auto
+DTITubeSpatialObjectPoint<TPointDimension>::operator=(const DTITubeSpatialObjectPoint & rhs) -> Self &
 {
   if (this != &rhs)
   {
-    // Point
-    this->SetId(rhs.GetId());
-    this->SetPositionInObjectSpace(rhs.GetPositionInObjectSpace());
-    this->SetColor(rhs.GetColor());
-    this->SetSpatialObject(rhs.GetSpatialObject());
-
-    // Tube
-    this->SetRadiusInObjectSpace(rhs.GetRadiusInObjectSpace());
-    this->SetTangentInObjectSpace(rhs.GetTangentInObjectSpace());
-    this->SetNormal1InObjectSpace(rhs.GetNormal1InObjectSpace());
-    this->SetNormal2InObjectSpace(rhs.GetNormal2InObjectSpace());
-
-    this->SetRidgeness(rhs.GetRidgeness());
-    this->SetMedialness(rhs.GetMedialness());
-    this->SetBranchness(rhs.GetBranchness());
-    this->SetAlpha1(rhs.GetAlpha1());
-    this->SetAlpha2(rhs.GetAlpha2());
-    this->SetAlpha3(rhs.GetAlpha3());
-
-    // Class
+    Superclass::operator=(rhs);
     m_Fields.clear();
     const FieldListType & fields = rhs.GetFields();
     auto                  it = fields.begin();
     while (it != fields.end())
     {
-      this->AddField((*it).first.c_str(), (*it).second);
-      it++;
+      this->AddField(it->first.c_str(), it->second);
+      ++it;
     }
-    for (unsigned int i = 0; i < 6; i++)
+    for (unsigned int i = 0; i < 6; ++i)
     {
       m_TensorMatrix[i] = rhs.m_TensorMatrix[i];
     }

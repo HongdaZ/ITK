@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 
 #include "itkCentralDifferenceImageFunction.h"
 #include "itkImageRegionIteratorWithIndex.h"
+#include "itkTestingMacros.h"
 
 template <unsigned int vecLength>
 int
@@ -37,7 +38,7 @@ itkCentralDifferenceImageFunctionOnVectorSpeedTestRun(char * argv[])
   using PixelType = itk::Vector<float, vecLength>;
   using ImageType = itk::Image<PixelType, ImageDimension>;
 
-  typename ImageType::Pointer  image = ImageType::New();
+  auto                         image = ImageType::New();
   typename ImageType::SizeType size;
   size.Fill(imageSize);
   typename ImageType::RegionType region(size);
@@ -54,7 +55,7 @@ itkCentralDifferenceImageFunctionOnVectorSpeedTestRun(char * argv[])
   while (!iter.IsAtEnd())
   {
     PixelType pix;
-    for (unsigned int n = 0; n < vecLength; n++)
+    for (unsigned int n = 0; n < vecLength; ++n)
     {
       pix[n] = counter; //(n+1) + counter;
     }
@@ -70,7 +71,7 @@ itkCentralDifferenceImageFunctionOnVectorSpeedTestRun(char * argv[])
   using FunctionType = itk::CentralDifferenceImageFunction<ImageType, CoordRepType, DerivativeType>;
   using OutputType = typename FunctionType::OutputType;
 
-  typename FunctionType::Pointer function = FunctionType::New();
+  auto function = FunctionType::New();
 
   function->SetInputImage(image);
 
@@ -83,7 +84,7 @@ itkCentralDifferenceImageFunctionOnVectorSpeedTestRun(char * argv[])
   std::cout << "UseImageDirection: " << function->GetUseImageDirection() << std::endl;
 
   /// loop
-  for (int l = 0; l < reps; l++)
+  for (int l = 0; l < reps; ++l)
   {
     iter.GoToBegin();
     while (!iter.IsAtEnd())
@@ -125,7 +126,8 @@ itkCentralDifferenceImageFunctionOnVectorSpeedTest(int argc, char * argv[])
 {
   if (argc != 7)
   {
-    std::cerr << "usage: size reps doEAI doEACI doE vecLength" << std::endl;
+    std::cerr << "usage: " << itkNameOfTestExecutableMacro(argv) << " size reps doEAI doEACI doE vecLength"
+              << std::endl;
     return EXIT_FAILURE;
   }
   int vecLength = std::stoi(argv[6]);

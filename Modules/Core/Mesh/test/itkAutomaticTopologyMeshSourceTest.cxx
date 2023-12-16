@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -74,7 +74,7 @@ itkAutomaticTopologyMeshSourceTest(int, char *[])
 
   IdentifierArrayType idArray(8);
   {
-    for (IdentifierType i = 0; i < 8; i++)
+    for (IdentifierType i = 0; i < 8; ++i)
     {
       idArray[i] = i;
     }
@@ -211,7 +211,7 @@ itkAutomaticTopologyMeshSourceTest(int, char *[])
   unsigned int i;
 
   std::cout << mesh->GetNumberOfPoints() << " points:" << std::endl;
-  for (i = 0; i < mesh->GetNumberOfPoints(); i++)
+  for (i = 0; i < mesh->GetNumberOfPoints(); ++i)
   {
     PointType point;
     if (mesh->GetPoint(i, &point))
@@ -221,7 +221,7 @@ itkAutomaticTopologyMeshSourceTest(int, char *[])
   }
 
   std::cout << "\n" << mesh->GetNumberOfCells() << " cells:" << std::endl;
-  for (i = 0; i < mesh->GetNumberOfCells(); i++)
+  for (i = 0; i < mesh->GetNumberOfCells(); ++i)
   {
     using CellAutoPointer = MeshType::CellAutoPointer;
     CellAutoPointer cell;
@@ -240,7 +240,7 @@ itkAutomaticTopologyMeshSourceTest(int, char *[])
   }
   std::cout << "\n";
 
-  for (i = 0; i < mesh->GetNumberOfCells(); i++)
+  for (i = 0; i < mesh->GetNumberOfCells(); ++i)
   {
     using CellAutoPointer = MeshType::CellAutoPointer;
     CellAutoPointer cell;

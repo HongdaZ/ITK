@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -116,7 +116,7 @@ main(int argc, char * argv[])
   }
 
   constexpr unsigned int ImageDimension = 3;
-  using PixelType = signed short;
+  using PixelType = short;
 
   using FixedImageType = itk::Image<PixelType, ImageDimension>;
   using MovingImageType = itk::Image<PixelType, ImageDimension>;
@@ -140,25 +140,23 @@ main(int argc, char * argv[])
   using RegistrationType =
     itk::ImageRegistrationMethod<FixedImageType, MovingImageType>;
 
-  MetricType::Pointer       metric = MetricType::New();
-  OptimizerType::Pointer    optimizer = OptimizerType::New();
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
-  RegistrationType::Pointer registration = RegistrationType::New();
+  auto metric = MetricType::New();
+  auto optimizer = OptimizerType::New();
+  auto interpolator = InterpolatorType::New();
+  auto registration = RegistrationType::New();
 
   registration->SetMetric(metric);
   registration->SetOptimizer(optimizer);
   registration->SetInterpolator(interpolator);
 
-  TransformType::Pointer transform = TransformType::New();
+  auto transform = TransformType::New();
   registration->SetTransform(transform);
 
   using FixedImageReaderType = itk::ImageFileReader<FixedImageType>;
   using MovingImageReaderType = itk::ImageFileReader<MovingImageType>;
 
-  FixedImageReaderType::Pointer fixedImageReader =
-    FixedImageReaderType::New();
-  MovingImageReaderType::Pointer movingImageReader =
-    MovingImageReaderType::New();
+  auto fixedImageReader = FixedImageReaderType::New();
+  auto movingImageReader = MovingImageReaderType::New();
 
   fixedImageReader->SetFileName(argv[1]);
   movingImageReader->SetFileName(argv[2]);
@@ -182,7 +180,7 @@ main(int argc, char * argv[])
   TransformType::MeshSizeType           meshSize;
   TransformType::OriginType             fixedOrigin;
 
-  for (unsigned int i = 0; i < SpaceDimension; i++)
+  for (unsigned int i = 0; i < SpaceDimension; ++i)
   {
     fixedOrigin[i] = fixedImage->GetOrigin()[i];
     fixedPhysicalDimensions[i] =
@@ -246,7 +244,7 @@ main(int argc, char * argv[])
 
   // Create the Command observer and register it with the optimizer.
   //
-  CommandIterationUpdate::Pointer observer = CommandIterationUpdate::New();
+  auto observer = CommandIterationUpdate::New();
   optimizer->AddObserver(itk::IterationEvent(), observer);
 
   metric->SetNumberOfHistogramBins(50);
@@ -315,7 +313,7 @@ main(int argc, char * argv[])
   using ResampleFilterType =
     itk::ResampleImageFilter<MovingImageType, FixedImageType>;
 
-  ResampleFilterType::Pointer resample = ResampleFilterType::New();
+  auto resample = ResampleFilterType::New();
 
   resample->SetTransform(transform);
   resample->SetInput(movingImageReader->GetOutput());
@@ -331,7 +329,7 @@ main(int argc, char * argv[])
   // such as 100 or 128.
   resample->SetDefaultPixelValue(0);
 
-  using OutputPixelType = signed short;
+  using OutputPixelType = short;
 
   using OutputImageType = itk::Image<OutputPixelType, ImageDimension>;
 
@@ -340,8 +338,8 @@ main(int argc, char * argv[])
 
   using WriterType = itk::ImageFileWriter<OutputImageType>;
 
-  WriterType::Pointer     writer = WriterType::New();
-  CastFilterType::Pointer caster = CastFilterType::New();
+  auto writer = WriterType::New();
+  auto caster = CastFilterType::New();
 
   writer->SetFileName(argv[3]);
 
@@ -364,9 +362,9 @@ main(int argc, char * argv[])
                                       FixedImageType,
                                       OutputImageType>;
 
-  DifferenceFilterType::Pointer difference = DifferenceFilterType::New();
+  auto difference = DifferenceFilterType::New();
 
-  WriterType::Pointer writer2 = WriterType::New();
+  auto writer2 = WriterType::New();
   writer2->SetInput(difference->GetOutput());
 
   // Compute the difference image between the
@@ -415,7 +413,7 @@ main(int argc, char * argv[])
     using VectorType = itk::Vector<float, ImageDimension>;
     using DisplacementFieldType = itk::Image<VectorType, ImageDimension>;
 
-    DisplacementFieldType::Pointer field = DisplacementFieldType::New();
+    auto field = DisplacementFieldType::New();
     field->SetRegions(fixedRegion);
     field->SetOrigin(fixedImage->GetOrigin());
     field->SetSpacing(fixedImage->GetSpacing());
@@ -444,7 +442,7 @@ main(int argc, char * argv[])
     }
 
     using FieldWriterType = itk::ImageFileWriter<DisplacementFieldType>;
-    FieldWriterType::Pointer fieldWriter = FieldWriterType::New();
+    auto fieldWriter = FieldWriterType::New();
 
     fieldWriter->SetInput(field);
 

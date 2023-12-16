@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 
 #include <set>
 #include <vector>
-#include <ITKDeformableMeshExport.h>
+#include "ITKDeformableMeshExport.h"
 
 namespace itk
 {
@@ -44,7 +44,7 @@ public:
   unsigned int m_Index;
 
   ImageVoxel() = default;
-  ImageVoxel(int * pos, double * subpos, double val, double dist, unsigned int ind)
+  ImageVoxel(const int * pos, const double * subpos, double val, double dist, unsigned int ind)
   {
     this->m_Vpos[0] = pos[0];
     this->m_Vpos[1] = pos[1];
@@ -96,7 +96,7 @@ public:
     m_Value = val;
   }
 };
-/**\class DeformableSimplexMesh3DGradientConstraintForceFilterEnums
+/** \class DeformableSimplexMesh3DGradientConstraintForceFilterEnums
  * \brief Contains all enum classes used by the DeformableSimplexMesh3DGradientConstraintForceFilter class.
  * \ingroup ITKDeformableMesh
  */
@@ -121,7 +121,7 @@ public:
 extern ITKDeformableMesh_EXPORT std::ostream &
                                 operator<<(std::ostream & out, const DeformableSimplexMesh3DGradientConstraintForceFilterEnums::SIDE value);
 /**
- *\class DeformableSimplexMesh3DGradientConstraintForceFilter
+ * \class DeformableSimplexMesh3DGradientConstraintForceFilter
  * \brief
  * Additional to its superclass this class reimplements the external forces methos
  * in which the scan line algorithm is used to find highest gradient is found in
@@ -157,11 +157,11 @@ public:
   using InputMeshType = TInputMesh;
   using OutputMeshType = TOutputMesh;
 
-  using PointType = typename Superclass::PointType;
-  using GradientIndexType = typename Superclass::GradientIndexType;
-  using GradientIndexValueType = typename Superclass::GradientIndexValueType;
-  using GradientType = typename Superclass::GradientType;
-  using GradientImageType = typename Superclass::GradientImageType;
+  using typename Superclass::PointType;
+  using typename Superclass::GradientIndexType;
+  using typename Superclass::GradientIndexValueType;
+  using typename Superclass::GradientType;
+  using typename Superclass::GradientImageType;
 
   /* Mesh pointer definition. */
   using InputMeshPointer = typename InputMeshType::Pointer;

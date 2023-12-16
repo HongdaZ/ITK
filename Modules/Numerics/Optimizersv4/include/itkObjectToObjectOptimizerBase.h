@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 
 namespace itk
 {
-/**\class ObjectToObjectOptimizerBaseTemplateEnums
+/** \class ObjectToObjectOptimizerBaseTemplateEnums
  *\brief This class contains all the enum classes used by ObjectToObjectOptimizerBaseTemplate class.
  *\ingroup ITKOptimizersv4
  */
@@ -58,7 +58,7 @@ extern ITKOptimizersv4_EXPORT std::ostream &
            const ObjectToObjectOptimizerBaseTemplateEnums::StopConditionObjectToObjectOptimizer value);
 
 /**
- *\class ObjectToObjectOptimizerBaseTemplate
+ * \class ObjectToObjectOptimizerBaseTemplate
  * \brief Abstract base for object-to-object optimizers.
  *
  * The goal of this optimizer hierarchy is to work with metrics
@@ -113,7 +113,7 @@ template <typename TInternalComputationValueType = double>
 class ITK_TEMPLATE_EXPORT ObjectToObjectOptimizerBaseTemplate : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ObjectToObjectOptimizerBaseTemplate);
+  ITK_DISALLOW_COPY_AND_MOVE(ObjectToObjectOptimizerBaseTemplate);
 
   /** Standard class type aliases. */
   using Self = ObjectToObjectOptimizerBaseTemplate;
@@ -261,6 +261,15 @@ public:
   /** Stop condition return string type */
   virtual const StopConditionReturnStringType
   GetStopConditionDescription() const = 0;
+
+  /** Returns true if derived optimizer supports using scales.
+   * For optimizers that do not support scaling, this
+   * default function is overriden to return false.*/
+  virtual bool
+  CanUseScales() const
+  {
+    return true;
+  }
 
 protected:
   /** Default constructor */

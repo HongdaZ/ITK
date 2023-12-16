@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,19 +15,18 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkPolygonGroupSpatialObjectXMLFile_hxx
-#define _itkPolygonGroupSpatialObjectXMLFile_hxx
 
 #include "itkPolygonGroupSpatialObjectXMLFile.h"
 #include "itksys/SystemTools.hxx"
 #include "itkMetaDataObject.h"
 #include "itkIOCommon.h"
-#define RAISE_EXCEPTION(s)                                                                                             \
-  {                                                                                                                    \
-    ExceptionObject exception(__FILE__, __LINE__);                                                                     \
-    exception.SetDescription(s);                                                                                       \
-    throw exception;                                                                                                   \
-  }
+#define RAISE_EXCEPTION(s)                         \
+  {                                                \
+    ExceptionObject exception(__FILE__, __LINE__); \
+    exception.SetDescription(s);                   \
+    throw exception;                               \
+  }                                                \
+  ITK_MACROEND_NOOP_STATEMENT
 
 namespace itk
 {
@@ -143,7 +142,7 @@ void
 PolygonGroupSpatialObjectXMLFileReader::CharacterDataHandler(const char * inData, int inLength)
 {
   m_CurCharacterData = "";
-  for (int i = 0; i < inLength; i++)
+  for (int i = 0; i < inLength; ++i)
   {
     m_CurCharacterData = m_CurCharacterData + inData[i];
   }
@@ -245,13 +244,13 @@ PolygonGroupSpatialObjectXMLFileWriter::WriteFile()
   {
     WriteStartElement("POLYGON", output);
     output << std::endl;
-    auto * curstrand = dynamic_cast<PolygonSpatialObjectType *>((*it).GetPointer());
+    auto * curstrand = dynamic_cast<PolygonSpatialObjectType *>(it->GetPointer());
     PolygonSpatialObjectType::PolygonPointListType & polygonPoints = curstrand->GetPoints();
     auto                                             pointIt = polygonPoints.begin();
     auto                                             pointItEnd = polygonPoints.end();
     while (pointIt != pointItEnd)
     {
-      PolygonSpatialObjectType::PointType curpoint = (*pointIt).GetPositionInObjectSpace();
+      PolygonSpatialObjectType::PointType curpoint = pointIt->GetPositionInObjectSpace();
       WriteStartElement("POINT", output);
       output << curpoint[0] << " " << curpoint[1] << " " << curpoint[2];
       WriteEndElement("POINT", output);
@@ -270,5 +269,3 @@ PolygonGroupSpatialObjectXMLFileWriter::WriteFile()
   return 0;
 }
 } // namespace itk
-
-#endif

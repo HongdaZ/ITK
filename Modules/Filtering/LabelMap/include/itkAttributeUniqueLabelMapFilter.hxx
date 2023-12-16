@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkAttributeUniqueLabelMapFilter_hxx
 #define itkAttributeUniqueLabelMapFilter_hxx
 
-#include "itkAttributeUniqueLabelMapFilter.h"
 #include "itkProgressReporter.h"
 #include <queue>
 
@@ -44,10 +43,12 @@ AttributeUniqueLabelMapFilter<TImage, TAttributeAccessor>::GenerateData()
     typename std::priority_queue<LineOfLabelObject, std::vector<LineOfLabelObject>, LineOfLabelObjectComparator>;
   PriorityQueueType pq;
 
-  ProgressReporter progress(this, 0, 1);
-  // TODO: really report the progress
+  auto           labelMap = this->GetLabelMap();
+  IdentifierType numberOfLines = 0;
 
-  for (typename ImageType::Iterator it2(this->GetLabelMap()); !it2.IsAtEnd(); ++it2)
+  ProgressReporter progress(this, 0, labelMap->GetNumberOfLabelObjects(), 100, 0.0f, 0.3f);
+
+  for (typename ImageType::Iterator it2(labelMap); !it2.IsAtEnd(); ++it2)
   {
     LabelObjectType * lo = it2.GetLabelObject();
 
@@ -58,6 +59,7 @@ AttributeUniqueLabelMapFilter<TImage, TAttributeAccessor>::GenerateData()
     while (!lit.IsAtEnd())
     {
       pq.push(LineOfLabelObject(lit.GetLine(), lo));
+      ++numberOfLines;
       ++lit;
     }
 
@@ -65,7 +67,7 @@ AttributeUniqueLabelMapFilter<TImage, TAttributeAccessor>::GenerateData()
     lo->Clear();
 
     // go to the next label
-    // progress.CompletedPixel();
+    progress.CompletedPixel();
   }
 
   if (pq.empty())
@@ -73,6 +75,8 @@ AttributeUniqueLabelMapFilter<TImage, TAttributeAccessor>::GenerateData()
     // nothing to do
     return;
   }
+
+  ProgressReporter progress2(this, 0, numberOfLines, 100, 0.3f, 0.60f);
 
   using LinesType = typename std::deque<LineOfLabelObject>;
   LinesType lines;
@@ -90,7 +94,7 @@ AttributeUniqueLabelMapFilter<TImage, TAttributeAccessor>::GenerateData()
     IndexType         idx = l.line.GetIndex();
     // NOTE: VS 7,8,9 seem to contain a bug where if the next line is
     // accessed with l.labelObject, the results will be erroneous. I
-    // have not been able to find anly reason for this.
+    // have not been able to find any reason for this.
     //
     // EXERCISE EXTREME CAUTION WHEN EDITING THE NEXT 2 LINES
     const typename LabelObjectType::LabelType             lLabel = pq.top().labelObject->GetLabel();
@@ -99,7 +103,7 @@ AttributeUniqueLabelMapFilter<TImage, TAttributeAccessor>::GenerateData()
 
     bool newMainLine = false;
     // don't check dim 0!
-    for (unsigned int i = 1; i < ImageDimension; i++)
+    for (unsigned int i = 1; i < ImageDimension; ++i)
     {
       if (idx[i] != prevIdx[i])
       {
@@ -214,14 +218,19 @@ AttributeUniqueLabelMapFilter<TImage, TAttributeAccessor>::GenerateData()
     // store the current line as the previous one, and go to the next one.
     prev = lines.back();
     prevIdx = prev.line.GetIndex();
+
+    --numberOfLines;
+    progress2.CompletedPixel();
   }
 
   // put the lines in their object
-  for (unsigned int i = 0; i < lines.size(); i++)
+  for (unsigned int i = 0; i < lines.size(); ++i)
   {
     LineOfLabelObject & l = lines[i];
     l.labelObject->AddLine(l.line);
   }
+
+  this->UpdateProgress(0.95f);
 
   // remove objects without lines
   typename ImageType::Iterator it(this->GetLabelMap());
@@ -242,6 +251,8 @@ AttributeUniqueLabelMapFilter<TImage, TAttributeAccessor>::GenerateData()
       ++it;
     }
   }
+
+  this->UpdateProgress(1.0f);
 }
 
 

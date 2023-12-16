@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -71,12 +71,10 @@ itkAdaptImageFilterTest2(int, char *[])
   region.SetIndex(index);
   region.SetSize(size);
 
-  myVectorImageType::Pointer myImage = myVectorImageType::New();
+  auto myImage = myVectorImageType::New();
 
 
-  myImage->SetLargestPossibleRegion(region);
-  myImage->SetBufferedRegion(region);
-  myImage->SetRequestedRegion(region);
+  myImage->SetRegions(region);
   myImage->Allocate();
 
   myVectorIteratorType it1(myImage, myImage->GetRequestedRegion());
@@ -88,9 +86,9 @@ itkAdaptImageFilterTest2(int, char *[])
   it1.GoToBegin();
   while (!it1.IsAtEnd())
   {
-    color[0] = (float)vnl_sample_uniform(0.0, 1.0);
-    color[1] = (float)vnl_sample_uniform(0.0, 1.0);
-    color[2] = (float)vnl_sample_uniform(0.0, 1.0);
+    color[0] = static_cast<float>(vnl_sample_uniform(0.0, 1.0));
+    color[1] = static_cast<float>(vnl_sample_uniform(0.0, 1.0));
+    color[2] = static_cast<float>(vnl_sample_uniform(0.0, 1.0));
     it1.Set(color);
     ++it1;
   }
@@ -113,7 +111,7 @@ itkAdaptImageFilterTest2(int, char *[])
   // Get the first element
   using AdaptFilterType = itk::AdaptImageFilter<myVectorImageType, myImageType, myAccessorType>;
 
-  AdaptFilterType::Pointer adaptImage = AdaptFilterType::New();
+  auto adaptImage = AdaptFilterType::New();
 
   myAccessorType accessor;
   accessor.SetElementNumber(0);

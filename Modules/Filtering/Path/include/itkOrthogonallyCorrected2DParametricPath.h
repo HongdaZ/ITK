@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class OrthogonallyCorrected2DParametricPath
+ * \class OrthogonallyCorrected2DParametricPath
  * \brief  Represent an orthogonally corrected 2D parametric path
  *
  * Description
@@ -45,7 +45,7 @@ namespace itk
 class ITK_TEMPLATE_EXPORT OrthogonallyCorrected2DParametricPath : public ParametricPath<2>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(OrthogonallyCorrected2DParametricPath);
+  ITK_DISALLOW_COPY_AND_MOVE(OrthogonallyCorrected2DParametricPath);
 
   /** Standard class type aliases. */
   using Self = OrthogonallyCorrected2DParametricPath;
@@ -69,14 +69,14 @@ public:
   using VectorType = Superclass::VectorType;
   using OriginalPathType = ParametricPath<2>;
   using OriginalPathConstPointer = OriginalPathType::ConstPointer;
-  using OrthogonalCorrectionTableType = VectorContainer<unsigned, double>;
+  using OrthogonalCorrectionTableType = VectorContainer<unsigned int, double>;
   using OrthogonalCorrectionTablePointer = OrthogonalCorrectionTableType::Pointer;
 
   using OrthogonalCorrectionTableSizeType = OrthogonalCorrectionTableType::ElementIdentifier;
 
   /** Return the location of the parametric path at the specified location. */
   OutputType
-  Evaluate(const InputType & input) const override;
+  Evaluate(const InputType & inputValue) const override;
 
   /** Set pointer to the original path.  The path MUST be continuous in its
    * first derivative to prevent discontinuities in the corrected path.  The
@@ -88,10 +88,10 @@ public:
   SetOriginalPath(const OriginalPathType * originalPath);
 
   /** Set table of evenly-spaced orthogonal offsets for the original path. */
-  itkSetObjectMacro(OrthogonalCorrectionTable, OrthogonalCorrectionTableType)
+  itkSetObjectMacro(OrthogonalCorrectionTable, OrthogonalCorrectionTableType);
 
-    /** New() method for dynamic construction */
-    itkNewMacro(Self);
+  /** New() method for dynamic construction */
+  itkNewMacro(Self);
 
   /** Needed for Pipelining */
   void

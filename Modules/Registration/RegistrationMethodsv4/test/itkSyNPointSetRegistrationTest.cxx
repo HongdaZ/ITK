@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 #include "itkDisplacementFieldTransformParametersAdaptor.h"
 #include "itkEuclideanDistancePointSetToPointSetMetricv4.h"
 #include "itkSyNImageRegistrationMethod.h"
+#include "itkTestingMacros.h"
 
 int
 itkSyNPointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[])
@@ -29,7 +30,7 @@ itkSyNPointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[])
   using PointSetType = itk::PointSet<unsigned int, Dimension>;
 
   using PointSetMetricType = itk::EuclideanDistancePointSetToPointSetMetricv4<PointSetType>;
-  PointSetMetricType::Pointer metric = PointSetMetricType::New();
+  auto metric = PointSetMetricType::New();
 
   using PointSetType = PointSetMetricType::FixedPointSetType;
   using PointType = PointSetType::PointType;
@@ -39,15 +40,15 @@ itkSyNPointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[])
   using MovingImageType = itk::Image<PixelType, Dimension>;
 
 
-  PointSetType::Pointer fixedPoints = PointSetType::New();
+  auto fixedPoints = PointSetType::New();
   fixedPoints->Initialize();
 
-  PointSetType::Pointer movingPoints = PointSetType::New();
+  auto movingPoints = PointSetType::New();
   movingPoints->Initialize();
 
   // two circles with a small offset
   PointType offset;
-  for (unsigned int d = 0; d < PointSetType::PointDimension; d++)
+  for (unsigned int d = 0; d < PointSetType::PointDimension; ++d)
   {
     offset[d] = 2.0;
   }
@@ -92,7 +93,7 @@ itkSyNPointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[])
   fixedImageDirection.SetIdentity();
   fixedImageSpacing.Fill(1);
 
-  FixedImageType::Pointer fixedImage = FixedImageType::New();
+  auto fixedImage = FixedImageType::New();
   fixedImage->SetRegions(fixedImageSize);
   fixedImage->SetOrigin(fixedImageOrigin);
   fixedImage->SetDirection(fixedImageDirection);
@@ -100,7 +101,7 @@ itkSyNPointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[])
   fixedImage->Allocate();
 
   using AffineTransformType = itk::AffineTransform<double, PointSetType::PointDimension>;
-  AffineTransformType::Pointer transform = AffineTransformType::New();
+  auto transform = AffineTransformType::New();
   transform->SetIdentity();
 
   metric->SetFixedPointSet(fixedPoints);
@@ -112,26 +113,26 @@ itkSyNPointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[])
   // Create the SyN deformable registration method
 
   using VectorType = itk::Vector<double, Dimension>;
-  VectorType zeroVector(0.0);
+  constexpr VectorType zeroVector{};
 
   using DisplacementFieldType = itk::Image<VectorType, Dimension>;
-  DisplacementFieldType::Pointer displacementField = DisplacementFieldType::New();
+  auto displacementField = DisplacementFieldType::New();
   displacementField->CopyInformation(fixedImage);
   displacementField->SetRegions(fixedImage->GetBufferedRegion());
   displacementField->Allocate();
   displacementField->FillBuffer(zeroVector);
 
-  DisplacementFieldType::Pointer inverseDisplacementField = DisplacementFieldType::New();
+  auto inverseDisplacementField = DisplacementFieldType::New();
   inverseDisplacementField->CopyInformation(fixedImage);
   inverseDisplacementField->SetRegions(fixedImage->GetBufferedRegion());
   inverseDisplacementField->Allocate();
   inverseDisplacementField->FillBuffer(zeroVector);
 
   using DisplacementFieldRegistrationType = itk::SyNImageRegistrationMethod<FixedImageType, MovingImageType>;
-  DisplacementFieldRegistrationType::Pointer displacementFieldRegistration = DisplacementFieldRegistrationType::New();
+  auto displacementFieldRegistration = DisplacementFieldRegistrationType::New();
 
   using OutputTransformType = DisplacementFieldRegistrationType::OutputTransformType;
-  OutputTransformType::Pointer outputTransform = OutputTransformType::New();
+  auto outputTransform = OutputTransformType::New();
   outputTransform->SetDisplacementField(displacementField);
   outputTransform->SetInverseDisplacementField(inverseDisplacementField);
 
@@ -169,19 +170,19 @@ itkSyNPointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[])
   smoothingSigmasPerLevel.SetSize(3);
   smoothingSigmasPerLevel.Fill(0);
 
-  for (unsigned int level = 0; level < numberOfLevels; level++)
+  for (unsigned int level = 0; level < numberOfLevels; ++level)
   {
     // We use the shrink image filter to calculate the fixed parameters of the virtual
     // domain at each level.  To speed up calculation and avoid unnecessary memory
     // usage, we could calculate these fixed parameters directly.
 
     using ShrinkFilterType = itk::ShrinkImageFilter<DisplacementFieldType, DisplacementFieldType>;
-    ShrinkFilterType::Pointer shrinkFilter = ShrinkFilterType::New();
+    auto shrinkFilter = ShrinkFilterType::New();
     shrinkFilter->SetShrinkFactors(shrinkFactorsPerLevel[level]);
     shrinkFilter->SetInput(displacementField);
     shrinkFilter->Update();
 
-    DisplacementFieldTransformAdaptorType::Pointer fieldTransformAdaptor = DisplacementFieldTransformAdaptorType::New();
+    auto fieldTransformAdaptor = DisplacementFieldTransformAdaptorType::New();
     fieldTransformAdaptor->SetRequiredSpacing(shrinkFilter->GetOutput()->GetSpacing());
     fieldTransformAdaptor->SetRequiredSize(shrinkFilter->GetOutput()->GetBufferedRegion().GetSize());
     fieldTransformAdaptor->SetRequiredDirection(shrinkFilter->GetOutput()->GetDirection());
@@ -199,23 +200,15 @@ itkSyNPointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[])
   displacementFieldRegistration->SetSmoothingSigmasPerLevel(smoothingSigmasPerLevel);
   displacementFieldRegistration->SetMetric(metric);
 
-  try
-  {
-    std::cout << "SyN point set registration" << std::endl;
-    displacementFieldRegistration->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cerr << "Exception caught: " << e << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(displacementFieldRegistration->Update());
+
 
   // applying the resultant transform to moving points and verify result
   std::cout << "Fixed\tMoving\tMovingTransformed\tFixedTransformed\tDiff" << std::endl;
   PointType::ValueType tolerance = 0.1;
 
   float averageError = 0.0;
-  for (unsigned int n = 0; n < movingPoints->GetNumberOfPoints(); n++)
+  for (unsigned int n = 0; n < movingPoints->GetNumberOfPoints(); ++n)
   {
     // compare the points in virtual domain
     PointType transformedMovingPoint =

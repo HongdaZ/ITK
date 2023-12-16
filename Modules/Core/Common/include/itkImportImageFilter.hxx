@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImportImageFilter_hxx
 #define itkImportImageFilter_hxx
 
-#include "itkImportImageFilter.h"
 #include "itkObjectFactory.h"
 #include "itkMath.h"
 
@@ -53,32 +52,17 @@ ImportImageFilter<TPixel, VImageDimension>::PrintSelf(std::ostream & os, Indent 
 
   Superclass::PrintSelf(os, indent);
 
-  if (m_ImportImageContainer)
-  {
-    os << indent << "ImportImageContainer pointer: (" << m_ImportImageContainer << ")" << std::endl;
-  }
-  else
-  {
-    os << indent << "ImportImageContainer pointer: (None)" << std::endl;
-  }
+  itkPrintSelfObjectMacro(ImportImageContainer);
   os << indent << "Import buffer size: " << m_Size << std::endl;
-  os << indent << "Import buffer size: " << m_Size << std::endl;
-  if (m_ImportImageContainer)
-  {
-    os << indent
-       << "ImageContainer manages memory: " << (m_ImportImageContainer->GetContainerManageMemory() ? "true" : "false")
-       << std::endl;
-  }
-
   os << indent << "Spacing: [";
-  for (i = 0; i < static_cast<int>(VImageDimension) - 1; i++)
+  for (i = 0; i < static_cast<int>(VImageDimension) - 1; ++i)
   {
     os << m_Spacing[i] << ", ";
   }
   os << m_Spacing[i] << "]" << std::endl;
 
   os << indent << "Origin: [";
-  for (i = 0; i < static_cast<int>(VImageDimension) - 1; i++)
+  for (i = 0; i < static_cast<int>(VImageDimension) - 1; ++i)
   {
     os << m_Origin[i] << ", ";
   }
@@ -186,9 +170,9 @@ ImportImageFilter<TPixel, VImageDimension>::SetDirection(const DirectionType & d
 {
   bool modified = false;
 
-  for (unsigned int r = 0; r < VImageDimension; r++)
+  for (unsigned int r = 0; r < VImageDimension; ++r)
   {
-    for (unsigned int c = 0; c < VImageDimension; c++)
+    for (unsigned int c = 0; c < VImageDimension; ++c)
     {
       if (Math::NotExactlyEquals(m_Direction[r][c], direction[r][c]))
       {

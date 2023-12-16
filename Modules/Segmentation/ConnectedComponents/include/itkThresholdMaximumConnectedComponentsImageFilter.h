@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 
 namespace itk
 {
-/**\class ThresholdMaximumConnectedComponentsImageFilter
+/** \class ThresholdMaximumConnectedComponentsImageFilter
  * \brief Finds the threshold value of an image based on  maximizing the number
  * of objects in the image that are larger than a given minimal size.
  *
@@ -58,9 +58,9 @@ namespace itk
  *
  * \par References:
  * 1) Urish KL, August J, Huard J. "Unsupervised segmentation for myofiber
- * counting in immunoflourescent images". Insight Journal.
+ * counting in immunoflourescent microscopy images". Insight Journal.
  * ISC/NA-MIC/MICCAI Workshop on Open-Source Software (2005)
- * Dspace handle: https://hdl.handle.net/1926/48
+ * https://insight-journal.org/browse/publication/40
  * 2) Pikaz A, Averbuch, A. "Digital image thresholding based on topological
  * stable-state". Pattern Recognition, 29(5): 829-843, 1996.
  *
@@ -75,7 +75,7 @@ class ITK_TEMPLATE_EXPORT ThresholdMaximumConnectedComponentsImageFilter
   : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ThresholdMaximumConnectedComponentsImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ThresholdMaximumConnectedComponentsImageFilter);
 
   /** Standard class type aliases. */
   using Self = ThresholdMaximumConnectedComponentsImageFilter;
@@ -155,6 +155,15 @@ protected:
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 
+  /** Update the filter. It essentially uses a bisection method to search for
+   * the threshold setPt that maximizes the number of connected components in
+   * the image. The ComputeConnectedComponents does the threshold and then a
+   * connected components object count. It is removed from GenerateData
+   * to make this all easier to read.
+   *
+   * Remove the comments on the output statements to see how the search
+   * strategy works.
+   */
   void
   GenerateData() override;
 

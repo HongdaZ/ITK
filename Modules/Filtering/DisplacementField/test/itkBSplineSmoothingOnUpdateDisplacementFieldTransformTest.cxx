@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 
 #include "itkBSplineSmoothingOnUpdateDisplacementFieldTransform.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 /**
  * Test the UpdateTransformParameters and related methods,
@@ -35,10 +36,24 @@ itkBSplineSmoothingOnUpdateDisplacementFieldTransformTest(int, char *[])
   using DisplacementTransformType = itk::BSplineSmoothingOnUpdateDisplacementFieldTransform<double, dimensions>;
 
   /* Create a displacement field transform */
-  DisplacementTransformType::Pointer displacementTransform = DisplacementTransformType::New();
+  auto displacementTransform = DisplacementTransformType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    displacementTransform, BSplineSmoothingOnUpdateDisplacementFieldTransform, DisplacementFieldTransform);
+
+
+  typename DisplacementTransformType::ArrayType::ValueType controlPointsUpdateFieldVal = 4;
+  typename DisplacementTransformType::ArrayType            controlPointsUpdateField;
+  controlPointsUpdateField.Fill(controlPointsUpdateFieldVal);
+  ITK_TEST_SET_GET_VALUE(controlPointsUpdateField, displacementTransform->GetNumberOfControlPointsForTheUpdateField());
+
+  typename DisplacementTransformType::ArrayType::ValueType controlPointsTotalFieldVal = 0;
+  typename DisplacementTransformType::ArrayType            controlPointsTotalField;
+  controlPointsTotalField.Fill(controlPointsTotalFieldVal);
+  ITK_TEST_SET_GET_VALUE(controlPointsTotalField, displacementTransform->GetNumberOfControlPointsForTheTotalField());
 
   using FieldType = DisplacementTransformType::DisplacementFieldType;
-  FieldType::Pointer field = FieldType::New(); // This is based on itk::Image
+  auto field = FieldType::New(); // This is based on itk::Image
 
   FieldType::SizeType   size;
   FieldType::IndexType  start;
@@ -71,10 +86,18 @@ itkBSplineSmoothingOnUpdateDisplacementFieldTransformTest(int, char *[])
   DisplacementTransformType::ArrayType meshSizeForUpdateField;
   meshSizeForUpdateField.Fill(15);
   displacementTransform->SetMeshSizeForTheUpdateField(meshSizeForUpdateField);
+
   DisplacementTransformType::ArrayType meshSizeForTotalField;
   meshSizeForTotalField.Fill(30);
   displacementTransform->SetMeshSizeForTheTotalField(meshSizeForTotalField);
-  displacementTransform->SetSplineOrder(3);
+
+  typename DisplacementTransformType::SplineOrderType splineOrder = 3;
+  displacementTransform->SetSplineOrder(splineOrder);
+  ITK_TEST_SET_GET_VALUE(splineOrder, displacementTransform->GetSplineOrder());
+
+  auto enforceStationaryBoundary = true;
+  ITK_TEST_SET_GET_BOOLEAN(displacementTransform, EnforceStationaryBoundary, enforceStationaryBoundary);
+
   displacementTransform->SetParameters(paramsFill);
 
   DisplacementTransformType::NumberOfParametersType numberOfParameters = displacementTransform->GetNumberOfParameters();
@@ -87,7 +110,7 @@ itkBSplineSmoothingOnUpdateDisplacementFieldTransformTest(int, char *[])
 
   /* We should see 0's on all boundaries from the smoothing routine */
   unsigned int linelength = dimLength * dimensions;
-  for (unsigned int i = 0; i < displacementTransform->GetNumberOfParameters(); i++)
+  for (unsigned int i = 0; i < displacementTransform->GetNumberOfParameters(); ++i)
   {
     bool ok = true;
 
@@ -119,11 +142,11 @@ itkBSplineSmoothingOnUpdateDisplacementFieldTransformTest(int, char *[])
   std::cout << "Parameters *after* SmoothDisplacementFieldBSpline, around "
             << "outlier: " << std::endl;
 
-  for (int i = -2; i < 3; i++)
+  for (int i = -2; i < 3; ++i)
   {
-    for (int j = -2; j < 3; j++)
+    for (int j = -2; j < 3; ++j)
     {
-      unsigned int index = outlier + (unsigned int)(i * (signed int)(dimLength * dimensions) + j);
+      unsigned int index = outlier + static_cast<unsigned int>(i * (int)(dimLength * dimensions) + j);
       std::cout << params(index) << " ";
       if (itk::Math::AlmostEquals(params(index), paramsFillValue))
       {
@@ -151,7 +174,7 @@ itkBSplineSmoothingOnUpdateDisplacementFieldTransformTest(int, char *[])
   /* We should see 0's on all boundaries from the smoothing routine */
   {
     linelength = dimLength * dimensions;
-    for (unsigned int i = 0; i < displacementTransform->GetNumberOfParameters(); i++)
+    for (unsigned int i = 0; i < displacementTransform->GetNumberOfParameters(); ++i)
     {
       bool ok = true;
       if (i < linelength && params[i] > 1e-6)
@@ -192,11 +215,11 @@ itkBSplineSmoothingOnUpdateDisplacementFieldTransformTest(int, char *[])
   /* Check that we have some smoothing around the outlier we set above. */
   std::cout << "Parameters *after* UpdateTransformParameters with "
             << "uneven field, around outlier: " << std::endl;
-  for (int i = -2; i < 3; i++)
+  for (int i = -2; i < 3; ++i)
   {
-    for (int j = -2; j < 3; j++)
+    for (int j = -2; j < 3; ++j)
     {
-      unsigned int index = outlier + (unsigned int)(i * (signed int)(dimLength * dimensions) + j);
+      unsigned int index = outlier + static_cast<unsigned int>(i * (int)(dimLength * dimensions) + j);
       std::cout << params(index) << " ";
       if (itk::Math::AlmostEquals(params(index), paramsFillValue))
       {
@@ -207,9 +230,6 @@ itkBSplineSmoothingOnUpdateDisplacementFieldTransformTest(int, char *[])
     }
     std::cout << std::endl;
   }
-
-  /* Exercise Get/Set sigma */
-  displacementTransform->Print(std::cout, 5);
 
   return EXIT_SUCCESS;
 }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ itkVectorCentralDifferenceImageFunctionTest(int, char *[])
   using PixelType = itk::Vector<short, VectorDimension>;
   using ImageType = itk::Image<PixelType, ImageDimension>;
 
-  ImageType::Pointer  image = ImageType::New();
+  auto                image = ImageType::New();
   ImageType::SizeType size;
   size.Fill(16);
   ImageType::RegionType region(size);
@@ -50,7 +50,7 @@ itkVectorCentralDifferenceImageFunctionTest(int, char *[])
   // set up central difference calculator
   using CoordRepType = float;
   using FunctionType = itk::VectorCentralDifferenceImageFunction<ImageType, CoordRepType>;
-  FunctionType::Pointer function = FunctionType::New();
+  auto function = FunctionType::New();
 
   function->SetInputImage(image);
 

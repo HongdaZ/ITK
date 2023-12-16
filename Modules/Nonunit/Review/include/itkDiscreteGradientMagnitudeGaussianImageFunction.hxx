@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkDiscreteGradientMagnitudeGaussianImageFunction_hxx
 #define itkDiscreteGradientMagnitudeGaussianImageFunction_hxx
 
-#include "itkDiscreteGradientMagnitudeGaussianImageFunction.h"
 #include "itkNeighborhoodOperatorImageFilter.h"
 
 namespace itk
@@ -69,7 +68,7 @@ DiscreteGradientMagnitudeGaussianImageFunction<TInputImage, TOutput>::RecomputeG
   unsigned int idx;
   unsigned int maxRadius = 0;
 
-  for (unsigned int direction = 0; direction < Self::ImageDimension2; direction++)
+  for (unsigned int direction = 0; direction < Self::ImageDimension2; ++direction)
   {
     for (unsigned int order = 0; order <= 1; ++order)
     {
@@ -108,12 +107,12 @@ DiscreteGradientMagnitudeGaussianImageFunction<TInputImage, TOutput>::RecomputeG
     }
   }
 
-  // Now precompute the N-dimensional kernel. This fastest as we don't have to
+  // Now precompute the n-dimensional kernel. This fastest as we don't have to
   // perform
   // N convolutions for each point we calculate but only one.
 
   using KernelImageType = itk::Image<TOutput, Self::ImageDimension2>;
-  typename KernelImageType::Pointer kernelImage = KernelImageType::New();
+  auto kernelImage = KernelImageType::New();
 
   using RegionType = typename KernelImageType::RegionType;
   RegionType region;
@@ -140,7 +139,7 @@ DiscreteGradientMagnitudeGaussianImageFunction<TInputImage, TOutput>::RecomputeG
 
   // Now create an image filter to perform successive convolutions
   using NeighborhoodFilterType = itk::NeighborhoodOperatorImageFilter<KernelImageType, KernelImageType>;
-  typename NeighborhoodFilterType::Pointer convolutionFilter = NeighborhoodFilterType::New();
+  auto convolutionFilter = NeighborhoodFilterType::New();
 
   unsigned int opidx; // current operator index in m_OperatorArray
 
@@ -179,8 +178,9 @@ DiscreteGradientMagnitudeGaussianImageFunction<TInputImage, TOutput>::RecomputeG
 
 /** Evaluate the function at the specified index */
 template <typename TInputImage, typename TOutput>
-typename DiscreteGradientMagnitudeGaussianImageFunction<TInputImage, TOutput>::OutputType
+auto
 DiscreteGradientMagnitudeGaussianImageFunction<TInputImage, TOutput>::EvaluateAtIndex(const IndexType & index) const
+  -> OutputType
 {
   OutputType gradientMagnitude = itk::NumericTraits<OutputType>::ZeroValue();
   OutputType temp;
@@ -205,8 +205,9 @@ DiscreteGradientMagnitudeGaussianImageFunction<TInputImage, TOutput>::EvaluateAt
 
 /** Evaluate the function at the specified point */
 template <typename TInputImage, typename TOutput>
-typename DiscreteGradientMagnitudeGaussianImageFunction<TInputImage, TOutput>::OutputType
+auto
 DiscreteGradientMagnitudeGaussianImageFunction<TInputImage, TOutput>::Evaluate(const PointType & point) const
+  -> OutputType
 {
   if (m_InterpolationMode == InterpolationModeEnum::NearestNeighbourInterpolation)
   {
@@ -246,7 +247,7 @@ DiscreteGradientMagnitudeGaussianImageFunction<TInputImage, TOutput>::EvaluateAt
     IndexType baseIndex;
     double    distance[ImageDimension2];
 
-    for (dim = 0; dim < ImageDimension2; dim++)
+    for (dim = 0; dim < ImageDimension2; ++dim)
     {
       baseIndex[dim] = Math::Floor<IndexValueType>(cindex[dim]);
       distance[dim] = cindex[dim] - static_cast<double>(baseIndex[dim]);
@@ -258,14 +259,14 @@ DiscreteGradientMagnitudeGaussianImageFunction<TInputImage, TOutput>::EvaluateAt
     TOutput value = NumericTraits<TOutput>::ZeroValue();
     TOutput totalOverlap = NumericTraits<TOutput>::ZeroValue();
 
-    for (NumberOfNeighborsType counter = 0; counter < neighbors; counter++)
+    for (NumberOfNeighborsType counter = 0; counter < neighbors; ++counter)
     {
       double                overlap = 1.0;   // fraction overlap
       NumberOfNeighborsType upper = counter; // each bit indicates upper/lower neighbour
       IndexType             neighIndex;
 
       // get neighbor index and overlap fraction
-      for (dim = 0; dim < ImageDimension2; dim++)
+      for (dim = 0; dim < ImageDimension2; ++dim)
       {
         if (upper & 1)
         {

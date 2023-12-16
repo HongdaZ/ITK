@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ samePoint(const TPoint & p1, const TPoint & p2, double epsilon = 1e-8)
 {
   bool pass = true;
 
-  for (unsigned int i = 0; i < TPoint::PointDimension; i++)
+  for (unsigned int i = 0; i < TPoint::PointDimension; ++i)
   {
     if (!itk::Math::FloatAlmostEqual(p1[i], p2[i], 10, epsilon))
     {
@@ -54,7 +54,7 @@ sameVector(const TVector & v1, const TVector & v2, double epsilon = 1e-8)
 {
   bool pass = true;
 
-  for (unsigned int i = 0; i < TVector::Dimension; i++)
+  for (unsigned int i = 0; i < TVector::Dimension; ++i)
   {
     if (!itk::Math::FloatAlmostEqual(v1[i], v2[i], 10, epsilon))
     {
@@ -82,7 +82,7 @@ sameVariableVector(const TVector & v1, const TVector & v2, double epsilon = 1e-8
   {
     return false;
   }
-  for (unsigned int i = 0; i < D1; i++)
+  for (unsigned int i = 0; i < D1; ++i)
   {
     if (!itk::Math::FloatAlmostEqual(v1[i], v2[i], 10, epsilon))
     {
@@ -103,7 +103,7 @@ sameTensor(const TTensor & t1, const TTensor & t2, double epsilon = 1e-8)
 {
   bool pass = true;
 
-  for (unsigned int i = 0; i < TTensor::InternalDimension; i++)
+  for (unsigned int i = 0; i < TTensor::InternalDimension; ++i)
   {
     if (!itk::Math::FloatAlmostEqual(t1[i], t2[i], 10, epsilon))
     {
@@ -128,9 +128,9 @@ sameArray2D(const TArray2D & a1, const TArray2D_ARG1 & a2, double epsilon = 1e-8
   {
     return false;
   }
-  for (unsigned int i = 0; i < a1.cols(); i++)
+  for (unsigned int i = 0; i < a1.cols(); ++i)
   {
-    for (unsigned int j = 0; j < a1.rows(); j++)
+    for (unsigned int j = 0; j < a1.rows(); ++j)
     {
       if (!itk::Math::FloatAlmostEqual(a1(j, i), a2(j, i), 10, epsilon))
       {
@@ -173,15 +173,25 @@ itkDisplacementFieldTransformTest(int argc, char * argv[])
   itk::StdStreamStateSave coutState(std::cout);
 
   // Create a displacement field transform
-  DisplacementTransformType::Pointer displacementTransform = DisplacementTransformType::New();
+  auto displacementTransform = DisplacementTransformType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(displacementTransform, DisplacementFieldTransform, Transform);
 
+
+  // Test exceptions
+  DisplacementTransformType::InputVnlVectorType::element_type vectorValue = 1.0;
+  DisplacementTransformType::InputVnlVectorType               vector;
+  vector.fill(vectorValue);
+  ITK_TRY_EXPECT_EXCEPTION(displacementTransform->TransformVector(vector));
 
   DisplacementTransformType::DisplacementFieldType::Pointer displacementField =
     DisplacementTransformType::DisplacementFieldType::New();
   displacementTransform->SetDisplacementField(displacementField);
   ITK_TEST_SET_GET_VALUE(displacementField, displacementTransform->GetDisplacementField());
+
+  DisplacementTransformType::VectorImageDisplacementFieldType::Pointer vectorImageDisplacementField =
+    DisplacementTransformType::VectorImageDisplacementFieldType::New();
+  displacementTransform->SetDisplacementField(vectorImageDisplacementField);
 
   DisplacementTransformType::DisplacementFieldType::Pointer inverseDisplacementField =
     DisplacementTransformType::DisplacementFieldType::New();
@@ -191,11 +201,11 @@ itkDisplacementFieldTransformTest(int argc, char * argv[])
   using InterpolatorType = itk::VectorLinearInterpolateImageFunction<DisplacementTransformType::DisplacementFieldType,
                                                                      DisplacementTransformType::ScalarType>;
 
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
   displacementTransform->SetInterpolator(interpolator);
   ITK_TEST_SET_GET_VALUE(interpolator, displacementTransform->GetInterpolator());
 
-  InterpolatorType::Pointer inverseInterpolator = InterpolatorType::New();
+  auto inverseInterpolator = InterpolatorType::New();
   displacementTransform->SetInverseInterpolator(inverseInterpolator);
   ITK_TEST_SET_GET_VALUE(inverseInterpolator, displacementTransform->GetInverseInterpolator());
 
@@ -208,7 +218,7 @@ itkDisplacementFieldTransformTest(int argc, char * argv[])
   ITK_TEST_SET_GET_VALUE(directionTolerance, displacementTransform->GetDirectionTolerance());
 
 
-  FieldType::Pointer field = FieldType::New();
+  auto field = FieldType::New();
 
   FieldType::SizeType   size;
   FieldType::IndexType  start;
@@ -282,7 +292,7 @@ itkDisplacementFieldTransformTest(int argc, char * argv[])
   affineMatrix(0, 1) = 0.02;
   affineMatrix(1, 1) = 1.1;
 
-  AffineTransformType::Pointer affineTransform = AffineTransformType::New();
+  auto affineTransform = AffineTransformType::New();
   affineTransform->SetIdentity();
   affineTransform->SetMatrix(affineMatrix);
 
@@ -292,6 +302,20 @@ itkDisplacementFieldTransformTest(int argc, char * argv[])
   fieldJTruth(1, 0) = 0.01;
   fieldJTruth(0, 1) = 0.02;
   fieldJTruth(1, 1) = 1.1;
+
+  /* Test the correctness of the Jacobian computation with anisotropic spacing */
+  FieldType::SpacingType anisotropicSpacing;
+  anisotropicSpacing[0] = 1.0;
+  anisotropicSpacing[1] = 0.8;
+  field->SetSpacing(anisotropicSpacing);
+
+  /* and non-trivial image grid orientation */
+  FieldType::DirectionType gridDirection;
+  gridDirection(0, 0) = 3. / 5;
+  gridDirection(0, 1) = 4. / 5;
+  gridDirection(1, 0) = -4. / 5;
+  gridDirection(1, 1) = 3. / 5;
+  field->SetDirection(gridDirection);
 
   itk::ImageRegionIteratorWithIndex<FieldType> it(field, field->GetLargestPossibleRegion());
   it.GoToBegin();
@@ -313,8 +337,10 @@ itkDisplacementFieldTransformTest(int argc, char * argv[])
   ITK_TEST_SET_GET_VALUE(field, displacementTransform->GetDisplacementField());
 
   DisplacementTransformType::InputPointType testPoint;
-  testPoint[0] = 10;
-  testPoint[1] = 8;
+  testPoint[0] = 12;
+  testPoint[1] = 4;
+  /* With the anisotropicSpacing and gridDirection set above
+   * this point corresponds exactly to index = { 4, 15 }. */
 
   // Test LocalJacobian methods
   DisplacementTransformType::JacobianPositionType jacobian;
@@ -363,7 +389,7 @@ itkDisplacementFieldTransformTest(int argc, char * argv[])
   DisplacementTransformType::JacobianType identity(Dimensions, Dimensions), testIdentity;
 
   identity.Fill(0);
-  for (unsigned int i = 0; i < Dimensions; i++)
+  for (unsigned int i = 0; i < Dimensions; ++i)
   {
     identity[i][i] = 1.0;
   }
@@ -397,8 +423,7 @@ itkDisplacementFieldTransformTest(int argc, char * argv[])
   DisplacementTransformType::OutputPointType deformOutput, deformTruth;
 
   // Test a point with non-zero displacement
-  FieldType::IndexType idx;
-  field->TransformPhysicalPointToIndex(testPoint, idx);
+  FieldType::IndexType idx = field->TransformPhysicalPointToIndex(testPoint);
   deformTruth = testPoint + field->GetPixel(idx);
 
   deformOutput = displacementTransform->TransformPoint(testPoint);
@@ -541,7 +566,7 @@ itkDisplacementFieldTransformTest(int argc, char * argv[])
 
   ScalarType testFactor = 1.5;
 
-  for (unsigned int i = 0; i < displacementTransform->GetNumberOfParameters(); i++)
+  for (unsigned int i = 0; i < displacementTransform->GetNumberOfParameters(); ++i)
   {
     params[i] = i;
     updateTruth[i] = params[i] + derivative[i] * testFactor;
@@ -550,7 +575,7 @@ itkDisplacementFieldTransformTest(int argc, char * argv[])
   displacementTransform->UpdateTransformParameters(derivative, testFactor);
   params = displacementTransform->GetParameters();
 
-  for (unsigned int i = 0; i < displacementTransform->GetNumberOfParameters(); i++)
+  for (unsigned int i = 0; i < displacementTransform->GetNumberOfParameters(); ++i)
   {
     if (itk::Math::NotExactlyEquals(params[i], updateTruth[i]))
     {
@@ -588,7 +613,7 @@ itkDisplacementFieldTransformTest(int argc, char * argv[])
   // The inverse displacement field for the inverse displacement transform must
   // have been set to nullptr when calling SetDisplacementField(), so
   // 'false' should be returned here
-  DisplacementTransformType::Pointer inverseTransform = DisplacementTransformType::New();
+  auto inverseTransform = DisplacementTransformType::New();
   if (displacementTransform->GetInverse(inverseTransform))
   {
     std::cout << "Test failed!" << std::endl;
@@ -606,7 +631,7 @@ itkDisplacementFieldTransformTest(int argc, char * argv[])
 
   displacementTransform->SetIdentity();
 
-  displacementTransform->SetDisplacementField(nullptr);
+  displacementTransform->SetDisplacementField(static_cast<DisplacementFieldType *>(nullptr));
   displacementTransform->SetInverseDisplacementField(nullptr);
 
   // Check setting all zero for fixed parameters

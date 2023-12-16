@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkGDCMSeriesFileNames_h
-#define _itkGDCMSeriesFileNames_h
 
 #include "itkGDCMSeriesFileNames.h"
 #include "itksys/SystemTools.hxx"
@@ -203,7 +201,7 @@ GDCMSeriesFileNames::GetOutputFileNames()
   }
 
   itksys::SystemTools::ConvertToUnixSlashes(m_OutputDirectory);
-  if (m_OutputDirectory[m_OutputDirectory.size() - 1] != '/')
+  if (m_OutputDirectory.back() != '/')
   {
     m_OutputDirectory += '/';
   }
@@ -211,40 +209,40 @@ GDCMSeriesFileNames::GetOutputFileNames()
   if (!m_InputFileNames.empty())
   {
     bool hasExtension = false;
-    for (const auto & m_InputFileName : m_InputFileNames)
+    for (const auto & inputFileName : m_InputFileNames)
     {
       // look for extension ".dcm" and ".DCM"
-      std::string::size_type dcmPos = m_InputFileName.rfind(".dcm");
-      if ((dcmPos != std::string::npos) && (dcmPos == m_InputFileName.length() - 4))
+      std::string::size_type dcmPos = inputFileName.rfind(".dcm");
+      if ((dcmPos != std::string::npos) && (dcmPos == inputFileName.length() - 4))
       {
         hasExtension = true;
       }
       else
       {
-        dcmPos = m_InputFileName.rfind(".DCM");
-        if ((dcmPos != std::string::npos) && (dcmPos == m_InputFileName.length() - 4))
+        dcmPos = inputFileName.rfind(".DCM");
+        if ((dcmPos != std::string::npos) && (dcmPos == inputFileName.length() - 4))
         {
           hasExtension = true;
         }
       }
 
       // look for extension ".dicom" and ".DICOM"
-      std::string::size_type dicomPos = m_InputFileName.rfind(".dicom");
-      if ((dicomPos != std::string::npos) && (dicomPos == m_InputFileName.length() - 6))
+      std::string::size_type dicomPos = inputFileName.rfind(".dicom");
+      if ((dicomPos != std::string::npos) && (dicomPos == inputFileName.length() - 6))
       {
         hasExtension = true;
       }
       else
       {
-        dicomPos = m_InputFileName.rfind(".DICOM");
-        if ((dicomPos != std::string::npos) && (dicomPos == m_InputFileName.length() - 6))
+        dicomPos = inputFileName.rfind(".DICOM");
+        if ((dicomPos != std::string::npos) && (dicomPos == inputFileName.length() - 6))
         {
           hasExtension = true;
         }
       }
 
       // construct a filename, adding an extension if necessary
-      std::string filename = m_OutputDirectory + itksys::SystemTools::GetFilenameName(m_InputFileName);
+      std::string filename = m_OutputDirectory + itksys::SystemTools::GetFilenameName(inputFileName);
       if (!hasExtension)
       {
         // input filename has no extension, add a ".dcm"
@@ -281,13 +279,13 @@ GDCMSeriesFileNames::PrintSelf(std::ostream & os, Indent indent) const
     os << indent << "Recursive: False" << std::endl;
   }
 
-  for (i = 0; i < m_InputFileNames.size(); i++)
+  for (i = 0; i < m_InputFileNames.size(); ++i)
   {
     os << indent << "InputFileNames[" << i << "]: " << m_InputFileNames[i] << std::endl;
   }
 
   os << indent << "OutputDirectory: " << m_OutputDirectory << std::endl;
-  for (i = 0; i < m_OutputFileNames.size(); i++)
+  for (i = 0; i < m_OutputFileNames.size(); ++i)
   {
     os << indent << "OutputFileNames[" << i << "]: " << m_OutputFileNames[i] << std::endl;
   }
@@ -301,5 +299,3 @@ GDCMSeriesFileNames::SetUseSeriesDetails(bool useSeriesDetails)
   m_SerieHelper->CreateDefaultUniqueSeriesIdentifier();
 }
 } // namespace itk
-
-#endif

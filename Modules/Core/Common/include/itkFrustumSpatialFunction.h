@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,7 +62,7 @@ template <unsigned int VDimension = 3, typename TInput = Point<double, VDimensio
 class ITK_TEMPLATE_EXPORT FrustumSpatialFunction : public InteriorExteriorSpatialFunction<VDimension, TInput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FrustumSpatialFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(FrustumSpatialFunction);
 
   /** Standard class type aliases. */
   using Self = FrustumSpatialFunction<VDimension, TInput>;
@@ -79,10 +79,10 @@ public:
   itkNewMacro(Self);
 
   /** Input type for the function. */
-  using InputType = typename Superclass::InputType;
+  using typename Superclass::InputType;
 
   /** Output type for the function. */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** Rotate the frustum in the XZ or the YZ plane. */
   using FrustumRotationPlaneType = RotationPlaneEnum;

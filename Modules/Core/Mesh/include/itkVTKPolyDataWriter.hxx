@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkVTKPolyDataWriter_hxx
 #define itkVTKPolyDataWriter_hxx
 
-#include "itkVTKPolyDataWriter.h"
 #include "itkCellInterface.h"
 
 #include <fstream>
@@ -72,7 +71,6 @@ VTKPolyDataWriter<TInputMesh>::GenerateData()
   if (this->m_FileName.empty())
   {
     itkExceptionMacro("No FileName");
-    return;
   }
 
   //
@@ -85,7 +83,6 @@ VTKPolyDataWriter<TInputMesh>::GenerateData()
     itkExceptionMacro("Unable to open file\n"
                       "outputFilename= "
                       << this->m_FileName);
-    return;
   }
 
   outputFile.imbue(std::locale::classic());
@@ -148,17 +145,17 @@ VTKPolyDataWriter<TInputMesh>::GenerateData()
       switch (static_cast<int>(cellIterator.Value()->GetType()))
       {
         case 0: // VERTEX_CELL:
-          numberOfVertices++;
+          ++numberOfVertices;
           break;
         case 1: // LINE_CELL:
         case 7: // QUADRATIC_EDGE_CELL:
-          numberOfEdges++;
+          ++numberOfEdges;
           break;
         case 2: // TRIANGLE_CELL:
         case 3: // QUADRILATERAL_CELL:
         case 4: // POLYGON_CELL:
         case 8: // QUADRATIC_TRIANGLE_CELL:
-          numberOfPolygons++;
+          ++numberOfPolygons;
           break;
         default:
           std::cerr << "Unhandled cell (volumic?)." << std::endl;
@@ -192,7 +189,7 @@ VTKPolyDataWriter<TInputMesh>::GenerateData()
             while (pointIdIterator != pointIdEnd)
             {
               outputFile << " " << IdMap[*pointIdIterator];
-              pointIdIterator++;
+              ++pointIdIterator;
             }
             outputFile << std::endl;
             break;
@@ -243,7 +240,7 @@ VTKPolyDataWriter<TInputMesh>::GenerateData()
             while (pointIdIterator != pointIdEnd)
             {
               outputFile << " " << IdMap[*pointIdIterator];
-              pointIdIterator++;
+              ++pointIdIterator;
             }
             outputFile << std::endl;
             break;

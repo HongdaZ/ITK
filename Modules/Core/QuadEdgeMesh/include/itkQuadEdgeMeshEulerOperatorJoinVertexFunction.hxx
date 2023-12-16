@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkQuadEdgeMeshEulerOperatorJoinVertexFunction_hxx
 #define itkQuadEdgeMeshEulerOperatorJoinVertexFunction_hxx
 
-#include "itkQuadEdgeMeshEulerOperatorJoinVertexFunction.h"
 #include "itkQuadEdgeMeshZipMeshFunction.h"
 
 #include <list>
@@ -84,8 +83,8 @@ QuadEdgeMeshEulerOperatorJoinVertexFunction<TMesh, TQEType>::PrintSelf(std::ostr
 
 //--------------------------------------------------------------------------
 template <typename TMesh, typename TQEType>
-typename QuadEdgeMeshEulerOperatorJoinVertexFunction<TMesh, TQEType>::OutputType
-QuadEdgeMeshEulerOperatorJoinVertexFunction<TMesh, TQEType>::Evaluate(QEType * e)
+auto
+QuadEdgeMeshEulerOperatorJoinVertexFunction<TMesh, TQEType>::Evaluate(QEType * e) -> OutputType
 {
   std::stack<QEType *> edges_to_be_deleted;
 
@@ -194,7 +193,7 @@ QuadEdgeMeshEulerOperatorJoinVertexFunction<TMesh, TQEType>::Process(QEType * e)
   using Zip = QuadEdgeMeshZipMeshFunction<MeshType, QEType>;
   if (wasLeftTriangle)
   {
-    typename Zip::Pointer zip = Zip::New();
+    auto zip = Zip::New();
     zip->SetInput(this->m_Mesh);
     if (QEType::m_NoPoint != zip->Evaluate(leftZip))
     {
@@ -214,7 +213,7 @@ QuadEdgeMeshEulerOperatorJoinVertexFunction<TMesh, TQEType>::Process(QEType * e)
   if (wasRiteTriangle)
   {
     NewOrg = riteZip->GetDestination();
-    typename Zip::Pointer zip = Zip::New();
+    auto zip = Zip::New();
     zip->SetInput(this->m_Mesh);
     if (QEType::m_NoPoint != zip->Evaluate(riteZip))
     {
@@ -298,7 +297,7 @@ QuadEdgeMeshEulerOperatorJoinVertexFunction<TMesh, TQEType>::ProcessIsolatedFace
 template <typename TMesh, typename TQEType>
 bool
 QuadEdgeMeshEulerOperatorJoinVertexFunction<TMesh, TQEType>::IsFaceIsolated(QEType *                e,
-                                                                            const bool &            iWasLeftFace,
+                                                                            const bool              iWasLeftFace,
                                                                             std::stack<TQEType *> & oToBeDeleted)
 {
   bool     border;
@@ -527,8 +526,8 @@ QuadEdgeMeshEulerOperatorJoinVertexFunction<TMesh, TQEType>::IsEye(QEType * e)
 
 //--------------------------------------------------------------------------
 template <typename TMesh, typename TQEType>
-typename QuadEdgeMeshEulerOperatorJoinVertexFunction<TMesh, TQEType>::PointIdentifier
-QuadEdgeMeshEulerOperatorJoinVertexFunction<TMesh, TQEType>::CommonVertexNeighboor(QEType * e)
+auto
+QuadEdgeMeshEulerOperatorJoinVertexFunction<TMesh, TQEType>::CommonVertexNeighboor(QEType * e) -> PointIdentifier
 {
   QEType * qe = e;
   QEType * e_it = qe->GetOnext();

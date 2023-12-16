@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,11 +23,11 @@ namespace itk
 namespace fem
 {
 
-::itk::LightObject::Pointer
+itk::LightObject::Pointer
 LoadPoint::CreateAnother() const
 {
-  ::itk::LightObject::Pointer smartPtr;
-  Pointer                     copyPtr = Self::New();
+  itk::LightObject::Pointer smartPtr;
+  Pointer                   copyPtr = Self::New();
 
   copyPtr->m_Point = this->m_Point;
   copyPtr->m_ForcePoint = this->m_ForcePoint;
@@ -82,9 +82,9 @@ LoadPoint::ApplyLoad(Element::ConstPointer element, Element::VectorType & Fe)
   // "Integrate" at the location of the point load
   shapeF = element->ShapeFunctions(pt);
   // Calculate the equivalent nodal loads
-  for (unsigned int n = 0; n < Nnodes; n++)
+  for (unsigned int n = 0; n < Nnodes; ++n)
   {
-    for (unsigned int d = 0; d < NnDOF; d++)
+    for (unsigned int d = 0; d < NnDOF; ++d)
     {
       Fe[n * NnDOF + d] += shapeF[n] * force[d];
     }

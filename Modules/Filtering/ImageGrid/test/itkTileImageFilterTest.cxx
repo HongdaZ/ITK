@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,12 +56,12 @@ itkTileImageFilterTest(int argc, char * argv[])
   layout[2] = std::stoi(argv[3]);
 
   // Tile the input images
-  TilerType::Pointer       tiler = TilerType::New();
+  auto                     tiler = TilerType::New();
   itk::SimpleFilterWatcher tileWatcher(tiler, "Tiler");
   int                      f = 0;
-  for (int i = 4; i < argc - 1; i++)
+  for (int i = 4; i < argc - 1; ++i)
   {
-    ImageReaderType::Pointer reader = ImageReaderType::New();
+    auto reader = ImageReaderType::New();
     reader->SetFileName(argv[i]);
     reader->Update();
     tiler->SetInput(f++, reader->GetOutput());
@@ -75,21 +75,15 @@ itkTileImageFilterTest(int argc, char * argv[])
 
   tiler->Print(std::cout);
 
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   writer->SetSeriesFormat(argv[argc - 1]);
 
-  try
-  {
-    writer->SetInput(tiler->GetOutput());
-    writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << "Error while writing the series with SeriesFileNames generator" << std::endl;
-    std::cerr << excp << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->SetInput(tiler->GetOutput()));
+
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+
+
   std::cout << "Test passed." << std::endl;
   return EXIT_SUCCESS;
 }

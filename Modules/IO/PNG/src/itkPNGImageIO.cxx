@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,42 +18,25 @@
 #include "itkPNGImageIO.h"
 #include "itk_png.h"
 #include "itksys/SystemTools.hxx"
+#include "itkMakeUniqueForOverwrite.h"
 #include <string>
 #include <csetjmp>
 
-namespace itk
-{
 extern "C"
 {
-  /* The PNG library does not expect the error function to return.
-     Therefore we must use this ugly longjmp call.  */
   void
   itkPNGWriteErrorFunction(png_structp png_ptr, png_const_charp itkNotUsed(error_msg))
   {
     longjmp(png_jmpbuf(png_ptr), 1);
   }
-}
 
-extern "C"
-{
   void
   itkPNGWriteWarningFunction(png_structp itkNotUsed(png_ptr), png_const_charp itkNotUsed(warning_msg))
   {}
 }
 
-namespace
+namespace itk
 {
-// Wrap setjmp call to avoid warnings about variable clobbering.
-bool
-wrapSetjmp(png_structp & png_ptr)
-{
-  if (setjmp(png_jmpbuf(png_ptr)))
-  {
-    return true;
-  }
-  return false;
-}
-} // namespace
 
 // simple class to call fopen on construct and
 // fclose on destruct
@@ -74,7 +57,7 @@ public:
     }
   }
 
-  FILE * m_FilePointer;
+  FILE * volatile m_FilePointer;
 };
 
 bool
@@ -180,10 +163,10 @@ PNGImageIO::Read(void * buffer)
     itkExceptionMacro("File is not png type " << this->GetFileName());
   }
 
-  if (wrapSetjmp(png_ptr))
+  if (setjmp(png_jmpbuf(png_ptr)))
   {
     png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-    itkExceptionMacro("File is not png type " << this->GetFileName());
+    itkExceptionMacro("PNG critical error in " << this->GetFileName());
   }
 
   png_init_io(png_ptr, fp);
@@ -251,9 +234,9 @@ PNGImageIO::Read(void * buffer)
   // update the info now that we have defined the filters
   png_read_update_info(png_ptr, info_ptr);
 
-  auto                               rowbytes = static_cast<SizeValueType>(png_get_rowbytes(png_ptr, info_ptr));
-  auto *                             tempImage = static_cast<unsigned char *>(buffer);
-  const std::unique_ptr<png_bytep[]> row_pointers(new png_bytep[height]);
+  auto       rowbytes = static_cast<SizeValueType>(png_get_rowbytes(png_ptr, info_ptr));
+  auto *     tempImage = static_cast<unsigned char *>(buffer);
+  const auto row_pointers = make_unique_for_overwrite<png_bytep[]>(height);
   for (unsigned int ui = 0; ui < height; ++ui)
   {
     row_pointers[ui] = tempImage + rowbytes * ui;
@@ -369,6 +352,12 @@ PNGImageIO::ReadImageInformation()
   {
     png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) nullptr);
     return;
+  }
+
+  if (setjmp(png_jmpbuf(png_ptr)))
+  {
+    png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+    itkExceptionMacro("PNG critical error in " << this->GetFileName());
   }
 
   png_init_io(png_ptr, fp);
@@ -511,7 +500,7 @@ PNGImageIO::Write(const void * buffer)
 }
 
 void
-PNGImageIO::WriteSlice(const std::string & fileName, const void * buffer)
+PNGImageIO::WriteSlice(const std::string & fileName, const void * const buffer)
 {
   // use this class so return will call close
   PNGFileWrapper pngfp(fileName.c_str(), "wb");
@@ -526,7 +515,7 @@ PNGImageIO::WriteSlice(const std::string & fileName, const void * buffer)
     //            of the Exception and prevent the catch() from recognizing it.
     //            For details, see Bug #1872 in the bugtracker.
 
-    ::itk::ExceptionObject excp(__FILE__, __LINE__, "Problem while opening the file.", ITK_LOCATION);
+    itk::ExceptionObject excp(__FILE__, __LINE__, "Problem while opening the file.", ITK_LOCATION);
     throw excp;
   }
 
@@ -550,7 +539,7 @@ PNGImageIO::WriteSlice(const std::string & fileName, const void * buffer)
       //            of the Exception and prevent the catch() from recognizing
       // it.
       //            For details, see Bug #1872 in the bugtracker.
-      ::itk::ExceptionObject excp(__FILE__, __LINE__, "PNG supports unsigned char and unsigned short", ITK_LOCATION);
+      itk::ExceptionObject excp(__FILE__, __LINE__, "PNG supports unsigned char and unsigned short", ITK_LOCATION);
       throw excp;
     }
   }
@@ -571,7 +560,7 @@ PNGImageIO::WriteSlice(const std::string & fileName, const void * buffer)
   png_init_io(png_ptr, fp);
 
   png_set_error_fn(png_ptr, (png_voidp) nullptr, itkPNGWriteErrorFunction, itkPNGWriteWarningFunction);
-  if (wrapSetjmp(png_ptr))
+  if (setjmp(png_jmpbuf(png_ptr)))
   {
     itkExceptionMacro("Error while writing Slice to file: " << this->GetFileName() << std::endl
                                                             << "Reason: " << itksys::SystemTools::GetLastSystemError());
@@ -634,8 +623,8 @@ PNGImageIO::WriteSlice(const std::string & fileName, const void * buffer)
   bool        paletteAllocated = false;
   if (colorType == PNG_COLOR_TYPE_PALETTE)
   {
-    auto     inputPaletteLength = static_cast<unsigned>(m_ColorPalette.size());
-    unsigned PNGPaletteLength = inputPaletteLength;
+    auto         inputPaletteLength = static_cast<unsigned int>(m_ColorPalette.size());
+    unsigned int PNGPaletteLength = inputPaletteLength;
 
     // discard colors exceeding PNG max number
     PNGPaletteLength = (PNGPaletteLength <= PNG_MAX_PALETTE_LENGTH) ? PNGPaletteLength : PNG_MAX_PALETTE_LENGTH;
@@ -646,7 +635,7 @@ PNGImageIO::WriteSlice(const std::string & fileName, const void * buffer)
     palette = static_cast<png_color *>(png_malloc(png_ptr, PNGPaletteLength * sizeof(png_color)));
     paletteAllocated = true;
 
-    for (unsigned i = 0; i < PNGPaletteLength; ++i)
+    for (unsigned int i = 0; i < PNGPaletteLength; ++i)
     {
       if (i < inputPaletteLength)
       {
@@ -693,12 +682,12 @@ PNGImageIO::WriteSlice(const std::string & fileName, const void * buffer)
     png_set_swap(png_ptr);
 #endif
   }
-  const std::unique_ptr<png_bytep[]> row_pointers(new png_bytep[height]);
+  const auto row_pointers = make_unique_for_overwrite<png_bytep[]>(height);
 
   {
     const int                      rowInc = width * numComp * bitDepth / 8;
     volatile const unsigned char * outPtr = ((const unsigned char *)buffer);
-    for (unsigned int ui = 0; ui < height; ui++)
+    for (unsigned int ui = 0; ui < height; ++ui)
     {
       row_pointers[ui] = const_cast<png_byte *>(outPtr);
       outPtr = const_cast<unsigned char *>(outPtr) + rowInc;

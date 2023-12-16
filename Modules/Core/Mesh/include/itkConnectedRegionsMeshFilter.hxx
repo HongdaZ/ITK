@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@
 #ifndef itkConnectedRegionsMeshFilter_hxx
 #define itkConnectedRegionsMeshFilter_hxx
 
-#include "itkConnectedRegionsMeshFilter.h"
 #include "itkNumericTraits.h"
 #include "itkObjectFactory.h"
 
@@ -162,7 +161,7 @@ ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
 
   m_RegionSizes.clear();
   m_Visited.resize(numCells);
-  for (unsigned int i = 0; i < numCells; i++)
+  for (unsigned int i = 0; i < numCells; ++i)
   {
     m_Visited[i] = -1;
   }
@@ -190,7 +189,7 @@ ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
     {
       if (!(cellId % tenth))
       {
-        this->UpdateProgress((float)cellId / numCells);
+        this->UpdateProgress(static_cast<float>(cellId) / numCells);
       }
 
       if (m_Visited[cellId] < 0)
@@ -205,7 +204,7 @@ ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
           largestRegionId = m_RegionNumber;
         }
 
-        m_RegionNumber++;
+        ++m_RegionNumber;
         m_RegionSizes.push_back(m_NumberOfCellsInRegion);
         m_Wave->clear();
         m_Wave2->clear();
@@ -288,8 +287,8 @@ ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
   CellsContainerConstIterator    cell;
   CellDataContainerConstIterator cellData;
   bool                           CellDataPresent = (nullptr != inCellData && !inCellData->empty());
-  InputMeshCellPointer           cellCopy; // need an autopointer to duplicate
-                                           // a cell
+  InputMeshCellPointer           cellCopy; // need an autopointer to duplicate a cell
+  int                            inserted_count = 0;
 
   if (m_ExtractionMode == PointSeededRegions || m_ExtractionMode == CellSeededRegions ||
       m_ExtractionMode == ClosestPointRegion || m_ExtractionMode == AllRegions)
@@ -303,7 +302,8 @@ ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
       if (m_Visited[cellId] >= 0)
       {
         cell->Value()->MakeCopy(cellCopy);
-        outCells->InsertElement(cellId, cellCopy.GetPointer());
+        outCells->InsertElement(inserted_count, cellCopy.GetPointer());
+        ++inserted_count;
         cellCopy.ReleaseOwnership(); // Pass cell ownership to output mesh
         if (CellDataPresent)
         {
@@ -341,13 +341,15 @@ ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
         if (inReg)
         {
           cell->Value()->MakeCopy(cellCopy);
-          outCells->InsertElement(cellId, cellCopy.GetPointer());
+          outCells->InsertElement(inserted_count, cellCopy.GetPointer());
           cellCopy.ReleaseOwnership(); // Pass cell ownership to output mesh
+          ++inserted_count;
           if (CellDataPresent)
           {
             outCellData->InsertElement(cellId, cellData->Value());
             ++cellData;
           }
+          inReg = false;
         }
       }
     }
@@ -358,13 +360,15 @@ ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
     {
       cellData = inCellData->Begin();
     }
+
     for (cell = inCells->Begin(); cell != inCells->End(); ++cell, ++cellId)
     {
       if (m_Visited[cellId] == static_cast<OffsetValueType>(largestRegionId))
       {
         cell->Value()->MakeCopy(cellCopy);
-        outCells->InsertElement(cellId, cellCopy.GetPointer());
+        outCells->InsertElement(inserted_count, cellCopy.GetPointer());
         cellCopy.ReleaseOwnership(); // Pass cell ownership to output mesh
+        ++inserted_count;
         if (CellDataPresent)
         {
           outCellData->InsertElement(cellId, cellData->Value());
@@ -380,16 +384,18 @@ ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
   m_Visited.clear();
 
   // Report some statistics
+#ifndef NDEBUG
   if (this->GetDebug())
   {
     SizeValueType count = 0;
-    for (const auto & m_RegionSize : m_RegionSizes)
+    for (const auto & regionSize : m_RegionSizes)
     {
-      count += m_RegionSize;
+      count += regionSize;
     }
     itkDebugMacro(<< "Total #of cells accounted for: " << count);
     itkDebugMacro(<< "Extracted " << output->GetNumberOfCells() << " cells");
   }
+#endif
 
   // This prevents unnecessary re-executions of the pipeline.
   output->SetBufferedRegion(output->GetRequestedRegion());
@@ -418,7 +424,7 @@ ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>::PropagateConnectedWave()
       if (m_Visited[cellId] < 0)
       {
         m_Visited[cellId] = static_cast<OffsetValueType>(m_RegionNumber);
-        m_NumberOfCellsInRegion++;
+        ++m_NumberOfCellsInRegion;
 
         // now get the cell points, and then cells using these points
         input->GetCell(cellId, cellPtr);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,14 +35,14 @@
 namespace itk
 {
 /**
- *\class LSMImageIOFactory
+ * \class LSMImageIOFactory
  * \brief Create instances of LSMImageIO objects using an object factory.
  * \ingroup ITKIOLSM
  */
 class ITKIOLSM_EXPORT LSMImageIOFactory : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LSMImageIOFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(LSMImageIOFactory);
 
   /** Standard class type aliases. */
   using Self = LSMImageIOFactory;
@@ -67,7 +67,7 @@ public:
   static void
   RegisterOneFactory()
   {
-    LSMImageIOFactory::Pointer lsmFactory = LSMImageIOFactory::New();
+    auto lsmFactory = LSMImageIOFactory::New();
 
     ObjectFactoryBase::RegisterFactoryInternal(lsmFactory);
   }

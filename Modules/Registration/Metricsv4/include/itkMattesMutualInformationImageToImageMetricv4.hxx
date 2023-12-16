@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMattesMutualInformationImageToImageMetricv4_hxx
 #define itkMattesMutualInformationImageToImageMetricv4_hxx
 
-#include "itkMattesMutualInformationImageToImageMetricv4.h"
 #include "itkCompensatedSummation.h"
 #include <mutex>
 
@@ -43,8 +42,6 @@ MattesMutualInformationImageToImageMetricv4<TFixedImage,
   , m_MovingImageTrueMax(0.0)
   , m_FixedImageBinSize(0.0)
   , m_MovingImageBinSize(0.0)
-  , m_CubicBSplineKernel(nullptr)
-  , m_CubicBSplineDerivativeKernel(nullptr)
   , m_PRatioArray(0)
   ,
   // Initialize memory
@@ -60,8 +57,6 @@ MattesMutualInformationImageToImageMetricv4<TFixedImage,
   // ImageToImageMetricv4 to use.
   this->m_DenseGetValueAndDerivativeThreader = MattesMutualInformationDenseGetValueAndDerivativeThreaderType::New();
   this->m_SparseGetValueAndDerivativeThreader = MattesMutualInformationSparseGetValueAndDerivativeThreaderType::New();
-  this->m_CubicBSplineKernel = CubicBSplineFunctionType::New();
-  this->m_CubicBSplineDerivativeKernel = CubicBSplineDerivativeFunctionType::New();
 }
 
 /**
@@ -591,7 +586,7 @@ MattesMutualInformationImageToImageMetricv4<TFixedImage,
                                             TMovingImage,
                                             TVirtualImage,
                                             TInternalComputationValueType,
-                                            TMetricTraits>::DerivativeBufferManager ::DoubleBufferSize()
+                                            TMetricTraits>::DerivativeBufferManager::DoubleBufferSize()
 {
   m_MaxBufferSize = m_MaxBufferSize * 2;
   m_MemoryBlockSize = m_MemoryBlockSize * 2;
@@ -614,7 +609,7 @@ MattesMutualInformationImageToImageMetricv4<TFixedImage,
                                             TMovingImage,
                                             TVirtualImage,
                                             TInternalComputationValueType,
-                                            TMetricTraits>::DerivativeBufferManager ::CheckAndReduceIfNecessary()
+                                            TMetricTraits>::DerivativeBufferManager::CheckAndReduceIfNecessary()
 {
   if (m_CurrentFillSize == m_MaxBufferSize)
   {
@@ -653,7 +648,7 @@ MattesMutualInformationImageToImageMetricv4<TFixedImage,
                                             TMovingImage,
                                             TVirtualImage,
                                             TInternalComputationValueType,
-                                            TMetricTraits>::DerivativeBufferManager ::BlockAndReduce()
+                                            TMetricTraits>::DerivativeBufferManager::BlockAndReduce()
 {
   if (m_CurrentFillSize > 0)
   {
@@ -672,7 +667,7 @@ MattesMutualInformationImageToImageMetricv4<TFixedImage,
                                             TMovingImage,
                                             TVirtualImage,
                                             TInternalComputationValueType,
-                                            TMetricTraits>::DerivativeBufferManager ::ReduceBuffer()
+                                            TMetricTraits>::DerivativeBufferManager::ReduceBuffer()
 {
   auto BufferOffsetContainerIter(this->m_BufferOffsetContainer.begin());
   auto BufferPDFValuesContainerIter(this->m_BufferPDFValuesContainer.begin());

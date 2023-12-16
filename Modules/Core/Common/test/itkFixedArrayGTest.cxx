@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 
 // First include the header file to be tested:
 #include "itkFixedArray.h"
+#include "itkRangeGTestUtilities.h"
 #include <gtest/gtest.h>
 
 #include <array>
@@ -88,7 +89,7 @@ Check_FixedArray_supports_modifying_elements_by_range_based_for_loop()
   // Now check if the array has got the expected values.
   TValue expectedValue{};
 
-  for (std::size_t i = 0; i < VLength; ++i)
+  for (unsigned int i = 0; i < VLength; ++i)
   {
     ++expectedValue;
     EXPECT_EQ(fixedArray[i], expectedValue);
@@ -222,7 +223,35 @@ Check_iterators_increment_return_value()
   }
 }
 
+template <int VFillValue>
+constexpr bool
+Is_Filled_FixedArray_correctly_filled()
+{
+  using FixedArrayType = itk::FixedArray<int>;
+
+  constexpr auto filledFixedArray = FixedArrayType::Filled(VFillValue);
+
+  for (unsigned int i{}; i < FixedArrayType::Length; ++i)
+  {
+    if (filledFixedArray[i] != VFillValue)
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+
 } // End of namespace
+
+static_assert(Is_Filled_FixedArray_correctly_filled<0>() && Is_Filled_FixedArray_correctly_filled<1>() &&
+                Is_Filled_FixedArray_correctly_filled<std::numeric_limits<int>::min()>() &&
+                Is_Filled_FixedArray_correctly_filled<std::numeric_limits<int>::max()>(),
+              "itk::FixedArray::Filled(value) should be correctly filled at compile-time");
+
+static_assert(itk::RangeGTestUtilities::CheckConstexprBeginAndEndOfContainer<itk::FixedArray<int>>() &&
+                itk::RangeGTestUtilities::CheckConstexprBeginAndEndOfContainer<itk::FixedArray<double, 1>>(),
+              "Check constexpr begin() and end() of FixedArray.");
 
 
 // Tests that the values of a FixedArray (either const or non-const) can be retrieved by a
@@ -273,4 +302,25 @@ TEST(FixedArray, IteratorIncrementReturnValue)
 {
   Check_iterators_increment_return_value<double, 2>();
   Check_iterators_increment_return_value<int, 3>();
+}
+
+// Tests data() and size() works
+TEST(FixedArray, StdMemberFunctionsWork)
+{
+  using FixedArrayType = itk::FixedArray<double, 3>;
+
+  // FixedArray::size() may be evaluated at compile-time, just like std::array::size().
+  static_assert(FixedArrayType{}.size() == FixedArrayType::Dimension, "FixedArray::size() should equal its dimension");
+
+  auto d3arr = FixedArrayType(3);
+  d3arr[0] = 1;
+  d3arr[1] = 2;
+  d3arr[2] = 3;
+  // size
+  EXPECT_EQ(d3arr.size(), 3);
+  // const and non-const data
+  const auto cdata = d3arr.data();
+  EXPECT_EQ(cdata[0], 1);
+  d3arr.data()[0] = 10;
+  EXPECT_EQ(cdata[0], 10);
 }

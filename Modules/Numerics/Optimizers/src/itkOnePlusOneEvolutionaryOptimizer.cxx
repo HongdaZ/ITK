@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,21 +15,19 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkOnePlusOneEvolutionaryOptimizer_cxx
-#define _itkOnePlusOneEvolutionaryOptimizer_cxx
 
 #include "itkOnePlusOneEvolutionaryOptimizer.h"
 #include "vnl/vnl_matrix.h"
 #include "itkMath.h"
 namespace itk
 {
-OnePlusOneEvolutionaryOptimizer ::OnePlusOneEvolutionaryOptimizer()
+OnePlusOneEvolutionaryOptimizer::OnePlusOneEvolutionaryOptimizer()
 {
   m_CatchGetValueException = false;
   m_MetricWorstPossibleValue = 0;
 
   m_Maximize = false;
-  m_Epsilon = (double)1.5e-4;
+  m_Epsilon = 1.5e-4;
   m_RandomGenerator = nullptr;
 
   m_Initialized = false;
@@ -45,7 +43,7 @@ OnePlusOneEvolutionaryOptimizer ::OnePlusOneEvolutionaryOptimizer()
 }
 
 void
-OnePlusOneEvolutionaryOptimizer ::SetNormalVariateGenerator(NormalVariateGeneratorType * generator)
+OnePlusOneEvolutionaryOptimizer::SetNormalVariateGenerator(NormalVariateGeneratorType * generator)
 {
   if (m_RandomGenerator != generator)
   {
@@ -55,7 +53,7 @@ OnePlusOneEvolutionaryOptimizer ::SetNormalVariateGenerator(NormalVariateGenerat
 }
 
 void
-OnePlusOneEvolutionaryOptimizer ::Initialize(double initialRadius, double grow, double shrink)
+OnePlusOneEvolutionaryOptimizer::Initialize(double initialRadius, double grow, double shrink)
 {
   m_InitialRadius = initialRadius;
 
@@ -78,7 +76,7 @@ OnePlusOneEvolutionaryOptimizer ::Initialize(double initialRadius, double grow, 
 }
 
 void
-OnePlusOneEvolutionaryOptimizer ::StartOptimization()
+OnePlusOneEvolutionaryOptimizer::StartOptimization()
 {
   if (m_CostFunction.IsNull())
   {
@@ -98,7 +96,7 @@ OnePlusOneEvolutionaryOptimizer ::StartOptimization()
   ParametersType parentPosition(spaceDimension);
   ParametersType childPosition(spaceDimension);
 
-  for (unsigned int i = 0; i < spaceDimension; i++)
+  for (unsigned int i = 0; i < spaceDimension; ++i)
   {
     parentPosition[i] = parent[i];
   }
@@ -134,13 +132,13 @@ OnePlusOneEvolutionaryOptimizer ::StartOptimization()
   }
 
   A.set_identity();
-  for (unsigned int i = 0; i < spaceDimension; i++)
+  for (unsigned int i = 0; i < spaceDimension; ++i)
   {
     A(i, i) = m_InitialRadius / scales[i];
   }
   m_CurrentIteration = 0;
 
-  for (unsigned int iter = 0; iter < m_MaximumIteration; iter++)
+  for (unsigned int iter = 0; iter < m_MaximumIteration; ++iter)
   {
     if (m_Stop)
     {
@@ -152,7 +150,7 @@ OnePlusOneEvolutionaryOptimizer ::StartOptimization()
 
     ++m_CurrentIteration;
 
-    for (unsigned int i = 0; i < spaceDimension; i++)
+    for (unsigned int i = 0; i < spaceDimension; ++i)
     {
       if (!m_RandomGenerator)
       {
@@ -164,7 +162,7 @@ OnePlusOneEvolutionaryOptimizer ::StartOptimization()
     delta = A * f_norm;
     child = parent + delta;
 
-    for (unsigned int i = 0; i < spaceDimension; i++)
+    for (unsigned int i = 0; i < spaceDimension; ++i)
     {
       childPosition[i] = child[i];
     }
@@ -203,7 +201,7 @@ OnePlusOneEvolutionaryOptimizer ::StartOptimization()
         pvalue = cvalue;
         parent.swap(child);
         adjust = m_GrowthFactor;
-        for (unsigned int i = 0; i < spaceDimension; i++)
+        for (unsigned int i = 0; i < spaceDimension; ++i)
         {
           parentPosition[i] = parent[i];
         }
@@ -222,7 +220,7 @@ OnePlusOneEvolutionaryOptimizer ::StartOptimization()
         pvalue = cvalue;
         parent.swap(child);
         adjust = m_GrowthFactor;
-        for (unsigned int i = 0; i < spaceDimension; i++)
+        for (unsigned int i = 0; i < spaceDimension; ++i)
         {
           parentPosition[i] = parent[i];
         }
@@ -265,9 +263,9 @@ OnePlusOneEvolutionaryOptimizer ::StartOptimization()
 
     // A = A + (adjust - 1.0) * A;
     double alpha = ((adjust - 1.0) / dot_product(f_norm, f_norm));
-    for (unsigned int c = 0; c < spaceDimension; c++)
+    for (unsigned int c = 0; c < spaceDimension; ++c)
     {
-      for (unsigned int r = 0; r < spaceDimension; r++)
+      for (unsigned int r = 0; r < spaceDimension; ++r)
       {
         A(r, c) += alpha * delta[r] * f_norm[c];
       }
@@ -287,7 +285,7 @@ OnePlusOneEvolutionaryOptimizer ::StartOptimization()
  */
 
 const std::string
-OnePlusOneEvolutionaryOptimizer ::GetStopConditionDescription() const
+OnePlusOneEvolutionaryOptimizer::GetStopConditionDescription() const
 {
   return m_StopConditionDescription.str();
 }
@@ -296,7 +294,7 @@ OnePlusOneEvolutionaryOptimizer ::GetStopConditionDescription() const
  *
  */
 void
-OnePlusOneEvolutionaryOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
+OnePlusOneEvolutionaryOptimizer::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
@@ -323,4 +321,3 @@ OnePlusOneEvolutionaryOptimizer ::PrintSelf(std::ostream & os, Indent indent) co
   os << indent << "MetricWorstPossibleValue " << GetMetricWorstPossibleValue() << std::endl;
 }
 } // end of namespace itk
-#endif

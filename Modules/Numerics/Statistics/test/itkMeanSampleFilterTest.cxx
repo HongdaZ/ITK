@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ itkMeanSampleFilterTest(int, char *[])
   using MeasurementVectorType = itk::FixedArray<float, MeasurementVectorSize>;
   using SampleType = itk::Statistics::ListSample<MeasurementVectorType>;
 
-  SampleType::Pointer sample = SampleType::New();
+  auto sample = SampleType::New();
 
   sample->SetMeasurementVectorSize(MeasurementVectorSize);
 
@@ -44,7 +44,7 @@ itkMeanSampleFilterTest(int, char *[])
 
   while (counter < numberOfMeasurementVectors)
   {
-    for (unsigned int i = 0; i < MeasurementVectorSize; i++)
+    for (unsigned int i = 0; i < MeasurementVectorSize; ++i)
     {
       measure[i] = counter;
     }
@@ -54,7 +54,7 @@ itkMeanSampleFilterTest(int, char *[])
 
   using FilterType = itk::Statistics::MeanSampleFilter<SampleType>;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   std::cout << filter->GetNameOfClass() << std::endl;
   filter->Print(std::cout);
@@ -64,8 +64,7 @@ itkMeanSampleFilterTest(int, char *[])
   try
   {
     filter->Update();
-    failureMeassage = "Exception should have been thrown since \
-                    Update() is invoked without setting an input ";
+    failureMeassage = "Exception should have been thrown since Update() is invoked without setting an input ";
     pass = false;
   }
   catch (const itk::ExceptionObject & excp)
@@ -76,8 +75,7 @@ itkMeanSampleFilterTest(int, char *[])
   if (filter->GetInput() != nullptr)
   {
     pass = false;
-    failureMeassage = "GetInput() should return nullptr if the input \
-                     has not been set";
+    failureMeassage = "GetInput() should return nullptr if the input has not been set";
   }
 
   filter->ResetPipeline();
@@ -104,7 +102,7 @@ itkMeanSampleFilterTest(int, char *[])
 
   FilterType::MeasurementVectorType::ValueType epsilon = 1e-6;
 
-  if ((std::fabs(meanOutput[0] - mean[0]) > epsilon) || (std::fabs(meanOutput[1] - mean[1]) > epsilon))
+  if ((itk::Math::abs(meanOutput[0] - mean[0]) > epsilon) || (itk::Math::abs(meanOutput[1] - mean[1]) > epsilon))
   {
     pass = false;
     failureMeassage = "The result is not what is expected";

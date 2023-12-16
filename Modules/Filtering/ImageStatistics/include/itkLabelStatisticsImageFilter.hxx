@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkLabelStatisticsImageFilter_hxx
 #define itkLabelStatisticsImageFilter_hxx
-#include "itkLabelStatisticsImageFilter.h"
 
 #include "itkImageLinearConstIteratorWithIndex.h"
 #include "itkImageScanlineConstIterator.h"
@@ -69,7 +68,7 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::MergeMap(MapType & m1, Map
     {
 
 
-      typename MapType::mapped_type & labelStats = (*m1It).second;
+      typename MapType::mapped_type & labelStats = m1It->second;
 
       // accumulate the information from this thread
       labelStats.m_Count += m2_value.second.m_Count;
@@ -103,7 +102,7 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::MergeMap(MapType & m1, Map
       {
         typename HistogramType::IndexType index;
         index.SetSize(1);
-        for (unsigned int bin = 0; bin < m_NumBins[0]; bin++)
+        for (unsigned int bin = 0; bin < m_NumBins[0]; ++bin)
         {
           index[0] = bin;
           labelStats.m_Histogram->IncreaseFrequency(bin, m2_value.second.m_Histogram->GetFrequency(bin));
@@ -284,8 +283,8 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::ThreadedStreamedGenerateDa
 }
 
 template <typename TInputImage, typename TLabelImage>
-typename LabelStatisticsImageFilter<TInputImage, TLabelImage>::RealType
-LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetMinimum(LabelPixelType label) const
+auto
+LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetMinimum(LabelPixelType label) const -> RealType
 {
   MapConstIterator mapIt;
 
@@ -297,13 +296,13 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetMinimum(LabelPixelType 
   }
   else
   {
-    return (*mapIt).second.m_Minimum;
+    return mapIt->second.m_Minimum;
   }
 }
 
 template <typename TInputImage, typename TLabelImage>
-typename LabelStatisticsImageFilter<TInputImage, TLabelImage>::RealType
-LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetMaximum(LabelPixelType label) const
+auto
+LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetMaximum(LabelPixelType label) const -> RealType
 {
   MapConstIterator mapIt;
 
@@ -315,13 +314,13 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetMaximum(LabelPixelType 
   }
   else
   {
-    return (*mapIt).second.m_Maximum;
+    return mapIt->second.m_Maximum;
   }
 }
 
 template <typename TInputImage, typename TLabelImage>
-typename LabelStatisticsImageFilter<TInputImage, TLabelImage>::RealType
-LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetMean(LabelPixelType label) const
+auto
+LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetMean(LabelPixelType label) const -> RealType
 {
   MapConstIterator mapIt;
 
@@ -333,13 +332,13 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetMean(LabelPixelType lab
   }
   else
   {
-    return (*mapIt).second.m_Mean;
+    return mapIt->second.m_Mean;
   }
 }
 
 template <typename TInputImage, typename TLabelImage>
-typename LabelStatisticsImageFilter<TInputImage, TLabelImage>::RealType
-LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetSum(LabelPixelType label) const
+auto
+LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetSum(LabelPixelType label) const -> RealType
 {
   MapConstIterator mapIt;
 
@@ -351,13 +350,13 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetSum(LabelPixelType labe
   }
   else
   {
-    return (*mapIt).second.m_Sum;
+    return mapIt->second.m_Sum;
   }
 }
 
 template <typename TInputImage, typename TLabelImage>
-typename LabelStatisticsImageFilter<TInputImage, TLabelImage>::RealType
-LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetSigma(LabelPixelType label) const
+auto
+LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetSigma(LabelPixelType label) const -> RealType
 {
   MapConstIterator mapIt;
 
@@ -369,13 +368,13 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetSigma(LabelPixelType la
   }
   else
   {
-    return (*mapIt).second.m_Sigma;
+    return mapIt->second.m_Sigma;
   }
 }
 
 template <typename TInputImage, typename TLabelImage>
-typename LabelStatisticsImageFilter<TInputImage, TLabelImage>::RealType
-LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetVariance(LabelPixelType label) const
+auto
+LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetVariance(LabelPixelType label) const -> RealType
 {
   MapConstIterator mapIt;
 
@@ -387,13 +386,13 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetVariance(LabelPixelType
   }
   else
   {
-    return (*mapIt).second.m_Variance;
+    return mapIt->second.m_Variance;
   }
 }
 
 template <typename TInputImage, typename TLabelImage>
-typename LabelStatisticsImageFilter<TInputImage, TLabelImage>::BoundingBoxType
-LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetBoundingBox(LabelPixelType label) const
+auto
+LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetBoundingBox(LabelPixelType label) const -> BoundingBoxType
 {
   MapConstIterator mapIt;
 
@@ -406,13 +405,13 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetBoundingBox(LabelPixelT
   }
   else
   {
-    return (*mapIt).second.m_BoundingBox;
+    return mapIt->second.m_BoundingBox;
   }
 }
 
 template <typename TInputImage, typename TLabelImage>
-typename LabelStatisticsImageFilter<TInputImage, TLabelImage>::RegionType
-LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetRegion(LabelPixelType label) const
+auto
+LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetRegion(LabelPixelType label) const -> RegionType
 {
   MapConstIterator mapIt;
 
@@ -435,17 +434,15 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetRegion(LabelPixelType l
       index[i] = bbox[2 * i];
       size[i] = bbox[2 * i + 1] - bbox[2 * i] + 1;
     }
-    RegionType region;
-    region.SetSize(size);
-    region.SetIndex(index);
+    const RegionType region(index, size);
 
     return region;
   }
 }
 
 template <typename TInputImage, typename TLabelImage>
-typename LabelStatisticsImageFilter<TInputImage, TLabelImage>::MapSizeType
-LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetCount(LabelPixelType label) const
+auto
+LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetCount(LabelPixelType label) const -> MapSizeType
 {
   MapConstIterator mapIt;
 
@@ -457,13 +454,13 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetCount(LabelPixelType la
   }
   else
   {
-    return (*mapIt).second.m_Count;
+    return mapIt->second.m_Count;
   }
 }
 
 template <typename TInputImage, typename TLabelImage>
-typename LabelStatisticsImageFilter<TInputImage, TLabelImage>::RealType
-LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetMedian(LabelPixelType label) const
+auto
+LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetMedian(LabelPixelType label) const -> RealType
 {
   RealType         median = 0.0;
   MapConstIterator mapIt;
@@ -483,26 +480,26 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetMedian(LabelPixelType l
     RealType total = 0;
 
     // count bins until just over half the distribution is counted
-    while (total <= ((*mapIt).second.m_Count / 2) && (bin < m_NumBins[0]))
+    while (total <= (mapIt->second.m_Count / 2) && (bin < m_NumBins[0]))
     {
       index[0] = bin;
-      total += (*mapIt).second.m_Histogram->GetFrequency(index);
-      bin++;
+      total += mapIt->second.m_Histogram->GetFrequency(index);
+      ++bin;
     }
-    bin--;
+    --bin;
     index[0] = bin;
 
     // return center of bin range
-    RealType lowRange = (*mapIt).second.m_Histogram->GetBinMin(0, bin);
-    RealType highRange = (*mapIt).second.m_Histogram->GetBinMax(0, bin);
+    RealType lowRange = mapIt->second.m_Histogram->GetBinMin(0, bin);
+    RealType highRange = mapIt->second.m_Histogram->GetBinMax(0, bin);
     median = lowRange + (highRange - lowRange) / 2;
     return median;
   }
 }
 
 template <typename TInputImage, typename TLabelImage>
-typename LabelStatisticsImageFilter<TInputImage, TLabelImage>::HistogramPointer
-LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetHistogram(LabelPixelType label) const
+auto
+LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetHistogram(LabelPixelType label) const -> HistogramPointer
 {
   MapConstIterator mapIt;
 
@@ -515,7 +512,7 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>::GetHistogram(LabelPixelTyp
   else
   {
     // this will be zero if histograms have not been enabled
-    return (*mapIt).second.m_Histogram;
+    return mapIt->second.m_Histogram;
   }
 }
 

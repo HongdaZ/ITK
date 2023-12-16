@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 
 #include "itkListSample.h"
 #include "itkKdTreeGenerator.h"
+#include "itkTestingMacros.h"
 
 #include <iostream>
 #include <fstream>
@@ -29,9 +30,9 @@ itkKdTreeTest2(int argc, char * argv[])
 
   if (argc < 4)
   {
-    std::cerr << "Missing argument" << std::endl;
-    std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << " pointsInputFile  bucketSize graphvizDotOutputFile" << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " pointsInputFile  bucketSize graphvizDotOutputFile" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -41,7 +42,7 @@ itkKdTreeTest2(int argc, char * argv[])
   using MeasurementVectorType = itk::Vector<MeasurementValueType, Dimension>;
 
   using SampleType = itk::Statistics::ListSample<MeasurementVectorType>;
-  SampleType::Pointer sample = SampleType::New();
+  auto sample = SampleType::New();
   sample->SetMeasurementVectorSize(Dimension);
 
   MeasurementVectorType mv;
@@ -62,7 +63,7 @@ itkKdTreeTest2(int argc, char * argv[])
   pntFile.close();
 
   using TreeGeneratorType = itk::Statistics::KdTreeGenerator<SampleType>;
-  TreeGeneratorType::Pointer treeGenerator = TreeGeneratorType::New();
+  auto treeGenerator = TreeGeneratorType::New();
 
   const unsigned int bucketSize = std::stoi(argv[2]);
 
@@ -77,7 +78,7 @@ itkKdTreeTest2(int argc, char * argv[])
   TreeType::Pointer tree = treeGenerator->GetOutput();
 
   using DistanceMetricType = itk::Statistics::EuclideanDistanceMetric<MeasurementVectorType>;
-  DistanceMetricType::Pointer distanceMetric = DistanceMetricType::New();
+  auto distanceMetric = DistanceMetricType::New();
 
   DistanceMetricType::OriginType origin(Dimension);
 
@@ -87,7 +88,7 @@ itkKdTreeTest2(int argc, char * argv[])
   tree->PrintTree(std::cout);
 
 
-  for (unsigned int k = 0; k < sample->Size(); k++)
+  for (unsigned int k = 0; k < sample->Size(); ++k)
   {
 
     queryPoint = sample->GetMeasurementVector(k);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,10 +44,10 @@ namespace itk
  * \ingroup ITKGPUFiniteDifference
  **/
 template <typename TImageType>
-class GPUFiniteDifferenceFunction : public FiniteDifferenceFunction<TImageType>
+class ITK_TEMPLATE_EXPORT GPUFiniteDifferenceFunction : public FiniteDifferenceFunction<TImageType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUFiniteDifferenceFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(GPUFiniteDifferenceFunction);
 
   /** Standard class type aliases. */
   using Self = GPUFiniteDifferenceFunction;
@@ -60,29 +60,29 @@ public:
   itkTypeMacro(GPUFiniteDifferenceFunction, FiniteDifferenceFunction);
 
   /** Extract some parameters from the image type */
-  using ImageType = typename Superclass::ImageType;
-  using PixelType = typename Superclass::PixelType;
-  using PixelRealType = typename Superclass::PixelRealType;
+  using typename Superclass::ImageType;
+  using typename Superclass::PixelType;
+  using typename Superclass::PixelRealType;
 
   /** Save image dimension. */
   static constexpr unsigned int ImageDimension = ImageType::ImageDimension;
 
   /** Define the TimeStepType to always be double. */
-  using TimeStepType = typename Superclass::TimeStepType;
+  using typename Superclass::TimeStepType;
 
   /** The default boundary condition for finite difference
    * functions that is used unless overridden in the Evaluate() method. */
-  using DefaultBoundaryConditionType = typename Superclass::DefaultBoundaryConditionType;
+  using typename Superclass::DefaultBoundaryConditionType;
 
   /** Neighborhood radius type */
-  using RadiusType = typename Superclass::RadiusType;
+  using typename Superclass::RadiusType;
 
   /** Neighborhood type */
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
+  using typename Superclass::NeighborhoodType;
 
   /** A floating point offset from an image grid location. Used for
    * interpolation among grid values in a neighborhood. */
-  using FloatOffsetType = typename Superclass::FloatOffsetType;
+  using typename Superclass::FloatOffsetType;
 
 #if !defined(ITK_WRAPPING_PARSER)
   /** Empty implementation - this will not be used by GPU filters */

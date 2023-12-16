@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkRobustAutomaticThresholdCalculator_hxx
 #define itkRobustAutomaticThresholdCalculator_hxx
-#include "itkRobustAutomaticThresholdCalculator.h"
 
 #include "itkImageRegionConstIteratorWithIndex.h"
 #include "itkImageRegionConstIterator.h"
@@ -62,8 +61,8 @@ RobustAutomaticThresholdCalculator<TInputImage, TGradientImage>::Compute()
 }
 
 template <typename TInputImage, typename TGradientImage>
-const typename RobustAutomaticThresholdCalculator<TInputImage, TGradientImage>::InputPixelType &
-RobustAutomaticThresholdCalculator<TInputImage, TGradientImage>::GetOutput() const
+auto
+RobustAutomaticThresholdCalculator<TInputImage, TGradientImage>::GetOutput() const -> const InputPixelType &
 {
   if (!m_Valid)
   {

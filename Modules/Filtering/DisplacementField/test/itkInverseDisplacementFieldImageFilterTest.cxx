@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include "itkInverseDisplacementFieldImageFilter.h"
 #include "itkImageFileWriter.h"
 #include "itkSimpleFilterWatcher.h"
+#include "itkThinPlateSplineKernelTransform.h"
 #include "itkTestingMacros.h"
 
 int
@@ -42,12 +43,20 @@ itkInverseDisplacementFieldImageFilterTest(int argc, char * argv[])
 
   using FilterType = itk::InverseDisplacementFieldImageFilter<DisplacementFieldType, DisplacementFieldType>;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, InverseDisplacementFieldImageFilter, ImageToImageFilter);
+
 
   itk::SimpleFilterWatcher watcher(filter);
 
+
+  auto kernelTransform = itk::ThinPlateSplineKernelTransform<double, FilterType::ImageDimension>::New();
+  filter->SetKernelTransform(kernelTransform);
+  ITK_TEST_SET_GET_VALUE(kernelTransform, filter->GetKernelTransform());
+
   // Creating an input displacement field
-  DisplacementFieldType::Pointer field = DisplacementFieldType::New();
+  auto field = DisplacementFieldType::New();
 
   DisplacementFieldType::SpacingType spacing;
   spacing.Fill(1.0);
@@ -90,51 +99,40 @@ itkInverseDisplacementFieldImageFilterTest(int argc, char * argv[])
 
   // Since the tested transform is upsampling by a factor of two, the
   // size of the inverse field should be twice the size of the input
-  // field. All other geomtry parameters are the same.
+  // field. All other geometry parameters are the same.
   filter->SetOutputSpacing(spacing);
+  ITK_TEST_SET_GET_VALUE(spacing, filter->GetOutputSpacing());
 
-  // keep the origin
+  // Keep the origin
   filter->SetOutputOrigin(origin);
+  ITK_TEST_SET_GET_VALUE(origin, filter->GetOutputOrigin());
 
-  // set the size
+  // Set the size
   DisplacementFieldType::SizeType invFieldSize;
   invFieldSize[0] = size[0] * 2;
   invFieldSize[1] = size[1] * 2;
 
   filter->SetSize(invFieldSize);
+  ITK_TEST_SET_GET_VALUE(invFieldSize, filter->GetSize());
 
   filter->SetInput(field);
 
-  filter->SetSubsamplingFactor(16);
+  unsigned int subsamplingFactor = 16;
+  filter->SetSubsamplingFactor(subsamplingFactor);
+  ITK_TEST_SET_GET_VALUE(subsamplingFactor, filter->GetSubsamplingFactor());
 
-  try
-  {
-    filter->UpdateLargestPossibleRegion();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << "Exception thrown " << std::endl;
-    std::cerr << excp << std::endl;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(filter->UpdateLargestPossibleRegion());
+
 
   // Write an image for regression testing
   using WriterType = itk::ImageFileWriter<DisplacementFieldType>;
+  auto writer = WriterType::New();
 
-  WriterType::Pointer writer = WriterType::New();
-
-  writer->SetInput(filter->GetOutput());
   writer->SetFileName(argv[1]);
+  writer->SetInput(filter->GetOutput());
 
-  try
-  {
-    writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << "Exception thrown by writer" << std::endl;
-    std::cerr << excp << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+
 
   // Now, test for loop invariant (acts as filter validation)
   // f^-1(f(p1) + p1 ) - f(p1)  = 0
@@ -150,11 +148,10 @@ itkInverseDisplacementFieldImageFilterTest(int argc, char * argv[])
     p2[0] = p1[0] + fp1[0];
     p2[1] = p1[1] + fp1[1];
 
-    DisplacementFieldType::IndexType id2;
-    filter->GetOutput()->TransformPhysicalPointToIndex(p2, id2);
+    DisplacementFieldType::IndexType id2 = filter->GetOutput()->TransformPhysicalPointToIndex(p2);
     DisplacementFieldType::PixelType fp2 = filter->GetOutput()->GetPixel(id2);
 
-    if (std::abs(fp2[0] + fp1[0]) > 0.001 || std::abs(fp2[1] + fp1[1]) > 0.001)
+    if (itk::Math::abs(fp2[0] + fp1[0]) > 0.001 || itk::Math::abs(fp2[1] + fp1[1]) > 0.001)
     {
       std::cerr << "Loop invariant not satisfied for index " << it.GetIndex() << " : f^-1(f(p1) + p1 ) + f(p1)  = 0"
                 << std::endl;
@@ -166,5 +163,7 @@ itkInverseDisplacementFieldImageFilterTest(int argc, char * argv[])
     ++it;
   }
 
+
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

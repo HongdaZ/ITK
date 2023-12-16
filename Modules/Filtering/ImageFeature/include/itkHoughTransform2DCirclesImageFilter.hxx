@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkHoughTransform2DCirclesImageFilter_hxx
 #define itkHoughTransform2DCirclesImageFilter_hxx
 
-#include "itkHoughTransform2DCirclesImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkDiscreteGaussianImageFilter.h"
 #include "itkGaussianDerivativeImageFunction.h"
@@ -179,8 +178,9 @@ HoughTransform2DCirclesImageFilter<TInputPixelType, TOutputPixelType, TRadiusPix
 }
 
 template <typename TInputPixelType, typename TOutputPixelType, typename TRadiusPixelType>
-typename HoughTransform2DCirclesImageFilter<TInputPixelType, TOutputPixelType, TRadiusPixelType>::CirclesListType &
+auto
 HoughTransform2DCirclesImageFilter<TInputPixelType, TOutputPixelType, TRadiusPixelType>::GetCircles()
+  -> CirclesListType &
 {
   // Make sure that all the required inputs exist and have a non-null value
   this->VerifyPreconditions();
@@ -253,7 +253,7 @@ HoughTransform2DCirclesImageFilter<TInputPixelType, TOutputPixelType, TRadiusPix
 
       m_CirclesList.push_back(Circle);
 
-      circles++;
+      ++circles;
       if (circles >= m_NumberOfCircles)
       {
         break;

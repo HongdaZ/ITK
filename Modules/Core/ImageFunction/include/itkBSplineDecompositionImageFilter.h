@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +38,7 @@
 namespace itk
 {
 /**
- *\class BSplineDecompositionImageFilter
+ * \class BSplineDecompositionImageFilter
  * \brief Calculates the B-Spline coefficients of an image. Spline order may be from 0 to 5.
  *
  * This class defines N-Dimension B-Spline transformation.
@@ -74,7 +74,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT BSplineDecompositionImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineDecompositionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BSplineDecompositionImageFilter);
 
   /** Standard class type aliases. */
   using Self = BSplineDecompositionImageFilter;
@@ -89,10 +89,10 @@ public:
   itkNewMacro(Self);
 
   /** Inherit input and output image types from Superclass. */
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
+  using typename Superclass::InputImageType;
+  using typename Superclass::InputImagePointer;
+  using typename Superclass::InputImageConstPointer;
+  using typename Superclass::OutputImagePointer;
 
   using CoeffType = typename itk::NumericTraits<typename TOutputImage::PixelType>::RealType;
 
@@ -110,7 +110,7 @@ public:
   void
   SetSplineOrder(unsigned int SplineOrder);
 
-  itkGetConstMacro(SplineOrder, int);
+  itkGetConstMacro(SplineOrder, unsigned int);
 
   /** Get the poles calculated for a given spline order. */
   itkGetConstMacro(SplinePoles, SplinePolesVectorType);

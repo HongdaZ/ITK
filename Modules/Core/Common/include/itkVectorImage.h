@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -74,14 +74,14 @@ namespace itk
  * \sphinx
  * \sphinxexample{Core/Common/CastVectorImageToAnotherType,Cast Vector Image To Another Type}
  * \sphinxexample{Core/Common/CreateVectorImage,Create Vector Image}
- * \sphinxexample{VectorImages/NeighborhoodIterator,Neighborhood Iterator On Vector Image}
+ * \sphinxexample{Core/Common/NeighborhoodIteratorOnVectorImage,Neighborhood Iterator On Vector Image}
  * \endsphinx
  */
 template <typename TPixel, unsigned int VImageDimension = 3>
 class ITK_TEMPLATE_EXPORT VectorImage : public ImageBase<VImageDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorImage);
+  ITK_DISALLOW_COPY_AND_MOVE(VectorImage);
 
   /** Standard class type aliases */
   using Self = VectorImage;
@@ -131,39 +131,39 @@ public:
   static constexpr unsigned int ImageDimension = VImageDimension;
 
   /** Index type alias support An index is used to access pixel values. */
-  using IndexType = typename Superclass::IndexType;
-  using IndexValueType = typename Superclass::IndexValueType;
+  using typename Superclass::IndexType;
+  using typename Superclass::IndexValueType;
 
   /** Offset type alias support An offset is used to access pixel values. */
-  using OffsetType = typename Superclass::OffsetType;
+  using typename Superclass::OffsetType;
 
   /** Size type alias support A size is used to define region bounds. */
-  using SizeType = typename Superclass::SizeType;
+  using typename Superclass::SizeType;
 
   /** Container used to store pixels in the image. */
   using PixelContainer = ImportImageContainer<SizeValueType, InternalPixelType>;
 
   /** Direction type alias support A matrix of direction cosines. */
-  using DirectionType = typename Superclass::DirectionType;
+  using typename Superclass::DirectionType;
 
   /** Region type alias support A region is used to specify a subset of an image.
    */
-  using RegionType = typename Superclass::RegionType;
+  using typename Superclass::RegionType;
 
   /** Spacing type alias support  Spacing holds the size of a pixel.  The
    * spacing is the geometric distance between image samples. */
-  using SpacingType = typename Superclass::SpacingType;
+  using typename Superclass::SpacingType;
 
   /** Origin type alias support  The origin is the geometric coordinates
    * of the index (0,0). */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** A pointer to the pixel container. */
   using PixelContainerPointer = typename PixelContainer::Pointer;
   using PixelContainerConstPointer = typename PixelContainer::ConstPointer;
 
   /** Offset type alias (relative position between indices) */
-  using OffsetValueType = typename Superclass::OffsetValueType;
+  using typename Superclass::OffsetValueType;
 
   using VectorLengthType = unsigned int;
 
@@ -183,22 +183,22 @@ public:
    * \sa Image::Rebind
    * \deprecated Use template alias RebindImageType instead
    */
-  template <typename UPixelType, unsigned int NUImageDimension = VImageDimension>
+  template <typename UPixelType, unsigned int VUImageDimension = VImageDimension>
   struct Rebind
   {
-    using Type = itk::VectorImage<UPixelType, NUImageDimension>;
+    using Type = itk::VectorImage<UPixelType, VUImageDimension>;
   };
 
   /// \cond HIDE_SPECIALIZATION_DOCUMENTATION
-  template <typename UElementType, unsigned int NUImageDimension>
-  struct Rebind<VariableLengthVector<UElementType>, NUImageDimension>
+  template <typename UElementType, unsigned int VUImageDimension>
+  struct Rebind<VariableLengthVector<UElementType>, VUImageDimension>
   {
-    using Type = itk::VectorImage<UElementType, NUImageDimension>;
+    using Type = itk::VectorImage<UElementType, VUImageDimension>;
   };
   /// \endcond
 
-  template <typename UPixelType, unsigned int NUImageDimension = VImageDimension>
-  using RebindImageType = typename Rebind<UPixelType, NUImageDimension>::Type;
+  template <typename UPixelType, unsigned int VUImageDimension = VImageDimension>
+  using RebindImageType = typename Rebind<UPixelType, VUImageDimension>::Type;
 
   /** Allocate the image memory. The size of the image must
    * already be set, e.g. by calling SetRegions(). */
@@ -225,7 +225,7 @@ public:
   {
     OffsetValueType offset = m_VectorLength * this->FastComputeOffset(index);
 
-    for (VectorLengthType i = 0; i < m_VectorLength; i++)
+    for (VectorLengthType i = 0; i < m_VectorLength; ++i)
     {
       (*m_Buffer)[offset + i] = value[i];
     }
@@ -325,7 +325,7 @@ public:
    * The implementation here refers to the superclass' implementation
    * and then copies over the pixel container. */
   virtual void
-  Graft(const Self * data);
+  Graft(const Self * image);
 
   /** Return the Pixel Accessor object */
   AccessorType

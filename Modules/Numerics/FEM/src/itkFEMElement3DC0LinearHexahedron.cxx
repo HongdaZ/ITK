@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,16 +17,17 @@
  *=========================================================================*/
 
 #include "itkFEMElement3DC0LinearHexahedron.h"
+#include "itkMath.h"
 
 namespace itk
 {
 namespace fem
 {
 void
-Element3DC0LinearHexahedron ::GetIntegrationPointAndWeight(unsigned int i,
-                                                           VectorType & pt,
-                                                           Float &      w,
-                                                           unsigned int order) const
+Element3DC0LinearHexahedron::GetIntegrationPointAndWeight(unsigned int i,
+                                                          VectorType & pt,
+                                                          Float &      w,
+                                                          unsigned int order) const
 {
   if (order == 0 || order > 9)
   {
@@ -43,7 +44,7 @@ Element3DC0LinearHexahedron ::GetIntegrationPointAndWeight(unsigned int i,
 }
 
 unsigned int
-Element3DC0LinearHexahedron ::GetNumberOfIntegrationPoints(unsigned int order) const
+Element3DC0LinearHexahedron::GetNumberOfIntegrationPoints(unsigned int order) const
 {
   // default integration order=2
   if (order == 0 || order > 9)
@@ -55,7 +56,7 @@ Element3DC0LinearHexahedron ::GetNumberOfIntegrationPoints(unsigned int order) c
 }
 
 Element3DC0LinearHexahedron::VectorType
-Element3DC0LinearHexahedron ::ShapeFunctions(const VectorType & pt) const
+Element3DC0LinearHexahedron::ShapeFunctions(const VectorType & pt) const
 {
   /* Linear hexahedral element has eight shape functions  */
   VectorType shapeF(8);
@@ -95,7 +96,7 @@ Element3DC0LinearHexahedron ::ShapeFunctions(const VectorType & pt) const
 }
 
 void
-Element3DC0LinearHexahedron ::ShapeFunctionDerivatives(const VectorType & pt, MatrixType & shapeD) const
+Element3DC0LinearHexahedron::ShapeFunctionDerivatives(const VectorType & pt, MatrixType & shapeD) const
 {
   /** functions at directions r and s.  */
   shapeD.set_size(3, 8);
@@ -174,7 +175,7 @@ Element3DC0LinearHexahedron ::ShapeFunctionDerivatives(const VectorType & pt, Ma
 }
 
 bool
-Element3DC0LinearHexahedron ::GetLocalFromGlobalCoordinates(const VectorType & globalPt, VectorType & localPt) const
+Element3DC0LinearHexahedron::GetLocalFromGlobalCoordinates(const VectorType & globalPt, VectorType & localPt) const
 {
   int   MAX_ITERATIONS = 10;
   Float CONVERGED = 1.0e-03;
@@ -192,20 +193,20 @@ Element3DC0LinearHexahedron ::GetLocalFromGlobalCoordinates(const VectorType & g
   //  set initial position for Newton's method
   localPt[0] = localPt[1] = localPt[2] = params[0] = params[1] = params[2] = 0.5;
   //  enter iteration loop
-  for (iteration = converged = 0; !converged && (iteration < MAX_ITERATIONS); iteration++)
+  for (iteration = converged = 0; !converged && (iteration < MAX_ITERATIONS); ++iteration)
   {
     //  calculate element interpolation functions and derivatives
     this->InterpolationFunctions(localPt, weights);
     this->InterpolationDerivs(localPt, derivs);
     //  calculate newton functions
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < 3; ++i)
     {
       fcol[i] = rcol[i] = scol[i] = tcol[i] = 0.0;
     }
-    for (i = 0; i < 8; i++)
+    for (i = 0; i < 8; ++i)
     {
       pt = this->m_node[i]->GetCoordinates();
-      for (j = 0; j < 3; j++)
+      for (j = 0; j < 3; ++j)
       {
         fcol[j] += pt[j] * weights[i];
         rcol[j] += pt[j] * derivs[i];
@@ -213,14 +214,14 @@ Element3DC0LinearHexahedron ::GetLocalFromGlobalCoordinates(const VectorType & g
         tcol[j] += pt[j] * derivs[i + 16];
       }
     }
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < 3; ++i)
     {
       fcol[i] -= globalPt[i];
     }
 
     //  compute determinants and generate improvements
     d = this->Determinant3x3(rcol, scol, tcol);
-    if (fabs(d) < 1.e-20)
+    if (itk::Math::abs(d) < 1.e-20)
     {
       return false;
     }
@@ -230,14 +231,16 @@ Element3DC0LinearHexahedron ::GetLocalFromGlobalCoordinates(const VectorType & g
     localPt[2] = params[2] - this->Determinant3x3(rcol, scol, fcol) / d;
 
     //  check for convergence
-    if (((fabs(localPt[0] - params[0])) < CONVERGED) && ((fabs(localPt[1] - params[1])) < CONVERGED) &&
-        ((fabs(localPt[2] - params[2])) < CONVERGED))
+    if (((itk::Math::abs(localPt[0] - params[0])) < CONVERGED) &&
+        ((itk::Math::abs(localPt[1] - params[1])) < CONVERGED) &&
+        ((itk::Math::abs(localPt[2] - params[2])) < CONVERGED))
     {
       converged = 1;
     }
 
     // Test for bad divergence (S.Hirschberg 11.12.2001)
-    else if ((fabs(localPt[0]) > DIVERGED) || (fabs(localPt[1]) > DIVERGED) || (fabs(localPt[2]) > DIVERGED))
+    else if ((itk::Math::abs(localPt[0]) > DIVERGED) || (itk::Math::abs(localPt[1]) > DIVERGED) ||
+             (itk::Math::abs(localPt[2]) > DIVERGED))
     {
       return false;
     }
@@ -271,7 +274,7 @@ Element3DC0LinearHexahedron ::GetLocalFromGlobalCoordinates(const VectorType & g
   else
   {
     VectorType pc(3);
-    for (i = 0; i < 3; i++) // only approximate, not really true for warped hexa
+    for (i = 0; i < 3; ++i) // only approximate, not really true for warped hexa
     {
       if (localPt[i] < 0.0)
       {

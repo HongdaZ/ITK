@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSampleToHistogramFilter_hxx
 #define itkSampleToHistogramFilter_hxx
 
-#include "itkSampleToHistogramFilter.h"
 #include "itkStatisticsAlgorithm.h"
 
 namespace itk
@@ -47,8 +46,8 @@ SampleToHistogramFilter<TSample, THistogram>::SetInput(const SampleType * sample
 }
 
 template <typename TSample, typename THistogram>
-const typename SampleToHistogramFilter<TSample, THistogram>::SampleType *
-SampleToHistogramFilter<TSample, THistogram>::GetInput() const
+auto
+SampleToHistogramFilter<TSample, THistogram>::GetInput() const -> const SampleType *
 {
   const auto * input = static_cast<const SampleType *>(this->ProcessObject::GetInput(0));
 
@@ -56,8 +55,8 @@ SampleToHistogramFilter<TSample, THistogram>::GetInput() const
 }
 
 template <typename TSample, typename THistogram>
-const typename SampleToHistogramFilter<TSample, THistogram>::HistogramType *
-SampleToHistogramFilter<TSample, THistogram>::GetOutput() const
+auto
+SampleToHistogramFilter<TSample, THistogram>::GetOutput() const -> const HistogramType *
 {
   const auto * output = static_cast<const HistogramType *>(this->ProcessObject::GetOutput(0));
 
@@ -167,7 +166,7 @@ SampleToHistogramFilter<TSample, THistogram>::GenerateData()
     {
       Algorithm::FindSampleBound(inputSample, inputSample->Begin(), inputSample->End(), lower, upper);
 
-      for (unsigned int i = 0; i < measurementVectorSize; i++)
+      for (unsigned int i = 0; i < measurementVectorSize; ++i)
       {
         if (!NumericTraits<HistogramMeasurementType>::is_integer)
         {
@@ -223,7 +222,7 @@ SampleToHistogramFilter<TSample, THistogram>::GenerateData()
     }
     else
     {
-      for (unsigned int i = 0; i < measurementVectorSize; i++)
+      for (unsigned int i = 0; i < measurementVectorSize; ++i)
       {
         h_lower[i] = static_cast<HistogramMeasurementType>(lower[i]);
         h_upper[i] = static_cast<HistogramMeasurementType>(upper[i]);
@@ -263,7 +262,7 @@ SampleToHistogramFilter<TSample, THistogram>::GenerateData()
   while (iter != last)
   {
     lvector = iter.GetMeasurementVector();
-    for (i = 0; i < inputSample->GetMeasurementVectorSize(); i++)
+    for (i = 0; i < inputSample->GetMeasurementVectorSize(); ++i)
     {
       hvector[i] = SafeAssign(lvector[i]);
     }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -67,14 +67,18 @@ itkRelabelComponentImageFilterTest(int argc, char * argv[])
   RealType LowerBound = 51.0;
   RealType UpperBound = 252.0;
 
-  ReaderType::Pointer               reader = ReaderType::New();
-  WriterType::Pointer               writer = WriterType::New();
-  ChangeFilterType::Pointer         change = ChangeFilterType::New();
-  ThresholdFilterType::Pointer      threshold = ThresholdFilterType::New();
-  ConnectedComponentType::Pointer   connected = ConnectedComponentType::New();
-  RelabelComponentType::Pointer     relabel = RelabelComponentType::New();
-  FinalThresholdFilterType::Pointer finalThreshold = FinalThresholdFilterType::New();
-  StatisticsFilterType::Pointer     statistics = StatisticsFilterType::New();
+  auto reader = ReaderType::New();
+  auto writer = WriterType::New();
+  auto change = ChangeFilterType::New();
+  auto threshold = ThresholdFilterType::New();
+  auto connected = ConnectedComponentType::New();
+  auto relabel = RelabelComponentType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(relabel, RelabelComponentImageFilter, InPlaceImageFilter);
+
+
+  auto finalThreshold = FinalThresholdFilterType::New();
+  auto statistics = StatisticsFilterType::New();
 
   itk::SimpleFilterWatcher watcher(relabel);
   itk::SimpleFilterWatcher statswatcher(statistics);
@@ -106,12 +110,22 @@ itkRelabelComponentImageFilterTest(int argc, char * argv[])
   // numbers increase as the size of the objects decrease.
   connected->SetInput(threshold->GetOutput());
   relabel->SetInput(connected->GetOutput());
-  relabel->SetNumberOfObjectsToPrint(5);
+
+  itk::SizeValueType numberOfObjectsToPrint = 5;
+  relabel->SetNumberOfObjectsToPrint(numberOfObjectsToPrint);
+  ITK_TEST_SET_GET_VALUE(numberOfObjectsToPrint, relabel->GetNumberOfObjectsToPrint());
+
+  typename RelabelComponentType::ObjectSizeType minimumObjectSize = 0;
+  relabel->SetMinimumObjectSize(minimumObjectSize);
+  ITK_TEST_SET_GET_VALUE(minimumObjectSize, relabel->GetMinimumObjectSize());
+
+  bool sortByObjectSize = true;
+  ITK_TEST_SET_GET_BOOLEAN(relabel, SortByObjectSize, sortByObjectSize);
+
   std::cout << "Modified time of relabel's output = " << relabel->GetOutput()->GetMTime() << std::endl;
   relabel->Update();
   std::cout << "NumberOfObjects: " << relabel->GetNumberOfObjects()
-            << " OriginalNumberOfObjects: " << relabel->GetOriginalNumberOfObjects()
-            << " MinimumObjectSize: " << relabel->GetMinimumObjectSize() << std::endl;
+            << " OriginalNumberOfObjects: " << relabel->GetOriginalNumberOfObjects() << std::endl;
 
   // pull out the largest object
   finalThreshold->SetInput(relabel->GetOutput());
@@ -186,7 +200,7 @@ itkRelabelComponentImageFilterTest(int argc, char * argv[])
       {
         std::cout << "\tHistogram Frequencies:" << std::endl;
         histogram = statistics->GetHistogram(ii);
-        for (int jj = 0; jj <= NumBins; jj++)
+        for (int jj = 0; jj <= NumBins; ++jj)
         {
           std::cout << histogram->GetFrequency(jj) << ", ";
         }
@@ -210,7 +224,7 @@ itkRelabelComponentImageFilterTest(int argc, char * argv[])
       {
         std::cout << "\tEvery tenth Histogram Frequencies:" << std::endl;
         histogram = statistics->GetHistogram(ii);
-        for (int jj = 0; jj <= NumBins; jj++)
+        for (int jj = 0; jj <= NumBins; ++jj)
         {
           std::cout << histogram->GetFrequency(jj) << ", ";
         }

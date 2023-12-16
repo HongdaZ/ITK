@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,7 +46,7 @@ namespace itk
  * \author Marius Staring, Leiden University Medical Center, The Netherlands.
  *
  * This class was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/1387
+ * https://www.insight-journal.org/browse/publication/240
  *
  * \ingroup GeometricTransform
  * \ingroup ITKDisplacementField
@@ -55,7 +55,7 @@ template <typename TOutputImage, typename TParametersValueType = double>
 class ITK_TEMPLATE_EXPORT TransformToDisplacementFieldFilter : public ImageSource<TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TransformToDisplacementFieldFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(TransformToDisplacementFieldFilter);
 
   /** Standard class type aliases. */
   using Self = TransformToDisplacementFieldFilter;
@@ -99,7 +99,7 @@ public:
    * the input-to-output transform that you might naively expect. */
   using Superclass::SetInput;
   virtual void
-  SetInput(const TransformInputType * transform);
+  SetInput(const TransformInputType * input);
   const TransformInputType *
   GetInput() const;
   itkSetGetDecoratedObjectInputMacro(Transform, TransformType);
@@ -116,7 +116,7 @@ public:
   /** Set the output image spacing. */
   itkSetMacro(OutputSpacing, SpacingType);
   virtual void
-  SetOutputSpacing(const SpacePrecisionType * values);
+  SetOutputSpacing(const SpacePrecisionType * spacing);
 
   /** Get the output image spacing. */
   itkGetConstReferenceMacro(OutputSpacing, SpacingType);
@@ -124,7 +124,7 @@ public:
   /** Set the output image origin. */
   itkSetMacro(OutputOrigin, OriginType);
   virtual void
-  SetOutputOrigin(const SpacePrecisionType * values);
+  SetOutputOrigin(const SpacePrecisionType * origin);
 
   /** Get the output image origin. */
   itkGetConstReferenceMacro(OutputOrigin, OriginType);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@ ComputeAxisAlignedBoundingBoxRegionInImageGridSpace(const TImage & image)
 }
 
 
-template <typename TPixel, unsigned VImageDimension>
+template <typename TPixel, unsigned int VImageDimension>
 void
 Expect_AxisAlignedBoundingBoxRegion_is_empty_when_all_pixel_values_are_zero(
   const itk::ImageRegion<VImageDimension> & imageRegion)
@@ -58,7 +58,7 @@ Expect_AxisAlignedBoundingBoxRegion_is_empty_when_all_pixel_values_are_zero(
 }
 
 
-template <typename TPixel, unsigned VImageDimension>
+template <typename TPixel, unsigned int VImageDimension>
 void
 Expect_AxisAlignedBoundingBoxRegion_equals_image_region_when_all_pixel_values_are_non_zero(
   const itk::ImageRegion<VImageDimension> & imageRegion)
@@ -79,7 +79,7 @@ Expect_AxisAlignedBoundingBoxRegion_equals_image_region_when_all_pixel_values_ar
 }
 
 
-template <typename TPixel, unsigned VImageDimension>
+template <typename TPixel, unsigned int VImageDimension>
 void
 Expect_AxisAlignedBoundingBoxRegion_equals_region_of_single_pixel_when_it_is_the_only_non_zero_pixel(
   const itk::ImageRegion<VImageDimension> & imageRegion)
@@ -91,7 +91,7 @@ Expect_AxisAlignedBoundingBoxRegion_equals_region_of_single_pixel_when_it_is_the
   // Initialize all pixels to zero.
   image->Allocate(true);
 
-  const itk::Experimental::ImageRegionIndexRange<VImageDimension> indexRange{ imageRegion };
+  const itk::ImageRegionIndexRange<VImageDimension> indexRange{ imageRegion };
 
   // Expected size: the "region size" of a single pixel (1x1, in 2D, 1x1x1 in 3D).
   const itk::Size<VImageDimension> expectedSize = [] {
@@ -112,7 +112,7 @@ Expect_AxisAlignedBoundingBoxRegion_equals_region_of_single_pixel_when_it_is_the
 }
 
 
-template <typename TPixel, unsigned VImageDimension>
+template <typename TPixel, unsigned int VImageDimension>
 void
 Expect_AxisAlignedBoundingBoxRegion_equals_image_region_when_only_a_single_pixel_has_value_zero(
   const itk::ImageRegion<VImageDimension> & imageRegion)
@@ -125,7 +125,7 @@ Expect_AxisAlignedBoundingBoxRegion_equals_image_region_when_only_a_single_pixel
   // Set all pixels to non-zero.
   image->FillBuffer(1);
 
-  const itk::Experimental::ImageBufferRange<ImageType> imageRange{ *image };
+  const itk::ImageBufferRange<ImageType> imageRange{ *image };
 
   for (auto && pixel : imageRange)
   {
@@ -195,7 +195,7 @@ TEST(ImageMaskSpatialObject, AxisAlignedBoundingBoxRegionIsRegionOfSinglePixelWh
 
 
 // Tests that the AABB region is equal to the image region when only a single pixel has value 0.
-// (This condition should hold for N-dimensional image regions, with N >= 2, and region size >= 2^N.)
+// (This condition should hold for n-dimensional image regions, with N >= 2, and region size >= 2^N.)
 TEST(ImageMaskSpatialObject, AxisAlignedBoundingBoxRegionIsImageRegionWhenOnlyOnePixelIsZero)
 {
   // Test 2D images:
@@ -233,9 +233,9 @@ TEST(ImageMaskSpatialObject, IsInsideSingleZeroPixel)
   spatialObject->SetImage(image);
   spatialObject->Update();
 
-  EXPECT_FALSE(spatialObject->IsInside(PointType{ indexValue }));
-  EXPECT_FALSE(spatialObject->IsInside(PointType{ indexValue - 0.4999 }));
-  EXPECT_FALSE(spatialObject->IsInside(PointType{ indexValue + 0.4999 }));
+  EXPECT_FALSE(spatialObject->IsInside(itk::MakeFilled<PointType>(indexValue)));
+  EXPECT_FALSE(spatialObject->IsInside(itk::MakeFilled<PointType>(indexValue - 0.4999)));
+  EXPECT_FALSE(spatialObject->IsInside(itk::MakeFilled<PointType>(indexValue + 0.4999)));
 }
 
 
@@ -259,9 +259,9 @@ TEST(ImageMaskSpatialObject, IsInsideSingleNonZeroPixel)
   spatialObject->SetImage(image);
   spatialObject->Update();
 
-  EXPECT_TRUE(spatialObject->IsInside(PointType{ indexValue }));
-  EXPECT_TRUE(spatialObject->IsInside(PointType{ indexValue - 0.4999 }));
-  EXPECT_TRUE(spatialObject->IsInside(PointType{ indexValue + 0.4999 }));
+  EXPECT_TRUE(spatialObject->IsInside(itk::MakeFilled<PointType>(indexValue)));
+  EXPECT_TRUE(spatialObject->IsInside(itk::MakeFilled<PointType>(indexValue - 0.4999)));
+  EXPECT_TRUE(spatialObject->IsInside(itk::MakeFilled<PointType>(indexValue + 0.4999)));
 }
 
 
@@ -288,7 +288,7 @@ TEST(ImageMaskSpatialObject, IsInsideIndependentOfDistantPixels)
   spatialObject->Update();
 
   // Point of interest: a point close to the non-zero pixel.
-  const PointType pointOfInterest{ indexValue - 0.25 };
+  const auto pointOfInterest = itk::MakeFilled<PointType>(indexValue - 0.25);
 
   const bool isInsideBefore = spatialObject->IsInside(pointOfInterest);
 

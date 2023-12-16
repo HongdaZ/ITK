@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -136,19 +136,19 @@ namespace itk
  *  This code was taken from the Insight Journal paper:
  *
  *      "Cell Tracking using Coupled Active Surfaces for Nuclei and Membranes"
- *      http://www.insight-journal.org/browse/publication/642
+ *      https://www.insight-journal.org/browse/publication/642
  *      https://hdl.handle.net/10380/3055
  *
  *  That is based on the papers:
  *
  *      "Level Set Segmentation: Active Contours without edge"
- *      http://www.insight-journal.org/browse/publication/322
+ *      https://www.insight-journal.org/browse/publication/322
  *      https://hdl.handle.net/1926/1532
  *
  *      and
  *
  *      "Level set segmentation using coupled active surfaces"
- *      http://www.insight-journal.org/browse/publication/323
+ *      https://www.insight-journal.org/browse/publication/323
  *      https://hdl.handle.net/1926/1533
  *
  *
@@ -165,7 +165,7 @@ template <typename TInputImage,
 class ITK_TEMPLATE_EXPORT MultiphaseFiniteDifferenceImageFilter : public InPlaceImageFilter<TFeatureImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiphaseFiniteDifferenceImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MultiphaseFiniteDifferenceImageFilter);
 
   /** Standard class type aliases. */
   using Self = MultiphaseFiniteDifferenceImageFilter;
@@ -355,7 +355,7 @@ public:
     RadiusType radius;
     radius.Fill(1);
 
-    for (unsigned int i = 0; i < this->m_FunctionCount; i++)
+    for (unsigned int i = 0; i < this->m_FunctionCount; ++i)
     {
       this->m_DifferenceFunctions[i] = FiniteDifferenceFunctionType::New();
       this->m_DifferenceFunctions[i]->Initialize(radius);
@@ -500,7 +500,7 @@ protected:
   virtual void
   InitializeIteration()
   {
-    for (IdCellType i = 0; i < this->m_FunctionCount; i++)
+    for (IdCellType i = 0; i < this->m_FunctionCount; ++i)
     {
       this->m_DifferenceFunctions[i]->InitializeIteration();
     }
@@ -515,11 +515,12 @@ protected:
    * \param timeStepList The set of time changes compiled from all the threaded
    *        calls to ThreadedGenerateData.
    *
-   * \param valid The set of flags indicating which of "list" elements are valid
+   * \param valid The set of flags indicating which of "timeStepList" elements are
+   *  valid. Although they are uint8_t, they should be treated like bools.
    *
    * The default is to return the minimum value in the list. */
   inline TimeStepType
-  ResolveTimeStep(const TimeStepVectorType & timeStepList, const std::vector<bool> & valid);
+  ResolveTimeStep(const TimeStepVectorType & timeStepList, const std::vector<uint8_t> & valid);
 
   /** This method is called after the solution has been generated to allow
    * subclasses to apply some further processing to the output. */

@@ -17,7 +17,6 @@
 #ifndef itkVTKTetrahedralMeshReader_hxx
 #define itkVTKTetrahedralMeshReader_hxx
 
-#include "itkVTKTetrahedralMeshReader.h"
 #include <fstream>
 #include <cstdio>
 #include <cstring>
@@ -34,7 +33,7 @@ VTKTetrahedralMeshReader<TOutputMesh>::VTKTetrahedralMeshReader()
   //
   // Create the output
   //
-  typename TOutputMesh::Pointer output = TOutputMesh::New();
+  auto output = TOutputMesh::New();
   this->ProcessObject::SetNumberOfRequiredOutputs(1);
   this->ProcessObject::SetNthOutput(0, output.GetPointer());
 }
@@ -153,7 +152,7 @@ VTKTetrahedralMeshReader<TOutputMesh>::GenerateData()
 
   PointType point;
 
-  for (PointIdentifier pointId = 0; pointId < numberOfPoints; pointId++)
+  for (PointIdentifier pointId = 0; pointId < numberOfPoints; ++pointId)
   {
     inputFile >> point;
     if (inputFile.eof())
@@ -228,7 +227,7 @@ VTKTetrahedralMeshReader<TOutputMesh>::GenerateData()
   unsigned long numberOfCellPoints;
   long          ids[4];
 
-  for (CellIdentifier cellId = 0; cellId < numberOfCells; cellId++)
+  for (CellIdentifier cellId = 0; cellId < numberOfCells; ++cellId)
   {
     std::getline(inputFile, line, '\n');
     if (inputFile.eof())
@@ -280,7 +279,7 @@ VTKTetrahedralMeshReader<TOutputMesh>::GenerateData()
     CellAutoPointer cell;
 
     auto * tetrahedronCell = new TetrahedronCellType;
-    for (PointIdentifier pointId = 0; pointId < 4; pointId++)
+    for (PointIdentifier pointId = 0; pointId < 4; ++pointId)
     {
       tetrahedronCell->SetPointId(pointId, ids[pointId]);
     }
@@ -328,7 +327,7 @@ VTKTetrahedralMeshReader<TOutputMesh>::GenerateData()
   }
 
 
-  for (CellIdentifier cellId = 0; cellId < numberOfCellTypes; cellId++)
+  for (CellIdentifier cellId = 0; cellId < numberOfCellTypes; ++cellId)
   {
     std::getline(inputFile, line, '\n');
     if (inputFile.eof())
@@ -385,7 +384,7 @@ VTKTetrahedralMeshReader<TOutputMesh>::GenerateData()
     itkDebugMacro("POINT_DATA line" << line);
 
     // Skip two lines
-    for (int j = 0; j < 2; j++)
+    for (int j = 0; j < 2; ++j)
     {
       if (!inputFile.eof())
       {
@@ -401,7 +400,7 @@ VTKTetrahedralMeshReader<TOutputMesh>::GenerateData()
 
     double pointData;
 
-    for (PointIdentifier pid = 0; pid < numberOfPoints; pid++)
+    for (PointIdentifier pid = 0; pid < numberOfPoints; ++pid)
     {
       if (inputFile.eof())
       {

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,11 @@
 #ifndef itkIsSame_h
 #define itkIsSame_h
 
-#include "itkMetaProgrammingLibrary.h"
+#include "itkMacro.h"
+
+#if !defined(ITK_LEGACY_REMOVE)
+
+#  include "itkMetaProgrammingLibrary.h"
 
 namespace itk
 {
@@ -49,5 +53,9 @@ using mpl::IsSame;
 /// \endcond
 
 } // end namespace itk
+
+#else // ITK_LEGACY_REMOVE
+#  error Use C++ 11 std::is_same directly
+#endif
 
 #endif // itkIsSame_h

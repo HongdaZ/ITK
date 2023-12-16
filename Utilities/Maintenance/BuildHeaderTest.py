@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#==========================================================================
+# ==========================================================================
 #
 #   Copyright NumFOCUS
 #
@@ -8,7 +8,7 @@
 #   you may not use this file except in compliance with the License.
 #   You may obtain a copy of the License at
 #
-#          http://www.apache.org/licenses/LICENSE-2.0.txt
+#          https://www.apache.org/licenses/LICENSE-2.0.txt
 #
 #   Unless required by applicable law or agreed to in writing, software
 #   distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,13 +16,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-#==========================================================================*/
+# ==========================================================================*/
 
-from __future__ import print_function
 
 usage = """usage: BuildHeaderTest.py <module_name> <module_source_path> <module_binary_path> <maximum_number_of_headers>
 
-This script generates a a source file designed to check the headers in each
+This script generates a source file designed to check the headers in each
 module.  The generated HeaderTest can be found in the module binary 'test'
 directory in a file itk<module_name>HeaderTest#.cxx.  This contains a null
 main(), but includes all the classes in the module.  The primary purpose of this
@@ -30,24 +29,32 @@ test is to make sure there are not missing module dependencies.  It also tests
 for syntax and missing #include's.
 """
 
-# Headers to not test because of dependecy issues, etc.
-BANNED_HEADERS = set(('itkDynamicLoader.h', # This cannot be included when ITK_DYNAMIC_LOADING is OFF
-    'itkExceptionObject.h', # There is a pre-processor check so people use itkMacro.h instead.
-    'itkFFTWForwardFFTImageFilter.h',
-    'itkFFTWInverseFFTImageFilter.h',
-    'itkFFTWRealToHalfHermitianForwardFFTImageFilter.h',
-    'itkFFTWHalfHermitianToRealInverseFFTImageFilter.h',
-    'itkFFTWComplexToComplexFFTImageFilter.h',
-    'itkFFTWCommon.h',
-    'itkPyBuffer.h', # needs Python.h, etc
-    'itkPyVnl.h', # needs Python.h, etc
-    'itkVanHerkGilWermanErodeDilateImageFilter.h', # circular include's
-    'itkBSplineDeformableTransform.h',   # deprecated
-    'vtkCaptureScreen.h',  # these includes require VTK
-    'itkMultiThreader.h', # Compatibility file, it should not be used
-    'itkViewImage.h', # Depends on VTK_RENDERING_BACKEND
-    'QuickView.h', # Depends on VTK_RENDERING_BACKEND
-    'itkBSplineDeformableTransformInitializer.h'))
+# Headers to not test because of dependency issues, etc.
+BANNED_HEADERS = {
+    "itkDynamicLoader.h",  # This cannot be included when ITK_DYNAMIC_LOADING is OFF
+    "itkExceptionObject.h",  # There is a pre-processor check so people use itkMacro.h instead.
+    "itkFFTWForwardFFTImageFilter.h",
+    "itkFFTWInverseFFTImageFilter.h",
+    "itkFFTWRealToHalfHermitianForwardFFTImageFilter.h",
+    "itkFFTWHalfHermitianToRealInverseFFTImageFilter.h",
+    "itkFFTWComplexToComplexFFTImageFilter.h",
+    "itkFFTWCommon.h",
+    "itkPyBuffer.h",  # needs Python.h, etc
+    "itkPyVnl.h",  # needs Python.h, etc
+    "itkPyVectorContainer.h",  # needs Python.h, etc
+    "itkVanHerkGilWermanErodeDilateImageFilter.h",  # circular include's
+    "itkBSplineDeformableTransform.h",  # deprecated
+    "vtkCaptureScreen.h",  # these includes require VTK
+    "itkMultiThreader.h",  # Compatibility file, it should not be used
+	"itkOrientationAdapterBase.h",  # Compatibility file, it should not be used
+    "itkEnableIf.h",  # Compatibility file, it should not be used
+    "itkIsSame.h",  # Compatibility file, it should not be used
+    "itkIsBaseOf.h",  # Compatibility file, it should not be used
+    "itkIsConvertible.h",  # Compatibility file, it should not be used
+    "itkViewImage.h",  # Depends on VTK_RENDERING_BACKEND
+    "QuickView.h",  # Depends on VTK_RENDERING_BACKEND
+    "itkBSplineDeformableTransformInitializer.h",
+}
 
 HEADER = """/*=========================================================================
  *
@@ -57,7 +64,7 @@ HEADER = """/*==================================================================
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -91,26 +98,28 @@ if len(sys.argv) < 6:
     print(usage)
     sys.exit(1)
 
+
 def main():
-    module_name        = sys.argv[1]
+    module_name = sys.argv[1]
     module_source_path = sys.argv[2]
     module_binary_path = sys.argv[3]
     maximum_number_of_headers = int(sys.argv[4])
-    test_num           = int(sys.argv[5])
+    test_num = int(sys.argv[5])
 
     # Get all the header files.
-    include_dir = os.path.join(module_source_path, 'include')
-    h_files = glob.glob(os.path.join(include_dir, '*.h'))
+    include_dir = os.path.join(module_source_path, "include")
+    h_files = glob.glob(os.path.join(include_dir, "*.h"))
     h_files = [os.path.basename(h) for h in h_files]
 
     added_header_idx = maximum_number_of_headers * (test_num - 1)
-    test_source_path = os.path.join(module_binary_path, 'test')
+    test_source_path = os.path.join(module_binary_path, "test")
     if not os.path.exists(test_source_path):
         os.makedirs(test_source_path)
-    test_source_file = os.path.join(test_source_path,
-        str(module_name) + 'HeaderTest' + str(test_num) + '.cxx')
+    test_source_file = os.path.join(
+        test_source_path, str(module_name) + "HeaderTest" + str(test_num) + ".cxx"
+    )
 
-    test_src = open(test_source_file, 'w')
+    test_src = open(test_source_file, "w")
     try:
         test_src.write(HEADER)
 
@@ -119,14 +128,11 @@ def main():
         else:
             max_idx = added_header_idx + maximum_number_of_headers
         for i in range(added_header_idx, max_idx):
-            # Use the .hxx if possible.
-            hxx_file = h_files[i][:-1] + 'hxx'
             # Files that include VTK headers need to link to VTK.
-            if h_files[i] in BANNED_HEADERS or h_files[i].lower().find('vtk') != -1:
-                to_include = '// #include "' + h_files[i] + '" // Banned in BuildHeaderTest.py\n'
-            elif os.path.exists(os.path.join(module_source_path, 'include',
-                hxx_file)):
-                to_include = '#include "' + hxx_file + '"\n'
+            if h_files[i] in BANNED_HEADERS or h_files[i].lower().find("vtk") != -1:
+                to_include = (
+                    '// #include "' + h_files[i] + '" // Banned in BuildHeaderTest.py\n'
+                )
             else:
                 to_include = '#include "' + h_files[i] + '"\n'
 
@@ -137,6 +143,7 @@ def main():
         test_src.close()
 
     return 0
+
 
 if __name__ == "__main__":
     ret = main()

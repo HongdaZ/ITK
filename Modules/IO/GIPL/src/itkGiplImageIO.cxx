@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  *=========================================================================*/
 #include "itkGiplImageIO.h"
 #include "itkByteSwapper.h"
+#include "itkMakeUniqueForOverwrite.h"
 #include <iostream>
 #include "itk_zlib.h"
 
@@ -71,7 +72,6 @@ public:
 #define GIPL_MAGIC_NUMBER 0xefffe9b0
 #define GIPL_MAGIC_NUMBER2 0x2ae389b8
 
-/** Constructor */
 GiplImageIO::GiplImageIO()
 {
   m_Internal = new GiplImageIOInternals;
@@ -80,7 +80,6 @@ GiplImageIO::GiplImageIO()
   m_IsCompressed = false;
 }
 
-/** Destructor */
 GiplImageIO::~GiplImageIO()
 {
   if (m_IsCompressed)
@@ -118,7 +117,7 @@ GiplImageIO::CanReadFile(const char * filename)
     {
       this->OpenFileForReading(inputStream, filename);
     }
-    catch (ExceptionObject &)
+    catch (const ExceptionObject &)
     {
       return false;
     }
@@ -204,7 +203,7 @@ GiplImageIO::Read(void * buffer)
   const uint32_t dimensions = this->GetNumberOfDimensions();
   uint32_t       numberOfPixels = 1;
 
-  for (unsigned int dim = 0; dim < dimensions; dim++)
+  for (unsigned int dim = 0; dim < dimensions; ++dim)
   {
     numberOfPixels *= static_cast<uint32_t>(m_Dimensions[dim]);
   }
@@ -253,10 +252,6 @@ GiplImageIO::Read(void * buffer)
   SwapBytesIfNecessary(buffer, numberOfPixels);
 }
 
-/**
- *  Read Information about the Gipl file
- *  and put the cursor of the stream just before the first data pixel
- */
 void
 GiplImageIO::ReadImageInformation()
 {
@@ -282,12 +277,12 @@ GiplImageIO::ReadImageInformation()
   unsigned short dims[4];
 
   unsigned int numberofdimension = 0;
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < 4; ++i)
   {
     dims[i] = 0;
   }
 
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < 4; ++i)
   {
     if (m_IsCompressed)
     {
@@ -310,18 +305,18 @@ GiplImageIO::ReadImageInformation()
     {
       if (i < 3)
       {
-        numberofdimension++;
+        ++numberofdimension;
       }
       else if (dims[i] > 1)
       {
-        numberofdimension++;
+        ++numberofdimension;
       }
     }
   }
 
   this->SetNumberOfDimensions(numberofdimension);
 
-  for (i = 0; i < numberofdimension; i++)
+  for (i = 0; i < numberofdimension; ++i)
   {
     m_Dimensions[i] = dims[i];
   }
@@ -375,7 +370,7 @@ GiplImageIO::ReadImageInformation()
   }
 
   float pixdim[4]; /*   10   16  X,Y,Z,T pixel dimensions mm */
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < 4; ++i)
   {
     if (m_IsCompressed)
     {
@@ -401,7 +396,7 @@ GiplImageIO::ReadImageInformation()
   }
 
   char line1[80]; /*   26   80  Patient / Text field        */
-  for (i = 0; i < 80; i++)
+  for (i = 0; i < 80; ++i)
   {
     if (m_IsCompressed)
     {
@@ -414,7 +409,7 @@ GiplImageIO::ReadImageInformation()
   }
 
   float matrix[20]; /*  106   80                              */
-  for (i = 0; i < 20; i++)
+  for (i = 0; i < 20; ++i)
   {
     if (m_IsCompressed)
     {
@@ -494,7 +489,7 @@ GiplImageIO::ReadImageInformation()
   }
 
   double origin[4]; /*  204   32  X,Y,Z,T offset              */
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < 4; ++i)
   {
     if (m_IsCompressed)
     {
@@ -617,7 +612,7 @@ GiplImageIO::ReadImageInformation()
 }
 
 void
-GiplImageIO ::SwapBytesIfNecessary(void * buffer, SizeValueType numberOfPixels)
+GiplImageIO::SwapBytesIfNecessary(void * buffer, SizeValueType numberOfPixels)
 {
   switch (m_ComponentType)
   {
@@ -701,14 +696,14 @@ GiplImageIO ::SwapBytesIfNecessary(void * buffer, SizeValueType numberOfPixels)
 }
 
 void
-GiplImageIO ::WriteImageInformation()
+GiplImageIO::WriteImageInformation()
 {
   // not possible to write a Gipl file
 }
 
 /** The write function is not implemented */
 void
-GiplImageIO ::Write(const void * buffer)
+GiplImageIO::Write(const void * buffer)
 {
   CheckExtension(m_FileName.c_str());
 
@@ -729,7 +724,7 @@ GiplImageIO ::Write(const void * buffer)
     this->OpenFileForWriting(m_Ofstream, m_FileName);
   }
 
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     unsigned short value;
     if (i < nDims)
@@ -825,7 +820,7 @@ GiplImageIO ::Write(const void * buffer)
   }
 
   /*   10   16  X,Y,Z,T pixel dimensions mm */
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     if (i < nDims)
     {
@@ -876,7 +871,7 @@ GiplImageIO ::Write(const void * buffer)
     i = 0; // initialize
   }
 
-  sprintf(line1, "No Patient Information");
+  snprintf(line1, sizeof(line1), "No Patient Information");
   for (char & i : line1)
   {
     if (m_IsCompressed)
@@ -944,7 +939,7 @@ GiplImageIO ::Write(const void * buffer)
   }
 
   double origin[4]; /*  204   32  X,Y,Z,T offset              */
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     if (i < nDims)
     {
@@ -1049,33 +1044,31 @@ GiplImageIO ::Write(const void * buffer)
     // Swap bytes if necessary
     if (m_ByteOrder == IOByteOrderEnum::LittleEndian)
     {
-      auto * tempBuffer = new char[numberOfBytes];
-      memcpy(tempBuffer, buffer, numberOfBytes);
-      SwapBytesIfNecessary(tempBuffer, numberOfComponents);
+      const auto tempBuffer = make_unique_for_overwrite<char[]>(numberOfBytes);
+      memcpy(tempBuffer.get(), buffer, numberOfBytes);
+      SwapBytesIfNecessary(tempBuffer.get(), numberOfComponents);
       if (m_IsCompressed)
       {
-        gzwrite(m_Internal->m_GzFile, tempBuffer, numberOfBytes);
+        gzwrite(m_Internal->m_GzFile, tempBuffer.get(), numberOfBytes);
       }
       else
       {
-        m_Ofstream.write(tempBuffer, numberOfBytes);
+        m_Ofstream.write(tempBuffer.get(), numberOfBytes);
       }
-      delete[] tempBuffer;
     }
     else if (m_ByteOrder == IOByteOrderEnum::BigEndian)
     {
-      auto * tempBuffer = new char[numberOfBytes];
-      memcpy(tempBuffer, buffer, numberOfBytes);
-      SwapBytesIfNecessary(tempBuffer, numberOfComponents);
+      const auto tempBuffer = make_unique_for_overwrite<char[]>(numberOfBytes);
+      memcpy(tempBuffer.get(), buffer, numberOfBytes);
+      SwapBytesIfNecessary(tempBuffer.get(), numberOfComponents);
       if (m_IsCompressed)
       {
-        gzwrite(m_Internal->m_GzFile, tempBuffer, numberOfBytes);
+        gzwrite(m_Internal->m_GzFile, tempBuffer.get(), numberOfBytes);
       }
       else
       {
-        m_Ofstream.write(tempBuffer, numberOfBytes);
+        m_Ofstream.write(tempBuffer.get(), numberOfBytes);
       }
-      delete[] tempBuffer;
     }
     else
     {
@@ -1101,7 +1094,6 @@ GiplImageIO ::Write(const void * buffer)
   }
 }
 
-/** Print Self Method */
 void
 GiplImageIO::PrintSelf(std::ostream & os, Indent indent) const
 {

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkShapeRelabelImageFilter_hxx
 #define itkShapeRelabelImageFilter_hxx
 
-#include "itkShapeRelabelImageFilter.h"
 #include "itkProgressAccumulator.h"
 
 namespace itk
@@ -58,20 +57,20 @@ void
 ShapeRelabelImageFilter<TInputImage>::GenerateData()
 {
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
 
   progress->SetMiniPipelineFilter(this);
 
   // Allocate the output
   this->AllocateOutputs();
 
-  typename LabelizerType::Pointer labelizer = LabelizerType::New();
+  auto labelizer = LabelizerType::New();
   labelizer->SetInput(this->GetInput());
   labelizer->SetBackgroundValue(m_BackgroundValue);
   labelizer->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   progress->RegisterInternalFilter(labelizer, .3f);
 
-  typename LabelObjectValuatorType::Pointer valuator = LabelObjectValuatorType::New();
+  auto valuator = LabelObjectValuatorType::New();
   valuator->SetInput(labelizer->GetOutput());
   valuator->SetLabelImage(this->GetInput());
   valuator->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
@@ -85,14 +84,14 @@ ShapeRelabelImageFilter<TInputImage>::GenerateData()
   }
   progress->RegisterInternalFilter(valuator, .3f);
 
-  typename RelabelType::Pointer opening = RelabelType::New();
+  auto opening = RelabelType::New();
   opening->SetInput(valuator->GetOutput());
   opening->SetReverseOrdering(m_ReverseOrdering);
   opening->SetAttribute(m_Attribute);
   opening->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   progress->RegisterInternalFilter(opening, .2f);
 
-  typename BinarizerType::Pointer binarizer = BinarizerType::New();
+  auto binarizer = BinarizerType::New();
   binarizer->SetInput(opening->GetOutput());
   binarizer->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   progress->RegisterInternalFilter(binarizer, .2f);

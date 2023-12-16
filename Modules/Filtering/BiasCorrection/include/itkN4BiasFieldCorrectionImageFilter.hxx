@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkN4BiasFieldCorrectionImageFilter_hxx
 #define itkN4BiasFieldCorrectionImageFilter_hxx
 
-#include "itkN4BiasFieldCorrectionImageFilter.h"
 
 #include "itkAddImageFilter.h"
 #include "itkBSplineControlPointImageFilter.h"
@@ -86,9 +85,6 @@ CLANG_SUPPRESS_Wfloat_equal
   template <typename TInputImage, typename TMaskImage, typename TOutputImage>
   void N4BiasFieldCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>::GenerateData()
   {
-    using itk::Experimental::ImageBufferRange;
-    using itk::Experimental::MakeImageBufferRange;
-
     this->AllocateOutputs();
 
     const InputImageType * inputImage = this->GetInput();
@@ -125,12 +121,12 @@ CLANG_SUPPRESS_Wfloat_equal
     const bool          useMaskLabel = this->GetUseMaskLabel();
 
     const ImageBufferRange<RealImageType> logInputImageBufferRange{ *logInputImage };
-    const std::size_t                     numberOfPixels = logInputImageBufferRange.size();
+    const size_t                          numberOfPixels = logInputImageBufferRange.size();
 
     // Number of pixels of the input image that are included with the filter.
-    std::size_t numberOfIncludedPixels = 0;
+    size_t numberOfIncludedPixels = 0;
 
-    for (std::size_t indexValue = 0; indexValue < numberOfPixels; ++indexValue)
+    for (size_t indexValue = 0; indexValue < numberOfPixels; ++indexValue)
     {
       if ((maskImageBufferRange.empty() || (useMaskLabel && maskImageBufferRange[indexValue] == maskLabel) ||
            (!useMaskLabel && maskImageBufferRange[indexValue] != NumericTraits<MaskPixelType>::ZeroValue())) &&
@@ -149,7 +145,7 @@ CLANG_SUPPRESS_Wfloat_equal
     // Duplicate logInputImage since we reuse the original at each iteration.
 
     using DuplicatorType = ImageDuplicator<RealImageType>;
-    typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
+    auto duplicator = DuplicatorType::New();
     duplicator->SetInputImage(logInputImage);
     duplicator->Update();
 
@@ -169,7 +165,7 @@ CLANG_SUPPRESS_Wfloat_equal
 
     // Iterate until convergence or iterative exhaustion.
     unsigned int maximumNumberOfLevels = 1;
-    for (unsigned int d = 0; d < this->m_NumberOfFittingLevels.Size(); d++)
+    for (unsigned int d = 0; d < this->m_NumberOfFittingLevels.Size(); ++d)
     {
       if (this->m_NumberOfFittingLevels[d] > maximumNumberOfLevels)
       {
@@ -194,7 +190,7 @@ CLANG_SUPPRESS_Wfloat_equal
         this->SharpenImage(logUncorrectedImage, logSharpenedImage);
 
         using SubtracterType = SubtractImageFilter<RealImageType, RealImageType, RealImageType>;
-        typename SubtracterType::Pointer subtracter1 = SubtracterType::New();
+        auto subtracter1 = SubtracterType::New();
         subtracter1->SetInput1(logUncorrectedImage);
         subtracter1->SetInput2(logSharpenedImage);
 
@@ -209,7 +205,7 @@ CLANG_SUPPRESS_Wfloat_equal
         this->m_CurrentConvergenceMeasurement = this->CalculateConvergenceMeasurement(logBiasField, newLogBiasField);
         logBiasField = newLogBiasField;
 
-        typename SubtracterType::Pointer subtracter2 = SubtracterType::New();
+        auto subtracter2 = SubtracterType::New();
         subtracter2->SetInput1(logInputImage);
         subtracter2->SetInput2(logBiasField);
 
@@ -221,7 +217,7 @@ CLANG_SUPPRESS_Wfloat_equal
 
       using BSplineReconstructerType =
         BSplineControlPointImageFilter<BiasFieldControlPointLatticeType, ScalarImageType>;
-      typename BSplineReconstructerType::Pointer reconstructer = BSplineReconstructerType::New();
+      auto reconstructer = BSplineReconstructerType::New();
       reconstructer->SetInput(this->m_LogBiasFieldControlPointLattice);
       reconstructer->SetOrigin(logBiasField->GetOrigin());
       reconstructer->SetSpacing(logBiasField->GetSpacing());
@@ -232,7 +228,7 @@ CLANG_SUPPRESS_Wfloat_equal
 
       typename BSplineReconstructerType::ArrayType numberOfLevels;
       numberOfLevels.Fill(1);
-      for (unsigned int d = 0; d < ImageDimension; d++)
+      for (unsigned int d = 0; d < ImageDimension; ++d)
       {
         if (this->m_NumberOfFittingLevels[d] + 1 >= this->m_CurrentLevel &&
             this->m_CurrentLevel != maximumNumberOfLevels - 1)
@@ -244,8 +240,8 @@ CLANG_SUPPRESS_Wfloat_equal
     }
 
     using CustomBinaryFilter = itk::BinaryGeneratorImageFilter<InputImageType, RealImageType, OutputImageType>;
-    typename CustomBinaryFilter::Pointer expAndDivFilter = CustomBinaryFilter::New();
-    auto                                 expAndDivLambda =
+    auto expAndDivFilter = CustomBinaryFilter::New();
+    auto expAndDivLambda =
       [](const typename InputImageType::PixelType & input, const typename RealImageType::PixelType & biasField) ->
       typename OutputImageType::PixelType
     {
@@ -263,9 +259,6 @@ CLANG_SUPPRESS_Wfloat_equal
   void N4BiasFieldCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>::SharpenImage(
     const RealImageType * unsharpenedImage, RealImageType * sharpenedImage) const
   {
-    using itk::Experimental::ImageBufferRange;
-    using itk::Experimental::MakeImageBufferRange;
-
     const auto          maskImageBufferRange = MakeImageBufferRange(this->GetMaskImage());
     const auto          confidenceImageBufferRange = MakeImageBufferRange(this->GetConfidenceImage());
     const MaskPixelType maskLabel = this->GetMaskLabel();
@@ -279,10 +272,10 @@ CLANG_SUPPRESS_Wfloat_equal
     RealType binMaximum = NumericTraits<RealType>::NonpositiveMin();
     RealType binMinimum = NumericTraits<RealType>::max();
 
-    const auto        unsharpenedImageBufferRange = MakeImageBufferRange(unsharpenedImage);
-    const std::size_t numberOfPixels = unsharpenedImageBufferRange.size();
+    const auto   unsharpenedImageBufferRange = MakeImageBufferRange(unsharpenedImage);
+    const size_t numberOfPixels = unsharpenedImageBufferRange.size();
 
-    for (std::size_t indexValue = 0; indexValue < numberOfPixels; ++indexValue)
+    for (size_t indexValue = 0; indexValue < numberOfPixels; ++indexValue)
     {
       if ((maskImageBufferRange.empty() || (useMaskLabel && maskImageBufferRange[indexValue] == maskLabel) ||
            (!useMaskLabel && maskImageBufferRange[indexValue] != NumericTraits<MaskPixelType>::ZeroValue())) &&
@@ -306,7 +299,7 @@ CLANG_SUPPRESS_Wfloat_equal
 
     vnl_vector<RealType> H(this->m_NumberOfHistogramBins, 0.0);
 
-    for (std::size_t indexValue = 0; indexValue < numberOfPixels; ++indexValue)
+    for (size_t indexValue = 0; indexValue < numberOfPixels; ++indexValue)
     {
       if ((maskImageBufferRange.empty() || (useMaskLabel && maskImageBufferRange[indexValue] == maskLabel) ||
            (!useMaskLabel && maskImageBufferRange[indexValue] != NumericTraits<MaskPixelType>::ZeroValue())) &&
@@ -342,7 +335,7 @@ CLANG_SUPPRESS_Wfloat_equal
 
     vnl_vector<FFTComplexType> V(paddedHistogramSize, FFTComplexType(0.0, 0.0));
 
-    for (unsigned int n = 0; n < this->m_NumberOfHistogramBins; n++)
+    for (unsigned int n = 0; n < this->m_NumberOfHistogramBins; ++n)
     {
       V[n + histogramOffset] = H[n];
     }
@@ -365,7 +358,7 @@ CLANG_SUPPRESS_Wfloat_equal
 
     F[0] = FFTComplexType(scaleFactor, 0.0);
     auto halfSize = static_cast<unsigned int>(0.5 * paddedHistogramSize);
-    for (unsigned int n = 1; n <= halfSize; n++)
+    for (unsigned int n = 1; n <= halfSize; ++n)
     {
       F[n] = F[paddedHistogramSize - n] =
         FFTComplexType(scaleFactor * std::exp(-itk::Math::sqr(static_cast<RealType>(n)) * expFactor), 0.0);
@@ -385,7 +378,7 @@ CLANG_SUPPRESS_Wfloat_equal
     vnl_vector<FFTComplexType> Gf(paddedHistogramSize);
 
     const auto wienerNoiseValue = static_cast<FFTComputationType>(this->m_WienerFilterNoise);
-    for (unsigned int n = 0; n < paddedHistogramSize; n++)
+    for (unsigned int n = 0; n < paddedHistogramSize; ++n)
     {
       FFTComplexType c = vnl_complex_traits<FFTComplexType>::conjugate(Ff[n]);
       Gf[n] = c / (c * Ff[n] + wienerNoiseValue);
@@ -393,7 +386,7 @@ CLANG_SUPPRESS_Wfloat_equal
 
     vnl_vector<FFTComplexType> Uf(paddedHistogramSize);
 
-    for (unsigned int n = 0; n < paddedHistogramSize; n++)
+    for (unsigned int n = 0; n < paddedHistogramSize; ++n)
     {
       Uf[n] = Vf[n] * Gf[n].real();
     }
@@ -401,7 +394,7 @@ CLANG_SUPPRESS_Wfloat_equal
     vnl_vector<FFTComplexType> U(Uf);
 
     fft.bwd_transform(U);
-    for (unsigned int n = 0; n < paddedHistogramSize; n++)
+    for (unsigned int n = 0; n < paddedHistogramSize; ++n)
     {
       U[n] = FFTComplexType(std::max(U[n].real(), static_cast<FFTComputationType>(0.0)), 0.0);
     }
@@ -410,13 +403,13 @@ CLANG_SUPPRESS_Wfloat_equal
 
     vnl_vector<FFTComplexType> numerator(paddedHistogramSize);
 
-    for (unsigned int n = 0; n < paddedHistogramSize; n++)
+    for (unsigned int n = 0; n < paddedHistogramSize; ++n)
     {
       numerator[n] =
         FFTComplexType((binMinimum + (static_cast<RealType>(n) - histogramOffset) * histogramSlope) * U[n].real(), 0.0);
     }
     fft.fwd_transform(numerator);
-    for (unsigned int n = 0; n < paddedHistogramSize; n++)
+    for (unsigned int n = 0; n < paddedHistogramSize; ++n)
     {
       numerator[n] *= Ff[n];
     }
@@ -425,7 +418,7 @@ CLANG_SUPPRESS_Wfloat_equal
     vnl_vector<FFTComplexType> denominator(U);
 
     fft.fwd_transform(denominator);
-    for (unsigned int n = 0; n < paddedHistogramSize; n++)
+    for (unsigned int n = 0; n < paddedHistogramSize; ++n)
     {
       denominator[n] *= Ff[n];
     }
@@ -433,7 +426,7 @@ CLANG_SUPPRESS_Wfloat_equal
 
     vnl_vector<RealType> E(paddedHistogramSize);
 
-    for (unsigned int n = 0; n < paddedHistogramSize; n++)
+    for (unsigned int n = 0; n < paddedHistogramSize; ++n)
     {
       if (denominator[n].real() != 0.0)
       {
@@ -454,7 +447,7 @@ CLANG_SUPPRESS_Wfloat_equal
 
     const ImageBufferRange<RealImageType> sharpenedImageBufferRange{ *sharpenedImage };
 
-    for (std::size_t indexValue = 0; indexValue < numberOfPixels; ++indexValue)
+    for (size_t indexValue = 0; indexValue < numberOfPixels; ++indexValue)
     {
       if ((maskImageBufferRange.empty() || (useMaskLabel && maskImageBufferRange[indexValue] == maskLabel) ||
            (!useMaskLabel && maskImageBufferRange[indexValue] != NumericTraits<MaskPixelType>::ZeroValue())) &&
@@ -470,7 +463,7 @@ CLANG_SUPPRESS_Wfloat_equal
         }
         else
         {
-          correctedPixel = E[E.size() - 1];
+          correctedPixel = E.back();
         }
         sharpenedImageBufferRange[indexValue] = correctedPixel;
       }
@@ -480,10 +473,8 @@ CLANG_SUPPRESS_Wfloat_equal
   template <typename TInputImage, typename TMaskImage, typename TOutputImage>
   typename N4BiasFieldCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>::RealImagePointer
   N4BiasFieldCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>::UpdateBiasFieldEstimate(
-    RealImageType * fieldEstimate, const std::size_t numberOfIncludedPixels)
+    RealImageType * fieldEstimate, const size_t numberOfIncludedPixels)
   {
-    using itk::Experimental::MakeImageBufferRange;
-
     // Temporarily set the direction cosine to identity since the B-spline
     // approximation algorithm works in parametric space and not physical
     // space.
@@ -495,7 +486,7 @@ CLANG_SUPPRESS_Wfloat_equal
     const bool                                   filterHandlesMemory = false;
 
     using ImporterType = ImportImageFilter<RealType, ImageDimension>;
-    typename ImporterType::Pointer importer = ImporterType::New();
+    auto importer = ImporterType::New();
     importer->SetImportPointer(fieldEstimate->GetBufferPointer(), numberOfPixels, filterHandlesMemory);
     importer->SetRegion(fieldEstimate->GetBufferedRegion());
     importer->SetOrigin(fieldEstimate->GetOrigin());
@@ -525,7 +516,7 @@ CLANG_SUPPRESS_Wfloat_equal
     ImageRegionConstIteratorWithIndex<RealImageType> It(parametricFieldEstimate,
                                                         parametricFieldEstimate->GetRequestedRegion());
 
-    for (std::size_t indexValue = 0; indexValue < numberOfPixels; ++indexValue, ++It)
+    for (size_t indexValue = 0; indexValue < numberOfPixels; ++indexValue, ++It)
     {
       if ((maskImageBufferRange.empty() || (useMaskLabel && maskImageBufferRange[indexValue] == maskLabel) ||
            (!useMaskLabel && maskImageBufferRange[indexValue] != NumericTraits<MaskPixelType>::ZeroValue())) &&
@@ -549,12 +540,12 @@ CLANG_SUPPRESS_Wfloat_equal
       }
     }
 
-    typename BSplineFilterType::Pointer bspliner = BSplineFilterType::New();
+    auto bspliner = BSplineFilterType::New();
 
     typename BSplineFilterType::ArrayType numberOfControlPoints;
     typename BSplineFilterType::ArrayType numberOfFittingLevels;
     numberOfFittingLevels.Fill(1);
-    for (unsigned int d = 0; d < ImageDimension; d++)
+    for (unsigned int d = 0; d < ImageDimension; ++d)
     {
       if (!this->m_LogBiasFieldControlPointLattice)
       {
@@ -567,7 +558,7 @@ CLANG_SUPPRESS_Wfloat_equal
     }
 
     typename ScalarImageType::PointType parametricOrigin = fieldEstimate->GetOrigin();
-    for (unsigned int d = 0; d < ImageDimension; d++)
+    for (unsigned int d = 0; d < ImageDimension; ++d)
     {
       parametricOrigin[d] += (fieldEstimate->GetSpacing()[d] * fieldEstimate->GetLargestPossibleRegion().GetIndex()[d]);
     }
@@ -601,7 +592,7 @@ CLANG_SUPPRESS_Wfloat_equal
       using AdderType = AddImageFilter<BiasFieldControlPointLatticeType,
                                        BiasFieldControlPointLatticeType,
                                        BiasFieldControlPointLatticeType>;
-      typename AdderType::Pointer adder = AdderType::New();
+      auto adder = AdderType::New();
       adder->SetInput1(this->m_LogBiasFieldControlPointLattice);
       adder->SetInput2(phiLattice);
       adder->Update();
@@ -610,7 +601,7 @@ CLANG_SUPPRESS_Wfloat_equal
     }
 
     RealImagePointer smoothField = this->ReconstructBiasField(this->m_LogBiasFieldControlPointLattice);
-
+    smoothField->SetRegions(this->GetInput()->GetRequestedRegion());
     return smoothField;
   }
 
@@ -622,7 +613,7 @@ CLANG_SUPPRESS_Wfloat_equal
     const InputImageType * inputImage = this->GetInput();
 
     using BSplineReconstructerType = BSplineControlPointImageFilter<BiasFieldControlPointLatticeType, ScalarImageType>;
-    typename BSplineReconstructerType::Pointer reconstructer = BSplineReconstructerType::New();
+    auto reconstructer = BSplineReconstructerType::New();
     reconstructer->SetInput(controlPointLattice);
     reconstructer->SetOrigin(inputImage->GetOrigin());
     reconstructer->SetSpacing(inputImage->GetSpacing());
@@ -634,7 +625,7 @@ CLANG_SUPPRESS_Wfloat_equal
     biasFieldBsplineImage->Update();
 
     using SelectorType = VectorIndexSelectionCastImageFilter<ScalarImageType, RealImageType>;
-    typename SelectorType::Pointer selector = SelectorType::New();
+    auto selector = SelectorType::New();
     selector->SetInput(biasFieldBsplineImage);
     selector->SetIndex(0);
 
@@ -642,7 +633,6 @@ CLANG_SUPPRESS_Wfloat_equal
     biasField->Update();
 
     biasField->DisconnectPipeline();
-    biasField->SetRegions(inputImage->GetRequestedRegion());
 
     return biasField;
   }
@@ -652,9 +642,8 @@ CLANG_SUPPRESS_Wfloat_equal
   N4BiasFieldCorrectionImageFilter<TInputImage, TMaskImage, TOutputImage>::CalculateConvergenceMeasurement(
     const RealImageType * fieldEstimate1, const RealImageType * fieldEstimate2) const
   {
-    using itk::Experimental::MakeImageBufferRange;
     using SubtracterType = SubtractImageFilter<RealImageType, RealImageType, RealImageType>;
-    typename SubtracterType::Pointer subtracter = SubtracterType::New();
+    auto subtracter = SubtracterType::New();
     subtracter->SetInput1(fieldEstimate1);
     subtracter->SetInput2(fieldEstimate2);
     subtracter->Update();
@@ -670,10 +659,10 @@ CLANG_SUPPRESS_Wfloat_equal
     const MaskPixelType maskLabel = this->GetMaskLabel();
     const bool          useMaskLabel = this->GetUseMaskLabel();
 
-    const auto        subtracterImageBufferRange = MakeImageBufferRange(subtracter->GetOutput());
-    const std::size_t numberOfPixels = subtracterImageBufferRange.size();
+    const auto   subtracterImageBufferRange = MakeImageBufferRange(subtracter->GetOutput());
+    const size_t numberOfPixels = subtracterImageBufferRange.size();
 
-    for (std::size_t indexValue = 0; indexValue < numberOfPixels; ++indexValue)
+    for (size_t indexValue = 0; indexValue < numberOfPixels; ++indexValue)
     {
       if ((maskImageBufferRange.empty() || (useMaskLabel && maskImageBufferRange[indexValue] == maskLabel) ||
            (!useMaskLabel && maskImageBufferRange[indexValue] != NumericTraits<MaskPixelType>::ZeroValue())) &&

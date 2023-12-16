@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -94,7 +94,7 @@ template <typename TInputImage, typename TOutputImage, typename TVoronoiImage = 
 class ITK_TEMPLATE_EXPORT SignedDanielssonDistanceMapImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SignedDanielssonDistanceMapImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SignedDanielssonDistanceMapImageFilter);
 
   /** Standard class type aliases. */
   using Self = SignedDanielssonDistanceMapImageFilter;
@@ -150,7 +150,7 @@ public:
   using VoronoiPixelType = typename VoronoiImageType::PixelType;
 
   /** Pointer Type for data object */
-  using DataObjectPointer = typename Superclass::DataObjectPointer;
+  using typename Superclass::DataObjectPointer;
 
   /** Set if the distance should be squared. */
   itkSetMacro(SquaredDistance, bool);
@@ -216,6 +216,8 @@ public:
   // Begin concept checking
   itkConceptMacro(IntConvertibleToInputCheck, (Concept::Convertible<int, PixelType>));
   itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<PixelType>));
+  itkConceptMacro(OutputImagePixelTypeIsFloatingPointCheck,
+                  (Concept::IsFloatingPoint<typename OutputImageType::PixelType>));
   // End concept checking
 #endif
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include "itkGaussianDistribution.h"
 #include "itkTestingMacros.h"
 #include "itkStdStreamStateSave.h"
+#include "itkMath.h"
 
 int
 itkGaussianDistributionTest(int, char *[])
@@ -31,7 +32,7 @@ itkGaussianDistributionTest(int, char *[])
 
   using DistributionType = itk::Statistics::GaussianDistribution;
 
-  DistributionType::Pointer distributionFunction = DistributionType::New();
+  auto distributionFunction = DistributionType::New();
 
   std::cout << "GetNameOfClass() = " << distributionFunction->GetNameOfClass() << std::endl;
   std::cout << "HasMean()        = " << distributionFunction->HasMean() << std::endl;
@@ -68,7 +69,7 @@ itkGaussianDistributionTest(int, char *[])
 
     value = distributionFunction->EvaluateCDF(x);
 
-    diff = fabs(value - expected1[i + 5]);
+    diff = itk::Math::abs(value - expected1[i + 5]);
 
     std::cout << "Gaussian cdf at ";
     std::cout.width(2);
@@ -97,7 +98,7 @@ itkGaussianDistributionTest(int, char *[])
   {
     value = distributionFunction->EvaluateInverseCDF(expected1[i + 5]);
 
-    diff = fabs(value - double(i));
+    diff = itk::Math::abs(value - static_cast<double>(i));
 
     std::cout << "Inverse Gaussian cdf at ";
     std::cout.width(22);
@@ -105,7 +106,7 @@ itkGaussianDistributionTest(int, char *[])
     std::cout.width(22);
     std::cout << value << ", expected value = ";
     std::cout.width(22);
-    std::cout << double(i) << ", error = ";
+    std::cout << static_cast<double>(i) << ", error = ";
     std::cout.width(22);
     std::cout << diff;
     if (diff < tol)
@@ -138,7 +139,7 @@ itkGaussianDistributionTest(int, char *[])
 
     value = distributionFunction->EvaluateCDF(x);
 
-    diff = fabs(value - expected2[i + 5]);
+    diff = itk::Math::abs(value - expected2[i + 5]);
 
     std::cout << "Gaussian cdf at ";
     std::cout.width(2);
@@ -182,7 +183,7 @@ itkGaussianDistributionTest(int, char *[])
 
     value = distributionFunction->EvaluateCDF(x, params);
 
-    diff = fabs(value - expected3[i + 5]);
+    diff = itk::Math::abs(value - expected3[i + 5]);
 
     std::cout << "Gaussian cdf at ";
     std::cout.width(2);
@@ -219,7 +220,7 @@ itkGaussianDistributionTest(int, char *[])
 
     value = distributionFunction->EvaluateCDF(x, params[0], params[1]);
 
-    diff = fabs(value - expected4[i + 5]);
+    diff = itk::Math::abs(value - expected4[i + 5]);
 
     std::cout << "Gaussian cdf at ";
     std::cout.width(2);
@@ -249,7 +250,7 @@ itkGaussianDistributionTest(int, char *[])
   {
     value = distributionFunction->EvaluateInverseCDF(expected2[i + 5]);
 
-    diff = fabs(value - double(i));
+    diff = itk::Math::abs(value - static_cast<double>(i));
 
     std::cout << "Inverse Gaussian cdf at ";
     std::cout.width(22);
@@ -257,7 +258,7 @@ itkGaussianDistributionTest(int, char *[])
     std::cout.width(22);
     std::cout << value << ", expected value = ";
     std::cout.width(22);
-    std::cout << double(i) << ", error = ";
+    std::cout << static_cast<double>(i) << ", error = ";
     std::cout.width(22);
     std::cout << diff;
     if (diff < tol)

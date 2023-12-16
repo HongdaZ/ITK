@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 #include "itkImageToParametricSpaceFilter.h"
 #include "itkMesh.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 int
 itkImageToParametricSpaceFilterTest(int, char *[])
@@ -43,7 +44,7 @@ itkImageToParametricSpaceFilterTest(int, char *[])
   using PointType = MeshType::PointType;
 
   // Create an input Mesh
-  MeshType::Pointer inputMesh = MeshType::New();
+  auto inputMesh = MeshType::New();
 
   // Insert data on the Mesh
   PointsContainerPointer points = inputMesh->GetPoints();
@@ -73,17 +74,9 @@ itkImageToParametricSpaceFilterTest(int, char *[])
   region.SetSize(size);
   region.SetIndex(start);
 
-  imageX->SetLargestPossibleRegion(region);
-  imageY->SetLargestPossibleRegion(region);
-  imageZ->SetLargestPossibleRegion(region);
-
-  imageX->SetBufferedRegion(region);
-  imageY->SetBufferedRegion(region);
-  imageZ->SetBufferedRegion(region);
-
-  imageX->SetRequestedRegion(region);
-  imageY->SetRequestedRegion(region);
-  imageZ->SetRequestedRegion(region);
+  imageX->SetRegions(region);
+  imageY->SetRegions(region);
+  imageZ->SetRegions(region);
 
   imageX->Allocate();
   imageY->Allocate();
@@ -118,6 +111,12 @@ itkImageToParametricSpaceFilterTest(int, char *[])
 
 
   FilterPointer filter = FilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, ImageToParametricSpaceFilter, ImageToMeshFilter);
+
+
+  bool computeIndices = true;
+  ITK_TEST_SET_GET_BOOLEAN(filter, ComputeIndices, computeIndices);
 
   // Connect the inputs
   filter->SetInput(0, imageX);

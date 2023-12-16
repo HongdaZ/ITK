@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 namespace Accessor
 {
 /**
- *\class ExpPixelAccessor
+ * \class ExpPixelAccessor
  * \brief Give access to the std::exp() function of a value
  *
  * ExpPixelAccessor is templated over an internal type and an
@@ -52,19 +52,19 @@ public:
   static inline void
   Set(TInternalType & output, const TExternalType & input)
   {
-    output = (TInternalType)std::exp((double)input);
+    output = (TInternalType)std::exp(static_cast<double>(input));
   }
 
   static inline TExternalType
   Get(const TInternalType & input)
   {
-    return (TExternalType)std::exp((double)input);
+    return (TExternalType)std::exp(static_cast<double>(input));
   }
 };
 } // end namespace Accessor
 
 /**
- *\class ExpImageAdaptor
+ * \class ExpImageAdaptor
  * \brief Presents an image as being composed of the std::exp() of its pixels
  *
  * Additional casting is performed according to the input and output image
@@ -78,7 +78,7 @@ class ExpImageAdaptor
   : public ImageAdaptor<TImage, Accessor::ExpPixelAccessor<typename TImage::PixelType, TOutputPixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExpImageAdaptor);
+  ITK_DISALLOW_COPY_AND_MOVE(ExpImageAdaptor);
 
   /** Standard class type aliases. */
   using Self = ExpImageAdaptor;

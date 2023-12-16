@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@
 #ifndef itkLabelMap_hxx
 #define itkLabelMap_hxx
 
-#include "itkLabelMap.h"
 #include "itkProcessObject.h"
 
 #include <algorithm>
@@ -116,8 +115,8 @@ LabelMap<TLabelObject>::Graft(const DataObject * data)
 
 
 template <typename TLabelObject>
-typename LabelMap<TLabelObject>::LabelObjectType *
-LabelMap<TLabelObject>::GetLabelObject(const LabelType & label)
+auto
+LabelMap<TLabelObject>::GetLabelObject(const LabelType & label) -> LabelObjectType *
 {
   if (m_BackgroundValue == label)
   {
@@ -136,8 +135,8 @@ LabelMap<TLabelObject>::GetLabelObject(const LabelType & label)
 
 
 template <typename TLabelObject>
-const typename LabelMap<TLabelObject>::LabelObjectType *
-LabelMap<TLabelObject>::GetLabelObject(const LabelType & label) const
+auto
+LabelMap<TLabelObject>::GetLabelObject(const LabelType & label) const -> const LabelObjectType *
 {
   if (m_BackgroundValue == label)
   {
@@ -164,8 +163,8 @@ LabelMap<TLabelObject>::HasLabel(const LabelType label) const
 
 
 template <typename TLabelObject>
-const typename LabelMap<TLabelObject>::LabelType &
-LabelMap<TLabelObject>::GetPixel(const IndexType & idx) const
+auto
+LabelMap<TLabelObject>::GetPixel(const IndexType & idx) const -> const LabelType &
 {
   auto end = m_LabelObjectContainer.end();
 
@@ -181,18 +180,18 @@ LabelMap<TLabelObject>::GetPixel(const IndexType & idx) const
 
 
 template <typename TLabelObject>
-typename LabelMap<TLabelObject>::LabelObjectType *
-LabelMap<TLabelObject>::GetNthLabelObject(const SizeValueType & pos)
+auto
+LabelMap<TLabelObject>::GetNthLabelObject(const SizeValueType & pos) -> LabelObjectType *
 {
   SizeValueType i = 0;
 
-  for (auto it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); it++)
+  for (auto it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); ++it)
   {
     if (i == pos)
     {
       return it->second;
     }
-    i++;
+    ++i;
   }
   itkExceptionMacro(<< "Can't access to label object at position " << pos << ". The label map has only "
                     << this->GetNumberOfLabelObjects() << " label objects registered.");
@@ -200,18 +199,18 @@ LabelMap<TLabelObject>::GetNthLabelObject(const SizeValueType & pos)
 
 
 template <typename TLabelObject>
-const typename LabelMap<TLabelObject>::LabelObjectType *
-LabelMap<TLabelObject>::GetNthLabelObject(const SizeValueType & pos) const
+auto
+LabelMap<TLabelObject>::GetNthLabelObject(const SizeValueType & pos) const -> const LabelObjectType *
 {
   SizeValueType i = 0;
 
-  for (LabelObjectContainerConstIterator it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); it++)
+  for (LabelObjectContainerConstIterator it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); ++it)
   {
     if (i == pos)
     {
       return it->second;
     }
-    i++;
+    ++i;
   }
   itkExceptionMacro(<< "Can't access to label object at position " << pos << ". The label map has only "
                     << this->GetNumberOfLabelObjects() << " label objects registered.");
@@ -283,7 +282,7 @@ LabelMap<TLabelObject>::AddPixel(const LabelObjectContainerIterator & it,
   if (it != m_LabelObjectContainer.end())
   {
     // the label already exist - add the pixel to it
-    (*it).second->AddIndex(idx);
+    it->second->AddIndex(idx);
     this->Modified();
   }
   else
@@ -354,7 +353,7 @@ LabelMap<TLabelObject>::SetLine(const IndexType & idx, const LengthType & length
   if (it != m_LabelObjectContainer.end())
   {
     // the label already exist - add the pixel to it
-    (*it).second->AddLine(idx, length);
+    it->second->AddLine(idx, length);
     this->Modified();
   }
   else
@@ -370,10 +369,10 @@ LabelMap<TLabelObject>::SetLine(const IndexType & idx, const LengthType & length
 
 
 template <typename TLabelObject>
-typename LabelMap<TLabelObject>::LabelObjectType *
-LabelMap<TLabelObject>::GetLabelObject(const IndexType & idx) const
+auto
+LabelMap<TLabelObject>::GetLabelObject(const IndexType & idx) const -> LabelObjectType *
 {
-  for (auto it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); it++)
+  for (auto it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); ++it)
   {
     if (it->second->HasIndex(idx))
     {
@@ -440,7 +439,7 @@ LabelMap<TLabelObject>::PushLabelObject(LabelObjectType * labelObject)
         assert((it->second.IsNotNull()));
         if (label == m_BackgroundValue)
         {
-          label++;
+          ++label;
         }
         if (label != it->first)
         {
@@ -496,21 +495,21 @@ LabelMap<TLabelObject>::ClearLabels()
 
 
 template <typename TLabelObject>
-typename LabelMap<TLabelObject>::SizeValueType
-LabelMap<TLabelObject>::GetNumberOfLabelObjects() const
+auto
+LabelMap<TLabelObject>::GetNumberOfLabelObjects() const -> SizeValueType
 {
   return static_cast<typename LabelMap<TLabelObject>::SizeValueType>(m_LabelObjectContainer.size());
 }
 
 
 template <typename TLabelObject>
-typename LabelMap<TLabelObject>::LabelVectorType
-LabelMap<TLabelObject>::GetLabels() const
+auto
+LabelMap<TLabelObject>::GetLabels() const -> LabelVectorType
 {
   LabelVectorType res;
 
   res.reserve(this->GetNumberOfLabelObjects());
-  for (auto it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); it++)
+  for (auto it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); ++it)
   {
     res.push_back(it->first);
   }
@@ -519,13 +518,13 @@ LabelMap<TLabelObject>::GetLabels() const
 
 
 template <typename TLabelObject>
-typename LabelMap<TLabelObject>::LabelObjectVectorType
-LabelMap<TLabelObject>::GetLabelObjects() const
+auto
+LabelMap<TLabelObject>::GetLabelObjects() const -> LabelObjectVectorType
 {
   LabelObjectVectorType res;
 
   res.reserve(this->GetNumberOfLabelObjects());
-  for (auto it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); it++)
+  for (auto it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); ++it)
   {
     res.push_back(it->second);
   }
@@ -537,7 +536,7 @@ template <typename TLabelObject>
 void
 LabelMap<TLabelObject>::PrintLabelObjects(std::ostream & os) const
 {
-  for (auto it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); it++)
+  for (auto it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); ++it)
   {
     assert((it->second.IsNotNull()));
     it->second->Print(os);
@@ -550,7 +549,7 @@ template <typename TLabelObject>
 void
 LabelMap<TLabelObject>::Optimize()
 {
-  for (LabelObjectContainerConstIterator it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); it++)
+  for (LabelObjectContainerConstIterator it = m_LabelObjectContainer.begin(); it != m_LabelObjectContainer.end(); ++it)
   {
     assert((it->second.IsNotNull()));
     it->second->Optimize();

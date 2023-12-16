@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,17 +23,18 @@
 #include "itkTextOutput.h"
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkSimpleFilterWatcher.h"
+#include "itkTestingMacros.h"
 
 int
-itkNoiseImageFilterTest(int ac, char * av[])
+itkNoiseImageFilterTest(int argc, char * argv[])
 {
   // Comment the following if you want to use the itk text output window
   itk::OutputWindow::SetInstance(itk::TextOutput::New());
 
-  if (ac < 3)
+  if (argc < 3)
   {
-    std::cerr << "Usage: " << av[0] << " InputImage BaselineImage\n";
-    return -1;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " InputImage BaselineImage\n";
+    return EXIT_FAILURE;
   }
 
   itk::Size<2> radius;
@@ -41,17 +42,17 @@ itkNoiseImageFilterTest(int ac, char * av[])
   using myImageOut = itk::Image<float, 2>;
   using myImageChar = itk::Image<unsigned char, 2>;
   itk::ImageFileReader<myImageIn>::Pointer input = itk::ImageFileReader<myImageIn>::New();
-  input->SetFileName(av[1]);
+  input->SetFileName(argv[1]);
 
   // Create a filter
   using FilterType = itk::NoiseImageFilter<myImageIn, myImageOut>;
 
-  FilterType::Pointer      filter = FilterType::New();
+  auto                     filter = FilterType::New();
   itk::SimpleFilterWatcher filterWatch(filter);
 
   using RescaleFilterType = itk::RescaleIntensityImageFilter<myImageOut, myImageChar>;
 
-  RescaleFilterType::Pointer rescale = RescaleFilterType::New();
+  auto rescale = RescaleFilterType::New();
   rescale->SetOutputMinimum(0);
   rescale->SetOutputMaximum(255);
   rescale->SetInput(filter->GetOutput());
@@ -73,7 +74,7 @@ itkNoiseImageFilterTest(int ac, char * av[])
   itk::ImageFileWriter<myImageChar>::Pointer writer;
   writer = itk::ImageFileWriter<myImageChar>::New();
   writer->SetInput(rescale->GetOutput());
-  writer->SetFileName(av[2]);
+  writer->SetFileName(argv[2]);
   writer->Update();
 
   return EXIT_SUCCESS;

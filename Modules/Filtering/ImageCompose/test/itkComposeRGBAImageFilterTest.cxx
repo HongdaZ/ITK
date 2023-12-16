@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,27 +65,27 @@ itkComposeRGBAImageFilterTest(int argc, char * argv[])
     using ComposeFilterType = itk::ComposeImageFilter<ScalarImageType, RGBAImageType>;
 
     // Read input1
-    ReaderType::Pointer reader1 = ReaderType::New();
+    auto reader1 = ReaderType::New();
     reader1->SetFileName(Input1Filename);
     reader1->Update();
 
     // Read input2
-    ReaderType::Pointer reader2 = ReaderType::New();
+    auto reader2 = ReaderType::New();
     reader2->SetFileName(Input2Filename);
     reader2->Update();
 
     // Read input3
-    ReaderType::Pointer reader3 = ReaderType::New();
+    auto reader3 = ReaderType::New();
     reader3->SetFileName(Input3Filename);
     reader3->Update();
 
     // Read input4
-    ReaderType::Pointer reader4 = ReaderType::New();
+    auto reader4 = ReaderType::New();
     reader4->SetFileName(Input4Filename);
     reader4->Update();
 
     // Test ComposeRGBA filter
-    ComposeFilterType::Pointer filterCompose = ComposeFilterType::New();
+    auto filterCompose = ComposeFilterType::New();
     filterCompose->SetInput(0, reader1->GetOutput());
     filterCompose->SetInput(1, reader2->GetOutput());
     filterCompose->SetInput(2, reader3->GetOutput());
@@ -93,7 +93,7 @@ itkComposeRGBAImageFilterTest(int argc, char * argv[])
     filterCompose->Update();
 
     // Write output
-    WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
     writer->SetFileName(OutputFilename);
     writer->SetInput(filterCompose->GetOutput());
     writer->Update();

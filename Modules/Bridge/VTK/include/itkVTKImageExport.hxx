@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkVTKImageExport_hxx
 #define itkVTKImageExport_hxx
 
-#include "itkVTKImageExport.h"
 
 #include "itkPixelTraits.h"
 #include "itkNumericTraits.h"
@@ -59,6 +58,14 @@ VTKImageExport<TInputImage>::VTKImageExport()
   else if (typeid(ScalarType) == typeid(unsigned long))
   {
     m_ScalarTypeName = "unsigned long";
+  }
+  else if (typeid(ScalarType) == typeid(long long))
+  {
+    m_ScalarTypeName = "long long";
+  }
+  else if (typeid(ScalarType) == typeid(unsigned long long))
+  {
+    m_ScalarTypeName = "unsigned long long";
   }
   else if (typeid(ScalarType) == typeid(int))
   {
@@ -115,8 +122,8 @@ VTKImageExport<TInputImage>::SetInput(const InputImageType * input)
  * Get the current input image.
  */
 template <typename TInputImage>
-typename VTKImageExport<TInputImage>::InputImageType *
-VTKImageExport<TInputImage>::GetInput()
+auto
+VTKImageExport<TInputImage>::GetInput() -> InputImageType *
 {
   return itkDynamicCastInDebugMode<TInputImage *>(this->ProcessObject::GetInput(0));
 }
@@ -145,8 +152,8 @@ VTKImageExport<TInputImage>::WholeExtentCallback()
   // Fill in the known portion of the extent.
   for (; i < InputImageDimension; ++i)
   {
-    m_WholeExtent[i * 2] = int(index[i]);
-    m_WholeExtent[i * 2 + 1] = int(index[i] + size[i]) - 1;
+    m_WholeExtent[i * 2] = static_cast<int>(index[i]);
+    m_WholeExtent[i * 2 + 1] = static_cast<int>(index[i] + size[i]) - 1;
   }
   // Fill in the extent for dimensions up to three.
   for (; i < 3; ++i)
@@ -351,9 +358,7 @@ VTKImageExport<TInputImage>::PropagateUpdateExtentCallback(int * extent)
     size[i] = (extent[i * 2 + 1] - extent[i * 2]) + 1;
   }
 
-  InputRegionType region;
-  region.SetSize(size);
-  region.SetIndex(index);
+  const InputRegionType region(index, size);
 
   InputImagePointer input = this->GetInput();
   if (!input)
@@ -388,8 +393,8 @@ VTKImageExport<TInputImage>::DataExtentCallback()
   unsigned int i = 0;
   for (; i < InputImageDimension; ++i)
   {
-    m_DataExtent[i * 2] = int(index[i]);
-    m_DataExtent[i * 2 + 1] = int(index[i] + size[i]) - 1;
+    m_DataExtent[i * 2] = static_cast<int>(index[i]);
+    m_DataExtent[i * 2 + 1] = static_cast<int>(index[i] + size[i]) - 1;
   }
   for (; i < 3; ++i)
   {

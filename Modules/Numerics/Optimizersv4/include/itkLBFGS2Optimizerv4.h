@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,22 +18,22 @@
 #ifndef itkLBFGS2Optimizerv4_h
 #define itkLBFGS2Optimizerv4_h
 
-
-#include "itkObjectToObjectOptimizerBase.h"
+#include "itkGradientDescentOptimizerv4.h"
 #include "ITKOptimizersv4Export.h"
 #include <memory>
 
+#include "lbfgs.h"
 
 namespace itk
 {
 /*** \class LBFGS2Optimizerv4Enums
- * \brief Scoped Enum classes for LBFGS2Optimizerv4 class
+ * \brief Scoped Enum classes for LBFGS2Optimizerv4Template class
  * \ingroup ITKOptimizersv4
  */
 class LBFGS2Optimizerv4Enums
 {
 public:
-  /***\class LineSearchMethod
+  /*** \class LineSearchMethod
    * \ingroup ITKOptimizersv4
    * Line search method enum
    */
@@ -84,7 +84,7 @@ extern ITKOptimizersv4_EXPORT std::ostream &
                               operator<<(std::ostream & out, LBFGS2Optimizerv4Enums::LineSearchMethod value);
 
 /**
- *\class LBFGS2Optimizerv4
+ * \class LBFGS2Optimizerv4Template
  * \brief Wrap of the libLBFGS[1] algorithm for use in ITKv4 registration framework.
  * LibLBFGS is a translation of LBFGS code by Nocedal [2] and adds the orthantwise
  * limited-memmory Quais-Newton method [3] for optimization with L1-norm on the
@@ -129,7 +129,7 @@ extern ITKOptimizersv4_EXPORT std::ostream &
  *
  * References:
  *
- * [1] [libLBFGS](http://www.chokkan.org/software/liblbfgs/)
+ * [1] [libLBFGS](https://www.chokkan.org/software/liblbfgs/)
  *
  * [2] [NETLIB lbfgs](http://users.iems.northwestern.edu/~nocedal/lbfgs.html)
  *
@@ -155,13 +155,13 @@ extern ITKOptimizersv4_EXPORT std::ostream &
  *
  * \ingroup ITKOptimizersv4
  */
-
-
-class ITKOptimizersv4_EXPORT LBFGS2Optimizerv4 : public ObjectToObjectOptimizerBaseTemplate<double>
+template <typename TInternalComputationValueType>
+class ITK_TEMPLATE_EXPORT LBFGS2Optimizerv4Template
+  : public GradientDescentOptimizerv4Template<TInternalComputationValueType>
 {
 
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LBFGS2Optimizerv4);
+  ITK_DISALLOW_COPY_AND_MOVE(LBFGS2Optimizerv4Template);
 
   using LineSearchMethodEnum = LBFGS2Optimizerv4Enums::LineSearchMethod;
 #if !defined(ITK_LEGACY_REMOVE)
@@ -178,43 +178,44 @@ public:
 #endif
 
   /**
-   * currently only double is used in lbfgs need to figure
+   * TODO: currently only double is used in lbfgs need to figure
    * out how to make it a template parameter and set the required
    * define so lbfgs.h uses the correct version
    **/
   using PrecisionType = double;
 
-
   /** Standard "Self" type alias. */
-  using Self = LBFGS2Optimizerv4;
-  using Superclass = ObjectToObjectOptimizerBaseTemplate<double>;
+  using Self = LBFGS2Optimizerv4Template;
+  using Superclass = GradientDescentOptimizerv4Template<TInternalComputationValueType>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
-  using MetricType = Superclass::MetricType;
-  using ParametersType = Superclass::ParametersType;
-  using ScalesType = Superclass::ScalesType;
+  using MetricType = typename Superclass::MetricType;
+  using ParametersType = typename Superclass::ParametersType;
+  using ScalesType = typename Superclass::ScalesType;
+
+  /** Stop condition return string type */
+  using typename Superclass::StopConditionReturnStringType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(LBFGS2Optimizerv4, Superclass);
+  itkTypeMacro(LBFGS2Optimizerv4Template, GradientDescentOptimizerv4Template);
 
   /** Start optimization with an initial value. */
   void
   StartOptimization(bool doOnlyInitialization = false) override;
 
-  const StopConditionReturnStringType
+  /** Resume optimization.
+   * This runs the optimization loop, and allows continuation
+   * of stopped optimization */
+  void
+  ResumeOptimization() override;
+
+  virtual const StopConditionReturnStringType
   GetStopConditionDescription() const override;
 
-  /** This optimizer does not support scaling of the derivatives. */
-  void
-  SetScales(const ScalesType &) override;
-
-  /** This optimizer does not support weighting of the derivatives. */
-  void
-  SetWeights(const ScalesType) override;
   /**
    * Set/Get the number of corrections to approximate the inverse hessian matrix.
    * The L-BFGS routine stores the computation results of previous \c m
@@ -267,7 +268,6 @@ public:
   SetDeltaConvergenceTolerance(PrecisionType tol);
   PrecisionType
   GetDeltaConvergenceTolerance() const;
-
 
   /**
    * The maximum number of iterations.
@@ -350,7 +350,6 @@ public:
   PrecisionType
   GetLineSearchAccuracy() const;
 
-
   /**
    * A coefficient for the Wolfe condition.
    *  This parameter is valid only when the backtracking line-search
@@ -364,7 +363,6 @@ public:
   SetWolfeCoefficient(PrecisionType wc);
   PrecisionType
   GetWolfeCoefficient() const;
-
 
   /**
    * A parameter to control the gradient accuracy of the More-Thuente
@@ -447,23 +445,31 @@ public:
   itkGetConstMacro(CurrentParameterNorm, PrecisionType);
   /** Get gradient norm of current iteration */
   itkGetConstMacro(CurrentGradientNorm, PrecisionType);
-  // itkGetConstMacro(CurrentParameter, double* );
-  // itkGetConstMacro(CurrentGradient, double* );
+
   /** Get stepsize of current iteration */
   itkGetConstMacro(CurrentStepSize, PrecisionType);
+
   /** Get number of evaluations for current iteration */
   itkGetConstMacro(CurrentNumberOfEvaluations, PrecisionType);
 
+  /** Option to use ScalesEstimator for estimating scales at
+   * *each* iteration. The estimation overrides the scales
+   * set by SetScales(). Default is true.
+   */
+  itkSetMacro(EstimateScalesAtEachIteration, bool);
+  itkGetConstReferenceMacro(EstimateScalesAtEachIteration, bool);
+  itkBooleanMacro(EstimateScalesAtEachIteration);
+
 protected:
-  LBFGS2Optimizerv4();
-  ~LBFGS2Optimizerv4() override;
+  LBFGS2Optimizerv4Template();
+  ~LBFGS2Optimizerv4Template() override;
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 
 
   /** Progress callback from libLBFGS forwards it to the specific instance */
   static int
-  UpdateProgressCallback(void *                Instance,
+  UpdateProgressCallback(void *                instance,
                          const PrecisionType * x,
                          const PrecisionType * g,
                          const PrecisionType   fx,
@@ -486,7 +492,7 @@ protected:
                  int                   k,
                  int                   ls);
 
-  //** Function evalation callback from libLBFGS frowrad to instance */
+  //** Function evaluation callback from libLBFGS forward to instance */
   static PrecisionType
   EvaluateCostCallback(void *                instance,
                        const PrecisionType * x,
@@ -500,19 +506,50 @@ protected:
 private:
   // Private Implementation (Pimpl), to hide liblbfgs data structures
   class PrivateImplementationHolder;
+  lbfgs_parameter_t m_Parameters;
 
-  std::unique_ptr<PrivateImplementationHolder> m_Pimpl;
-
-  /** Progress update variables */
-  const double * m_CurrentGradient;
-  const double * m_CurrentParameter;
-
+  bool   m_EstimateScalesAtEachIteration;
   double m_CurrentStepSize;
   double m_CurrentParameterNorm;
   double m_CurrentGradientNorm;
   int    m_CurrentNumberOfEvaluations;
+  int    m_StatusCode;
 
-  int m_StatusCode;
+  /**
+   * itkGradientDecentOptimizerv4Template specific non supported methods.
+   */
+  void
+  SetMinimumConvergenceValue(double) override
+  {
+    itkWarningMacro("Not supported. Please use LBFGS specific convergence methods.");
+  };
+  void SetConvergenceWindowSize(SizeValueType) override
+  {
+    itkWarningMacro("Not supported. Please use LBFGS specific convergence methods.");
+  };
+  const double &
+  GetConvergenceValue() const override
+  {
+    itkWarningMacro("Not supported. Please use LBFGS specific convergence methods.");
+    static double value = 0;
+    return value;
+  };
+
+  void
+  AdvanceOneStep() override
+  {
+    itkWarningMacro("LBFGS2Optimizerv4Template does not implement single step advance");
+  };
 };
+
+
+/** This helps to meet backward compatibility */
+using LBFGS2Optimizerv4 = LBFGS2Optimizerv4Template<double>;
+
 } // end namespace itk
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#  include "itkLBFGS2Optimizerv4.hxx"
+#endif
+
 #endif

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,8 +55,7 @@ namespace itk
  * This code was contributed in the Insight Journal paper:
  * "Efficient implementation of kernel filtering"
  * by Beare R., Lehmann G
- * https://hdl.handle.net/1926/555
- * http://www.insight-journal.org/browse/publication/160
+ * https://www.insight-journal.org/browse/publication/160
  *
  *
  * \sa MedianImageFilter
@@ -75,7 +74,7 @@ class ITK_TEMPLATE_EXPORT RankImageFilter
                                       Function::RankHistogram<typename TInputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RankImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(RankImageFilter);
 
   /** Standard class type aliases. */
   using Self = RankImageFilter;
@@ -100,11 +99,11 @@ public:
   using IndexType = typename TInputImage::IndexType;
   using PixelType = typename TInputImage::PixelType;
   using OffsetType = typename TInputImage::OffsetType;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
   using OutputPixelType = typename TOutputImage::PixelType;
   using InputPixelType = typename TInputImage::PixelType;
 
-  using HistogramType = typename Superclass::HistogramType;
+  using typename Superclass::HistogramType;
 
   /** Image related type alias. */
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
@@ -119,9 +118,10 @@ public:
   using RadiusType = typename KernelType::SizeType;
 
   itkSetClampMacro(Rank, float, 0.0, 1.0);
-  itkGetConstMacro(Rank, float)
+  itkGetConstMacro(Rank, float);
 
-    bool GetUseVectorBasedAlgorithm() const
+  bool
+  GetUseVectorBasedAlgorithm() const
   {
     return HistogramType::UseVectorBasedAlgorithm();
   }

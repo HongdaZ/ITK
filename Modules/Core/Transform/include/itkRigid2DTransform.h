@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ namespace itk
  * Access methods for the center, translation and underlying matrix
  * offset vectors are documented in the superclass MatrixOffsetTransformBase.
  *
- * \sa Transfrom
+ * \sa Transform
  * \sa MatrixOffsetTransformBase
  *
  * \ingroup ITKTransform
@@ -56,7 +56,7 @@ template <typename TParametersValueType = double>
 class ITK_TEMPLATE_EXPORT Rigid2DTransform : public MatrixOffsetTransformBase<TParametersValueType, 2, 2>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Rigid2DTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(Rigid2DTransform);
 
   /** Standard class type aliases. */
   using Self = Rigid2DTransform;
@@ -76,43 +76,43 @@ public:
   static constexpr unsigned int ParametersDimension = 3;
 
   /** Scalar type. */
-  using ScalarType = typename Superclass::ScalarType;
+  using typename Superclass::ScalarType;
 
   /** Parameters type. */
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename Superclass::FixedParametersValueType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::ParametersValueType;
+  using typename Superclass::FixedParametersType;
+  using typename Superclass::FixedParametersValueType;
 
   /** Jacobian type. */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  using typename Superclass::JacobianType;
+  using typename Superclass::JacobianPositionType;
+  using typename Superclass::InverseJacobianPositionType;
 
   // / Standard matrix type for this class
-  using MatrixType = typename Superclass::MatrixType;
-  using MatrixValueType = typename Superclass::MatrixValueType;
+  using typename Superclass::MatrixType;
+  using typename Superclass::MatrixValueType;
 
   // / Standard vector type for this class
-  using OffsetType = typename Superclass::OffsetType;
-  using OffsetValueType = typename Superclass::OffsetValueType;
+  using typename Superclass::OffsetType;
+  using typename Superclass::OffsetValueType;
 
   // / Standard vector type for this class
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using OutputVectorValueType = typename Superclass::OutputVectorValueType;
+  using typename Superclass::InputVectorType;
+  using typename Superclass::OutputVectorType;
+  using typename Superclass::OutputVectorValueType;
 
   // / Standard covariant vector type for this class
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
+  using typename Superclass::InputCovariantVectorType;
+  using typename Superclass::OutputCovariantVectorType;
 
   // / Standard vnl_vector type for this class
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
+  using typename Superclass::InputVnlVectorType;
+  using typename Superclass::OutputVnlVectorType;
 
   // / Standard coordinate point type for this class
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
+  using typename Superclass::InputPointType;
+  using typename Superclass::OutputPointType;
 
   /** Base inverse transform type. This type should not be changed to the
    * concrete inverse transform type or inheritance would be lost. */
@@ -171,13 +171,13 @@ public:
   BackTransform(const OutputPointType & point) const;
 
   inline InputVectorType
-  BackTransform(const OutputVectorType & vector) const;
+  BackTransform(const OutputVectorType & vect) const;
 
   inline InputVnlVectorType
-  BackTransform(const OutputVnlVectorType & vector) const;
+  BackTransform(const OutputVnlVectorType & vect) const;
 
   inline InputCovariantVectorType
-  BackTransform(const OutputCovariantVectorType & vector) const;
+  BackTransform(const OutputCovariantVectorType & vect) const;
 
   /** Set/Get the angle of rotation in radians */
   void
@@ -228,14 +228,14 @@ public:
   /** Compute the Jacobian Matrix of the transformation at one point,
    *  allowing for thread-safety. */
   void
-  ComputeJacobianWithRespectToParameters(const InputPointType & p, JacobianType & jacobian) const override;
+  ComputeJacobianWithRespectToParameters(const InputPointType & p, JacobianType & j) const override;
 
   /**
    * This method creates and returns a new Rigid2DTransform object
    * which is the inverse of self.
    */
   void
-  CloneInverseTo(Pointer & newinverse) const;
+  CloneInverseTo(Pointer & result) const;
 
   /** Get an inverse of this transform. */
   bool
@@ -250,7 +250,7 @@ public:
    * which has the same parameters.
    */
   void
-  CloneTo(Pointer & clone) const;
+  CloneTo(Pointer & result) const;
 
   /** Reset the parameters to create and identity transform. */
   void

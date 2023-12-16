@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class PolylineMaskImageFilter
+ * \class PolylineMaskImageFilter
  * \brief Implements image masking operation constrained by a polyline on a plane
  * perpendicular to certain viewing direction.
  *
@@ -38,7 +38,7 @@ template <typename TInputImage, typename TPolyline, typename TVector, typename T
 class ITK_TEMPLATE_EXPORT PolylineMaskImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PolylineMaskImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(PolylineMaskImageFilter);
 
   /** Standard class type aliases. */
   using Self = PolylineMaskImageFilter;
@@ -82,11 +82,11 @@ public:
 
   /** Set input image. */
   void
-  SetInput1(const InputImageType * image);
+  SetInput1(const InputImageType * input);
 
   /** Set input polyline. */
   void
-  SetInput2(const PolylineType * polyline);
+  SetInput2(const PolylineType * input);
 
   /** Set/Get viewing direction vector. */
   itkSetMacro(ViewVector, VectorType);

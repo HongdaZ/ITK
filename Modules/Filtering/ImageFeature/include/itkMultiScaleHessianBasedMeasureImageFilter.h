@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,14 +24,14 @@
 
 namespace itk
 {
-/**\class MultiScaleHessianBasedMeasureImageFilterEnums
+/** \class MultiScaleHessianBasedMeasureImageFilterEnums
  * \brief This class contains all enum classes used by MultiScaleHessianBasedMeasureImageFilter class.
  * \ingroup ITKImageFeature
  */
 class MultiScaleHessianBasedMeasureImageFilterEnums
 {
 public:
-  /**\class SigmaStepMethod
+  /** \class SigmaStepMethod
    * \ingroup ITKImageFeature
    * \ingroup IntensityImageFilters
    * Sigma step method type
@@ -46,7 +46,7 @@ public:
 extern ITKImageFeature_EXPORT std::ostream &
                               operator<<(std::ostream & out, const MultiScaleHessianBasedMeasureImageFilterEnums::SigmaStepMethod value);
 
-/**\class MultiScaleHessianBasedMeasureImageFilter
+/** \class MultiScaleHessianBasedMeasureImageFilter
  * \brief A filter to enhance structures using Hessian eigensystem-based
  * measures in a multiscale framework
  *
@@ -66,8 +66,7 @@ extern ITKImageFeature_EXPORT std::ostream &
  * This code was contributed in the Insight Journal paper:
  * "Generalizing vesselness with respect to dimensionality and shape"
  * by Antiga L.
- * https://hdl.handle.net/1926/576
- * http://www.insight-journal.org/browse/publication/175
+ * https://www.insight-journal.org/browse/publication/175
  *
  *
  * \author Luca Antiga Ph.D.  Medical Imaging Unit,
@@ -89,7 +88,7 @@ class ITK_TEMPLATE_EXPORT MultiScaleHessianBasedMeasureImageFilter
   : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiScaleHessianBasedMeasureImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MultiScaleHessianBasedMeasureImageFilter);
 
   /** Standard class type aliases. */
   using Self = MultiScaleHessianBasedMeasureImageFilter;
@@ -109,7 +108,7 @@ public:
   using OutputRegionType = typename TOutputImage::RegionType;
 
   /** Image dimension. */
-  static constexpr unsigned int ImageDimension = InputImageType ::ImageDimension;
+  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
 
   /** Types for Scales image */
   using ScalesPixelType = float;
@@ -124,7 +123,7 @@ public:
   using UpdateBufferType = Image<double, Self::ImageDimension>;
   using BufferValueType = typename UpdateBufferType::ValueType;
 
-  using DataObjectPointer = typename Superclass::DataObjectPointer;
+  using typename Superclass::DataObjectPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

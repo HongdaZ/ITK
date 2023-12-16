@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,7 @@ itkCropImageFilter3DTest(int, char *[])
   region.SetSize(size);
   region.SetIndex(index);
 
-  ImageType::Pointer image = ImageType::New();
+  auto image = ImageType::New();
 
   image->SetRegions(region);
   image->Allocate();
@@ -74,7 +74,7 @@ itkCropImageFilter3DTest(int, char *[])
 
   // check size of cropped image
   ImageType::RegionType::SizeType croppedSize = croppedImage->GetLargestPossibleRegion().GetSize();
-  for (unsigned i = 0; i < ImageType::RegionType::SizeType::GetSizeDimension(); i++)
+  for (unsigned int i = 0; i < ImageType::RegionType::SizeType::GetSizeDimension(); ++i)
   {
     if (croppedSize[i] != dimSize - 2)
     {

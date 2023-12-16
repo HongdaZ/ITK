@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ template <typename TInputImage, typename TOutputImage = TInputImage>
 class ITK_TEMPLATE_EXPORT InvertDisplacementFieldImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InvertDisplacementFieldImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(InvertDisplacementFieldImageFilter);
 
   using Self = InvertDisplacementFieldImageFilter;
   using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
@@ -50,6 +50,9 @@ public:
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
+
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(InvertDisplacementFieldImageFilter, ImageToImageFilter);
 
   /** Extract dimension from input image. */
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
@@ -136,6 +139,7 @@ public:
   /* Should we force the boundary to have zero displacement? */
   itkSetMacro(EnforceBoundaryCondition, bool);
   itkGetMacro(EnforceBoundaryCondition, bool);
+  itkBooleanMacro(EnforceBoundaryCondition);
 
 protected:
   /** Constructor */

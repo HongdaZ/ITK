@@ -38,6 +38,7 @@ itkCompositeTransformTest.cxx
 itkTransformCloneTest.cxx
 itkMultiTransformTest.cxx
 itkTestTransformGetInverse.cxx
+        itkTransformGeometryImageFilterTest.cxx
 )
 
 CreateTestDriver(ITKTransform  "${ITKTransform-Test_LIBRARIES}" "${ITKTransformTests}")
@@ -83,7 +84,7 @@ itk_add_test(NAME itkScaleTransformTest
 itk_add_test(NAME itkSimilarity3DTransformTest
       COMMAND ITKTransformTestDriver itkSimilarity3DTransformTest)
 itk_add_test(NAME itkAzimuthElevationToCartesianTransformTest
-      COMMAND ITKTransformTestDriver itkAzimuthElevationToCartesianTransformTest)
+      COMMAND ITKTransformTestDriver itkAzimuthElevationToCartesianTransformTest 0 0 1.0 1.0 1.0 0.0)
 itk_add_test(NAME itkCenteredEuler3DTransformTest
       COMMAND ITKTransformTestDriver itkCenteredEuler3DTransformTest)
 itk_add_test(NAME itkTransformsSetParametersTest
@@ -161,7 +162,7 @@ itk_add_test(NAME itkBSplineTransformInitializerTest1
               ${ITK_EXAMPLE_DATA_ROOT}/BSplineDisplacements1.txt ${ITK_EXAMPLE_DATA_ROOT}/BrainProtonDensitySliceBorder20.png ${ITK_EXAMPLE_DATA_ROOT}/BrainProtonDensitySliceBorder20.png ${ITK_TEST_OUTPUT_DIR}/itkBSplineTransformInitializerTest1.png ${ITK_TEST_OUTPUT_DIR}/itkBSplineTransformInitializerTest1DeformationField.mhd)
 itk_add_test(NAME itkBSplineTransformInitializerTest2
       COMMAND ITKTransformTestDriver itkBSplineTransformInitializerTest2
-              ${ITK_EXAMPLE_DATA_ROOT}/BrainProtonDensitySliceBorder20.png )
+              ${ITK_EXAMPLE_DATA_ROOT}/BrainProtonDensitySliceBorder20.png)
 itk_add_test(NAME itkVersorRigid3DTransformTest
       COMMAND ITKTransformTestDriver itkVersorRigid3DTransformTest)
 itk_add_test(NAME itkVersorTransformTest
@@ -177,9 +178,19 @@ itk_add_test(NAME itkMultiTransformTest
 itk_add_test(NAME itkTestTransformGetInverse
   COMMAND ITKTransformTestDriver itkTestTransformGetInverse)
 set_property(TEST itkTestTransformGetInverse APPEND PROPERTY LABELS RUNS_LONG)
-set_tests_properties( itkTestTransformGetInverse PROPERTIES COST 50 )
+set_tests_properties(itkTestTransformGetInverse PROPERTIES COST 50)
+itk_add_test(NAME itkTransformGeometryImageFilterTest
+      COMMAND ITKTransformTestDriver itkTransformGeometryImageFilterTest
+              ${ITK_EXAMPLE_DATA_ROOT}/BrainProtonDensity3Slices.mha
+              DATA{Baseline/BrainProtonDensity3SlicesHardened.mha}
+              ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensity3SlicesHardened.mha)
 
 set(ITKTransformGTests
   itkBSplineTransformGTest.cxx
+  itkEuler3DTransformGTest.cxx
+  itkMatrixOffsetTransformBaseGTest.cxx
+  itkSimilarityTransformGTest.cxx
+  itkTransformGTest.cxx
+  itkTranslationTransformGTest.cxx
 )
 CreateGoogleTestDriver(ITKTransform "${ITKTransform-Test_LIBRARIES}" "${ITKTransformGTests}")

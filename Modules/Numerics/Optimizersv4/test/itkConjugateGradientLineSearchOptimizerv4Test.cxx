@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -63,7 +63,7 @@ public:
   }
 
   void
-  Initialize() throw(itk::ExceptionObject) override
+  Initialize() override
   {}
 
   void
@@ -183,7 +183,7 @@ ConjugateGradientLineSearchOptimizerv4RunTest(itk::ConjugateGradientLineSearchOp
   // check results to see if it is within range
   //
   double trueParameters[2] = { 2, -2 };
-  for (unsigned int j = 0; j < 2; j++)
+  for (unsigned int j = 0; j < 2; ++j)
   {
     if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > 0.01)
     {
@@ -207,8 +207,8 @@ itkConjugateGradientLineSearchOptimizerv4Test(int, char *[])
 
   using ScalesType = OptimizerType::ScalesType;
 
-  // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  // Declaration of an itkOptimizer
+  auto itkOptimizer = OptimizerType::New();
 
   // Declaration of the Metric
   ConjugateGradientLineSearchOptimizerv4TestMetric::Pointer metric =
@@ -278,8 +278,8 @@ itkConjugateGradientLineSearchOptimizerv4Test(int, char *[])
   itkOptimizer->Print(std::cout);
   std::cout << "Stop description   = " << itkOptimizer->GetStopConditionDescription() << std::endl;
 
-  OptimizerType::Pointer badOptimizer = OptimizerType::New();
-  bool                   caught = false;
+  auto badOptimizer = OptimizerType::New();
+  bool caught = false;
   try
   {
     badOptimizer->GetCurrentPosition();

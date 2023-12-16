@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,11 +19,12 @@
 #define itkInverseFFTImageFilter_h
 
 #include "itkImageToImageFilter.h"
+#include "itkMacro.h"
 
 namespace itk
 {
 /**
- *\class InverseFFTImageFilter
+ * \class InverseFFTImageFilter
  *
  * \brief Base class for inverse Fast Fourier Transform.
  *
@@ -51,7 +52,7 @@ class ITK_TEMPLATE_EXPORT InverseFFTImageFilter : public ImageToImageFilter<TInp
 
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InverseFFTImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(InverseFFTImageFilter);
 
   /** Standard class type aliases. */
   using InputImageType = TInputImage;
@@ -66,12 +67,14 @@ public:
 
   static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
 
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(InverseFFTImageFilter, ImageToImageFilter);
+
   /** Customized object creation methods that support configuration-based
    * selection of FFT implementation.
    *
    * Default implementation is VnlFFT. */
-  static Pointer
-  New();
+  itkFactoryOnlyNewMacro(Self);
 
   /* Return the preferred greatest prime factor supported for the input image
    * size. Defaults to 2 as many implementations work only for sizes that are
@@ -97,6 +100,10 @@ protected:
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkInverseFFTImageFilter.hxx"
+#endif
+
+#ifdef ITK_FFTIMAGEFILTERINIT_FACTORY_REGISTER_MANAGER
+#  include "itkFFTImageFilterInitFactoryRegisterManager.h"
 #endif
 
 #endif

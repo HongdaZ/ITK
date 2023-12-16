@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -74,7 +74,7 @@ main(int argc, char * argv[])
   using ReaderType = itk::ImageFileReader<ImageType>;
 
   ImageType::ConstPointer inputImage;
-  ReaderType::Pointer     reader = ReaderType::New();
+  auto                    reader = ReaderType::New();
   reader->SetFileName(argv[1]);
   try
   {
@@ -101,7 +101,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   ConstIteratorType inputIt(inputImage, inputImage->GetRequestedRegion());
-  inputIt.SetNumberOfSamples(::std::stoi(argv[2]));
+  inputIt.SetNumberOfSamples(std::stoi(argv[2]));
   inputIt.ReinitializeSeed();
   // Software Guide : EndCodeSnippet
 
@@ -118,7 +118,7 @@ main(int argc, char * argv[])
   {
     mean += static_cast<float>(inputIt.Get());
   }
-  mean = mean / ::std::stod(argv[2]);
+  mean = mean / std::stod(argv[2]);
 
   // Software Guide : EndCodeSnippet
   std::cout << "Mean estimate with " << argv[2] << " samples is " << mean
@@ -126,26 +126,29 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginLatex
   //
-  // The following table shows the results
-  // of running this example on several of the data files from
-  // \code{Examples/Data} with a range of sample sizes.
-  //
-  // \begin{table}
-  // \begin{center}
-  // \begin{tabular}[]{rc|c|c|c}
-  // & \multicolumn{4}{c}{\emph{Sample Size}} \\  & \code{\textbf{10}} &
-  // \code{\textbf{100}} & \code{\textbf{1000}} & \code{\textbf{10000}} \\
-  // \cline{2-5} \code{RatLungSlice1.mha} & 50.5 & 52.4 & 53.0 & 52.4 \\
-  // \code{RatLungSlice2.mha} & 46.7 & 47.5 & 47.4 & 47.6  \\
-  // \code{BrainT1Slice.png} & 47.2 & 64.1 & 68.0 & 67.8  \\ \end{tabular}
-  // \itkcaption[ImageRandomConstIteratorWithIndex usage]{Estimates of mean
-  // image pixel value using the ImageRandomConstIteratorWithIndex at
-  // different sample sizes.} \end{center}
-  // \label{tab:ImageRandomConstIteratorWithIndexExample}
-  // \end{table}
-  //
-  // \index{itk::Image\-Random\-Const\-Iterator\-With\-Index!example of
-  // using|)} Software Guide : EndLatex
+  /*
+   The following table shows the results
+   of running this example on several of the data files from
+   \code{Examples/Data} with a range of sample sizes.
+
+   \begin{table}
+   \begin{center}
+   \begin{tabular}[]{rc|c|c|c}
+   & \multicolumn{4}{c}{\emph{Sample Size}} \\  & \code{\textbf{10}} &
+   \code{\textbf{100}} & \code{\textbf{1000}} & \code{\textbf{10000}} \\
+   \cline{2-5} \code{RatLungSlice1.mha} & 50.5 & 52.4 & 53.0 & 52.4 \\
+   \code{RatLungSlice2.mha} & 46.7 & 47.5 & 47.4 & 47.6  \\
+   \code{BrainT1Slice.png} & 47.2 & 64.1 & 68.0 & 67.8  \\ \end{tabular}
+   \itkcaption[ImageRandomConstIteratorWithIndex usage]{Estimates of mean
+   image pixel value using the ImageRandomConstIteratorWithIndex at
+   different sample sizes.} \end{center}
+   \label{tab:ImageRandomConstIteratorWithIndexExample}
+   \end{table}
+
+   \index{itk::Image\-Random\-Const\-Iterator\-With\-Index!example of
+   using|)}
+  */
+  // Software Guide : EndLatex
 
   return EXIT_SUCCESS;
 }

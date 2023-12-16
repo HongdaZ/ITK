@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,14 +18,13 @@
 #ifndef itkChainCodePath_hxx
 #define itkChainCodePath_hxx
 
-#include "itkChainCodePath.h"
 #include "itkNumericTraits.h"
 
 namespace itk
 {
 template <unsigned int VDimension>
-typename ChainCodePath<VDimension>::IndexType
-ChainCodePath<VDimension>::EvaluateToIndex(const InputType & input) const
+auto
+ChainCodePath<VDimension>::EvaluateToIndex(const InputType & input) const -> IndexType
 {
   /* We could do something fancy here, such as "secretly" store the input and
    * total offset from the last time this function was called, and use such
@@ -63,7 +62,7 @@ ChainCodePath<VDimension>::EvaluateToIndex(const InputType & input) const
   IndexType index = m_Start;
 
   // Iterate through the chaincode, summing the offsets as we go.
-  for (InputType i = 0; i < input; i++)
+  for (InputType i = 0; i < input; ++i)
   {
     index += m_Chain[i];
   }
@@ -72,8 +71,8 @@ ChainCodePath<VDimension>::EvaluateToIndex(const InputType & input) const
 }
 
 template <unsigned int VDimension>
-typename ChainCodePath<VDimension>::OffsetType
-ChainCodePath<VDimension>::IncrementInput(InputType & input) const
+auto
+ChainCodePath<VDimension>::IncrementInput(InputType & input) const -> OffsetType
 {
   if (input < NumberOfSteps())
   {

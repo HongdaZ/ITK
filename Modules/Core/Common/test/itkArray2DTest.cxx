@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,9 +34,9 @@ itkArray2DTest(int, char *[])
   ArrayType     a(rows, cols);
   VnlMatrixType vm(rows, cols);
 
-  for (unsigned int r = 0; r < rows; r++)
+  for (unsigned int r = 0; r < rows; ++r)
   {
-    for (unsigned int c = 0; c < cols; c++)
+    for (unsigned int c = 0; c < cols; ++c)
     {
       const auto value = static_cast<double>(r + c);
       a.SetElement(r, c, value);
@@ -49,9 +49,9 @@ itkArray2DTest(int, char *[])
   // test copy constructor
   ArrayType b(a);
 
-  for (unsigned int r = 0; r < rows; r++)
+  for (unsigned int r = 0; r < rows; ++r)
   {
-    for (unsigned int c = 0; c < cols; c++)
+    for (unsigned int c = 0; c < cols; ++c)
     {
       double diff = a.GetElement(r, c) - b(r, c);
       diff = (diff > 0.0) ? diff : -diff; // take abs value
@@ -66,9 +66,9 @@ itkArray2DTest(int, char *[])
   // test construction from vnl_matrix
   ArrayType d(vm);
 
-  for (unsigned int r = 0; r < rows; r++)
+  for (unsigned int r = 0; r < rows; ++r)
   {
-    for (unsigned int c = 0; c < cols; c++)
+    for (unsigned int c = 0; c < cols; ++c)
     {
       double diff = d(r, c) - vm(r, c);
       diff = (diff > 0.0) ? diff : -diff; // take abs value
@@ -85,9 +85,9 @@ itkArray2DTest(int, char *[])
 
   e = a;
 
-  for (unsigned int r = 0; r < rows; r++)
+  for (unsigned int r = 0; r < rows; ++r)
   {
-    for (unsigned int c = 0; c < cols; c++)
+    for (unsigned int c = 0; c < cols; ++c)
     {
       double diff = a(r, c) - e(r, c);
       diff = (diff > 0.0) ? diff : -diff; // take abs value
@@ -104,9 +104,9 @@ itkArray2DTest(int, char *[])
 
   f = vm;
 
-  for (unsigned int r = 0; r < rows; r++)
+  for (unsigned int r = 0; r < rows; ++r)
   {
-    for (unsigned int c = 0; c < cols; c++)
+    for (unsigned int c = 0; c < cols; ++c)
     {
       double diff = f(r, c) - vm(r, c);
       diff = (diff > 0.0) ? diff : -diff; // take abs value

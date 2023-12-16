@@ -1,8 +1,8 @@
 include(ExternalProject)
 
-set( KWStyle_SOURCE_DIR ${CMAKE_BINARY_DIR}/KWStyle )
-set( KWStyle_DIR ${CMAKE_BINARY_DIR}/KWStyle-build )
-set( KWSTYLE_EXECUTABLE ${KWStyle_DIR}/KWStyle)
+set(KWStyle_SOURCE_DIR ${CMAKE_BINARY_DIR}/KWStyle)
+set(KWStyle_DIR ${CMAKE_BINARY_DIR}/KWStyle-build)
+set(KWSTYLE_EXECUTABLE ${KWStyle_DIR}/KWStyle)
 
 if(CMAKE_BUILD_TYPE)
   set(_build_configuration_arg -DCMAKE_BUILD_TYPE=Release)
@@ -23,7 +23,7 @@ set(CMAKE_C_COMPILER_LAUNCHER_FLAG -DCMAKE_C_COMPILER_LAUNCHER:FILEPATH=${CMAKE_
 if(NOT TARGET KWStyle)
 ExternalProject_add(KWStyle
   GIT_REPOSITORY "${git_protocol}://github.com/Kitware/KWStyle.git"
-  GIT_TAG d0d656e67f95129421e47825301a056f245cfecf
+  GIT_TAG 1173206c0e7f4bc70dc3af641daf6e33f4042772
   UPDATE_COMMAND ""
   DOWNLOAD_DIR ${KWStyle_SOURCE_DIR}
   SOURCE_DIR ${KWStyle_SOURCE_DIR}

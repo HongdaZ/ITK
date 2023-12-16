@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,6 @@
 
 #include "itkImageToImageFilter.h"
 
-#include "itkVideoToVideoFilter.h"
 
 namespace itk
 {
@@ -190,14 +189,12 @@ VideoToVideoFilter<TInputVideoStream, TOutputVideoStream>::GenerateInputRequeste
   OutputFrameSpatialRegionType outputRegion = this->GetOutput()->GetFrameRequestedSpatialRegion(outputStart);
 
   // Convert to input spatial region (TODO: handle dificult cases)
-  InputFrameSpatialRegionType inputRegion;
-  inputRegion.SetSize(outputRegion.GetSize());
-  inputRegion.SetIndex(outputRegion.GetIndex());
+  const InputFrameSpatialRegionType inputRegion = outputRegion;
 
   // Create input spatial regions for each frame of each input
   for (unsigned int i = 0; i < this->GetNumberOfInputs(); ++i)
   {
-    // Get the input and it's requeted temporal region
+    // Get the input and its requeted temporal region
     auto * input = dynamic_cast<InputVideoStreamType *>(this->ProcessObject::GetInput(i));
     if (!input)
     {

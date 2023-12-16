@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ namespace itk
 {
 
 /**
- *\class MultiStartOptimizerv4Template
+ * \class MultiStartOptimizerv4Template
  *  \brief Multi-start searches over input parameters and returns the best metric value
  *
  *   The multi-start algorithm performs gradient descent from N (large) number of starting points and
@@ -43,7 +43,7 @@ class ITK_TEMPLATE_EXPORT MultiStartOptimizerv4Template
   : public ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiStartOptimizerv4Template);
+  ITK_DISALLOW_COPY_AND_MOVE(MultiStartOptimizerv4Template);
 
   /** Standard class type aliases. */
   using Self = MultiStartOptimizerv4Template;
@@ -57,7 +57,7 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
   using ParametersListType = std::vector<ParametersType>;
   using ParameterListSizeType = typename ParametersListType::size_type;
 
@@ -85,24 +85,24 @@ public:
 #endif
 
   /** Stop condition return string type */
-  using StopConditionReturnStringType = typename Superclass::StopConditionReturnStringType;
+  using typename Superclass::StopConditionReturnStringType;
 
   /** Stop condition internal string type */
-  using StopConditionDescriptionType = typename Superclass::StopConditionDescriptionType;
+  using typename Superclass::StopConditionDescriptionType;
   /** Stop condition return string type */
 
   /** It should be possible to derive the internal computation type from the class object. */
   using InternalComputationValueType = TInternalComputationValueType;
 
   /** Metric type over which this class is templated */
-  using MetricType = typename Superclass::MetricType;
+  using typename Superclass::MetricType;
   using MetricTypePointer = typename MetricType::Pointer;
 
   /** Derivative type */
   using DerivativeType = typename MetricType::DerivativeType;
 
   /** Measure type */
-  using MeasureType = typename Superclass::MeasureType;
+  using typename Superclass::MeasureType;
   using MetricValuesListType = std::vector<MeasureType>;
 
   /** Get stop condition enum */

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -77,12 +77,12 @@ itkQuasiNewtonOptimizerv4TestTemplated(int         numberOfIterations,
 
   // Transform for the moving image
   using MovingTransformType = TMovingTransform;
-  typename MovingTransformType::Pointer movingTransform = MovingTransformType::New();
+  auto movingTransform = MovingTransformType::New();
   movingTransform->SetIdentity();
 
   // Transform for the fixed image
   using FixedTransformType = itk::IdentityTransform<double, Dimension>;
-  typename FixedTransformType::Pointer fixedTransform = FixedTransformType::New();
+  auto fixedTransform = FixedTransformType::New();
   fixedTransform->SetIdentity();
 
   // ParametersType for the moving transform
@@ -90,7 +90,7 @@ itkQuasiNewtonOptimizerv4TestTemplated(int         numberOfIterations,
 
   // Metric
   using MetricType = itk::MeanSquaresImageToImageMetricv4<FixedImageType, MovingImageType, FixedImageType>;
-  typename MetricType::Pointer metric = MetricType::New();
+  auto metric = MetricType::New();
 
   // Assign images and transforms to the metric.
   metric->SetFixedImage(fixedImage);
@@ -105,14 +105,14 @@ itkQuasiNewtonOptimizerv4TestTemplated(int         numberOfIterations,
 
   // Optimizer
   using OptimizerType = itk::QuasiNewtonOptimizerv4;
-  OptimizerType::Pointer optimizer = OptimizerType::New();
+  auto optimizer = OptimizerType::New();
 
   optimizer->SetMetric(metric);
   optimizer->SetNumberOfIterations(numberOfIterations);
 
   // Instantiate an Observer to report the progress of the Optimization
   using CommandIterationType = itk::CommandIterationUpdate<OptimizerType>;
-  CommandIterationType::Pointer iterationCommand = CommandIterationType::New();
+  auto iterationCommand = CommandIterationType::New();
   iterationCommand->SetOptimizer(optimizer);
 
   // Optimizer parameter scales estimator
@@ -127,7 +127,7 @@ itkQuasiNewtonOptimizerv4TestTemplated(int         numberOfIterations,
     if (usePhysicalSpaceForShift)
     {
       std::cout << "Testing RegistrationParameterScalesFrom*Physical*Shift" << std::endl;
-      typename PhysicalShiftScalesEstimatorType::Pointer shiftScalesEstimator = PhysicalShiftScalesEstimatorType::New();
+      auto shiftScalesEstimator = PhysicalShiftScalesEstimatorType::New();
       shiftScalesEstimator->SetMetric(metric);
       shiftScalesEstimator->SetTransformForward(true); // default
       scalesEstimator = shiftScalesEstimator;
@@ -135,7 +135,7 @@ itkQuasiNewtonOptimizerv4TestTemplated(int         numberOfIterations,
     else
     {
       std::cout << "Testing RegistrationParameterScalesFrom*Index*Shift" << std::endl;
-      typename IndexShiftScalesEstimatorType::Pointer shiftScalesEstimator = IndexShiftScalesEstimatorType::New();
+      auto shiftScalesEstimator = IndexShiftScalesEstimatorType::New();
       shiftScalesEstimator->SetMetric(metric);
       shiftScalesEstimator->SetTransformForward(true); // default
       scalesEstimator = shiftScalesEstimator;
@@ -144,7 +144,7 @@ itkQuasiNewtonOptimizerv4TestTemplated(int         numberOfIterations,
   else
   {
     std::cout << "Testing RegistrationParameterScalesFromJacobian" << std::endl;
-    typename JacobianScalesEstimatorType::Pointer jacobianScalesEstimator = JacobianScalesEstimatorType::New();
+    auto jacobianScalesEstimator = JacobianScalesEstimatorType::New();
     jacobianScalesEstimator->SetMetric(metric);
     scalesEstimator = jacobianScalesEstimator;
   }
@@ -194,7 +194,7 @@ itkQuasiNewtonOptimizerv4TestTemplated(int         numberOfIterations,
 
   constexpr double tolerance = 1.0; // equivalent to 1 pixel.
 
-  for (unsigned int i = 0; i < numbeOfParameters; i++)
+  for (unsigned int i = 0; i < numbeOfParameters; ++i)
   {
     // the parameters are negated in order to get the inverse transformation.
     // this only works for comparing translation parameters....

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,16 +37,12 @@ public:
   Atan2() = default;
   ~Atan2() = default;
   bool
-  operator!=(const Atan2 &) const
+  operator==(const Atan2 &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const Atan2 & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Atan2);
 
   inline TOutput
   operator()(const TInput1 & A, const TInput2 & B) const
@@ -81,10 +77,10 @@ public:
  * \endsphinx
  */
 template <typename TInputImage1, typename TInputImage2, typename TOutputImage>
-class Atan2ImageFilter : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
+class ITK_TEMPLATE_EXPORT Atan2ImageFilter : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Atan2ImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(Atan2ImageFilter);
 
   /** Standard class type aliases. */
   using Self = Atan2ImageFilter;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -67,7 +67,7 @@ template <typename TNode, unsigned int VImageDimension = 2>
 class ITK_TEMPLATE_EXPORT SparseImage : public Image<TNode *, VImageDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SparseImage);
+  ITK_DISALLOW_COPY_AND_MOVE(SparseImage);
 
   /** Standard type alias. */
   using Self = SparseImage;
@@ -89,13 +89,13 @@ public:
   using NodeType = TNode;
 
   /** Types derived from the Superclass */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   /** Tyepdef for the functor used to access a neighborhood of pixel
    * pointers. */
   using NeighborhoodAccessorFunctorType = NeighborhoodAccessorFunctor<Self>;
 
-  using IOPixelType = typename Superclass::IOPixelType;
+  using typename Superclass::IOPixelType;
 
   /** The list types for storing the active pixels. */
   using NodeListType = SparseFieldLayer<NodeType>;

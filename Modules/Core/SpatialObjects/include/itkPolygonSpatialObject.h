@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class PolygonSpatialObject
+ * \class PolygonSpatialObject
  *
  * \brief TODO
  * \ingroup ITKSpatialObjects
@@ -33,7 +33,7 @@ class ITK_TEMPLATE_EXPORT PolygonSpatialObject
   : public PointBasedSpatialObject<TDimension, SpatialObjectPoint<TDimension>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PolygonSpatialObject);
+  ITK_DISALLOW_COPY_AND_MOVE(PolygonSpatialObject);
 
   using Self = PolygonSpatialObject<TDimension>;
   using Superclass = PointBasedSpatialObject<TDimension>;
@@ -43,9 +43,9 @@ public:
   using PolygonPointType = SpatialObjectPoint<TDimension>;
   using PolygonPointListType = std::vector<PolygonPointType>;
 
-  using PointType = typename Superclass::PointType;
-  using TransformType = typename Superclass::TransformType;
-  using SpatialObjectPointType = typename Superclass::SpatialObjectPointType;
+  using typename Superclass::PointType;
+  using typename Superclass::TransformType;
+  using typename Superclass::SpatialObjectPointType;
 
   using ObjectDimensionType = unsigned int;
   static constexpr ObjectDimensionType ObjectDimension = TDimension;
@@ -76,6 +76,8 @@ public:
 
   /** Get if the contour is closed */
   itkGetConstMacro(IsClosed, bool);
+
+  itkBooleanMacro(IsClosed);
 
   /** Method returns area of polygon described by points */
   double

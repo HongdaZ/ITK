@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,7 @@ namespace itk
  * even though Versors are represented using four values.
  *
  * This optimizer assumes that the CostFunction to be
- * optimized has an itk::Versor as parameter.
+ * optimized has an itk::Versor as parameters.
  *
  * \sa RegularStepGradientDescentOptimizer
  * \sa Versor
@@ -52,7 +52,7 @@ namespace itk
 class ITKOptimizers_EXPORT VersorTransformOptimizer : public RegularStepGradientDescentBaseOptimizer
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VersorTransformOptimizer);
+  ITK_DISALLOW_COPY_AND_MOVE(VersorTransformOptimizer);
 
   /** Standard class type aliases. */
   using Self = VersorTransformOptimizer;

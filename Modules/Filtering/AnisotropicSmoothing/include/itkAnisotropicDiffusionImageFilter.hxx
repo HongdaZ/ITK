@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkAnisotropicDiffusionImageFilter_hxx
 #define itkAnisotropicDiffusionImageFilter_hxx
 
-#include "itkAnisotropicDiffusionImageFilter.h"
 
 namespace itk
 {
@@ -56,7 +55,7 @@ AnisotropicDiffusionImageFilter<TInputImage, TOutputImage>::InitializeIteration(
   if (this->GetUseImageSpacing())
   {
     minSpacing = this->GetInput()->GetSpacing()[0];
-    for (unsigned int i = 1; i < ImageDimension; i++)
+    for (unsigned int i = 1; i < ImageDimension; ++i)
     {
       if (this->GetInput()->GetSpacing()[i] < minSpacing)
       {
@@ -92,7 +91,8 @@ AnisotropicDiffusionImageFilter<TInputImage, TOutputImage>::InitializeIteration(
 
   if (this->GetNumberOfIterations() != 0)
   {
-    this->UpdateProgress(((float)(this->GetElapsedIterations())) / ((float)(this->GetNumberOfIterations())));
+    this->UpdateProgress((static_cast<float>(this->GetElapsedIterations())) /
+                         (static_cast<float>(this->GetNumberOfIterations())));
   }
   else
   {

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,11 +73,11 @@ public:
   using Superclass = Neighborhood<DummyNeighborhoodPixelType, Self::Dimension>;
 
   /** Inherit type alias from superclass */
-  using OffsetType = typename Superclass::OffsetType;
-  using RadiusType = typename Superclass::RadiusType;
-  using SizeType = typename Superclass::SizeType;
-  using Iterator = typename Superclass::Iterator;
-  using ConstIterator = typename Superclass::ConstIterator;
+  using typename Superclass::OffsetType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::SizeType;
+  using typename Superclass::Iterator;
+  using typename Superclass::ConstIterator;
 
   /** Typedef support for common objects */
   using ImageType = TImage;
@@ -89,7 +89,7 @@ public:
   using NeighborIndexType = typename NeighborhoodType::NeighborIndexType;
 
   /** Default constructor */
-  ConstNeighborhoodIteratorWithOnlyIndex();
+  ConstNeighborhoodIteratorWithOnlyIndex() = default;
 
   /** Virtual destructor */
   ~ConstNeighborhoodIteratorWithOnlyIndex() override = default;
@@ -230,14 +230,7 @@ public:
     return it.GetIndex() == this->GetIndex();
   }
 
-  /** Returns a boolean != comparison of the current location/index
-   * of two ConstNeighborhoodIteratorWithOnlyIndexs of like
-   * dimensionality.  The radii of the iterators are ignored. */
-  bool
-  operator!=(const Self & it) const
-  {
-    return it.GetIndex() != this->GetIndex();
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
 
   /** Returns a boolean < comparison of the  current location/index of
    * two ConstNeighborhoodIteratorWithOnlyIndexs
@@ -376,35 +369,35 @@ protected:
 
   /** The starting index for iteration within the itk::Image region
    * on which this ConstNeighborhoodIteratorWithOnlyIndex is defined. */
-  IndexType m_BeginIndex;
+  IndexType m_BeginIndex{ { 0 } };
 
   /** An array of upper looping boundaries used during iteration. */
-  IndexType m_Bound;
+  IndexType m_Bound{ { 0 } };
 
   /** The image on which iteration is defined. */
   typename ImageType::ConstPointer m_ConstImage;
 
   /** The end index for iteration within the itk::Image region
    * on which this ConstNeighborhoodIteratorWithOnlyIndex is defined. */
-  IndexType m_EndIndex;
+  IndexType m_EndIndex{ { 0 } };
 
   /** Array of loop counters used during iteration. */
-  IndexType m_Loop;
+  IndexType m_Loop{ { 0 } };
 
   /** The region over which iteration is defined. */
   RegionType m_Region;
 
   /** Denotes which of the iterators dimensional sides spill outside
-   * region of interest boundaries. */
-  mutable bool m_InBounds[Dimension];
+   * region of interest boundaries. By default `false` for each dimension. */
+  mutable bool m_InBounds[Dimension]{ false };
 
   /** Denotes if iterator is entirely within bounds */
-  mutable bool m_IsInBounds;
+  mutable bool m_IsInBounds{ false };
 
   /** Is the m_InBounds and m_IsInBounds variables up to date? Set to
    * false whenever the iterator is repositioned.  Set to true within
    * InBounds(). */
-  mutable bool m_IsInBoundsValid;
+  mutable bool m_IsInBoundsValid{ false };
 
   /** Lower threshold of in-bounds loop counter values. */
   IndexType m_InnerBoundsLow;
@@ -413,7 +406,7 @@ protected:
   IndexType m_InnerBoundsHigh;
 
   /** Does the specified region need to worry about boundary conditions? */
-  bool m_NeedToUseBoundaryCondition;
+  bool m_NeedToUseBoundaryCondition{ false };
 };
 
 template <typename TImage>

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@ template <typename TInputImage,
 class ITK_TEMPLATE_EXPORT DisplacementFieldToBSplineImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DisplacementFieldToBSplineImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(DisplacementFieldToBSplineImageFilter);
 
   using Self = DisplacementFieldToBSplineImageFilter;
   using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
@@ -53,6 +53,9 @@ public:
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
+
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(DisplacementFieldToBSplineImageFilter, ImageToImageFilter);
 
   /** Extract dimension from input image. */
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
@@ -197,7 +200,8 @@ public:
 
   /* Use input field to define the B-spline doain. */
   itkSetMacro(UseInputFieldToDefineTheBSplineDomain, bool);
-  itkGetConstMacro(UseInputFieldToDefineTheBSplineDomain, bool) itkBooleanMacro(UseInputFieldToDefineTheBSplineDomain);
+  itkGetConstMacro(UseInputFieldToDefineTheBSplineDomain, bool);
+  itkBooleanMacro(UseInputFieldToDefineTheBSplineDomain);
 
   /**
    * Set the spline order defining the bias field estimate.  Default = 3.

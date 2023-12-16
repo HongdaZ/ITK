@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class GaborImageSource
+ * \class GaborImageSource
  * \brief Generate an n-dimensional image of a Gabor filter.
  *
  * GaborImageSource generates an image of either the real
@@ -39,7 +39,7 @@ namespace itk
  * The output image may be of any dimension.
  *
  * This implementation was contributed as a paper to the Insight Journal
- * https://hdl.handle.net/1926/500
+ * https://www.insight-journal.org/browse/publication/150
  *
  * \ingroup DataSources
  * \ingroup ITKImageSources
@@ -48,7 +48,7 @@ template <typename TOutputImage>
 class ITK_TEMPLATE_EXPORT GaborImageSource : public GenerateImageSource<TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaborImageSource);
+  ITK_DISALLOW_COPY_AND_MOVE(GaborImageSource);
 
   /** Standard class type aliases. */
   using Self = GaborImageSource;

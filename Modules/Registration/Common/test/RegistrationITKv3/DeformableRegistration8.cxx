@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -105,7 +105,7 @@ public:
 };
 
 
-#include "itkTestDriverIncludeRequiredIOFactories.h"
+#include "itkTestDriverIncludeRequiredFactories.h"
 int
 main(int argc, char * argv[])
 {
@@ -124,7 +124,7 @@ main(int argc, char * argv[])
   }
 
   constexpr unsigned int ImageDimension = 3;
-  using PixelType = signed short;
+  using PixelType = short;
 
   using FixedImageType = itk::Image<PixelType, ImageDimension>;
   using MovingImageType = itk::Image<PixelType, ImageDimension>;
@@ -208,7 +208,7 @@ main(int argc, char * argv[])
   TransformType::MeshSizeType           meshSize;
   TransformType::OriginType             fixedOrigin;
 
-  for (unsigned int i = 0; i < SpaceDimension; i++)
+  for (unsigned int i = 0; i < SpaceDimension; ++i)
   {
     fixedOrigin[i] = fixedImage->GetOrigin()[i];
     fixedPhysicalDimensions[i] =
@@ -363,7 +363,7 @@ main(int argc, char * argv[])
   // such as 100 or 128.
   resample->SetDefaultPixelValue(0);
 
-  using OutputPixelType = signed short;
+  using OutputPixelType = short;
 
   using OutputImageType = itk::Image<OutputPixelType, ImageDimension>;
 

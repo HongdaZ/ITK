@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,11 +58,11 @@ itkBSplineScatteredDataPointSetToImageFilterTest4(int, char *[])
 
   // Instantiate example corresponding points with relative weighting
 
-  PointSetType::Pointer pointSet = PointSetType::New();
+  auto pointSet = PointSetType::New();
   pointSet->Initialize();
 
   using WeightsContainerType = FilterType::WeightsContainerType;
-  WeightsContainerType::Pointer weights = WeightsContainerType::New();
+  auto weights = WeightsContainerType::New();
   weights->Initialize();
 
   // Create first landmark pair and weights
@@ -81,7 +81,7 @@ itkBSplineScatteredDataPointSetToImageFilterTest4(int, char *[])
   weights->InsertElement(0, weight1);
 
   VectorType vector1;
-  for (unsigned int d = 0; d < DataDimension; d++)
+  for (unsigned int d = 0; d < DataDimension; ++d)
   {
     vector1[d] = landmarkInSecondImage1[d] - landmarkInFirstImage1[d];
   }
@@ -104,7 +104,7 @@ itkBSplineScatteredDataPointSetToImageFilterTest4(int, char *[])
   weights->InsertElement(1, weight2);
 
   VectorType vector2;
-  for (unsigned int d = 0; d < DataDimension; d++)
+  for (unsigned int d = 0; d < DataDimension; ++d)
   {
     vector2[d] = landmarkInSecondImage2[d] - landmarkInFirstImage2[d];
   }
@@ -127,7 +127,7 @@ itkBSplineScatteredDataPointSetToImageFilterTest4(int, char *[])
   weights->InsertElement(2, weight3);
 
   VectorType vector3;
-  for (unsigned int d = 0; d < DataDimension; d++)
+  for (unsigned int d = 0; d < DataDimension; ++d)
   {
     vector3[d] = landmarkInSecondImage3[d] - landmarkInFirstImage3[d];
   }
@@ -136,7 +136,7 @@ itkBSplineScatteredDataPointSetToImageFilterTest4(int, char *[])
 
   // Now fit the displacement
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, BSplineScatteredDataPointSetToImageFilter, PointSetToImageFilter);
 
@@ -175,15 +175,15 @@ itkBSplineScatteredDataPointSetToImageFilterTest4(int, char *[])
   // Instantiate the BSpline transform
 
   using TransformType = itk::BSplineTransform<float, DataDimension, SplineOrder>;
-  TransformType::Pointer transform = TransformType::New();
+  auto transform = TransformType::New();
 
   using CoefficientImageType = TransformType::ImageType;
 
   TransformType::CoefficientImageArray coefficientImages;
-  for (unsigned int j = 0; j < DataDimension; j++)
+  for (unsigned int j = 0; j < DataDimension; ++j)
   {
     using SelectorType = itk::VectorIndexSelectionCastImageFilter<VectorImageType, CoefficientImageType>;
-    SelectorType::Pointer selector = SelectorType::New();
+    auto selector = SelectorType::New();
     selector->SetInput(filter->GetPhiLattice());
     selector->SetIndex(j);
 
@@ -206,7 +206,7 @@ itkBSplineScatteredDataPointSetToImageFilterTest4(int, char *[])
   // the transform should produce
 
   using InterpolatorType = itk::VectorLinearInterpolateImageFunction<VectorImageType>;
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
   interpolator->SetInputImage(filter->GetOutput());
 
   VectorImageType::PointType testPoint;
@@ -217,7 +217,7 @@ itkBSplineScatteredDataPointSetToImageFilterTest4(int, char *[])
   RealType   approximateDistance = inputPoint.EuclideanDistanceTo(outputPoint);
 
   VectorImageType::PointType approximateOutputPoint;
-  for (unsigned int d = 0; d < DataDimension; d++)
+  for (unsigned int d = 0; d < DataDimension; ++d)
   {
     approximateOutputPoint[d] = testPoint[d] + vector[d];
   }

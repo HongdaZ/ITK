@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class STAPLEImageFilter
+ * \class STAPLEImageFilter
  *
  * \brief The STAPLE filter implements the Simultaneous Truth and Performance
  * Level Estimation algorithm for generating ground truth volumes from a set of
@@ -122,7 +122,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT STAPLEImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(STAPLEImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(STAPLEImageFilter);
 
   /** Standard class type aliases. */
   using Self = STAPLEImageFilter;
@@ -153,7 +153,7 @@ public:
   using OutputImagePointer = typename OutputImageType::Pointer;
 
   /** Superclass type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
 
   /** Set get the binary ON value of the input image. */
   itkSetMacro(ForegroundValue, InputPixelType);
@@ -204,7 +204,7 @@ public:
   /** Set/Get the maximum number of iterations after which the STAPLE algorithm
    *  will be considered to have converged.  In general this SHOULD NOT be set and
    *  the algorithm should be allowed to converge on its own. */
-  itkSetMacro(MaximumIterations, unsigned int);
+  itkSetClampMacro(MaximumIterations, unsigned int, 1, NumericTraits<unsigned int>::max());
   itkGetConstMacro(MaximumIterations, unsigned int);
 
   /** Scales the estimated prior probability that a pixel will be inside the

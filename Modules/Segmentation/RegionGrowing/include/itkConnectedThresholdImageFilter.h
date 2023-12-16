@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 
 namespace itk
 {
-/**\class ConnectedThresholdImageFilterEnums
+/** \class ConnectedThresholdImageFilterEnums
  * \brief Contains all the enum classes used by the ConnectedThresholdImageFilter class.
  * \ingroup RegionGrowingSegmentation
  * \ingroup ITKRegionGrowing
@@ -51,7 +51,7 @@ public:
 extern ITKRegionGrowing_EXPORT std::ostream &
                                operator<<(std::ostream & out, const ConnectedThresholdImageFilterEnums::Connectivity value);
 /**
- *\class ConnectedThresholdImageFilter
+ * \class ConnectedThresholdImageFilter
  * \brief Label pixels that are connected to a seed and lie within a range of values
  *
  * ConnectedThresholdImageFilter labels pixels with ReplaceValue that are
@@ -68,7 +68,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT ConnectedThresholdImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConnectedThresholdImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ConnectedThresholdImageFilter);
 
   /** Standard class type aliases. */
   using Self = ConnectedThresholdImageFilter;

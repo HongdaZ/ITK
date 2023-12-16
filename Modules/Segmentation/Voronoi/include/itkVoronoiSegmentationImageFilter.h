@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,7 +54,7 @@ class ITK_TEMPLATE_EXPORT VoronoiSegmentationImageFilter
   : public VoronoiSegmentationImageFilterBase<TInputImage, TOutputImage, TBinaryPriorImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VoronoiSegmentationImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(VoronoiSegmentationImageFilter);
 
   /** Standard class type aliases. */
   using Self = VoronoiSegmentationImageFilter;
@@ -69,11 +69,11 @@ public:
   itkTypeMacro(VoronoiSegmentationImageFilter, VoronoiSegmentationImageFilterBase);
 
   /** Convenient type alias. */
-  using BinaryObjectImage = typename Superclass::BinaryObjectImage;
-  using IndexList = typename Superclass::IndexList;
-  using IndexType = typename Superclass::IndexType;
-  using RegionType = typename Superclass::RegionType;
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::BinaryObjectImage;
+  using typename Superclass::IndexList;
+  using typename Superclass::IndexType;
+  using typename Superclass::RegionType;
+  using typename Superclass::InputImageType;
 
   /** Set/Get the Estimation of the mean pixel value for the object. */
   itkSetMacro(Mean, double);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class ExhaustiveOptimizerv4
+ * \class ExhaustiveOptimizerv4
  * \brief Optimizer that fully samples a grid on the parametric space.
  *
  * This optimizer is equivalent to an exhaustive search in a discrete grid
@@ -80,7 +80,7 @@ class ITK_TEMPLATE_EXPORT ExhaustiveOptimizerv4
   : public ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExhaustiveOptimizerv4);
+  ITK_DISALLOW_COPY_AND_MOVE(ExhaustiveOptimizerv4);
 
   /** Standard "Self" type alias. */
   using Self = ExhaustiveOptimizerv4;
@@ -98,13 +98,13 @@ public:
   using StepsType = Array<SizeValueType>;
 
   /** Measure type */
-  using MeasureType = typename Superclass::MeasureType;
+  using typename Superclass::MeasureType;
 
   /** Parameters type */
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
 
   /** Scales type */
-  using ScalesType = typename Superclass::ScalesType;
+  using typename Superclass::ScalesType;
 
   void
   StartOptimization(bool doOnlyInitialization = false) override;
@@ -158,22 +158,22 @@ protected:
   AdvanceOneStep();
 
   void
-  IncrementIndex(ParametersType & param);
+  IncrementIndex(ParametersType & newPosition);
 
 protected:
   ParametersType m_InitialPosition;
-  MeasureType    m_CurrentValue;
-  StepsType      m_NumberOfSteps;
+  MeasureType    m_CurrentValue{ 0 };
+  StepsType      m_NumberOfSteps{ 0 };
   bool           m_Stop{ false };
   double         m_StepLength{ 1.0 };
-  ParametersType m_CurrentIndex;
-  MeasureType    m_MaximumMetricValue;
-  MeasureType    m_MinimumMetricValue;
+  ParametersType m_CurrentIndex{ 0 };
+  MeasureType    m_MaximumMetricValue{ 0.0 };
+  MeasureType    m_MinimumMetricValue{ 0.0 };
   ParametersType m_MinimumMetricValuePosition;
   ParametersType m_MaximumMetricValuePosition;
 
 private:
-  std::ostringstream m_StopConditionDescription;
+  std::ostringstream m_StopConditionDescription{ "" };
 };
 } // end namespace itk
 

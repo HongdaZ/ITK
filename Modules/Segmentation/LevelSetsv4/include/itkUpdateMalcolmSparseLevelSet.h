@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ template <unsigned int VDimension, typename TEquationContainer>
 class ITK_TEMPLATE_EXPORT UpdateMalcolmSparseLevelSet : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(UpdateMalcolmSparseLevelSet);
+  ITK_DISALLOW_COPY_AND_MOVE(UpdateMalcolmSparseLevelSet);
 
   using Self = UpdateMalcolmSparseLevelSet;
   using Pointer = SmartPointer<Self>;
@@ -139,7 +139,7 @@ protected:
   /** Update separately the zero layer for points with positive/negative update values
    *  Move points to -1 or +1 layers */
   void
-  EvolveWithPhasedPropagation(LevelSetLayerType & ioList, LevelSetLayerType & ioUpdate, const bool & iContraction);
+  EvolveWithPhasedPropagation(LevelSetLayerType & ioList, LevelSetLayerType & ioUpdate, const bool iContraction);
 
   /** Make sure the layers are of single pixel thickness only. This method is related
     to the minimal interface function described in the original paper. */

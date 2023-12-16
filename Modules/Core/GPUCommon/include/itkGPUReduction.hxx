@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkGPUReduction_hxx
 
 #include "itkMacro.h"
-#include "itkGPUReduction.h"
 
 //#define CPU_VERIFY
 
@@ -116,7 +115,6 @@ GPUReduction<TElement>::GetReductionKernel(int whichKernel, int blockSize, int i
   if (whichKernel != 5 && whichKernel != 6)
   {
     itkExceptionMacro(<< "Reduction kernel undefined!");
-    return 0;
   }
 
   std::ostringstream defines;
@@ -188,7 +186,7 @@ GPUReduction<TElement>::RandomTest()
   unsigned int bytes = size * sizeof(TElement);
   auto *       h_idata = (TElement *)malloc(bytes);
 
-  for (int i = 0; i < size; i++)
+  for (int i = 0; i < size; ++i)
   {
     // Keep the numbers small so we don't get truncation error in the sum
     h_idata[i] = (TElement)(rand() & 0xFF);
@@ -340,7 +338,7 @@ GPUReduction<TElement>::GPUReduce(cl_int         n,
   std::cout << "CPU_VERIFY sum = " << CPUSum << std::endl;
 #endif
 
-  for (int i = 0; i < numBlocks; i++)
+  for (int i = 0; i < numBlocks; ++i)
   {
     gpu_result += h_odata[i];
   }
@@ -357,7 +355,7 @@ GPUReduction<TElement>::CPUGenerateData(TElement * data, int size)
 {
   TElement sum = data[0];
   //     TElement c = (TElement)0.0;
-  for (int i = 1; i < size; i++)
+  for (int i = 1; i < size; ++i)
   {
     // TODO consider using compensated sum algorithm
 

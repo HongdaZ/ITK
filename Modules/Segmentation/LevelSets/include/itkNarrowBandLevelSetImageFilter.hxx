@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkNarrowBandLevelSetImageFilter_hxx
 #define itkNarrowBandLevelSetImageFilter_hxx
 
-#include "itkNarrowBandLevelSetImageFilter.h"
 #include <cstdio>
 #include "itkMath.h"
 
@@ -31,8 +30,13 @@ NarrowBandLevelSetImageFilter<TInputImage, TFeatureImage, TOutputPixelType, TOut
   Indent         indent) const
 {
   Superclass::PrintSelf(os, indent);
-  os << indent << "m_ReverseExpansionDirection = " << m_ReverseExpansionDirection << std::endl;
-  os << indent << "m_SegmentationFunction = " << m_SegmentationFunction << std::endl;
+
+  os << indent << "ReverseExpansionDirection: " << m_ReverseExpansionDirection << std::endl;
+
+  itkPrintSelfObjectMacro(IsoFilter);
+  itkPrintSelfObjectMacro(ChamferFilter);
+
+  os << indent << "SegmentationFunction: " << m_SegmentationFunction << std::endl;
 }
 
 template <typename TInputImage, typename TFeatureImage, typename TOutputPixelType, typename TOutputImage>

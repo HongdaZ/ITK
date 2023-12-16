@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkInvertDisplacementFieldImageFilter_hxx
 #define itkInvertDisplacementFieldImageFilter_hxx
 
-#include "itkInvertDisplacementFieldImageFilter.h"
 
 #include "itkComposeDisplacementFieldsImageFilter.h"
 #include "itkImageDuplicator.h"
@@ -71,7 +70,7 @@ InvertDisplacementFieldImageFilter<TInputImage, TOutputImage>::GenerateData()
   this->UpdateProgress(0.0f);
   this->AllocateOutputs();
 
-  VectorType zeroVector(0.0);
+  constexpr VectorType zeroVector{};
 
   typename DisplacementFieldType::ConstPointer displacementField = this->GetInput();
 
@@ -80,7 +79,7 @@ InvertDisplacementFieldImageFilter<TInputImage, TOutputImage>::GenerateData()
   if (this->GetInverseFieldInitialEstimate())
   {
     using DuplicatorType = ImageDuplicator<InverseDisplacementFieldType>;
-    typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
+    auto duplicator = DuplicatorType::New();
     duplicator->SetInputImage(this->GetInverseFieldInitialEstimate());
     duplicator->Update();
 
@@ -94,7 +93,7 @@ InvertDisplacementFieldImageFilter<TInputImage, TOutputImage>::GenerateData()
     inverseDisplacementField->FillBuffer(zeroVector);
   }
 
-  for (unsigned int d = 0; d < ImageDimension; d++)
+  for (unsigned int d = 0; d < ImageDimension; ++d)
   {
     this->m_DisplacementFieldSpacing[d] = displacementField->GetSpacing()[d];
   }
@@ -117,7 +116,7 @@ InvertDisplacementFieldImageFilter<TInputImage, TOutputImage>::GenerateData()
                                << ", max error norm = " << this->m_MaxErrorNorm);
 
     using ComposerType = ComposeDisplacementFieldsImageFilter<DisplacementFieldType>;
-    typename ComposerType::Pointer composer = ComposerType::New();
+    auto composer = ComposerType::New();
     composer->SetDisplacementField(displacementField);
     composer->SetWarpingField(inverseDisplacementField);
 
@@ -129,7 +128,7 @@ InvertDisplacementFieldImageFilter<TInputImage, TOutputImage>::GenerateData()
     this->m_MeanErrorNorm = NumericTraits<RealType>::ZeroValue();
     this->m_MaxErrorNorm = NumericTraits<RealType>::ZeroValue();
 
-    float               newProgress = float(2 * iteration - 1) / (2 * m_MaximumNumberOfIterations);
+    float               newProgress = static_cast<float>(2 * iteration - 1) / (2 * m_MaximumNumberOfIterations);
     ProgressTransformer pt(oldProgress, newProgress, this);
     this->m_DoThreadedEstimateInverse = false;
     this->GetMultiThreader()->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
@@ -149,7 +148,7 @@ InvertDisplacementFieldImageFilter<TInputImage, TOutputImage>::GenerateData()
     }
 
     oldProgress = newProgress;
-    newProgress = float(2 * iteration) / (2 * m_MaximumNumberOfIterations);
+    newProgress = static_cast<float>(2 * iteration) / (2 * m_MaximumNumberOfIterations);
     ProgressTransformer pt2(oldProgress, newProgress, this);
     // Multithread processing to estimate inverse field
     this->m_DoThreadedEstimateInverse = true;
@@ -172,7 +171,7 @@ InvertDisplacementFieldImageFilter<TInputImage, TOutputImage>::DynamicThreadedGe
   const typename DisplacementFieldType::RegionType fullRegion = this->m_ComposedField->GetRequestedRegion();
   const typename DisplacementFieldType::SizeType   size = fullRegion.GetSize();
   const typename DisplacementFieldType::IndexType  startIndex = fullRegion.GetIndex();
-  const typename DisplacementFieldType::PixelType  zeroVector(0.0);
+  const typename DisplacementFieldType::PixelType  zeroVector{};
 
   ImageRegionIterator<DisplacementFieldType> ItE(this->m_ComposedField, region);
   ImageRegionIterator<RealImageType>         ItS(this->m_ScaledNormImage, region);
@@ -195,7 +194,7 @@ InvertDisplacementFieldImageFilter<TInputImage, TOutputImage>::DynamicThreadedGe
       typename DisplacementFieldType::IndexType index = ItI.GetIndex();
       if (this->m_EnforceBoundaryCondition)
       {
-        for (unsigned int d = 0; d < ImageDimension; d++)
+        for (unsigned int d = 0; d < ImageDimension; ++d)
         {
           if (index[d] == startIndex[d] || index[d] == static_cast<IndexValueType>(size[d]) - startIndex[d] - 1)
           {

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 
 namespace itk
 {
-/**\class VideoIOBaseEnums
+/** \class VideoIOBaseEnums
  * \brief This contains all enum classes used from VideoIOBase class.
  * \ingroup ITKVideoIO
  */
@@ -34,7 +34,7 @@ class VideoIOBaseEnums
 {
 public:
   /**
-   *\class ReadFrom
+   * \class ReadFrom
    * \ingroup ITKVideoIO
    * Enum used to define weather to read from a file or a camera */
   enum class ReadFrom : uint8_t
@@ -47,7 +47,7 @@ public:
 extern ITKVideoIO_EXPORT std::ostream &
                          operator<<(std::ostream & out, const VideoIOBaseEnums::ReadFrom value);
 /**
- *\class VideoIOBase
+ * \class VideoIOBase
  * \brief Abstract superclass defines video IO interface.
  *
  * VideoIOBase is a class that reads and/or writes video data
@@ -69,13 +69,13 @@ extern ITKVideoIO_EXPORT std::ostream &
 class ITKVideoIO_EXPORT VideoIOBase : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VideoIOBase);
+  ITK_DISALLOW_COPY_AND_MOVE(VideoIOBase);
 
   /** Standard class type aliases. */
   using Self = VideoIOBase;
   using Superclass = ImageIOBase;
   using Pointer = SmartPointer<Self>;
-  using SizeValueType = ::itk::SizeValueType;
+  using SizeValueType = itk::SizeValueType;
 
   /** Frame offset type alias */
   using TemporalOffsetType = double;

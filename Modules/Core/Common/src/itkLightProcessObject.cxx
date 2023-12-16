@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@ namespace itk
 /**
  * Instantiate object with no start, end, or progress methods.
  */
-LightProcessObject ::LightProcessObject()
+LightProcessObject::LightProcessObject()
 {
   m_AbortGenerateData = false;
   m_Progress = 0.0f;
@@ -32,7 +32,7 @@ LightProcessObject ::LightProcessObject()
  * Destructor for the LightProcessObject class. We've got to
  * UnRegister() the use of any input classes.
  */
-LightProcessObject ::~LightProcessObject() = default;
+LightProcessObject::~LightProcessObject() = default;
 
 /**
  * Update the progress of the process object. If a ProgressMethod exists,
@@ -40,7 +40,7 @@ LightProcessObject ::~LightProcessObject() = default;
  * should range between (0,1).
  */
 void
-LightProcessObject ::UpdateProgress(float amount)
+LightProcessObject::UpdateProgress(float amount)
 {
   m_Progress = amount;
   this->InvokeEvent(ProgressEvent());
@@ -50,7 +50,7 @@ LightProcessObject ::UpdateProgress(float amount)
  *
  */
 void
-LightProcessObject ::PrintSelf(std::ostream & os, Indent indent) const
+LightProcessObject::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
@@ -62,7 +62,7 @@ LightProcessObject ::PrintSelf(std::ostream & os, Indent indent) const
  *
  */
 void
-LightProcessObject ::UpdateOutputData()
+LightProcessObject::UpdateOutputData()
 {
   this->InvokeEvent(StartEvent());
 

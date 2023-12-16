@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,9 +31,9 @@ namespace itk
  * The code in this class was adapted from the Wikipedia and the
  * netlib.org zeroin function.
  *
- * http://www.netlib.org/go/zeroin.f
- * http://en.wikipedia.org/wiki/Brent_method
- * http://en.wikipedia.org/wiki/Golden_section_search
+ * https://www.netlib.org/go/zeroin.f
+ * https://en.wikipedia.org/wiki/Brent_method
+ * https://en.wikipedia.org/wiki/Golden_section_search
  *
  * This optimizer needs a cost function.
  * Partial derivatives of that function are not required.
@@ -193,10 +193,10 @@ protected:
    * IMPORTANT: The value of ax and the value of the function at ax (i.e., fa),
    * must both be provided to this function. */
   virtual void
-  LineBracket(double * ax, double * bx, double * cx, double * fa, double * fb, double * fc);
+  LineBracket(double * x1, double * x2, double * x3, double * f1, double * f2, double * f3);
 
   virtual void
-  LineBracket(double * ax, double * bx, double * cx, double * fa, double * fb, double * fc, ParametersType & tempCoord);
+  LineBracket(double * x1, double * x2, double * x3, double * f1, double * f2, double * f3, ParametersType & tempCoord);
 
   /** Given a bracketing triple of points and their function values, returns
    * a bounded extreme.  These values are in parameter space, along the
@@ -208,7 +208,7 @@ protected:
                         double   bx,
                         double   cx,
                         double   fa,
-                        double   fb,
+                        double   functionValueOfb,
                         double   fc,
                         double * extX,
                         double * extVal);
@@ -218,7 +218,7 @@ protected:
                         double           bx,
                         double           cx,
                         double           fa,
-                        double           fb,
+                        double           functionValueOfb,
                         double           fc,
                         double *         extX,
                         double *         extVal,

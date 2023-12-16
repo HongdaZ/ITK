@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,11 +36,11 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-template <typename TPixel>
+template <typename TComponent>
 class ITK_TEMPLATE_EXPORT ColorTable : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ColorTable);
+  ITK_DISALLOW_COPY_AND_MOVE(ColorTable);
 
   /** Standard class type aliases. */
   using Self = ColorTable;
@@ -88,33 +88,33 @@ public:
   itkGetConstMacro(NumberOfColors, unsigned int);
 
   /** Get the color stored at a given index. */
-  RGBPixel<TPixel>
-  GetColor(unsigned int colorId);
+  RGBPixel<TComponent>
+  GetColor(unsigned int c);
 
   /** Set the color at a given index. Optionally provide a name for
    * the color. If a name is not provided, the name "UserDefined" is
    * used.
    */
   bool
-  SetColor(unsigned int c, TPixel r, TPixel g, TPixel b, const char * name = "UserDefined");
+  SetColor(unsigned int c, TComponent r, TComponent g, TComponent b, const char * name = "UserDefined");
   bool
-  SetColor(unsigned int c, RGBPixel<TPixel> pixel, const char * name = "UserDefined");
+  SetColor(unsigned int c, RGBPixel<TComponent> pixel, const char * name = "UserDefined");
 
   /** Given the position in the table and the color
    * returns the value.
    */
-  TPixel
-  GetColorComponent(unsigned int colorId, char rgb);
+  TComponent
+  GetColorComponent(unsigned int c, char rgb);
 
   /** Get the name of the color at a given index. */
   std::string
-  GetColorName(unsigned int colorId);
+  GetColorName(unsigned int c);
 
   /** Find the color closest to a given pixel. Uses a L2 distance
    * metric.
    */
   unsigned int
-  GetClosestColorTableId(TPixel r, TPixel g, TPixel b);
+  GetClosestColorTableId(TComponent r, TComponent g, TComponent b);
 
 protected:
   ColorTable() = default;
@@ -123,7 +123,7 @@ protected:
 
 private:
   using ColorNameVectorType = std::vector<std::string>;
-  using ColorVectorType = std::vector<RGBPixel<TPixel>>;
+  using ColorVectorType = std::vector<RGBPixel<TComponent>>;
 
   void
   DeleteColors();

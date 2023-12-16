@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class GeometricalQuadEdge
+ * \class GeometricalQuadEdge
  * \brief This class extends the QuadEdge by adding a reference to the Origin.
  *
  * The class is implemented in such a way that it can generate its own Dual.
@@ -45,12 +45,12 @@ namespace itk
  * and QEDual of \ref QuadEdgeMesh identical and would prevent any algorithm
  * requiring to distinguish those types (e.g. by relying on a
  * dynamic_cast<QEType*>) to be effective.  This justifies the existence of
- * last dummy template parameter and it's default value.
+ * last dummy template parameter and its default value.
  *
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
  *
  * This implementation was contributed as a paper to the Insight Journal
- * https://hdl.handle.net/1926/306
+ * https://www.insight-journal.org/browse/publication/122
  *
  * \sa QuadEdge
  *

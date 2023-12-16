@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,7 @@
  *
  *=========================================================================*/
 
-/**
- * This is a test file for the itkLineSpatialObject class.
- */
-
+#include "itkTestingMacros.h"
 #include "itkLineSpatialObject.h"
 #include "itkMath.h"
 
@@ -36,13 +33,13 @@ itkLineSpatialObjectTest(int, char *[])
 
   LineType::LinePointListType list;
   unsigned int                i;
-  for (i = 0; i < 10; i++)
+  for (i = 0; i < 10; ++i)
   {
     LinePointType p;
     p.SetPositionInObjectSpace(i, i + 1, i + 2);
     VectorType normal1;
     VectorType normal2;
-    for (unsigned int j = 0; j < 3; j++)
+    for (unsigned int j = 0; j < 3; ++j)
     {
       normal1[j] = j;
       normal2[j] = j * 2;
@@ -59,17 +56,21 @@ itkLineSpatialObjectTest(int, char *[])
   p.Print(std::cout);
 
   // Create a Line Spatial Object
-  LinePointer Line = LineType::New();
-  Line->GetProperty().SetName("Line 1");
-  Line->SetId(1);
-  Line->SetPoints(list);
-  Line->Update();
+  LinePointer line = LineType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(line, LineSpatialObject, PointBasedSpatialObject);
+
+
+  line->GetProperty().SetName("Line 1");
+  line->SetId(1);
+  line->SetPoints(list);
+  line->Update();
 
   // Number of points
   std::cout << "Testing Consistency: " << std::endl;
   std::cout << "Number of Points: ";
 
-  if (Line->GetPoints().size() != 10)
+  if (line->GetPoints().size() != 10)
   {
     std::cout << "[FAILED]" << std::endl;
     return EXIT_FAILURE;
@@ -83,26 +84,26 @@ itkLineSpatialObjectTest(int, char *[])
   // Point consistency
   std::cout << "Point consistency: ";
 
-  LineType::LinePointListType::const_iterator it = Line->GetPoints().begin();
+  LineType::LinePointListType::const_iterator it = line->GetPoints().begin();
 
   i = 0;
-  while (it != Line->GetPoints().end())
+  while (it != line->GetPoints().end())
   {
-    for (unsigned int d = 0; d < 3; d++)
+    for (unsigned int d = 0; d < 3; ++d)
     {
-      if (itk::Math::NotExactlyEquals((*it).GetPositionInWorldSpace()[d], i + d))
+      if (itk::Math::NotExactlyEquals(it->GetPositionInWorldSpace()[d], i + d))
       {
         std::cout << "[FAILED]" << std::endl;
         return EXIT_FAILURE;
       }
 
-      if (itk::Math::NotExactlyEquals(((*it).GetNormalInObjectSpace(0))[d], d))
+      if (itk::Math::NotExactlyEquals((it->GetNormalInObjectSpace(0))[d], d))
       {
         std::cout << "[FAILED]" << std::endl;
         return EXIT_FAILURE;
       }
 
-      if (itk::Math::NotExactlyEquals(((*it).GetNormalInObjectSpace(1))[d], 2 * d))
+      if (itk::Math::NotExactlyEquals((it->GetNormalInObjectSpace(1))[d], 2 * d))
       {
         std::cout << "[FAILED]" << std::endl;
         return EXIT_FAILURE;
@@ -125,13 +126,13 @@ itkLineSpatialObjectTest(int, char *[])
   out[1] = 0;
   out[2] = 0;
 
-  if (!Line->IsInsideInWorldSpace(in))
+  if (!line->IsInsideInWorldSpace(in))
   {
     std::cout << "[FAILED]" << std::endl;
     return EXIT_FAILURE;
   }
 
-  if (Line->IsInsideInWorldSpace(out))
+  if (line->IsInsideInWorldSpace(out))
   {
     std::cout << "[FAILED]" << std::endl;
     return EXIT_FAILURE;
@@ -140,7 +141,7 @@ itkLineSpatialObjectTest(int, char *[])
 
   // Testing IsEvaluableAt()
   std::cout << "IsEvaluableAt: ";
-  if (!Line->IsEvaluableAtInWorldSpace(in) || Line->IsEvaluableAtInWorldSpace(out))
+  if (!line->IsEvaluableAtInWorldSpace(in) || line->IsEvaluableAtInWorldSpace(out))
   {
     std::cout << "[FAILED]" << std::endl;
     return EXIT_FAILURE;
@@ -152,7 +153,7 @@ itkLineSpatialObjectTest(int, char *[])
   std::cout << "ValueAt: ";
 
   double value;
-  if (!Line->ValueAtInWorldSpace(in, value))
+  if (!line->ValueAtInWorldSpace(in, value))
   {
     std::cout << "[FAILED]" << std::endl;
     return EXIT_FAILURE;
@@ -165,6 +166,52 @@ itkLineSpatialObjectTest(int, char *[])
   }
   std::cout << "[PASSED]" << std::endl;
 
+  // Test Copy and Assignment for LinePointType
+  {
+    LinePointType pOriginal;
 
+    // itk::SpatialObjectPoint
+    pOriginal.SetId(250);
+    pOriginal.SetColor(0.5, 0.4, 0.3, 0.2);
+    pOriginal.SetPositionInObjectSpace(42, 41, 43);
+
+    // itk::LineSpatialObjectPoint
+    VectorType normal;
+    normal.Fill(276);
+    pOriginal.SetNormalInObjectSpace(normal, 0);
+
+    // Copy
+    LinePointType pCopy(pOriginal);
+    // Assign
+    LinePointType pAssign = pOriginal;
+
+    std::vector<LinePointType> pointVector;
+    pointVector.push_back(pCopy);
+    pointVector.push_back(pAssign);
+
+    for (const auto & pv : pointVector)
+    {
+      // itk::SpatialObjectPoint
+      ITK_TEST_EXPECT_EQUAL(pOriginal.GetId(), pv.GetId());
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetRed(), pv.GetRed()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetGreen(), pv.GetGreen()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetBlue(), pv.GetBlue()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetAlpha(), pv.GetAlpha()));
+      for (size_t j = 0; j < 3; ++j)
+      {
+        ITK_TEST_EXPECT_TRUE(
+          itk::Math::AlmostEquals(pOriginal.GetPositionInObjectSpace()[j], pv.GetPositionInObjectSpace()[j]));
+      }
+      // itk::LineSpatialObjectPoint
+      for (size_t j = 0; j < 3; ++j)
+      {
+        ITK_TEST_EXPECT_TRUE(
+          itk::Math::AlmostEquals(pOriginal.GetNormalInObjectSpace(0)[j], pv.GetNormalInObjectSpace(0)[j]));
+      }
+    }
+  }
+
+
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

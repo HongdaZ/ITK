@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,34 +18,12 @@
 #ifndef itkChangeInformationImageFilter_hxx
 #define itkChangeInformationImageFilter_hxx
 
-#include "itkChangeInformationImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkContinuousIndex.h"
 #include "itkObjectFactory.h"
 
 namespace itk
 {
-/**
- *
- */
-template <typename TInputImage>
-ChangeInformationImageFilter<TInputImage>::ChangeInformationImageFilter()
-{
-  m_ReferenceImage = nullptr;
-
-  m_ChangeSpacing = false;
-  m_ChangeOrigin = false;
-  m_ChangeDirection = false;
-  m_ChangeRegion = false;
-
-  m_CenterImage = false;
-  m_UseReferenceImage = false;
-
-  m_OutputSpacing.Fill(1.0);
-  m_OutputOrigin.Fill(0.0);
-  m_OutputDirection.SetIdentity();
-  m_OutputOffset.Fill(0);
-}
 
 template <typename TInputImage>
 void
@@ -133,12 +111,12 @@ ChangeInformationImageFilter<TInputImage>::GenerateOutputInformation()
     typename TInputImage::PointType                     centerPoint;
     ContinuousIndex<SpacePrecisionType, ImageDimension> centerIndex;
 
-    for (i = 0; i < ImageDimension; i++)
+    for (i = 0; i < ImageDimension; ++i)
     {
       centerIndex[i] = static_cast<double>((outputSize[i] - 1) / 2.0);
     }
     output->TransformContinuousIndexToPhysicalPoint(centerIndex, centerPoint);
-    for (i = 0; i < ImageDimension; i++)
+    for (i = 0; i < ImageDimension; ++i)
     {
       origin[i] = output->GetOrigin()[i] - centerPoint[i];
     }
@@ -224,7 +202,7 @@ ChangeInformationImageFilter<TInputImage>::PrintSelf(std::ostream & os, Indent i
   {
     os << m_OutputSpacing[0];
   }
-  for (unsigned int j = 1; j < ImageDimension; j++)
+  for (unsigned int j = 1; j < ImageDimension; ++j)
   {
     os << ", " << m_OutputSpacing[j];
   }
@@ -235,7 +213,7 @@ ChangeInformationImageFilter<TInputImage>::PrintSelf(std::ostream & os, Indent i
   {
     os << m_OutputOrigin[0];
   }
-  for (unsigned int j = 1; j < ImageDimension; j++)
+  for (unsigned int j = 1; j < ImageDimension; ++j)
   {
     os << ", " << m_OutputOrigin[j];
   }

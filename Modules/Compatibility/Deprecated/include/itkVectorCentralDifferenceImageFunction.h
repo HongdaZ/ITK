@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,7 +51,7 @@ class ITK_TEMPLATE_EXPORT VectorCentralDifferenceImageFunction
                          TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorCentralDifferenceImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(VectorCentralDifferenceImageFunction);
 
   using InputPixelType = typename TInputImage::PixelType;
 
@@ -77,16 +77,16 @@ public:
   using InputImageType = TInputImage;
 
   /** OutputType typdef support. */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
 
   /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** Evalulate the image derivative by central differencing at specified index.
    *

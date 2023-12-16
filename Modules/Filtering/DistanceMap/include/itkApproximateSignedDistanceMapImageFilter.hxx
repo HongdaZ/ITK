@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkApproximateSignedDistanceMapImageFilter_hxx
 #define itkApproximateSignedDistanceMapImageFilter_hxx
 
-#include "itkApproximateSignedDistanceMapImageFilter.h"
 
 #include "itkNumericTraits.h"
 #include "itkImageScanlineIterator.h"
@@ -39,7 +38,7 @@ template <typename TInputImage, typename TOutputImage>
 void
 ApproximateSignedDistanceMapImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
-  ThreadIdType numberOfThreads = this->GetNumberOfWorkUnits();
+  ThreadIdType numberOfWorkUnits = this->GetNumberOfWorkUnits();
 
   OutputImagePointer output = this->GetOutput();
 
@@ -51,7 +50,7 @@ ApproximateSignedDistanceMapImageFilter<TInputImage, TOutputImage>::GenerateData
   OutputSizeType      outputSize = oRegion.GetSize();
   OutputSizeValueType maximumDistance = 0;
 
-  for (unsigned int i = 0; i < InputImageDimension; i++)
+  for (unsigned int i = 0; i < InputImageDimension; ++i)
   {
     maximumDistance += outputSize[i] * outputSize[i];
   }
@@ -64,7 +63,7 @@ ApproximateSignedDistanceMapImageFilter<TInputImage, TOutputImage>::GenerateData
   this->AllocateOutputs();
 
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
   progress->RegisterInternalFilter(m_IsoContourFilter, 0.5f);
   progress->RegisterInternalFilter(m_ChamferFilter, 0.5f);
@@ -72,7 +71,7 @@ ApproximateSignedDistanceMapImageFilter<TInputImage, TOutputImage>::GenerateData
   // Set up the isocontour filter
   m_IsoContourFilter->SetInput(this->GetInput());
   m_IsoContourFilter->SetFarValue(maximumDistance + 1);
-  m_IsoContourFilter->SetNumberOfWorkUnits(numberOfThreads);
+  m_IsoContourFilter->SetNumberOfWorkUnits(numberOfWorkUnits);
   typename IsoContourType::PixelRealType levelSetValue =
     (static_cast<typename IsoContourType::PixelRealType>(m_InsideValue) +
      static_cast<typename IsoContourType::PixelRealType>(m_OutsideValue)) /
@@ -82,7 +81,7 @@ ApproximateSignedDistanceMapImageFilter<TInputImage, TOutputImage>::GenerateData
   // Set up the chamfer filter
   m_ChamferFilter->SetInput(m_IsoContourFilter->GetOutput());
   m_ChamferFilter->SetMaximumDistance(maximumDistance);
-  m_ChamferFilter->SetNumberOfWorkUnits(numberOfThreads);
+  m_ChamferFilter->SetNumberOfWorkUnits(numberOfWorkUnits);
 
   // Graft our output to the chamfer filter to force the proper regions
   // to be generated

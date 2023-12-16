@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkTileImageFilter_hxx
 #define itkTileImageFilter_hxx
-#include "itkTileImageFilter.h"
 
 #include "itkMacro.h"
 #include "itkImageRegionIteratorWithIndex.h"
@@ -43,7 +42,7 @@ template <typename TInputImage, typename TOutputImage>
 void
 TileImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
 
   TOutputImage * output = this->GetOutput();
@@ -56,7 +55,7 @@ TileImageFilter<TInputImage, TOutputImage>::GenerateData()
     const OutputPixelComponentType zeroComponent = NumericTraits<OutputPixelComponentType>::ZeroValue();
     const unsigned int             nComponents = output->GetNumberOfComponentsPerPixel();
     NumericTraits<OutputPixelType>::SetLength(defaultPixelValue, nComponents);
-    for (unsigned int n = 0; n < nComponents; n++)
+    for (unsigned int n = 0; n < nComponents; ++n)
     {
       DefaultConvertPixelTraits<OutputPixelType>::SetNthComponent(n, defaultPixelValue, zeroComponent);
     }
@@ -96,17 +95,17 @@ TileImageFilter<TInputImage, TOutputImage>::GenerateData()
       // output image. The additional dimensions are set to 1. The
       // temporary image will use the same container as the input
       // image. This way we avoid copying the data.
-      typename TempImageType::Pointer tempImage = TempImageType::New();
+      auto tempImage = TempImageType::New();
       tempImage->CopyInformation(output);
 
       OutputSizeType  tempSize;
       OutputIndexType tempIndex;
-      for (unsigned int i = 0; i < InputImageDimension; i++)
+      for (unsigned int i = 0; i < InputImageDimension; ++i)
       {
         tempSize[i] = this->GetInput(it.Get().m_ImageNumber)->GetBufferedRegion().GetSize()[i];
         tempIndex[i] = this->GetInput(it.Get().m_ImageNumber)->GetBufferedRegion().GetIndex()[i];
       }
-      for (unsigned int i = InputImageDimension; i < OutputImageDimension; i++)
+      for (unsigned int i = InputImageDimension; i < OutputImageDimension; ++i)
       {
         tempSize[i] = 1;
         tempIndex[i] = 0;
@@ -135,7 +134,7 @@ template <typename TInputImage, typename TOutputImage>
 void
 TileImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
-  for (unsigned int i = 0; i < this->GetNumberOfIndexedInputs(); i++)
+  for (unsigned int i = 0; i < this->GetNumberOfIndexedInputs(); ++i)
   {
     auto * input = const_cast<TInputImage *>(this->GetInput(i));
     if (input)
@@ -173,7 +172,7 @@ TileImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
   SpacePrecisionType spacing[OutputImageDimension];
   SpacePrecisionType origin[OutputImageDimension];
 
-  for (unsigned i = 0; i < OutputImageDimension; i++)
+  for (unsigned int i = 0; i < OutputImageDimension; ++i)
   {
     if (i < InputImageDimension)
     {
@@ -201,13 +200,11 @@ TileImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
   // be large enough to accommodate left-over images.
   OutputSizeType outputSize;
   outputSize.Fill(1);
-  OutputIndexType outputIndex;
-  outputIndex.Fill(0);
 
   if (m_Layout[OutputImageDimension - 1] == 0)
   {
     int used = 1;
-    for (unsigned int d = 0; d < OutputImageDimension - 1; d++)
+    for (unsigned int d = 0; d < OutputImageDimension - 1; ++d)
     {
       used *= m_Layout[d];
     }
@@ -222,10 +219,8 @@ TileImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 
   OutputSizeType tileSize;
   tileSize.Fill(1);
-  OutputIndexType tileIndex;
-  tileIndex.Fill(0);
 
-  for (unsigned int i = 0; i < OutputImageDimension; i++)
+  for (unsigned int i = 0; i < OutputImageDimension; ++i)
   {
     tileSize[i] = m_Layout[i];
   }
@@ -233,7 +228,7 @@ TileImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
   // Determine the size of the output. Each "row" size is determined
   // and the maximum size for each "row" will be the size for that
   // dimension.
-  RegionType tileRegion(tileIndex, tileSize);
+  RegionType tileRegion(tileSize);
   m_TileImage->SetRegions(tileRegion);
   m_TileImage->Allocate();
 
@@ -269,16 +264,16 @@ TileImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 
   sizes.resize(OutputImageDimension);
   offsets.resize(OutputImageDimension);
-  for (unsigned int i = 0; i < OutputImageDimension; i++)
+  for (unsigned int i = 0; i < OutputImageDimension; ++i)
   {
     offsets[i].resize(m_Layout[i]);
     sizes[i].resize(m_Layout[i]);
-    for (unsigned int l = 0; l < m_Layout[i]; l++)
+    for (unsigned int l = 0; l < m_Layout[i]; ++l)
     {
       sizes[i][l] = 1;
     }
   }
-  for (unsigned int i = 0; i < OutputImageDimension; i++)
+  for (unsigned int i = 0; i < OutputImageDimension; ++i)
   {
     tit.SetDirection(i);
     tit.GoToBegin();
@@ -308,10 +303,10 @@ TileImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
   }
 
   // Convert the sizes to offsets.
-  for (unsigned int i = 0; i < OutputImageDimension; i++)
+  for (unsigned int i = 0; i < OutputImageDimension; ++i)
   {
     offsets[i][0] = 0;
-    for (unsigned int t = 0; t < m_Layout[i] - 1; t++)
+    for (unsigned int t = 0; t < m_Layout[i] - 1; ++t)
     {
       offsets[i][t + 1] = offsets[i][t] + sizes[i][t];
     }
@@ -330,7 +325,7 @@ TileImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 
       OutputSizeType  regionSize;
       OutputIndexType regionIndex;
-      for (unsigned int i = 0; i < OutputImageDimension; i++)
+      for (unsigned int i = 0; i < OutputImageDimension; ++i)
       {
         regionIndex[i] = offsets[i][tileIndex2[i]];
         if (i < InputImageDimension)
@@ -350,10 +345,7 @@ TileImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
     ++it;
   }
 
-  typename TOutputImage::RegionType outputLargestPossibleRegion;
-
-  outputLargestPossibleRegion.SetSize(outputSize);
-  outputLargestPossibleRegion.SetIndex(outputIndex);
+  const typename TOutputImage::RegionType outputLargestPossibleRegion(outputSize);
   outputPtr->SetLargestPossibleRegion(outputLargestPossibleRegion);
 
   // Support VectorImages by setting number of components on output.

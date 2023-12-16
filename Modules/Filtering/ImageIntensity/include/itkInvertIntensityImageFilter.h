@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,21 +43,14 @@ public:
     m_Maximum = max;
   }
 
-  bool
-  operator!=(const InvertIntensityTransform & other) const
-  {
-    if (m_Maximum != other.m_Maximum)
-    {
-      return true;
-    }
-    return false;
-  }
 
   bool
   operator==(const InvertIntensityTransform & other) const
   {
-    return !(*this != other);
+    return m_Maximum == other.m_Maximum;
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(InvertIntensityTransform);
 
   inline TOutput
   operator()(const TInput & x) const
@@ -100,7 +93,7 @@ class ITK_TEMPLATE_EXPORT InvertIntensityImageFilter
       Functor::InvertIntensityTransform<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InvertIntensityImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(InvertIntensityImageFilter);
 
   /** Standard class type aliases. */
   using Self = InvertIntensityImageFilter;

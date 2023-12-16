@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,16 +37,16 @@ namespace itk
  * \sphinxexample{Core/Transform/ScaleAnImage,Scale An Image}
  * \endsphinx
  */
-template <typename TParametersValueType = float, unsigned int NDimensions = 3>
+template <typename TParametersValueType = float, unsigned int VDimension = 3>
 class ITK_TEMPLATE_EXPORT ScaleTransform
-  : public MatrixOffsetTransformBase<TParametersValueType, NDimensions, NDimensions>
+  : public MatrixOffsetTransformBase<TParametersValueType, VDimension, VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ScaleTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(ScaleTransform);
 
   /** Standard class type aliases.   */
   using Self = ScaleTransform;
-  using Superclass = MatrixOffsetTransformBase<TParametersValueType, NDimensions, NDimensions>;
+  using Superclass = MatrixOffsetTransformBase<TParametersValueType, VDimension, VDimension>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
@@ -57,46 +57,46 @@ public:
   itkTypeMacro(ScaleTransform, Transform);
 
   /** Dimension of the domain space. */
-  static constexpr unsigned int SpaceDimension = NDimensions;
-  static constexpr unsigned int ParametersDimension = NDimensions;
+  static constexpr unsigned int SpaceDimension = VDimension;
+  static constexpr unsigned int ParametersDimension = VDimension;
 
   /** Scalar type. */
-  using ScalarType = typename Superclass::ScalarType;
+  using typename Superclass::ScalarType;
 
   /** Parameters type. */
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::FixedParametersType;
+  using typename Superclass::ParametersType;
 
   /** Jacobian types. */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  using typename Superclass::JacobianType;
+  using typename Superclass::JacobianPositionType;
+  using typename Superclass::InverseJacobianPositionType;
 
   /** Standard vector type for this class. */
-  using ScaleType = FixedArray<TParametersValueType, NDimensions>;
+  using ScaleType = FixedArray<TParametersValueType, VDimension>;
 
   /** Standard vector type for this class. */
-  using InputVectorType = Vector<TParametersValueType, NDimensions>;
-  using OutputVectorType = Vector<TParametersValueType, NDimensions>;
+  using InputVectorType = Vector<TParametersValueType, VDimension>;
+  using OutputVectorType = Vector<TParametersValueType, VDimension>;
 
   /** Standard covariant vector type for this class. */
-  using InputCovariantVectorType = CovariantVector<TParametersValueType, NDimensions>;
-  using OutputCovariantVectorType = CovariantVector<TParametersValueType, NDimensions>;
+  using InputCovariantVectorType = CovariantVector<TParametersValueType, VDimension>;
+  using OutputCovariantVectorType = CovariantVector<TParametersValueType, VDimension>;
 
   /** Standard vnl_vector type for this class. */
-  using InputVnlVectorType = vnl_vector_fixed<TParametersValueType, NDimensions>;
-  using OutputVnlVectorType = vnl_vector_fixed<TParametersValueType, NDimensions>;
+  using InputVnlVectorType = vnl_vector_fixed<TParametersValueType, VDimension>;
+  using OutputVnlVectorType = vnl_vector_fixed<TParametersValueType, VDimension>;
 
   /** Standard coordinate point type for this class. */
-  using InputPointType = Point<TParametersValueType, NDimensions>;
-  using OutputPointType = Point<TParametersValueType, NDimensions>;
+  using InputPointType = Point<TParametersValueType, VDimension>;
+  using OutputPointType = Point<TParametersValueType, VDimension>;
 
   /** Base inverse transform type. This type should not be changed to the
    * concrete inverse transform type or inheritance would be lost.*/
   using InverseTransformBaseType = typename Superclass::InverseTransformBaseType;
   using InverseTransformBasePointer = typename InverseTransformBaseType::Pointer;
 
-  using MatrixType = typename Superclass::MatrixType;
+  using typename Superclass::MatrixType;
 
   /** Set parameters.  This method sets the parameters for the transform value
    *  specified by the user. The parameters are organized as scale[i] =
@@ -114,7 +114,7 @@ public:
 
   /** Get the Jacobian matrix. */
   void
-  ComputeJacobianWithRespectToParameters(const InputPointType & point, JacobianType & j) const override;
+  ComputeJacobianWithRespectToParameters(const InputPointType & p, JacobianType & j) const override;
 
   /** Get the jacobian with respect to position, which simply is the
    *  matrix because the transform is position-invariant.
@@ -157,14 +157,14 @@ public:
 
   using Superclass::TransformVector;
   OutputVectorType
-  TransformVector(const InputVectorType & vector) const override;
+  TransformVector(const InputVectorType & vect) const override;
 
   OutputVnlVectorType
-  TransformVector(const InputVnlVectorType & vector) const override;
+  TransformVector(const InputVnlVectorType & vect) const override;
 
   using Superclass::TransformCovariantVector;
   OutputCovariantVectorType
-  TransformCovariantVector(const InputCovariantVectorType & vector) const override;
+  TransformCovariantVector(const InputCovariantVectorType & vect) const override;
 
   /** Back transform by a scale transformation
    * This method finds the point or vector that maps to a given
@@ -174,13 +174,13 @@ public:
   BackTransform(const OutputPointType & point) const;
 
   inline InputVectorType
-  BackTransform(const OutputVectorType & vector) const;
+  BackTransform(const OutputVectorType & vect) const;
 
   inline InputVnlVectorType
-  BackTransform(const OutputVnlVectorType & vector) const;
+  BackTransform(const OutputVnlVectorType & vect) const;
 
   inline InputCovariantVectorType
-  BackTransform(const OutputCovariantVectorType & vector) const;
+  BackTransform(const OutputCovariantVectorType & vect) const;
 
   /** Find inverse of a scale transformation
    * This method creates and returns a new ScaleTransform object

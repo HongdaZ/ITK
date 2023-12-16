@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  *=========================================================================*/
 
 #include "itkLevelSetDomainMapImageFilter.h"
+#include "itkTestingMacros.h"
 
 int
 itkLevelSetDomainMapImageFilterTest(int, char *[])
@@ -45,12 +46,12 @@ itkLevelSetDomainMapImageFilterTest(int, char *[])
 
   ListPixelType l;
 
-  InputImageType::Pointer input = InputImageType::New();
+  auto input = InputImageType::New();
   input->SetRegions(region);
   input->Allocate();
   input->FillBuffer(l);
 
-  for (unsigned int i = 0; i < 10; i++)
+  for (unsigned int i = 0; i < 10; ++i)
   {
     ListPixelType ll;
     ll.push_back(i);
@@ -60,7 +61,11 @@ itkLevelSetDomainMapImageFilterTest(int, char *[])
     input->SetPixel(index, ll);
   }
 
-  DomainMapImageFilterType::Pointer filter = DomainMapImageFilterType::New();
+  auto filter = DomainMapImageFilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, LevelSetDomainMapImageFilter, ImageToImageFilter);
+
+
   filter->SetInput(input);
   filter->Update();
 

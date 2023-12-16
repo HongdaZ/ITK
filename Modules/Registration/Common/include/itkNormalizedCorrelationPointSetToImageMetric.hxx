@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkNormalizedCorrelationPointSetToImageMetric_hxx
 #define itkNormalizedCorrelationPointSetToImageMetric_hxx
 
-#include "itkNormalizedCorrelationPointSetToImageMetric.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
 
 namespace itk
@@ -200,17 +199,17 @@ NormalizedCorrelationPointSetToImageMetric<TFixedPointSet, TMovingImage>::GetDer
       using CoordRepType = typename OutputPointType::CoordRepType;
       using MovingImageContinuousIndexType = ContinuousIndex<CoordRepType, MovingImageType::ImageDimension>;
 
-      MovingImageContinuousIndexType tempIndex;
-      this->GetMovingImage()->TransformPhysicalPointToContinuousIndex(transformedPoint, tempIndex);
+      const MovingImageContinuousIndexType tempIndex =
+        this->GetMovingImage()->template TransformPhysicalPointToContinuousIndex<CoordRepType>(transformedPoint);
 
       typename MovingImageType::IndexType mappedIndex;
       mappedIndex.CopyWithRound(tempIndex);
 
       const GradientPixelType gradient = this->GetGradientImage()->GetPixel(mappedIndex);
-      for (unsigned int par = 0; par < ParametersDimension; par++)
+      for (unsigned int par = 0; par < ParametersDimension; ++par)
       {
         RealType sumD = NumericTraits<RealType>::ZeroValue();
-        for (unsigned int dim = 0; dim < dimension; dim++)
+        for (unsigned int dim = 0; dim < dimension; ++dim)
         {
           const RealType differential = jacobian(dim, par) * gradient[dim];
           sumD += differential;
@@ -233,7 +232,7 @@ NormalizedCorrelationPointSetToImageMetric<TFixedPointSet, TMovingImage>::GetDer
     sff -= (sf * sf / this->m_NumberOfPixelsCounted);
     smm -= (sm * sm / this->m_NumberOfPixelsCounted);
     sfm -= (sf * sm / this->m_NumberOfPixelsCounted);
-    for (unsigned int par = 0; par < ParametersDimension; par++)
+    for (unsigned int par = 0; par < ParametersDimension; ++par)
     {
       derivativeF[par] -= derivativeO[par] * sf / this->m_NumberOfPixelsCounted;
       derivativeM[par] -= derivativeO[par] * sm / this->m_NumberOfPixelsCounted;
@@ -244,14 +243,14 @@ NormalizedCorrelationPointSetToImageMetric<TFixedPointSet, TMovingImage>::GetDer
 
   if (this->m_NumberOfPixelsCounted > 0 && denom != 0.0)
   {
-    for (unsigned int i = 0; i < ParametersDimension; i++)
+    for (unsigned int i = 0; i < ParametersDimension; ++i)
     {
       derivative[i] = (derivativeF[i] - (sfm / smm) * derivativeM[i]) / denom;
     }
   }
   else
   {
-    for (unsigned int i = 0; i < ParametersDimension; i++)
+    for (unsigned int i = 0; i < ParametersDimension; ++i)
     {
       derivative[i] = NumericTraits<MeasureType>::ZeroValue();
     }
@@ -346,17 +345,17 @@ NormalizedCorrelationPointSetToImageMetric<TFixedPointSet, TMovingImage>::GetVal
       using CoordRepType = typename OutputPointType::CoordRepType;
       using MovingImageContinuousIndexType = ContinuousIndex<CoordRepType, MovingImageType::ImageDimension>;
 
-      MovingImageContinuousIndexType tempIndex;
-      this->GetMovingImage()->TransformPhysicalPointToContinuousIndex(transformedPoint, tempIndex);
+      const MovingImageContinuousIndexType tempIndex =
+        this->GetMovingImage()->template TransformPhysicalPointToContinuousIndex<CoordRepType>(transformedPoint);
 
       typename MovingImageType::IndexType mappedIndex;
       mappedIndex.CopyWithRound(tempIndex);
 
       const GradientPixelType gradient = this->GetGradientImage()->GetPixel(mappedIndex);
-      for (unsigned int par = 0; par < ParametersDimension; par++)
+      for (unsigned int par = 0; par < ParametersDimension; ++par)
       {
         RealType sumD = NumericTraits<RealType>::ZeroValue();
-        for (unsigned int dim = 0; dim < dimension; dim++)
+        for (unsigned int dim = 0; dim < dimension; ++dim)
         {
           const RealType differential = jacobian(dim, par) * gradient[dim];
           sumD += differential;
@@ -379,7 +378,7 @@ NormalizedCorrelationPointSetToImageMetric<TFixedPointSet, TMovingImage>::GetVal
     sff -= (sf * sf / this->m_NumberOfPixelsCounted);
     smm -= (sm * sm / this->m_NumberOfPixelsCounted);
     sfm -= (sf * sm / this->m_NumberOfPixelsCounted);
-    for (unsigned int par = 0; par < ParametersDimension; par++)
+    for (unsigned int par = 0; par < ParametersDimension; ++par)
     {
       derivativeF[par] -= derivativeO[par] * sf / this->m_NumberOfPixelsCounted;
       derivativeM[par] -= derivativeO[par] * sm / this->m_NumberOfPixelsCounted;
@@ -390,7 +389,7 @@ NormalizedCorrelationPointSetToImageMetric<TFixedPointSet, TMovingImage>::GetVal
 
   if (this->m_NumberOfPixelsCounted > 0 && denom != 0.0)
   {
-    for (unsigned int i = 0; i < ParametersDimension; i++)
+    for (unsigned int i = 0; i < ParametersDimension; ++i)
     {
       derivative[i] = (derivativeF[i] - (sfm / smm) * derivativeM[i]) / denom;
     }
@@ -398,7 +397,7 @@ NormalizedCorrelationPointSetToImageMetric<TFixedPointSet, TMovingImage>::GetVal
   }
   else
   {
-    for (unsigned int i = 0; i < ParametersDimension; i++)
+    for (unsigned int i = 0; i < ParametersDimension; ++i)
     {
       derivative[i] = NumericTraits<MeasureType>::ZeroValue();
     }

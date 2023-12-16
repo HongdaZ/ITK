@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,7 +50,7 @@ namespace itk
 class ITKCommon_EXPORT PlatformMultiThreader : public MultiThreaderBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PlatformMultiThreader);
+  ITK_DISALLOW_COPY_AND_MOVE(PlatformMultiThreader);
 
   /** Standard class type aliases. */
   using Self = PlatformMultiThreader;
@@ -72,16 +72,14 @@ public:
    * of threads was accepted. Legacy: use MultiThreaderBase to invoke these. */
   itkLegacyMacro(static void SetGlobalMaximumNumberOfThreads(ThreadIdType val))
   {
-    itkGenericOutputMacro("Warning: SetGlobalMaximumNumberOfThreads \
-should now be called on itk::MultiThreaderBase. \
-It can affect all MultiThreaderBase's derived classes in ITK");
+    itkGenericOutputMacro("Warning: SetGlobalMaximumNumberOfThreads should now be called on itk::MultiThreaderBase. It "
+                          "can affect all MultiThreaderBase's derived classes in ITK");
     Superclass::SetGlobalMaximumNumberOfThreads(val);
   }
   itkLegacyMacro(static ThreadIdType GetGlobalMaximumNumberOfThreads())
   {
-    itkGenericOutputMacro("Warning: GetGlobalMaximumNumberOfThreads \
-should now be called on itk::MultiThreaderBase. \
-It can affect all MultiThreaderBase's derived classes in ITK");
+    itkGenericOutputMacro("Warning: GetGlobalMaximumNumberOfThreads should now be called on itk::MultiThreaderBase. It "
+                          "can affect all MultiThreaderBase's derived classes in ITK");
     return Superclass::GetGlobalMaximumNumberOfThreads();
   }
 
@@ -91,16 +89,14 @@ It can affect all MultiThreaderBase's derived classes in ITK");
    * of threads was accepted. Legacy: use MultiThreaderBase to invoke these. */
   itkLegacyMacro(static void SetGlobalDefaultNumberOfThreads(ThreadIdType val))
   {
-    itkGenericOutputMacro("Warning: SetGlobalDefaultNumberOfThreads \
-should now be called on itk::MultiThreaderBase. \
-It can affect all MultiThreaderBase's derived classes in ITK");
+    itkGenericOutputMacro("Warning: SetGlobalDefaultNumberOfThreads should now be called on itk::MultiThreaderBase. It "
+                          "can affect all MultiThreaderBase's derived classes in ITK");
     Superclass::SetGlobalDefaultNumberOfThreads(val);
   }
   itkLegacyMacro(static ThreadIdType GetGlobalDefaultNumberOfThreads())
   {
-    itkGenericOutputMacro("Warning: GetGlobalDefaultNumberOfThreads \
-should now be called on itk::MultiThreaderBase. \
-It can affect all MultiThreaderBase's derived classes in ITK");
+    itkGenericOutputMacro("Warning: GetGlobalDefaultNumberOfThreads should now be called on itk::MultiThreaderBase. It "
+                          "can affect all MultiThreaderBase's derived classes in ITK");
     return Superclass::GetGlobalDefaultNumberOfThreads();
   }
 #endif

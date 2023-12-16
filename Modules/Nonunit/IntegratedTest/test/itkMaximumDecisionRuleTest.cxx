@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ itkMaximumDecisionRuleTest(int, char *[])
 
   using MembershipVectorType = MaximumDecisionRuleType::MembershipVectorType;
 
-  MaximumDecisionRuleType::Pointer decisionRule = MaximumDecisionRuleType::New();
+  auto decisionRule = MaximumDecisionRuleType::New();
 
   std::cout << decisionRule->GetNameOfClass() << std::endl;
   std::cout << decisionRule->MaximumDecisionRuleType::Superclass::GetNameOfClass() << std::endl;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ itkGaussianExponentialDiffeomorphicTransformParametersAdaptorTest(int, char *[])
   direction.SetIdentity();
 
   using DisplacementFieldType = TransformType::DisplacementFieldType;
-  DisplacementFieldType::Pointer displacementField = DisplacementFieldType::New();
+  auto displacementField = DisplacementFieldType::New();
   displacementField->SetOrigin(origin);
   displacementField->SetSpacing(spacing);
   displacementField->SetRegions(size);
@@ -71,7 +71,7 @@ itkGaussianExponentialDiffeomorphicTransformParametersAdaptorTest(int, char *[])
    */
   std::cout << "Initialize transform." << std::endl;
 
-  TransformType::Pointer transform = TransformType::New();
+  auto transform = TransformType::New();
   transform->SetConstantVelocityField(displacementField);
   transform->IntegrateVelocityField();
 
@@ -93,13 +93,13 @@ itkGaussianExponentialDiffeomorphicTransformParametersAdaptorTest(int, char *[])
   SpacingType requiredSpacing;
   requiredSpacing.Fill(0.6);
   SizeType requiredSize;
-  for (unsigned int d = 0; d < SpaceDimension; d++)
+  for (unsigned int d = 0; d < SpaceDimension; ++d)
   {
     requiredSize[d] = static_cast<SizeType::SizeValueType>((spacing[d] * (size[d] - 1) / requiredSpacing[d]) + 1);
   }
 
   using AdaptorType = itk::GaussianExponentialDiffeomorphicTransformParametersAdaptor<TransformType>;
-  AdaptorType::Pointer adaptor = AdaptorType::New();
+  auto adaptor = AdaptorType::New();
   adaptor->SetTransform(transform);
   adaptor->SetRequiredSize(requiredSize);
   adaptor->SetRequiredSpacing(requiredSpacing);

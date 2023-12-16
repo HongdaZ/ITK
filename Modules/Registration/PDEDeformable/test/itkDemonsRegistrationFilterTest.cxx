@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@
 #include "itkNearestNeighborInterpolateImageFunction.h"
 #include "itkCommand.h"
 #include "itkCastImageFilter.h"
+#include "itkTestingMacros.h"
 
 
 namespace
@@ -71,9 +72,9 @@ FillWithCircle(TImage *                   image,
   {
     index = it.GetIndex();
     double distance = 0;
-    for (unsigned int j = 0; j < TImage::ImageDimension; j++)
+    for (unsigned int j = 0; j < TImage::ImageDimension; ++j)
     {
-      distance += itk::Math::sqr((double)index[j] - center[j]);
+      distance += itk::Math::sqr(static_cast<double>(index[j]) - center[j]);
     }
     if (distance <= r2)
       it.Set(foregnd);
@@ -128,9 +129,9 @@ itkDemonsRegistrationFilterTest(int, char *[])
   region.SetSize(size);
   region.SetIndex(index);
 
-  ImageType::Pointer moving = ImageType::New();
-  ImageType::Pointer fixed = ImageType::New();
-  FieldType::Pointer initField = FieldType::New();
+  auto moving = ImageType::New();
+  auto fixed = ImageType::New();
+  auto initField = FieldType::New();
 
   moving->SetLargestPossibleRegion(region);
   moving->SetBufferedRegion(region);
@@ -167,7 +168,7 @@ itkDemonsRegistrationFilterTest(int, char *[])
   initField->FillBuffer(zeroVec);
 
   using CasterType = itk::CastImageFilter<FieldType, FieldType>;
-  CasterType::Pointer caster = CasterType::New();
+  auto caster = CasterType::New();
   caster->SetInput(initField);
   caster->InPlaceOff();
 
@@ -175,7 +176,7 @@ itkDemonsRegistrationFilterTest(int, char *[])
   std::cout << "Run registration and warp moving" << std::endl;
 
   using RegistrationType = itk::DemonsRegistrationFilter<ImageType, ImageType, FieldType>;
-  RegistrationType::Pointer registrator = RegistrationType::New();
+  auto registrator = RegistrationType::New();
 
   registrator->SetInitialDisplacementField(caster->GetOutput());
   registrator->SetMovingImage(moving);
@@ -190,7 +191,8 @@ itkDemonsRegistrationFilterTest(int, char *[])
   registrator->InPlaceOn();
 
   // turn on/off use moving image gradient
-  registrator->UseMovingImageGradientOff();
+  auto useMovingImageGradient = false;
+  ITK_TEST_SET_GET_BOOLEAN(registrator, UseMovingImageGradient, useMovingImageGradient);
 
   using FunctionType = RegistrationType::DemonsRegistrationFunctionType;
   auto * fptr = dynamic_cast<FunctionType *>(registrator->GetDifferenceFunction().GetPointer());
@@ -205,7 +207,7 @@ itkDemonsRegistrationFilterTest(int, char *[])
   std::cout << "Max. kernel width: " << registrator->GetMaximumKernelWidth() << std::endl;
 
   double v[ImageDimension];
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     v[j] = registrator->GetStandardDeviations()[j];
   }
@@ -220,11 +222,11 @@ itkDemonsRegistrationFilterTest(int, char *[])
 
   // warp moving image
   using WarperType = itk::WarpImageFilter<ImageType, ImageType, FieldType>;
-  WarperType::Pointer warper = WarperType::New();
+  auto warper = WarperType::New();
 
   using CoordRepType = WarperType::CoordRepType;
   using InterpolatorType = itk::NearestNeighborInterpolateImageFunction<ImageType, CoordRepType>;
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
 
 
   warper->SetInput(moving);

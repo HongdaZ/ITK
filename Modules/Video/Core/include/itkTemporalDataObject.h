@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 
 namespace itk
 {
-/**\class TemporalDataObjectEnums
+/** \class TemporalDataObjectEnums
  * \brief Contains all enum classes used by TemporalUnit class.
  * \ingroup ITKVideoCore
  */
@@ -49,7 +49,7 @@ extern ITKVideoCore_EXPORT std::ostream &
                            operator<<(std::ostream & out, TemporalDataObjectEnums::TemporalUnit value);
 
 /**
- *\class TemporalDataObject
+ * \class TemporalDataObject
  * \brief DataObject subclass with knowledge of temporal region
  *
  * This class represents a data object that relies on temporal regions. It uses
@@ -65,7 +65,7 @@ extern ITKVideoCore_EXPORT std::ostream &
 class ITK_FORCE_EXPORT_MACRO(ITKVideoCore) TemporalDataObject : public DataObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TemporalDataObject);
+  ITK_DISALLOW_COPY_AND_MOVE(TemporalDataObject);
 
   /** Standard class type aliases */
   using Self = TemporalDataObject;

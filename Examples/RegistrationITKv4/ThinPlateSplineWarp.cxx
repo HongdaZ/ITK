@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -74,7 +74,7 @@ main(int argc, char * argv[])
   using InterpolatorType =
     itk::LinearInterpolateImageFunction<InputImageType, double>;
 
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[2]);
 
   try
@@ -91,7 +91,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginLatex
   //
-  // Landmarks correspondances may be associated with the
+  // Landmarks correspondences may be associated with the
   // SplineKernelTransforms via Point Set containers. Let us define containers
   // for the landmarks.
   //
@@ -100,10 +100,10 @@ main(int argc, char * argv[])
   // Define container for landmarks
 
   // Software Guide : BeginCodeSnippet
-  PointSetType::Pointer sourceLandMarks = PointSetType::New();
-  PointSetType::Pointer targetLandMarks = PointSetType::New();
-  PointType             p1;
-  PointType             p2;
+  auto      sourceLandMarks = PointSetType::New();
+  auto      targetLandMarks = PointSetType::New();
+  PointType p1;
+  PointType p2;
   PointSetType::PointsContainer::Pointer sourceLandMarkContainer =
     sourceLandMarks->GetPoints();
   PointSetType::PointsContainer::Pointer targetLandMarkContainer =
@@ -127,7 +127,7 @@ main(int argc, char * argv[])
   infile.close();
 
   // Software Guide : BeginCodeSnippet
-  TransformType::Pointer tps = TransformType::New();
+  auto tps = TransformType::New();
   tps->SetSourceLandmarks(sourceLandMarks);
   tps->SetTargetLandmarks(targetLandMarks);
   tps->ComputeWMatrix();
@@ -142,8 +142,8 @@ main(int argc, char * argv[])
 
   // Set the resampler params
   InputImageType::ConstPointer inputImage = reader->GetOutput();
-  ResamplerType::Pointer       resampler = ResamplerType::New();
-  InterpolatorType::Pointer    interpolator = InterpolatorType::New();
+  auto                         resampler = ResamplerType::New();
+  auto                         interpolator = InterpolatorType::New();
   resampler->SetInterpolator(interpolator);
   InputImageType::SpacingType   spacing = inputImage->GetSpacing();
   InputImageType::PointType     origin = inputImage->GetOrigin();
@@ -163,8 +163,7 @@ main(int argc, char * argv[])
   resampler->SetInput(reader->GetOutput());
 
   // Set and write deformed image
-  DeformedImageWriterType::Pointer deformedImageWriter =
-    DeformedImageWriterType::New();
+  auto deformedImageWriter = DeformedImageWriterType::New();
   deformedImageWriter->SetInput(resampler->GetOutput());
   deformedImageWriter->SetFileName(argv[3]);
 
@@ -189,7 +188,7 @@ main(int argc, char * argv[])
 
   // Compute the deformation field
 
-  DisplacementFieldType::Pointer field = DisplacementFieldType::New();
+  auto field = DisplacementFieldType::New();
   field->SetRegions(region);
   field->SetOrigin(origin);
   field->SetSpacing(spacing);
@@ -208,7 +207,7 @@ main(int argc, char * argv[])
     index = fi.GetIndex();
     field->TransformIndexToPhysicalPoint(index, point1);
     point2 = tps->TransformPoint(point1);
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       displacement[i] = point2[i] - point1[i];
     }
@@ -217,7 +216,7 @@ main(int argc, char * argv[])
   }
 
   // Write computed deformation field
-  FieldWriterType::Pointer fieldWriter = FieldWriterType::New();
+  auto fieldWriter = FieldWriterType::New();
   fieldWriter->SetFileName(argv[4]);
   fieldWriter->SetInput(field);
   try

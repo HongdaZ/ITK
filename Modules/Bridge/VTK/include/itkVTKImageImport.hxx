@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkVTKImageImport_hxx
 #define itkVTKImageImport_hxx
 
-#include "itkVTKImageImport.h"
 #include "itkPixelTraits.h"
 #include "itkNumericTraits.h"
 #include "itkNumericTraitsArrayPixel.h"
@@ -46,6 +45,14 @@ VTKImageImport<TOutputImage>::VTKImageImport()
   else if (typeid(ScalarType) == typeid(float))
   {
     m_ScalarTypeName = "float";
+  }
+  else if (typeid(ScalarType) == typeid(long long))
+  {
+    m_ScalarTypeName = "long long";
+  }
+  else if (typeid(ScalarType) == typeid(unsigned long long))
+  {
+    m_ScalarTypeName = "unsigned long long";
   }
   else if (typeid(ScalarType) == typeid(long))
   {
@@ -117,7 +124,6 @@ VTKImageImport<TOutputImage>::PropagateRequestedRegion(DataObject * outputPtr)
   if (!output)
   {
     itkExceptionMacro(<< "Downcast from DataObject to my Image type failed.");
-    return;
   }
   Superclass::PropagateRequestedRegion(output);
   if (m_PropagateUpdateExtentCallback)
@@ -130,8 +136,8 @@ VTKImageImport<TOutputImage>::PropagateRequestedRegion(DataObject * outputPtr)
     unsigned int i = 0;
     for (; i < OutputImageDimension; ++i)
     {
-      updateExtent[i * 2] = int(index[i]);
-      updateExtent[i * 2 + 1] = int(index[i] + size[i]) - 1;
+      updateExtent[i * 2] = static_cast<int>(index[i]);
+      updateExtent[i * 2 + 1] = static_cast<int>(index[i] + size[i]) - 1;
     }
     for (; i < 3; ++i)
     {
@@ -187,9 +193,7 @@ VTKImageImport<TOutputImage>::GenerateOutputInformation()
       size[i] = (extent[i * 2 + 1] - extent[i * 2]) + 1;
     }
 
-    OutputRegionType region;
-    region.SetIndex(index);
-    region.SetSize(size);
+    const OutputRegionType region(index, size);
     output->SetLargestPossibleRegion(region);
   }
   if (m_SpacingCallback)
@@ -319,9 +323,7 @@ VTKImageImport<TOutputImage>::GenerateData()
       importSize *= size[i];
     }
 
-    OutputRegionType region;
-    region.SetIndex(index);
-    region.SetSize(size);
+    const OutputRegionType region(index, size);
     output->SetBufferedRegion(region);
 
     void * data = (m_BufferPointerCallback)(m_CallbackUserData);

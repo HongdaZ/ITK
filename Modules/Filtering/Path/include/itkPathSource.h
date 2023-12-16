@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class PathSource
+ * \class PathSource
  *  \brief Base class for all process objects that output path data.
  *
  * PathSource is the base class for all process objects that output
@@ -42,7 +42,7 @@ template <typename TOutputPath>
 class ITK_TEMPLATE_EXPORT PathSource : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PathSource);
+  ITK_DISALLOW_COPY_AND_MOVE(PathSource);
 
   /** Standard class type aliases. */
   using Self = PathSource;
@@ -149,7 +149,7 @@ public:
    * mini-pipeline will do). */
   // just calls GraftNthOutput()
   virtual void
-  GraftOutput(OutputPathType * output);
+  GraftOutput(OutputPathType * graft);
 
   /** Graft the specified data object onto this ProcessObject's idx'th
    * output. This is the similar to GraftOutput method except is
@@ -158,7 +158,7 @@ public:
    * ProcessObject::GetNumberOfIndexedOutputs()). See the GraftOutput for
    * general usage information. */
   virtual void
-  GraftNthOutput(unsigned int idx, OutputPathType * output);
+  GraftNthOutput(unsigned int idx, OutputPathType * graft);
 
   /** Make a DataObject of the correct type to used as the specified
    * output.  Every ProcessObject subclass must be able to create a

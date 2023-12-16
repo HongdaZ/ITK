@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkNormalizedMutualInformationHistogramImageToImageMetric_hxx
 #define itkNormalizedMutualInformationHistogramImageToImageMetric_hxx
 
-#include "itkNormalizedMutualInformationHistogramImageToImageMetric.h"
 #include "itkHistogram.h"
 
 namespace itk
@@ -36,7 +35,7 @@ NormalizedMutualInformationHistogramImageToImageMetric<TFixedImage, TMovingImage
 
   auto totalFreq = static_cast<HistogramFrequencyRealType>(histogram.GetTotalFrequency());
 
-  for (unsigned int i = 0; i < this->GetHistogramSize()[0]; i++)
+  for (unsigned int i = 0; i < this->GetHistogramSize()[0]; ++i)
   {
     auto freq = static_cast<HistogramFrequencyRealType>(histogram.GetFrequency(i, 0));
 
@@ -48,7 +47,7 @@ NormalizedMutualInformationHistogramImageToImageMetric<TFixedImage, TMovingImage
 
   entropyX = -entropyX / static_cast<MeasureType>(totalFreq) + std::log(totalFreq);
 
-  for (unsigned int i = 0; i < this->GetHistogramSize()[1]; i++)
+  for (unsigned int i = 0; i < this->GetHistogramSize()[1]; ++i)
   {
     auto freq = static_cast<HistogramFrequencyRealType>(histogram.GetFrequency(i, 1));
 

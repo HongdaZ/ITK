@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ namespace itk
 {
 
 /**
- *\class VideoStream
+ * \class VideoStream
  * \brief A DataObject that holds a buffered portion of a video
  *
  * The function of VideoStream is to provide an Image-specific subclass of
@@ -42,7 +42,7 @@ template <typename TFrameType>
 class ITK_TEMPLATE_EXPORT VideoStream : public TemporalDataObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VideoStream);
+  ITK_DISALLOW_COPY_AND_MOVE(VideoStream);
 
   /** Standard class type aliases */
   using Self = VideoStream;
@@ -54,7 +54,7 @@ public:
   using FrameType = TFrameType;
   using FramePointer = typename FrameType::Pointer;
   using FrameConstPointer = typename FrameType::ConstPointer;
-  using BufferType = typename Superclass::BufferType;
+  using typename Superclass::BufferType;
 
   using SpatialRegionType = typename FrameType::RegionType;
   using IndexType = typename FrameType::IndexType;
@@ -63,12 +63,14 @@ public:
   using SpacingType = typename FrameType::SpacingType;
   using SizeType = typename FrameType::SizeType;
   using DirectionType = typename FrameType::DirectionType;
+  using NumberOfComponentsPerPixelType = unsigned int;
 
   /** Types used to store map between frame numbers and frame meta data */
   using SpatialRegionMapType = typename std::map<SizeValueType, SpatialRegionType>;
   using PointMapType = typename std::map<SizeValueType, PointType>;
   using DirectionMapType = typename std::map<SizeValueType, DirectionType>;
   using SpacingMapType = typename std::map<SizeValueType, SpacingType>;
+  using NumberOfComponentsPerPixelMapType = typename std::map<SizeValueType, NumberOfComponentsPerPixelType>;
 
   /** Access the spacial dimensionality of the frames */
   static constexpr unsigned int FrameDimension = FrameType::ImageDimension;
@@ -179,6 +181,17 @@ public:
     m_DirectionCache = map;
   }
 
+  const NumberOfComponentsPerPixelMapType &
+  GetNumberOfComponentsPerPixelCache() const
+  {
+    return m_NumberOfComponentsPerPixelCache;
+  }
+  void
+  GetNumberOfComponentsPerPixelCache(NumberOfComponentsPerPixelMapType map)
+  {
+    m_NumberOfComponentsPerPixelCache = map;
+  }
+
   /** Set the contents of the frame at a given frame number */
   void
   SetFrame(SizeValueType frameNumber, FramePointer frame);
@@ -187,9 +200,9 @@ public:
    * Head of the ring buffer in place and just use the frame number as an
    * offset. This allows all references to frames to be processed by an
    * explicit frame number rather than a potentially confusing offset. */
-  FramePointer
+  FrameType *
   GetFrame(SizeValueType frameNumber);
-  FrameConstPointer
+  const FrameType *
   GetFrame(SizeValueType frameNumber) const;
 
   /** Get/Set the LargestPossibleRegion of a frame */
@@ -234,6 +247,13 @@ public:
   const DirectionType &
   GetFrameDirection(SizeValueType frameNumber) const;
 
+  /** Get/Set the NumberOfComponentsPerPixel of a frame */
+  void
+  SetFrameNumberOfComponentsPerPixel(SizeValueType frameNumber, unsigned int n);
+
+  const NumberOfComponentsPerPixelType &
+  GetFrameNumberOfComponentsPerPixel(SizeValueType frameNumber) const;
+
   /** Set the LargestPossibleRegion on all frames. This assumes that all frames
    * in the buffered temporal region have been initialized (should be called
    * after InitializeEmptyFrames). */
@@ -269,6 +289,12 @@ public:
    * InitializeEmptyFrames). */
   void
   SetAllFramesDirection(DirectionType direction);
+
+  /** Set the number of components per pixel of all frames.
+   * This assumes that all frames in the buffered temporal region have been
+   * initialized (should be called after InitializeEmptyFrames). */
+  void
+  SetAllFramesNumberOfComponentsPerPixel(NumberOfComponentsPerPixelType n);
 
   /** Allocate memory for the buffered spatial region of each frame in the
    * buffered temporal region. This assumes that all frames in the buffered
@@ -330,10 +356,12 @@ protected:
   SpatialRegionMapType m_BufferedSpatialRegionCache;
 
   /** These maps cache a mapping between frame number and the meta data for
-   * origin, spacing, and direction */
-  SpacingMapType   m_SpacingCache;
-  DirectionMapType m_DirectionCache;
-  PointMapType     m_OriginCache;
+   * origin, spacing, direction, and number of components per pixel */
+  SpacingMapType                    m_SpacingCache;
+  DirectionMapType                  m_DirectionCache;
+  PointMapType                      m_OriginCache;
+  NumberOfComponentsPerPixelMapType m_NumberOfComponentsPerPixelCache;
+
 }; // end class VideoStream
 
 } // end namespace itk

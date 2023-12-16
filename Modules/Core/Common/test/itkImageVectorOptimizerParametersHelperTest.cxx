@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,9 +43,9 @@ testMemoryAccess(OptimizerParametersType & params, ImageVectorPointer imageOfVec
 {
   int result = EXIT_SUCCESS;
 
-  for (itk::SizeValueType y = 0; y < dimLength; y++)
+  for (itk::SizeValueType y = 0; y < dimLength; ++y)
   {
-    for (itk::SizeValueType x = 0; x < dimLength; x++)
+    for (itk::SizeValueType x = 0; x < dimLength; ++x)
     {
       IndexType index;
       index[0] = x;
@@ -55,7 +55,7 @@ testMemoryAccess(OptimizerParametersType & params, ImageVectorPointer imageOfVec
       // element against the values returned by parameter object.
       itk::OffsetValueType offset = (x + y * dimLength) * VectorDimension;
       VectorPixelType      vectorpixel = imageOfVectors->GetPixel(index);
-      for (itk::SizeValueType ind = 0; ind < VectorDimension; ind++)
+      for (itk::SizeValueType ind = 0; ind < VectorDimension; ++ind)
       {
         ValueType paramsValue = params[offset + ind];
         if (itk::Math::NotExactlyEquals(vectorpixel[ind], paramsValue))
@@ -114,9 +114,9 @@ itkImageVectorOptimizerParametersHelperTest(int, char *[])
   //   Intensity = f(x,y) = x + 3 * y
   //
   //
-  for (int y = 0; y < dimLength; y++)
+  for (int y = 0; y < dimLength; ++y)
   {
-    for (int x = 0; x < dimLength; x++)
+    for (int x = 0; x < dimLength; ++x)
     {
       IndexType index;
       index[0] = x;
@@ -156,7 +156,7 @@ itkImageVectorOptimizerParametersHelperTest(int, char *[])
 
   // Test setting an image of wrong type
   using BadImageType = itk::Image<char, 2>;
-  BadImageType::Pointer badImage = BadImageType::New();
+  auto badImage = BadImageType::New();
   ITK_TRY_EXPECT_EXCEPTION(params.SetParametersObject(badImage));
 
   return result;

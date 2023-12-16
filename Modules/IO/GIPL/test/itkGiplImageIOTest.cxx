@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,17 +19,18 @@
 #include <fstream>
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
+#include "itkTestingMacros.h"
 
 
 // Specific ImageIO test
 
 int
-itkGiplImageIOTest(int ac, char * av[])
+itkGiplImageIOTest(int argc, char * argv[])
 {
 
-  if (ac < 3)
+  if (argc < 3)
   {
-    std::cerr << "Usage: " << av[0] << " Input Output\n";
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " Input Output\n";
     return EXIT_FAILURE;
   }
 
@@ -42,7 +43,7 @@ itkGiplImageIOTest(int ac, char * av[])
 
   itk::ImageFileReader<myImage>::Pointer reader = itk::ImageFileReader<myImage>::New();
 
-  reader->SetFileName(av[1]);
+  reader->SetFileName(argv[1]);
 
   try
   {
@@ -66,7 +67,7 @@ itkGiplImageIOTest(int ac, char * av[])
   itk::ImageFileWriter<myImage>::Pointer writer;
   writer = itk::ImageFileWriter<myImage>::New();
   writer->SetInput(reader->GetOutput());
-  writer->SetFileName(av[2]);
+  writer->SetFileName(argv[2]);
   writer->Update();
 
   return EXIT_SUCCESS;

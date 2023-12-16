@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class MahalanobisDistanceThresholdImageFunction
+ * \class MahalanobisDistanceThresholdImageFunction
  * \brief Returns true if the pixel value of a vector image has a
  * Mahalanobis distance below the value specified by the threshold.
  *
@@ -50,7 +50,7 @@ template <typename TInputImage, typename TCoordRep = float>
 class ITK_TEMPLATE_EXPORT MahalanobisDistanceThresholdImageFunction : public ImageFunction<TInputImage, bool, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MahalanobisDistanceThresholdImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(MahalanobisDistanceThresholdImageFunction);
 
   /** Standard class type aliases. */
   using Self = MahalanobisDistanceThresholdImageFunction;
@@ -65,7 +65,7 @@ public:
   itkNewMacro(Self);
 
   /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
 
   /** Typedef to describe the type of pixel. */
   using PixelType = typename TInputImage::PixelType;
@@ -74,13 +74,13 @@ public:
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
 
   /** Type used to represent the Covariance matrix of the vector population. */
   using CovarianceMatrixType = vnl_matrix<double>;
@@ -151,7 +151,7 @@ public:
   /** Set the covariance matrix.
    * Set this covariance matrix to the membership function. */
   void
-  SetCovariance(const CovarianceMatrixType & cov);
+  SetCovariance(const CovarianceMatrixType & covariance);
 
   /** Get the covariance matrix.
    * The covariance matrix set on the membership function matches this value. */

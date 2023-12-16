@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkCannySegmentationLevelSetFunction_hxx
 #define itkCannySegmentationLevelSetFunction_hxx
 
-#include "itkCannySegmentationLevelSetFunction.h"
 #include "itkGradientImageFilter.h"
 #include "itkMultiplyImageFilter.h"
 #include "itkImageRegionIterator.h"
@@ -74,7 +73,7 @@ template <typename TImageType, typename TFeatureImageType>
 void
 CannySegmentationLevelSetFunction<TImageType, TFeatureImageType>::CalculateDistanceImage()
 {
-  typename TFeatureImageType::Pointer tempFeature = TFeatureImageType::New();
+  auto tempFeature = TFeatureImageType::New();
 
   // The minipipeline might muck with its feature image requested
   // region. The rest of the class relies on the feature image requested

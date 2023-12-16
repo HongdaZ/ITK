@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,14 +26,14 @@
 
 namespace itk
 {
-/**\class BorderQuadEdgeMeshFilterEnums
+/** \class BorderQuadEdgeMeshFilterEnums
  * \brief Contains all enum classes used by
  * \ingroup ITKQuadEdgeMeshFiltering
  */
 class BorderQuadEdgeMeshFilterEnums
 {
 public:
-  /**\class BorderTransform
+  /** \class BorderTransform
    * \ingroup ITKQuadEdgeMeshFiltering
    * */
   enum class BorderTransform : uint8_t
@@ -42,7 +42,7 @@ public:
     DISK_BORDER_TRANSFORM
   };
 
-  /**\class BorderPick
+  /** \class BorderPick
    * \ingroup ITKQuadEdgeMeshFiltering
    * */
   enum class BorderPick : uint8_t
@@ -82,7 +82,7 @@ template <typename TInputMesh, typename TOutputMesh = TInputMesh>
 class ITK_TEMPLATE_EXPORT BorderQuadEdgeMeshFilter : public QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BorderQuadEdgeMeshFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BorderQuadEdgeMeshFilter);
 
   /** Basic types. */
   using Self = BorderQuadEdgeMeshFilter;

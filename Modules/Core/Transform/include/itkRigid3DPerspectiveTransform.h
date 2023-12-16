@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +38,7 @@ template <typename TParametersValueType = double>
 class ITK_TEMPLATE_EXPORT Rigid3DPerspectiveTransform : public Transform<TParametersValueType, 3, 2>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Rigid3DPerspectiveTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(Rigid3DPerspectiveTransform);
 
   /** Dimension of the domain space. */
   static constexpr unsigned int InputSpaceDimension = 3;
@@ -62,18 +62,18 @@ public:
   itkNewMacro(Self);
 
   /** Scalar type. */
-  using ScalarType = typename Superclass::ScalarType;
+  using typename Superclass::ScalarType;
 
   /** Parameters type. */
-  using FixedParametersType = typename Superclass::FixedParametersType;
+  using typename Superclass::FixedParametersType;
   using FixedParametersValueType = typename FixedParametersType::ValueType;
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
   using ParametersValueType = typename ParametersType::ValueType;
 
   /** Jacobian types. */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  using typename Superclass::JacobianType;
+  using typename Superclass::JacobianPositionType;
+  using typename Superclass::InverseJacobianPositionType;
 
   /** Standard matrix type for this class. */
   using MatrixType = Matrix<TParametersValueType, Self::InputSpaceDimension, Self::InputSpaceDimension>;
@@ -87,8 +87,8 @@ public:
   using OutputVectorType = Vector<TParametersValueType, Self::OutputSpaceDimension>;
 
   /** Standard covariant vector type for this class */
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
+  using typename Superclass::InputCovariantVectorType;
+  using typename Superclass::OutputCovariantVectorType;
 
   /** Standard coordinate point type for this class. */
   using InputPointType = Point<TParametersValueType, Self::InputSpaceDimension>;
@@ -98,8 +98,8 @@ public:
   using VnlQuaternionType = vnl_quaternion<TParametersValueType>;
 
   /** Standard vnl_vector type for this class. */
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
+  using typename Superclass::InputVnlVectorType;
+  using typename Superclass::OutputVnlVectorType;
 
   /** Versor type. */
   using VersorType = Versor<TParametersValueType>;

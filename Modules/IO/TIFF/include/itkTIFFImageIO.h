@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ class TIFFReaderInternal;
 // ETX
 
 /**
- *\class TIFFImageIO
+ * \class TIFFImageIO
  *
  * \brief ImageIO object for reading and writing TIFF images
  *
@@ -48,7 +48,7 @@ class TIFFReaderInternal;
 class ITKIOTIFF_EXPORT TIFFImageIO : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TIFFImageIO);
+  ITK_DISALLOW_COPY_AND_MOVE(TIFFImageIO);
 
   /** Standard class type aliases. */
   using Self = TIFFImageIO;
@@ -253,11 +253,11 @@ private:
   AllocateTiffPalette(uint16_t bps);
 
   void
-  ReadCurrentPage(void * out, size_t pixelOffset);
+  ReadCurrentPage(void * buffer, size_t pixelOffset);
 
   template <typename TComponent>
   void
-  ReadGenericImage(void * out, unsigned int width, unsigned int height);
+  ReadGenericImage(void * _out, unsigned int width, unsigned int height);
 
   template <typename TComponent>
   void

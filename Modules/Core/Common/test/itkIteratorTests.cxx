@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ itkIteratorTests(int, char *[])
 {
   std::cout << "Creating an image" << std::endl;
   using ScalarImage = itk::Image<unsigned short, 3>;
-  ScalarImage::Pointer o3 = ScalarImage::New();
+  auto o3 = ScalarImage::New();
 
   double origin3D[3] = { 5, 2.1, 8.1 };
   double spacing3D[3] = { 1.5, 2.1, 1 };
@@ -71,7 +71,7 @@ itkIteratorTests(int, char *[])
   unsigned short * ptr = o3->GetBufferPointer();
   memset(ptr, 0, num * sizeof(unsigned short));
   end = clock();
-  elapsedTime = (end - start) / (double)CLOCKS_PER_SEC;
+  elapsedTime = (end - start) / static_cast<double>(CLOCKS_PER_SEC);
 
   std::cout << "Raw pointer using memset" << std::endl;
   std::cout << "\tTime   = " << elapsedTime << std::endl;
@@ -86,7 +86,7 @@ itkIteratorTests(int, char *[])
   }
   end = clock();
   *ptr = 0;
-  elapsedTime = (end - start) / (double)CLOCKS_PER_SEC;
+  elapsedTime = (end - start) / static_cast<double>(CLOCKS_PER_SEC);
 
   std::cout << "Raw pointer as a 1D array" << std::endl;
   std::cout << "\tTime   = " << elapsedTime << std::endl;
@@ -111,7 +111,7 @@ itkIteratorTests(int, char *[])
         ++i;
       }
   end = clock();
-  elapsedTime = (end - start) / (double)CLOCKS_PER_SEC;
+  elapsedTime = (end - start) / static_cast<double>(CLOCKS_PER_SEC);
 
   std::cout << "Raw pointer in 3 nested loops" << std::endl;
   std::cout << "\tTime   = " << elapsedTime << std::endl;
@@ -136,7 +136,7 @@ itkIteratorTests(int, char *[])
     ++i;
   }
   end = clock();
-  elapsedTime = (end - start) / (double)CLOCKS_PER_SEC;
+  elapsedTime = (end - start) / static_cast<double>(CLOCKS_PER_SEC);
 
   std::cout << "ImageRegionIterator" << std::endl;
   std::cout << "\tTime   = " << elapsedTime << std::endl;
@@ -158,7 +158,7 @@ itkIteratorTests(int, char *[])
     ++i;
   }
   end = clock();
-  elapsedTime = (end - start) / (double)CLOCKS_PER_SEC;
+  elapsedTime = (end - start) / static_cast<double>(CLOCKS_PER_SEC);
 
   std::cout << "ImageRegionIteratorWithIndex" << std::endl;
   std::cout << "\tTime   = " << elapsedTime << std::endl;

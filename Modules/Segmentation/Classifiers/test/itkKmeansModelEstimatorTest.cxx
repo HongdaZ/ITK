@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,7 +62,7 @@ itkKmeansModelEstimatorTest(int, char *[])
 
   using VecImagePixelType = VecImageType::PixelType;
 
-  VecImageType::Pointer vecImage = VecImageType::New();
+  auto vecImage = VecImageType::New();
 
   VecImageType::SizeType vecImgSize = { { IMGWIDTH, IMGHEIGHT, NFRAMES } };
 
@@ -233,7 +233,7 @@ itkKmeansModelEstimatorTest(int, char *[])
   //----------------------------------------------------------------------
   using ImageKmeansModelEstimatorType = itk::ImageKmeansModelEstimator<VecImageType, MembershipFunctionType>;
 
-  ImageKmeansModelEstimatorType::Pointer applyKmeansEstimator = ImageKmeansModelEstimatorType::New();
+  auto applyKmeansEstimator = ImageKmeansModelEstimatorType::New();
 
   //----------------------------------------------------------------------
   // Set the parameters of the clusterer
@@ -255,13 +255,13 @@ itkKmeansModelEstimatorTest(int, char *[])
   double             error = 0;
   double             meanCDBKvalue = 0;
 
-  for (unsigned int classIndex = 0; classIndex < membershipFunctions.size(); classIndex++)
+  for (unsigned int classIndex = 0; classIndex < membershipFunctions.size(); ++classIndex)
   {
     kmeansResultForClass = membershipFunctions[classIndex]->GetCentroid();
     referenceCodebookForClass = inCDBK.get_row(classIndex);
     errorForClass = kmeansResultForClass - referenceCodebookForClass;
 
-    for (int i = 0; i < NUMBANDS; i++)
+    for (int i = 0; i < NUMBANDS; ++i)
     {
       error += itk::Math::abs(errorForClass[i] / referenceCodebookForClass[i]);
       meanCDBKvalue += referenceCodebookForClass[i];
@@ -301,7 +301,7 @@ itkKmeansModelEstimatorTest(int, char *[])
   unsigned int minidx = 0;
   double       mindist = 99999999;
   double       classdist;
-  for (unsigned int idx = 0; idx < membershipFunctions.size(); idx++)
+  for (unsigned int idx = 0; idx < membershipFunctions.size(); ++idx)
   {
     classdist = membershipFunctions[idx]->Evaluate(outIt.Get());
     std::cout << "Distance of first pixel to class " << idx << " is: " << classdist << std::endl;
@@ -316,13 +316,13 @@ itkKmeansModelEstimatorTest(int, char *[])
   error = 0;
   meanCDBKvalue = 0;
   const size_t test = membershipFunctions.size();
-  for (unsigned int classIndex = 0; classIndex < test; classIndex++)
+  for (unsigned int classIndex = 0; classIndex < test; ++classIndex)
   {
     kmeansResultForClass = membershipFunctions[classIndex]->GetCentroid();
     referenceCodebookForClass = inCDBK.get_row(classIndex);
     errorForClass = kmeansResultForClass - referenceCodebookForClass;
 
-    for (int i = 0; i < NUMBANDS; i++)
+    for (int i = 0; i < NUMBANDS; ++i)
     {
       error += itk::Math::abs(errorForClass[i] / referenceCodebookForClass[i]);
       meanCDBKvalue += referenceCodebookForClass[i];

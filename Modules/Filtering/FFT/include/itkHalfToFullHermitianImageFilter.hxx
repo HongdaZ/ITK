@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkHalfToFullHermitianImageFilter_hxx
 #define itkHalfToFullHermitianImageFilter_hxx
 
-#include "itkHalfToFullHermitianImageFilter.h"
 
 #include "itkImageAlgorithm.h"
 #include "itkImageRegionIteratorWithIndex.h"
@@ -57,7 +56,7 @@ HalfToFullHermitianImageFilter<TInputImage>::GenerateOutputInformation()
   typename OutputImageType::SizeType  outputSize;
   typename OutputImageType::IndexType outputStartIndex;
 
-  for (unsigned int i = 0; i < OutputImageType::ImageDimension; i++)
+  for (unsigned int i = 0; i < OutputImageType::ImageDimension; ++i)
   {
     outputSize[i] = inputSize[i];
     outputStartIndex[i] = inputStartIndex[i];
@@ -68,9 +67,7 @@ HalfToFullHermitianImageFilter<TInputImage>::GenerateOutputInformation()
     outputSize[0]++;
   }
 
-  typename OutputImageType::RegionType outputLargestPossibleRegion;
-  outputLargestPossibleRegion.SetSize(outputSize);
-  outputLargestPossibleRegion.SetIndex(outputStartIndex);
+  const typename OutputImageType::RegionType outputLargestPossibleRegion(outputStartIndex, outputSize);
 
   outputPtr->SetLargestPossibleRegion(outputLargestPossibleRegion);
 }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageFileWriter_hxx
 #define itkImageFileWriter_hxx
 
-#include "itkImageFileWriter.h"
 #include "itkDataObject.h"
 #include "itkObjectFactoryBase.h"
 #include "itkImageIOFactory.h"
@@ -47,16 +46,16 @@ ImageFileWriter<TInputImage>::SetInput(const InputImageType * input)
 
 //---------------------------------------------------------
 template <typename TInputImage>
-const typename ImageFileWriter<TInputImage>::InputImageType *
-ImageFileWriter<TInputImage>::GetInput()
+auto
+ImageFileWriter<TInputImage>::GetInput() -> const InputImageType *
 {
   return itkDynamicCastInDebugMode<TInputImage *>(this->GetPrimaryInput());
 }
 
 //---------------------------------------------------------
 template <typename TInputImage>
-const typename ImageFileWriter<TInputImage>::InputImageType *
-ImageFileWriter<TInputImage>::GetInput(unsigned int idx)
+auto
+ImageFileWriter<TInputImage>::GetInput(unsigned int idx) -> const InputImageType *
 {
   return itkDynamicCastInDebugMode<TInputImage *>(this->ProcessObject::GetInput(idx));
 }
@@ -177,7 +176,7 @@ ImageFileWriter<TInputImage>::Write()
   typename TInputImage::PointType         origin;
   input->TransformIndexToPhysicalPoint(startIndex, origin);
 
-  for (unsigned int i = 0; i < TInputImage::ImageDimension; i++)
+  for (unsigned int i = 0; i < TInputImage::ImageDimension; ++i)
   {
     m_ImageIO->SetDimensions(i, largestRegion.GetSize(i));
     m_ImageIO->SetSpacing(i, spacing[i]);
@@ -185,7 +184,7 @@ ImageFileWriter<TInputImage>::Write()
     vnl_vector<double> axisDirection(TInputImage::ImageDimension);
     // Please note: direction cosines are stored as columns of the
     // direction matrix
-    for (unsigned int j = 0; j < TInputImage::ImageDimension; j++)
+    for (unsigned int j = 0; j < TInputImage::ImageDimension; ++j)
     {
       axisDirection[j] = direction[j][i];
     }
@@ -205,19 +204,12 @@ ImageFileWriter<TInputImage>::Write()
     m_ImageIO->SetMetaDataDictionary(input->GetMetaDataDictionary());
   }
 
-  // Make sure that the image is the right type
-  // confiugure pixel type
+  // Set the pixel and component type; the number of components.
+  m_ImageIO->SetPixelTypeInfo(static_cast<const InputImagePixelType *>(nullptr));
   if (strcmp(input->GetNameOfClass(), "VectorImage") == 0)
   {
-    using VectorImageScalarType = typename InputImageType::InternalPixelType;
-    m_ImageIO->SetPixelTypeInfo(static_cast<const VectorImageScalarType *>(nullptr));
     using AccessorFunctorType = typename InputImageType::AccessorFunctorType;
     m_ImageIO->SetNumberOfComponents(AccessorFunctorType::GetVectorLength(input));
-  }
-  else
-  {
-    // Set the pixel and component type; the number of components.
-    m_ImageIO->SetPixelTypeInfo(static_cast<const InputImagePixelType *>(nullptr));
   }
 
   // Setup the image IO for writing.
@@ -250,11 +242,11 @@ ImageFileWriter<TInputImage>::Write()
   // largest region or not.
   if (!largestIORegion.IsInside(pasteIORegion))
   {
-    itkExceptionMacro(<< "Largest possible region does not fully contain requested paste IO region"
-                      << "Paste IO region: " << pasteIORegion << "Largest possible region: " << largestRegion);
+    itkExceptionMacro(<< "Largest possible region does not fully contain requested paste IO region. Paste IO region: "
+                      << pasteIORegion << "Largest possible region: " << largestRegion);
   }
 
-  // Determin the actual number of divisions of the input. This is determined
+  // Determine the actual number of divisions of the input. This is determined
   // by what the ImageIO can do
   unsigned int numDivisions;
 
@@ -268,7 +260,7 @@ ImageFileWriter<TInputImage>::Write()
    */
   unsigned int piece;
 
-  for (piece = 0; piece < numDivisions && !this->GetAbortGenerateData(); piece++)
+  for (piece = 0; piece < numDivisions && !this->GetAbortGenerateData(); ++piece)
   {
     // get the actual piece to write
     ImageIORegion streamIORegion =
@@ -278,8 +270,9 @@ ImageFileWriter<TInputImage>::Write()
     // largest region or not.
     if (!pasteIORegion.IsInside(streamIORegion))
     {
-      itkExceptionMacro(<< "ImageIO returns streamable region that is not fully contain in paste IO region"
-                        << "Paste IO region: " << pasteIORegion << "Streamable region: " << streamIORegion);
+      itkExceptionMacro(
+        << "ImageIO returns streamable region that is not fully contain in paste IO region. Paste IO region: "
+        << pasteIORegion << "Streamable region: " << streamIORegion);
     }
 
     InputImageRegionType streamRegion;
@@ -342,7 +335,7 @@ ImageFileWriter<TInputImage>::GenerateData()
   itkDebugMacro(<< "Writing file: " << m_FileName);
 
   // now extract the data as a raw buffer pointer
-  const auto * dataPtr = (const void *)input->GetBufferPointer();
+  const void * dataPtr = input->GetBufferPointer();
 
   // check that the image's buffered region is the same as
   // ImageIO is expecting and we requested
@@ -366,7 +359,7 @@ ImageFileWriter<TInputImage>::GenerateData()
 
       ImageAlgorithm::Copy(input, cacheImage.GetPointer(), ioRegion, ioRegion);
 
-      dataPtr = (const void *)cacheImage->GetBufferPointer();
+      dataPtr = cacheImage->GetBufferPointer();
     }
     else
     {
@@ -395,15 +388,7 @@ ImageFileWriter<TInputImage>::PrintSelf(std::ostream & os, Indent indent) const
 
   os << indent << "File Name: " << (m_FileName.data() ? m_FileName.data() : "(none)") << std::endl;
 
-  os << indent << "Image IO: ";
-  if (m_ImageIO.IsNull())
-  {
-    os << "(none)\n";
-  }
-  else
-  {
-    os << m_ImageIO << "\n";
-  }
+  itkPrintSelfObjectMacro(ImageIO);
 
   os << indent << "IO Region: " << m_PasteIORegion << "\n";
   os << indent << "Number of Stream Divisions: " << m_NumberOfStreamDivisions << "\n";

@@ -27,12 +27,12 @@
 #--   - [ ] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -46,9 +46,9 @@ itk_fetch_module(MeshNoise
   "Perturb itk::Mesh and itk::QuadEdgeMesh coordinates with Gaussian noise.
   Please see the following Insight Journal article for an introduction to this module:
   Vigneault, DM.  Perturbing Mesh Vertices with Additive Gaussian Noise.
-  http://hdl.handle.net/10380/3567
+  https://www.insight-journal.org/browse/publication/981
   "
   MODULE_COMPLIANCE_LEVEL 2
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKMeshNoise.git
-  GIT_TAG 9bb48f45a2b3406ecb5d455beeff0029d950e92a
+  GIT_TAG a01fae4f1d637eb6d4a183d940b9ce79970db14e
   )

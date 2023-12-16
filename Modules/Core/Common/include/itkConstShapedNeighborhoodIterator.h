@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,6 +65,7 @@ namespace itk
  * \sa NeighborhoodIterator \sa PathConstIterator  \sa PathIterator
  * \sa ShapedNeighborhoodIterator  \sa SliceIterator
  * \sa ImageConstIteratorWithIndex
+ * \sa ShapedImageNeighborhoodRange
  * \ingroup ITKCommon
  */
 template <typename TImage, typename TBoundaryCondition = ZeroFluxNeumannBoundaryCondition<TImage>>
@@ -83,10 +84,10 @@ public:
   using Superclass = NeighborhoodIterator<TImage, TBoundaryCondition>;
 
   /** Inherit type alias from superclass */
-  using OffsetType = typename Superclass::OffsetType;
+  using typename Superclass::OffsetType;
   using OffsetValueType = typename OffsetType::OffsetValueType;
-  using RadiusType = typename Superclass::RadiusType;
-  using SizeType = typename Superclass::SizeType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::SizeType;
   using SizeValueType = typename SizeType::SizeValueType;
 
   /** Typedef support for common objects */
@@ -111,7 +112,7 @@ public:
   /** Typedef for generic boundary condition pointer */
   using ImageBoundaryConditionPointerType = ImageBoundaryCondition<ImageType> *;
 
-  /** Const Interator */
+  /** Const Iterator */
   struct ConstIterator
   {
     ConstIterator() { m_NeighborhoodIterator = nullptr; }
@@ -140,39 +141,36 @@ public:
     void
     operator++(int)
     {
-      m_ListIterator++;
+      ++m_ListIterator;
     }
 
     void
     operator--(int)
     {
-      m_ListIterator--;
+      --m_ListIterator;
     }
 
     const ConstIterator &
     operator++()
     {
-      m_ListIterator++;
+      ++m_ListIterator;
       return *this;
     }
 
     const ConstIterator &
     operator--()
     {
-      m_ListIterator--;
+      --m_ListIterator;
       return *this;
     }
 
-    bool
-    operator!=(const ConstIterator & o) const
-    {
-      return m_ListIterator != o.m_ListIterator;
-    }
     bool
     operator==(const ConstIterator & o) const
     {
       return m_ListIterator == o.m_ListIterator;
     }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
 
     bool
     IsAtEnd() const
@@ -283,7 +281,9 @@ public:
   using Superclass::IsAtEnd;
   using Superclass::GetOffset;
   using Superclass::operator==;
+#ifndef ITK_EXPERIMENTAL_CXX20_REWRITTEN_UNEQUAL_OPERATOR
   using Superclass::operator!=;
+#endif
   using Superclass::operator<;
   using Superclass::operator>;
   using Superclass::operator>=;
@@ -296,6 +296,7 @@ public:
   using Superclass::OverrideBoundaryCondition;
   using Superclass::ResetBoundaryCondition;
   using Superclass::GetBoundaryCondition;
+  using Superclass::SetBoundaryCondition;
   using Superclass::GetNeedToUseBoundaryCondition;
   using Superclass::SetNeedToUseBoundaryCondition;
   using Superclass::NeedToUseBoundaryConditionOn;
@@ -337,7 +338,7 @@ public:
   }
 
   /** Activates a whole range of offsets, for example, an std::vector<OffsetType>,
-   * which could be from Experimental::GenerateImageNeighborhoodOffsets(shape). */
+   * which could be from GenerateImageNeighborhoodOffsets(shape). */
   template <typename TOffsets>
   void
   ActivateOffsets(const TOffsets & offsets)

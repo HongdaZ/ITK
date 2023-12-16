@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 
 #include "itkFrustumSpatialFunction.h"
 #include "itkTestingMacros.h"
+#include <set>
 
 
 int
@@ -37,7 +38,7 @@ itkFrustumSpatialFunctionTest(int, char *[])
   using FrustumSpatialFunctionType = itk::FrustumSpatialFunction<PointDimension, PointType>;
 
   // Create the frustum spatial function
-  FrustumSpatialFunctionType::Pointer frustrumSpatialFunction = FrustumSpatialFunctionType::New();
+  auto frustrumSpatialFunction = FrustumSpatialFunctionType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(frustrumSpatialFunction, FrustumSpatialFunction, InteriorExteriorSpatialFunction);
 
@@ -200,6 +201,16 @@ itkFrustumSpatialFunctionTest(int, char *[])
     std::cerr << " is inside frustum" << std::endl;
     std::cerr << "Test FAILED ! " << std::endl;
     testStatus = EXIT_FAILURE;
+  }
+
+  // Test streaming enumeration for FrustumSpatialFunctionEnums elements
+  const std::set<itk::FrustumSpatialFunctionEnums::RotationPlane> allRotationPlanes{
+    itk::FrustumSpatialFunctionEnums::RotationPlane::RotateInXZPlane,
+    itk::FrustumSpatialFunctionEnums::RotationPlane::RotateInYZPlane
+  };
+  for (const auto & ee : allRotationPlanes)
+  {
+    std::cout << "STREAMED ENUM VALUE itk::FrustumSpatialFunctionEnums::RotationPlane: " << ee << std::endl;
   }
 
   return testStatus;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkBoxMeanImageFilter_hxx
 #define itkBoxMeanImageFilter_hxx
 
-#include "itkBoxMeanImageFilter.h"
 #include "itkProgressAccumulator.h"
 #include "itkBoxUtilities.h"
 
@@ -28,8 +27,7 @@
  * This code was contributed in the Insight Journal paper:
  * "Efficient implementation of kernel filtering"
  * by Beare R., Lehmann G
- * https://hdl.handle.net/1926/555
- * http://www.insight-journal.org/browse/publication/160
+ * https://www.insight-journal.org/browse/publication/160
  *
  */
 
@@ -51,7 +49,7 @@ BoxMeanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   using AccumImageType = Image<AccPixType, TInputImage::ImageDimension>;
 
   typename TInputImage::SizeType internalRadius;
-  for (unsigned int i = 0; i < TInputImage::ImageDimension; i++)
+  for (unsigned int i = 0; i < TInputImage::ImageDimension; ++i)
   {
     internalRadius[i] = this->GetRadius()[i] + 1;
   }
@@ -62,7 +60,7 @@ BoxMeanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   accumRegion.PadByRadius(internalRadius);
   accumRegion.Crop(inputImage->GetRequestedRegion());
 
-  typename AccumImageType::Pointer accImage = AccumImageType::New();
+  auto accImage = AccumImageType::New();
   accImage->SetRegions(accumRegion);
   accImage->Allocate();
 

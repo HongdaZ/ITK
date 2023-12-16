@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -110,7 +110,6 @@ ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>::StartOptimiz
   if (this->m_Metric.IsNull())
   {
     itkExceptionMacro("m_Metric must be set.");
-    return;
   }
 
   /* Estimate the parameter scales if requested. */
@@ -136,7 +135,7 @@ ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>::StartOptimiz
      * Also check if scales are identity. */
     using SizeType = typename ScalesType::size_type;
     this->m_ScalesAreIdentity = true;
-    for (SizeType i = 0; i < this->m_Scales.Size(); i++)
+    for (SizeType i = 0; i < this->m_Scales.Size(); ++i)
     {
       if (this->m_Scales[i] <= NumericTraits<SValueType>::epsilon())
       {
@@ -145,7 +144,7 @@ ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>::StartOptimiz
       /* Check if the scales are identity. Consider to be identity if
        * within a tolerance, to allow for automatically estimated scales
        * that may not be exactly 1.0 when in priciniple they should be. */
-      SValueType difference = std::fabs(NumericTraits<SValueType>::OneValue() - this->m_Scales[i]);
+      SValueType difference = itk::Math::abs(NumericTraits<SValueType>::OneValue() - this->m_Scales[i]);
       auto       tolerance = static_cast<SValueType>(0.01);
       if (difference > tolerance)
       {
@@ -174,9 +173,9 @@ ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>::StartOptimiz
     /* Check if they are identity within tolerance. */
     using SizeType = typename ScalesType::size_type;
     this->m_WeightsAreIdentity = true;
-    for (SizeType i = 0; i < this->m_Weights.Size(); i++)
+    for (SizeType i = 0; i < this->m_Weights.Size(); ++i)
     {
-      SValueType difference = std::fabs(NumericTraits<SValueType>::OneValue() - this->m_Weights[i]);
+      SValueType difference = itk::Math::abs(NumericTraits<SValueType>::OneValue() - this->m_Weights[i]);
       auto       tolerance = static_cast<SValueType>(1e-4);
       if (difference > tolerance)
       {

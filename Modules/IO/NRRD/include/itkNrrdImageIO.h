@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ struct NrrdEncoding_t;
 namespace itk
 {
 /**
- *\class NrrdImageIO
+ * \class NrrdImageIO
  *
  * \brief Read and write the "Nearly Raw Raster Data" (Nrrd) image format.
  * The Nrrd format was developed as part of the Teem package
@@ -44,7 +44,7 @@ namespace itk
 class ITKIONRRD_EXPORT NrrdImageIO : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NrrdImageIO);
+  ITK_DISALLOW_COPY_AND_MOVE(NrrdImageIO);
 
   /** Standard class type aliases. */
   using Self = NrrdImageIO;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,13 @@
 
 #include "itkMacro.h"
 #include <iostream>
+#include <type_traits>
+
+static_assert(std::is_nothrow_default_constructible<itk::ExceptionObject>::value,
+              "ExceptionObject must have a noexcept default-constructor!");
+static_assert(std::is_nothrow_copy_assignable<itk::ExceptionObject>::value &&
+                std::is_nothrow_copy_constructible<itk::ExceptionObject>::value,
+              "An exception type must have noexcept copy semantics!");
 
 class mammal
 {
@@ -64,13 +71,13 @@ mammal::operator==(mammal & o)
 }
 
 int
-lookup(const int & i)
+lookup(const int i)
 {
   static int table[5] = { 23, 42, 42, 32, 12 };
   if (!(0 <= i && i < 5))
   {
     itk::RangeError e(__FILE__, __LINE__);
-    e.SetLocation("int lookup(const int& )");
+    e.SetLocation("int lookup(const int )");
     e.SetDescription("Attempted to access out-of-bounds array element");
     throw e;
   }
@@ -135,7 +142,7 @@ itkExceptionObjectTest(int, char *[])
     //       the OneShouldFail variable is never actually set to false!
     OneShouldFail &= (hal == john); // ERROR
   }
-  catch (itk::IncompatibleOperandsError & e)
+  catch (const itk::IncompatibleOperandsError & e)
   {
     std::cout << e << std::endl;
     raised = true;
@@ -163,7 +170,7 @@ itkExceptionObjectTest(int, char *[])
     E.SetDescription("sample error");
     throw E;
   }
-  catch (itk::ExceptionObject &e) { std::cout << e << std::endl; }
+  catch (const itk::ExceptionObject &e) { std::cout << e << std::endl; }
   */
 
   delete Fp;

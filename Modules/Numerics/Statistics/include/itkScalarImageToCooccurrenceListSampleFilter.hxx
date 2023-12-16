@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkScalarImageToCooccurrenceListSampleFilter_hxx
 #define itkScalarImageToCooccurrenceListSampleFilter_hxx
 
-#include "itkScalarImageToCooccurrenceListSampleFilter.h"
 
 namespace itk
 {
@@ -56,8 +55,8 @@ ScalarImageToCooccurrenceListSampleFilter<TImage>::GetInput() const
 }
 
 template <typename TImage>
-const typename ScalarImageToCooccurrenceListSampleFilter<TImage>::SampleType *
-ScalarImageToCooccurrenceListSampleFilter<TImage>::GetOutput() const
+auto
+ScalarImageToCooccurrenceListSampleFilter<TImage>::GetOutput() const -> const SampleType *
 {
   const auto * output = static_cast<const SampleType *>(this->ProcessObject::GetOutput(0));
 
@@ -114,7 +113,7 @@ ScalarImageToCooccurrenceListSampleFilter<TImage>::GenerateData()
     while (iter != m_OffsetTable.end())
     {
       it.ActivateOffset(*iter);
-      iter++;
+      ++iter;
     }
 
     for (it.GoToBegin(); !it.IsAtEnd(); ++it)
@@ -155,7 +154,7 @@ ScalarImageToCooccurrenceListSampleFilter<TImage>::UseNeighbor(const OffsetType 
   // Don't add the center pixel
   bool isTheCenterPixel = true;
 
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     if (offset[i] != 0)
     {

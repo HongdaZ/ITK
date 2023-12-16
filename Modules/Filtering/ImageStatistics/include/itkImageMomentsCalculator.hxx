@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkImageMomentsCalculator_hxx
 #define itkImageMomentsCalculator_hxx
-#include "itkImageMomentsCalculator.h"
 
 #include "vnl/algo/vnl_real_eigensystem.h"
 #include "vnl/algo/vnl_symmetric_eigensystem.h"
@@ -25,29 +24,6 @@
 
 namespace itk
 {
-class InvalidImageMomentsError : public ExceptionObject
-{
-public:
-  /**
-   * Constructor. Needed to ensure the exception object can be copied.
-   */
-  InvalidImageMomentsError(const char * file, unsigned int lineNumber)
-    : ExceptionObject(file, lineNumber)
-  {
-    this->SetDescription("No valid image moments are available.");
-  }
-
-  /**
-   * Constructor. Needed to ensure the exception object can be copied.
-   */
-  InvalidImageMomentsError(const std::string & file, unsigned int lineNumber)
-    : ExceptionObject(file, lineNumber)
-  {
-    this->SetDescription("No valid image moments are available.");
-  }
-
-  itkTypeMacro(InvalidImageMomentsError, ExceptionObject);
-};
 
 //----------------------------------------------------------------------
 // Construct without computing moments
@@ -117,20 +93,20 @@ ImageMomentsCalculator<TImage>::Compute()
     {
       m_M0 += value;
 
-      for (unsigned int i = 0; i < ImageDimension; i++)
+      for (unsigned int i = 0; i < ImageDimension; ++i)
       {
         m_M1[i] += static_cast<double>(indexPosition[i]) * value;
-        for (unsigned int j = 0; j < ImageDimension; j++)
+        for (unsigned int j = 0; j < ImageDimension; ++j)
         {
           double weight = value * static_cast<double>(indexPosition[i]) * static_cast<double>(indexPosition[j]);
           m_M2[i][j] += weight;
         }
       }
 
-      for (unsigned int i = 0; i < ImageDimension; i++)
+      for (unsigned int i = 0; i < ImageDimension; ++i)
       {
         m_Cg[i] += physicalPosition[i] * value;
-        for (unsigned int j = 0; j < ImageDimension; j++)
+        for (unsigned int j = 0; j < ImageDimension; ++j)
         {
           double weight = value * physicalPosition[i] * physicalPosition[j];
           m_Cm[i][j] += weight;
@@ -149,11 +125,11 @@ ImageMomentsCalculator<TImage>::Compute()
   }
 
   // Normalize using the total mass
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     m_Cg[i] /= m_M0;
     m_M1[i] /= m_M0;
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       m_M2[i][j] /= m_M0;
       m_Cm[i][j] /= m_M0;
@@ -161,9 +137,9 @@ ImageMomentsCalculator<TImage>::Compute()
   }
 
   // Center the second order moments
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       m_M2[i][j] -= m_M1[i] * m_M1[j];
       m_Cm[i][j] -= m_Cg[i] * m_Cg[j];
@@ -173,7 +149,7 @@ ImageMomentsCalculator<TImage>::Compute()
   // Compute principal moments and axes
   vnl_symmetric_eigensystem<double> eigen{ m_Cm.GetVnlMatrix().as_matrix() };
   vnl_diag_matrix<double>           pm{ eigen.D };
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     m_Pm[i] = pm(i) * m_M0;
   }
@@ -185,12 +161,12 @@ ImageMomentsCalculator<TImage>::Compute()
   vnl_diag_matrix<std::complex<double>> eigenval{ eigenrot.D };
   std::complex<double>                  det(1.0, 0.0);
 
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     det *= eigenval(i);
   }
 
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     m_Pa[ImageDimension - 1][i] *= std::real(det);
   }
@@ -202,8 +178,8 @@ ImageMomentsCalculator<TImage>::Compute()
 //---------------------------------------------------------------------
 // Get sum of intensities
 template <typename TImage>
-typename ImageMomentsCalculator<TImage>::ScalarType
-ImageMomentsCalculator<TImage>::GetTotalMass() const
+auto
+ImageMomentsCalculator<TImage>::GetTotalMass() const -> ScalarType
 {
   if (!m_Valid)
   {
@@ -215,8 +191,8 @@ ImageMomentsCalculator<TImage>::GetTotalMass() const
 //--------------------------------------------------------------------
 // Get first moments about origin, in index coordinates
 template <typename TImage>
-typename ImageMomentsCalculator<TImage>::VectorType
-ImageMomentsCalculator<TImage>::GetFirstMoments() const
+auto
+ImageMomentsCalculator<TImage>::GetFirstMoments() const -> VectorType
 {
   if (!m_Valid)
   {
@@ -228,8 +204,8 @@ ImageMomentsCalculator<TImage>::GetFirstMoments() const
 //--------------------------------------------------------------------
 // Get second moments about origin, in index coordinates
 template <typename TImage>
-typename ImageMomentsCalculator<TImage>::MatrixType
-ImageMomentsCalculator<TImage>::GetSecondMoments() const
+auto
+ImageMomentsCalculator<TImage>::GetSecondMoments() const -> MatrixType
 {
   if (!m_Valid)
   {
@@ -241,8 +217,8 @@ ImageMomentsCalculator<TImage>::GetSecondMoments() const
 //--------------------------------------------------------------------
 // Get center of gravity, in physical coordinates
 template <typename TImage>
-typename ImageMomentsCalculator<TImage>::VectorType
-ImageMomentsCalculator<TImage>::GetCenterOfGravity() const
+auto
+ImageMomentsCalculator<TImage>::GetCenterOfGravity() const -> VectorType
 {
   if (!m_Valid)
   {
@@ -254,8 +230,8 @@ ImageMomentsCalculator<TImage>::GetCenterOfGravity() const
 //--------------------------------------------------------------------
 // Get second central moments, in physical coordinates
 template <typename TImage>
-typename ImageMomentsCalculator<TImage>::MatrixType
-ImageMomentsCalculator<TImage>::GetCentralMoments() const
+auto
+ImageMomentsCalculator<TImage>::GetCentralMoments() const -> MatrixType
 {
   if (!m_Valid)
   {
@@ -267,8 +243,8 @@ ImageMomentsCalculator<TImage>::GetCentralMoments() const
 //--------------------------------------------------------------------
 // Get principal moments, in physical coordinates
 template <typename TImage>
-typename ImageMomentsCalculator<TImage>::VectorType
-ImageMomentsCalculator<TImage>::GetPrincipalMoments() const
+auto
+ImageMomentsCalculator<TImage>::GetPrincipalMoments() const -> VectorType
 {
   if (!m_Valid)
   {
@@ -281,8 +257,8 @@ ImageMomentsCalculator<TImage>::GetPrincipalMoments() const
 //--------------------------------------------------------------------
 // Get principal axes, in physical coordinates
 template <typename TImage>
-typename ImageMomentsCalculator<TImage>::MatrixType
-ImageMomentsCalculator<TImage>::GetPrincipalAxes() const
+auto
+ImageMomentsCalculator<TImage>::GetPrincipalAxes() const -> MatrixType
 {
   if (!m_Valid)
   {
@@ -294,15 +270,15 @@ ImageMomentsCalculator<TImage>::GetPrincipalAxes() const
 //--------------------------------------------------------------------
 // Get principal axes to physical axes transform
 template <typename TImage>
-typename ImageMomentsCalculator<TImage>::AffineTransformPointer
-ImageMomentsCalculator<TImage>::GetPrincipalAxesToPhysicalAxesTransform() const
+auto
+ImageMomentsCalculator<TImage>::GetPrincipalAxesToPhysicalAxesTransform() const -> AffineTransformPointer
 {
   typename AffineTransformType::MatrixType matrix;
   typename AffineTransformType::OffsetType offset;
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     offset[i] = m_Cg[i];
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       matrix[j][i] = m_Pa[i][j]; // Note the transposition
     }
@@ -320,15 +296,15 @@ ImageMomentsCalculator<TImage>::GetPrincipalAxesToPhysicalAxesTransform() const
 // Get physical axes to principal axes transform
 
 template <typename TImage>
-typename ImageMomentsCalculator<TImage>::AffineTransformPointer
-ImageMomentsCalculator<TImage>::GetPhysicalAxesToPrincipalAxesTransform() const
+auto
+ImageMomentsCalculator<TImage>::GetPhysicalAxesToPrincipalAxesTransform() const -> AffineTransformPointer
 {
   typename AffineTransformType::MatrixType matrix;
   typename AffineTransformType::OffsetType offset;
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     offset[i] = m_Cg[i];
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       matrix[j][i] = m_Pa[i][j]; // Note the transposition
     }

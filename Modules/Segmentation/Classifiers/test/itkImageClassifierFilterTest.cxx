@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,10 +52,10 @@ itkImageClassifierFilterTest(int argc, char * argv[])
   // Generate an image with pixel intensities generated from two normal
   // distributions
   using NormalGeneratorType = itk::Statistics::NormalVariateGenerator;
-  NormalGeneratorType::Pointer normalGenerator = NormalGeneratorType::New();
+  auto normalGenerator = NormalGeneratorType::New();
   normalGenerator->Initialize(101);
 
-  InputImageType::Pointer image = InputImageType::New();
+  auto image = InputImageType::New();
 
   InputImageType::IndexType start;
   InputImageType::SizeType  size;
@@ -75,10 +75,10 @@ itkImageClassifierFilterTest(int argc, char * argv[])
   InputImageType::IndexType index;
   unsigned int              halfSize = size[1] / 2;
 
-  for (unsigned int y = 0; y < halfSize; y++)
+  for (unsigned int y = 0; y < halfSize; ++y)
   {
     index[1] = y;
-    for (unsigned int x = 0; x < size[0]; x++)
+    for (unsigned int x = 0; x < size[0]; ++x)
     {
       index[0] = x;
       InputPixelType value;
@@ -92,10 +92,10 @@ itkImageClassifierFilterTest(int argc, char * argv[])
   double mean2 = 200.5;
   double standardDeviation2 = 20.0;
 
-  for (unsigned int y = halfSize; y < size[1]; y++)
+  for (unsigned int y = halfSize; y < size[1]; ++y)
   {
     index[1] = y;
-    for (unsigned int x = 0; x < size[0]; x++)
+    for (unsigned int x = 0; x < size[0]; ++x)
     {
       index[0] = x;
       InputPixelType value;
@@ -109,7 +109,7 @@ itkImageClassifierFilterTest(int argc, char * argv[])
   // to EM estimator
   using ImageToListSampleAdaptorType = itk::Statistics::ImageToListSampleAdaptor<InputImageType>;
 
-  ImageToListSampleAdaptorType::Pointer sample = ImageToListSampleAdaptorType::New();
+  auto sample = ImageToListSampleAdaptorType::New();
   sample->SetImage(image);
 
   // Use EM estimator to estimate gaussian membership functions
@@ -130,7 +130,7 @@ itkImageClassifierFilterTest(int argc, char * argv[])
 
   using ComponentPointer = ComponentType::Pointer;
   std::vector<ComponentPointer> components;
-  for (unsigned int i = 0; i < numberOfClasses; i++)
+  for (unsigned int i = 0; i < numberOfClasses; ++i)
   {
     components.push_back(ComponentType::New());
     (components[i])->SetSample(sample);
@@ -138,7 +138,7 @@ itkImageClassifierFilterTest(int argc, char * argv[])
   }
 
   /* Estimating */
-  EstimatorType::Pointer estimator = EstimatorType::New();
+  auto estimator = EstimatorType::New();
   estimator->SetSample(sample);
 
   int maximumIteration = 200;
@@ -150,14 +150,14 @@ itkImageClassifierFilterTest(int argc, char * argv[])
 
   estimator->SetInitialProportions(initialProportions);
 
-  for (unsigned int i = 0; i < numberOfClasses; i++)
+  for (unsigned int i = 0; i < numberOfClasses; ++i)
   {
     estimator->AddComponent((ComponentType::Superclass *)(components[i]).GetPointer());
   }
 
   estimator->Update();
 
-  for (unsigned int i = 0; i < numberOfClasses; i++)
+  for (unsigned int i = 0; i < numberOfClasses; ++i)
   {
     std::cout << "Cluster[" << i << "]" << std::endl;
     std::cout << "    Parameters:" << std::endl;
@@ -169,12 +169,12 @@ itkImageClassifierFilterTest(int argc, char * argv[])
 
   using ImageClassifierFilterType =
     itk::Statistics::ImageClassifierFilter<ImageToListSampleAdaptorType, InputImageType, OutputImageType>;
-  ImageClassifierFilterType::Pointer filter = ImageClassifierFilterType::New();
+  auto filter = ImageClassifierFilterType::New();
 
   using ClassLabelVectorObjectType = ImageClassifierFilterType::ClassLabelVectorObjectType;
   using ClassLabelVectorType = ImageClassifierFilterType::ClassLabelVectorType;
 
-  ClassLabelVectorObjectType::Pointer classLabelsObject = ClassLabelVectorObjectType::New();
+  auto classLabelsObject = ClassLabelVectorObjectType::New();
 
   // Add class labels
   ClassLabelVectorType & classLabelVector = classLabelsObject->Get();
@@ -190,7 +190,7 @@ itkImageClassifierFilterTest(int argc, char * argv[])
   // Set a decision rule type
   using DecisionRuleType = itk::Statistics::MaximumDecisionRule;
 
-  DecisionRuleType::Pointer decisionRule = DecisionRuleType::New();
+  auto decisionRule = DecisionRuleType::New();
 
   const ImageClassifierFilterType::MembershipFunctionVectorObjectType * membershipFunctionsObject =
     estimator->GetOutput();
@@ -227,7 +227,7 @@ itkImageClassifierFilterTest(int argc, char * argv[])
   const ImageClassifierFilterType::MembershipFunctionsWeightsArrayType weightsArray = weightArrayObjects->Get();
 
   std::cout << "Estimator membership function Weight/proporation output: " << std::endl;
-  for (unsigned int i = 0; i < weightsArray.Size(); i++)
+  for (unsigned int i = 0; i < weightsArray.Size(); ++i)
   {
     std::cout << "Membership function: \t" << i << "\t" << weightsArray[i] << std::endl;
   }
@@ -251,8 +251,8 @@ itkImageClassifierFilterTest(int argc, char * argv[])
   try
   {
     filter->Update();
-    std::cerr << "Attempting to run a classification without setting"
-              << "decision rule, should throw an exception" << std::endl;
+    std::cerr << "Attempting to run a classification without setting decision rule, should throw an exception"
+              << std::endl;
     return EXIT_FAILURE;
   }
   catch (const itk::ExceptionObject & excp)
@@ -282,7 +282,7 @@ itkImageClassifierFilterTest(int argc, char * argv[])
 
   // Write out the classified image
   using OutputImageWriterType = itk::ImageFileWriter<OutputImageType>;
-  OutputImageWriterType::Pointer outputImageWriter = OutputImageWriterType::New();
+  auto outputImageWriter = OutputImageWriterType::New();
   outputImageWriter->SetFileName(argv[1]);
   outputImageWriter->SetInput(filter->GetOutput());
   outputImageWriter->Update();

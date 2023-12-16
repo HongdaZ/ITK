@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 namespace Functor
 {
 /**
- *\class LabelOverlayFunctor
+ * \class LabelOverlayFunctor
  *  \brief Functor for applying a colormap to a label image and combine it
  * with a grayscale image
  *
@@ -35,8 +35,7 @@ namespace Functor
  * This code was contributed in the Insight Journal paper:
  * "The watershed transform in ITK - discussion and new developments"
  * by Beare R., Lehmann G.
- * https://hdl.handle.net/1926/202
- * http://www.insight-journal.org/browse/publication/92
+ * https://www.insight-journal.org/browse/publication/92
  *
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction,
  * INRA de Jouy-en-Josas, France.
@@ -89,18 +88,13 @@ public:
   }
 
   bool
-  operator!=(const LabelOverlayFunctor & l) const
+  operator==(const LabelOverlayFunctor & other) const
   {
-    bool areDifferent = Math::NotExactlyEquals(l.m_Opacity, m_Opacity) || l.m_BackgroundValue != m_BackgroundValue ||
-                        l.m_RGBFunctor != m_RGBFunctor;
-    return areDifferent;
+    return Math::ExactlyEquals(m_Opacity, other.m_Opacity) && m_BackgroundValue == other.m_BackgroundValue &&
+           m_RGBFunctor == other.m_RGBFunctor;
   }
 
-  bool
-  operator==(const LabelOverlayFunctor & l) const
-  {
-    return !(*this != l);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(LabelOverlayFunctor);
 
   ~LabelOverlayFunctor() = default;
 

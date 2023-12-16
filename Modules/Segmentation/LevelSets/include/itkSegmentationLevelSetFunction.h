@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ template <typename TImageType, typename TFeatureImageType = TImageType>
 class ITK_TEMPLATE_EXPORT SegmentationLevelSetFunction : public LevelSetFunction<TImageType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SegmentationLevelSetFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(SegmentationLevelSetFunction);
 
   /** Standard class type aliases. */
   using Self = SegmentationLevelSetFunction;
@@ -59,17 +59,17 @@ public:
   itkTypeMacro(SegmentationLevelSetFunction, LevelSetFunction);
 
   /** Extract some parameters from the superclass. */
-  using ImageType = typename Superclass::ImageType;
-  using RadiusType = typename Superclass::RadiusType;
-  using PixelRealType = typename Superclass::PixelRealType;
+  using typename Superclass::ImageType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::PixelRealType;
   using FeatureImageType = TFeatureImageType;
-  using FloatOffsetType = typename Superclass::FloatOffsetType;
-  using ScalarValueType = typename Superclass::ScalarValueType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
+  using typename Superclass::FloatOffsetType;
+  using typename Superclass::ScalarValueType;
+  using typename Superclass::NeighborhoodType;
   using FeatureScalarType = typename FeatureImageType::PixelType;
   using IndexType = typename ImageType::IndexType;
-  using VectorType = typename Superclass::VectorType;
-  using GlobalDataStruct = typename Superclass::GlobalDataStruct;
+  using typename Superclass::VectorType;
+  using typename Superclass::GlobalDataStruct;
 
   /** Extract some parameters from the superclass. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,16 +18,10 @@
 #ifndef itkRegistrationParameterScalesFromJacobian_hxx
 #define itkRegistrationParameterScalesFromJacobian_hxx
 
-#include "itkRegistrationParameterScalesFromJacobian.h"
 
 namespace itk
 {
 
-/** Compute parameter scales from average jacobian norms.
- *  For each parameter, compute the squared norm of its transform Jacobian,
- *  then average the squared norm over the sample points. This average is
- *  used as the scale of this parameter.
- */
 template <typename TMetric>
 void
 RegistrationParameterScalesFromJacobian<TMetric>::EstimateScales(ScalesType & parameterScales)
@@ -48,7 +42,7 @@ RegistrationParameterScalesFromJacobian<TMetric>::EstimateScales(ScalesType & pa
   parameterScales.Fill(NumericTraits<typename ScalesType::ValueType>::OneValue());
 
   // checking each sample point
-  for (SizeValueType c = 0; c < numSamples; c++)
+  for (SizeValueType c = 0; c < numSamples; ++c)
   {
     const VirtualPointType point = this->m_SamplePoints[c];
 
@@ -60,19 +54,16 @@ RegistrationParameterScalesFromJacobian<TMetric>::EstimateScales(ScalesType & pa
 
   if (numSamples > 0)
   {
-    for (SizeValueType p = 0; p < numPara; p++)
+    for (SizeValueType p = 0; p < numPara; ++p)
     {
       parameterScales[p] = norms[p] / numSamples;
     }
   }
 }
 
-/**
- *  Compute the scale for a STEP, the impact of a STEP on the transform.
- */
 template <typename TMetric>
-typename RegistrationParameterScalesFromJacobian<TMetric>::FloatType
-RegistrationParameterScalesFromJacobian<TMetric>::EstimateStepScale(const ParametersType & step)
+auto
+RegistrationParameterScalesFromJacobian<TMetric>::EstimateStepScale(const ParametersType & step) -> FloatType
 {
   this->CheckAndSetInputs();
   this->SetStepScaleSamplingStrategy();
@@ -85,7 +76,7 @@ RegistrationParameterScalesFromJacobian<TMetric>::EstimateStepScale(const Parame
   FloatType  scaleSum = NumericTraits<FloatType>::ZeroValue();
 
   // checking each sample point
-  for (SizeValueType c = 0; c < numSamples; c++)
+  for (SizeValueType c = 0; c < numSamples; ++c)
   {
     scaleSum += sampleScales[c];
   }
@@ -93,11 +84,6 @@ RegistrationParameterScalesFromJacobian<TMetric>::EstimateStepScale(const Parame
   return scaleSum / numSamples;
 }
 
-/**
- * Estimate the scales of local steps. For each voxel, we compute the impact
- * of a STEP on its location as in EstimateStepScale. Then we attribute this
- * impact to the corresponding local parameters.
- */
 template <typename TMetric>
 void
 RegistrationParameterScalesFromJacobian<TMetric>::EstimateLocalStepScales(const ParametersType & step,
@@ -124,7 +110,7 @@ RegistrationParameterScalesFromJacobian<TMetric>::EstimateLocalStepScales(const 
   localStepScales.Fill(NumericTraits<typename ScalesType::ValueType>::ZeroValue());
 
   // checking each sample point
-  for (SizeValueType c = 0; c < numSamples; c++)
+  for (SizeValueType c = 0; c < numSamples; ++c)
   {
     VirtualPointType & point = this->m_SamplePoints[c];
     IndexValueType     localId =
@@ -133,10 +119,6 @@ RegistrationParameterScalesFromJacobian<TMetric>::EstimateLocalStepScales(const 
   }
 }
 
-/**
- *  Compute the step scales for samples, i.e. the impacts on each sampled
- *  voxel from a change on the transform.
- */
 template <typename TMetric>
 void
 RegistrationParameterScalesFromJacobian<TMetric>::ComputeSampleStepScales(const ParametersType & step,
@@ -157,7 +139,7 @@ RegistrationParameterScalesFromJacobian<TMetric>::ComputeSampleStepScales(const 
 
 
   // checking each sample point
-  for (SizeValueType c = 0; c < numSamples; c++)
+  for (SizeValueType c = 0; c < numSamples; ++c)
   {
     const VirtualPointType & point = this->m_SamplePoints[c];
 
@@ -181,7 +163,7 @@ RegistrationParameterScalesFromJacobian<TMetric>::ComputeSampleStepScales(const 
       SizeValueType offset = this->m_Metric->ComputeParameterOffsetFromVirtualPoint(point, numPara);
 
       ParametersType localStep(numPara);
-      for (SizeValueType p = 0; p < numPara; p++)
+      for (SizeValueType p = 0; p < numPara; ++p)
       {
         localStep[p] = step[offset + p];
       }
@@ -192,7 +174,6 @@ RegistrationParameterScalesFromJacobian<TMetric>::ComputeSampleStepScales(const 
   }
 }
 
-/** Print the information about this class */
 template <typename TMetric>
 void
 RegistrationParameterScalesFromJacobian<TMetric>::PrintSelf(std::ostream & os, Indent indent) const

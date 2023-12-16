@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -119,7 +119,7 @@ testVectorImageAdaptor(typename TAdaptor::Pointer &                             
   bool itFailed = false;
   using InternalPixelType = itk::FixedArray<PixelType, VectorLength>;
   InternalPixelType f;
-  for (unsigned int i = 0; i < VectorLength; i++)
+  for (unsigned int i = 0; i < VectorLength; ++i)
   {
     f[i] = i;
   }
@@ -157,7 +157,7 @@ testVectorImageBasicMethods()
 
   std::cout << "Testing Get/SetPixel methods." << std::endl;
 
-  typename VectorImageType::Pointer    image = VectorImageType::New();
+  auto                                 image = VectorImageType::New();
   typename VectorImageType::SizeType   size = { { 11, 9, 7 } };
   typename VectorImageType::RegionType region;
   region.SetSize(size);
@@ -252,7 +252,7 @@ testVectorImageBasicMethods()
   std::cout << "Testing Get/SetPixel methods [PASSED]" << std::endl;
 
   // test Graft method
-  typename VectorImageType::Pointer imageGraft = VectorImageType::New();
+  auto imageGraft = VectorImageType::New();
   imageGraft->Graft(image);
   ITK_TEST_EXPECT_EQUAL(image->GetPixelContainer(), imageGraft->GetPixelContainer());
 
@@ -294,11 +294,11 @@ itkVectorImageTest(int, char * argv[])
       itk::TimeProbe clock;
       clock.Start();
 
-      VariableLengthVectorImageType::Pointer   image = VariableLengthVectorImageType::New();
+      auto                                     image = VariableLengthVectorImageType::New();
       VariableLengthVectorImageType::IndexType start;
       InternalPixelType                        f(VectorLength);
       VariableLengthVectorImageType::SizeType  size;
-      for (unsigned int i = 0; i < VectorLength; i++)
+      for (unsigned int i = 0; i < VectorLength; ++i)
       {
         f[i] = i;
       }
@@ -340,11 +340,11 @@ itkVectorImageTest(int, char * argv[])
 
       using InternalPixelType = itk::FixedArray<PixelType, VectorLength>;
 
-      FixedArrayImageType::Pointer   image = FixedArrayImageType::New();
+      auto                           image = FixedArrayImageType::New();
       FixedArrayImageType::IndexType start;
       InternalPixelType              f;
       FixedArrayImageType::SizeType  size;
-      for (unsigned int i = 0; i < VectorLength; i++)
+      for (unsigned int i = 0; i < VectorLength; ++i)
       {
         f[i] = i;
       }
@@ -366,12 +366,12 @@ itkVectorImageTest(int, char * argv[])
         // Test and compare times with iterators
         //
         // First set some pixel
-        for (unsigned int i = 0; i < VectorLength; i++)
+        for (unsigned int i = 0; i < VectorLength; ++i)
         {
           f[i] = i * 0.1;
         }
         FixedArrayImageType::IndexType idx;
-        for (unsigned int i = 0; i < Dimension; i++)
+        for (unsigned int i = 0; i < Dimension; ++i)
         {
           idx[i] = 4;
         }
@@ -399,11 +399,11 @@ itkVectorImageTest(int, char * argv[])
       itk::TimeProbe clock;
       clock.Start();
 
-      VectorImageType::Pointer             vectorImage = VectorImageType::New();
+      auto                                 vectorImage = VectorImageType::New();
       VectorImageType::IndexType           start;
       itk::VariableLengthVector<PixelType> f(VectorLength);
       VectorImageType::SizeType            size;
-      for (unsigned int i = 0; i < VectorLength; i++)
+      for (unsigned int i = 0; i < VectorLength; ++i)
       {
         f[i] = i;
       }
@@ -442,7 +442,7 @@ itkVectorImageTest(int, char * argv[])
 
       const unsigned int componentToExtract = 2 * (Dimension - 1);
       using VectorImageToImageAdaptorType = itk::VectorImageToImageAdaptor<PixelType, Dimension>;
-      VectorImageToImageAdaptorType::Pointer vectorImageToImageAdaptor = VectorImageToImageAdaptorType::New();
+      auto vectorImageToImageAdaptor = VectorImageToImageAdaptorType::New();
       vectorImageToImageAdaptor->SetExtractComponentIndex(componentToExtract);
       if (vectorImageToImageAdaptor->GetExtractComponentIndex() != componentToExtract)
       {
@@ -457,7 +457,7 @@ itkVectorImageTest(int, char * argv[])
         failed = true;
       }
       using NthElementImageAdaptorType = itk::NthElementImageAdaptor<VectorImageType, PixelType>;
-      NthElementImageAdaptorType::Pointer nthElementImageAdaptor = NthElementImageAdaptorType::New();
+      auto nthElementImageAdaptor = NthElementImageAdaptorType::New();
       nthElementImageAdaptor->SelectNthElement(componentToExtract);
       adaptorTestResult = testVectorImageAdaptor<PixelType, Dimension, NthElementImageAdaptorType, VectorLength>(
         nthElementImageAdaptor, vectorImage, region, componentToExtract);
@@ -470,12 +470,12 @@ itkVectorImageTest(int, char * argv[])
     // Test with Region and Linear iterators...
     {
       // Create a  small image
-      VectorImageType::Pointer             vectorImage = VectorImageType::New();
+      auto                                 vectorImage = VectorImageType::New();
       VectorImageType::IndexType           start;
       itk::VariableLengthVector<PixelType> f(VectorLength);
       itk::VariableLengthVector<PixelType> ZeroPixel(VectorLength);
       ZeroPixel.Fill(itk::NumericTraits<PixelType>::ZeroValue());
-      for (unsigned int i = 0; i < VectorLength; i++)
+      for (unsigned int i = 0; i < VectorLength; ++i)
       {
         f[i] = i;
       }
@@ -484,7 +484,7 @@ itkVectorImageTest(int, char * argv[])
       size.Fill(11);
       size[Dimension - 1] = 5;
       unsigned long midCtr = 1;
-      for (unsigned int i = 0; i < Dimension; i++)
+      for (unsigned int i = 0; i < Dimension; ++i)
       {
         midCtr *= size[i];
       }
@@ -592,7 +592,7 @@ itkVectorImageTest(int, char * argv[])
     // Create an image using itk::Vector
     using VectorPixelType = itk::Vector<PixelType, VectorLength>;
     using VectorImageType = itk::Image<itk::Vector<PixelType, VectorLength>, Dimension>;
-    VectorImageType::Pointer   image = VectorImageType::New();
+    auto                       image = VectorImageType::New();
     VectorImageType::IndexType start;
     start.Fill(0);
     VectorImageType::SizeType size;
@@ -608,7 +608,7 @@ itkVectorImageTest(int, char * argv[])
     while (!it.IsAtEnd())
     {
       VectorPixelType f;
-      for (unsigned int i = 0; i < Dimension; i++)
+      for (unsigned int i = 0; i < Dimension; ++i)
       {
         f[i] = it.GetIndex()[i];
         f[Dimension + i] = it.GetIndex()[i];
@@ -618,7 +618,7 @@ itkVectorImageTest(int, char * argv[])
     }
 
     using WriterType = itk::ImageFileWriter<VectorImageType>;
-    WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
     writer->SetInput(image);
     writer->SetFileName(argv[2]);
     writer->Update();
@@ -628,10 +628,10 @@ itkVectorImageTest(int, char * argv[])
   }
 
   {
-    // Now read it as a itk::VectorImage.
+    // Now read it as an itk::VectorImage.
     using VectorImageType = itk::VectorImage<PixelType, Dimension>;
     using ReaderType = itk::ImageFileReader<VectorImageType>;
-    ReaderType::Pointer reader = ReaderType::New();
+    auto reader = ReaderType::New();
     reader->SetFileName(argv[1]);
     reader->Update();
 
@@ -644,7 +644,7 @@ itkVectorImageTest(int, char * argv[])
     bool failed1 = false;
     while (!cit.IsAtEnd())
     {
-      for (unsigned int i = 0; i < Dimension; i++)
+      for (unsigned int i = 0; i < Dimension; ++i)
       {
         if (itk::Math::NotExactlyEquals(cit.Get()[i], cit.GetIndex()[i]) ||
             itk::Math::NotExactlyEquals(cit.Get()[i + Dimension], cit.GetIndex()[i]))
@@ -667,19 +667,15 @@ itkVectorImageTest(int, char * argv[])
 
 
     // Now write this out this VectorImage and read it again
-    using WriterType = itk::ImageFileWriter<VectorImageType>;
-    WriterType::Pointer writer = WriterType::New();
-    writer->SetInput(vectorImage);
-    writer->SetFileName(argv[1]);
-    writer->Update();
+    itk::WriteImage(vectorImage, argv[1]);
   }
 
 
   {
-    // Now read it as a itk::VectorImage.
+    // Now read it as an itk::VectorImage.
     using VectorImageType = itk::VectorImage<PixelType, Dimension>;
     using ReaderType = itk::ImageFileReader<VectorImageType>;
-    ReaderType::Pointer reader = ReaderType::New();
+    auto reader = ReaderType::New();
     reader->SetFileName(argv[1]);
     reader->Update();
 
@@ -692,7 +688,7 @@ itkVectorImageTest(int, char * argv[])
     bool failed1 = false;
     while (!cit.IsAtEnd())
     {
-      for (unsigned int i = 0; i < Dimension; i++)
+      for (unsigned int i = 0; i < Dimension; ++i)
       {
         if (itk::Math::NotExactlyEquals(cit.Get()[i], cit.GetIndex()[i]) ||
             itk::Math::NotExactlyEquals(cit.Get()[i + Dimension], cit.GetIndex()[i]))
@@ -738,14 +734,14 @@ itkVectorImageTest(int, char * argv[])
       // Move Iterator to a point and see if it reads out the right value
       //
       unsigned int centerIndex = 1;
-      for (unsigned int i = 0; i < Dimension; i++)
+      for (unsigned int i = 0; i < Dimension; ++i)
       {
         centerIndex *= (radius[i] * 2 + 1);
       }
       centerIndex /= 2;
 
       ConstNeighborhoodIteratorType::IndexType location;
-      for (unsigned int i = 0; i < Dimension; i++)
+      for (unsigned int i = 0; i < Dimension; ++i)
       {
         location[i] = i + 1;
       }
@@ -784,7 +780,7 @@ itkVectorImageTest(int, char * argv[])
       }
       cNit.GoToBegin();
       unsigned int numPixelsTraversed = 1;
-      for (unsigned int i = 0; i < Dimension; i++)
+      for (unsigned int i = 0; i < Dimension; ++i)
       {
         numPixelsTraversed *= size[i];
       }
@@ -849,9 +845,9 @@ itkVectorImageTest(int, char * argv[])
         std::cerr << "  SetNext() [FAILED]" << std::endl;
         failed = true;
       }
-      for (unsigned i = 0; i < Dimension; i++)
+      for (unsigned int i = 0; i < Dimension; ++i)
       {
-        p[i] = p[Dimension + i] = (float)index1[i];
+        p[i] = p[Dimension + i] = static_cast<float>(index1[i]);
       }
       nit.SetCenterPixel(p);
       if (nit.GetCenterPixel() != p)
@@ -863,7 +859,7 @@ itkVectorImageTest(int, char * argv[])
       // Test SetNeighborhood() and GetPrevious()
       nit.SetLocation(index1);
       nit.SetNeighborhood(neighborhood);
-      for (unsigned i = 0; i < Dimension; i++)
+      for (unsigned int i = 0; i < Dimension; ++i)
       {
         p[i] = p[Dimension + i] = i + 1;
       }

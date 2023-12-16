@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +38,7 @@
 namespace itk
 {
 /**
- *\class DeformableSimplexMesh3DBalloonForceFilter
+ * \class DeformableSimplexMesh3DBalloonForceFilter
  * \brief
  * Additional to its superclass this model adds an balloon force component to the
  * internal forces.
@@ -73,10 +73,10 @@ public:
   /** Some type alias. */
   using InputMeshType = TInputMesh;
   using OutputMeshType = TOutputMesh;
-  using PointType = typename Superclass::PointType;
-  using GradientIndexType = typename Superclass::GradientIndexType;
-  using GradientIndexValueType = typename Superclass::GradientIndexValueType;
-  using GradientImageType = typename Superclass::GradientImageType;
+  using typename Superclass::PointType;
+  using typename Superclass::GradientIndexType;
+  using typename Superclass::GradientIndexValueType;
+  using typename Superclass::GradientImageType;
 
   /* Mesh pointer definition. */
   using InputMeshPointer = typename InputMeshType::Pointer;

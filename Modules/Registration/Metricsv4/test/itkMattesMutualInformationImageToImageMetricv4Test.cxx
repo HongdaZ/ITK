@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,6 +24,7 @@
 #include "itkBSplineSmoothingOnUpdateDisplacementFieldTransform.h"
 #include "itkImageMaskSpatialObject.h"
 #include "itkTimeProbe.h"
+#include "itkTestingMacros.h"
 
 #include <iostream>
 
@@ -77,18 +78,14 @@ TestMattesMetricWithAffineTransform(TInterpolator * const interpolator, const bo
   imgOrigin[0] = 0.001;
   imgOrigin[1] = -0.002;
 
-  typename MovingImageType::Pointer imgMoving = MovingImageType::New();
-  imgMoving->SetLargestPossibleRegion(region);
-  imgMoving->SetBufferedRegion(region);
-  imgMoving->SetRequestedRegion(region);
+  auto imgMoving = MovingImageType::New();
+  imgMoving->SetRegions(region);
   imgMoving->Allocate();
   imgMoving->SetSpacing(imgSpacing);
   imgMoving->SetOrigin(imgOrigin);
 
-  typename FixedImageType::Pointer imgFixed = FixedImageType::New();
-  imgFixed->SetLargestPossibleRegion(region);
-  imgFixed->SetBufferedRegion(region);
-  imgFixed->SetRequestedRegion(region);
+  auto imgFixed = FixedImageType::New();
+  imgFixed->SetRegions(region);
   imgFixed->Allocate();
   imgFixed->SetSpacing(imgSpacing);
   imgFixed->SetOrigin(imgOrigin);
@@ -98,10 +95,10 @@ TestMattesMetricWithAffineTransform(TInterpolator * const interpolator, const bo
   using TargetIteratorType = itk::ImageRegionIterator<FixedImageType>;
 
   itk::Point<double, 2> center;
-  center[0] = (double)region.GetSize()[0] / 2.0;
-  center[1] = (double)region.GetSize()[1] / 2.0;
+  center[0] = static_cast<double>(region.GetSize()[0]) / 2.0;
+  center[1] = static_cast<double>(region.GetSize()[1]) / 2.0;
 
-  const double s = (double)region.GetSize()[0] / 2.0;
+  const double s = static_cast<double>(region.GetSize()[0]) / 2.0;
 
   itk::Point<double, 2> p;
 
@@ -121,7 +118,7 @@ TestMattesMetricWithAffineTransform(TInterpolator * const interpolator, const bo
       d += displacement;
       const double x = d[0];
       const double y = d[1];
-      ri.Set((unsigned char)(200.0 * std::exp(-(x * x + y * y) / (s * s))));
+      ri.Set(static_cast<unsigned char>(200.0 * std::exp(-(x * x + y * y) / (s * s))));
       ++ri;
     }
   }
@@ -135,18 +132,18 @@ TestMattesMetricWithAffineTransform(TInterpolator * const interpolator, const bo
       itk::Vector<double, 2> d = p - center;
       const double           x = d[0];
       const double           y = d[1];
-      ti.Set((unsigned char)(200.0 * std::exp(-(x * x + y * y) / (s * s))));
+      ti.Set(static_cast<unsigned char>(200.0 * std::exp(-(x * x + y * y) / (s * s))));
       ++ti;
     }
   }
 
   // Setup a fixed image mask for the image
-  typename MovingImageType::Pointer imgMovingMask = MovingImageType::New();
+  auto imgMovingMask = MovingImageType::New();
   imgMovingMask->CopyInformation(imgMoving);
   imgMovingMask->SetRegions(region);
   imgMovingMask->Allocate(true); // initialize buffer to zero
 
-  typename FixedImageType::Pointer imgFixedMask = FixedImageType::New();
+  auto imgFixedMask = FixedImageType::New();
   imgFixedMask->CopyInformation(imgFixed);
   imgFixedMask->SetRegions(region);
   imgFixedMask->Allocate(true); // initialize buffer to zero
@@ -192,14 +189,17 @@ TestMattesMetricWithAffineTransform(TInterpolator * const interpolator, const bo
   using TransformType = itk::AffineTransform<double, ImageDimension>;
   using ParametersType = typename TransformType::ParametersType;
 
-  typename TransformType::Pointer transformer = TransformType::New();
+  auto transformer = TransformType::New();
 
   //------------------------------------------------------------
   // Set up the metric
   //------------------------------------------------------------
   using MetricType = itk::MattesMutualInformationImageToImageMetricv4<FixedImageType, MovingImageType>;
 
-  typename MetricType::Pointer metric = MetricType::New();
+  auto metric = MetricType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(metric, MattesMutualInformationImageToImageMetricv4, ImageToImageMetricv4);
+
 
   // Sanity check before metric is run, these should be nullptr;
   if (metric->GetJointPDFDerivatives().IsNotNull())
@@ -222,7 +222,9 @@ TestMattesMetricWithAffineTransform(TInterpolator * const interpolator, const bo
   metric->SetMovingImage(imgMoving);
 
   // set the number of histogram bins
-  metric->SetNumberOfHistogramBins(50);
+  itk::SizeValueType numberOfHistogramBins = 50;
+  metric->SetNumberOfHistogramBins(numberOfHistogramBins);
+  ITK_TEST_SET_GET_VALUE(numberOfHistogramBins, metric->GetNumberOfHistogramBins());
 
   // this test doesn't pass when using gradient image filters,
   // presumably because of different deriviative scaling created
@@ -235,8 +237,6 @@ TestMattesMetricWithAffineTransform(TInterpolator * const interpolator, const bo
   //-------------------------------------------------------
   // exercise misc member functions
   //-------------------------------------------------------
-  std::cout << "Name of class: " << metric->GetNameOfClass() << std::endl;
-  std::cout << "No. of histogram bin used = " << metric->GetNumberOfHistogramBins() << std::endl;
   if (metric->GetJointPDF().IsNotNull())
   {
     std::cout << "JointPDF image info: " << metric->GetJointPDF() << std::endl;
@@ -281,7 +281,7 @@ TestMattesMetricWithAffineTransform(TInterpolator * const interpolator, const bo
   metric->Initialize();
 
   //------------------------------------------------------------
-  // Set up a affine transform parameters
+  // Set up affine transform parameters
   //------------------------------------------------------------
   transformer->SetIdentity();
   const unsigned int numberOfParameters = transformer->GetNumberOfParameters();
@@ -350,7 +350,7 @@ TestMattesMetricWithAffineTransform(TInterpolator * const interpolator, const bo
 
   constexpr double delta = 0.00001;
 
-  const double tolerance = (useSampling) ? static_cast<double>(0.075) : static_cast<double>(0.014);
+  const double tolerance = (useSampling) ? 0.075 : 0.014;
   for (unsigned int perturbParamIndex = 0; perturbParamIndex < numberOfParameters; ++perturbParamIndex)
   {
     // copy the parameters and perturb the current one.
@@ -385,6 +385,22 @@ TestMattesMetricWithAffineTransform(TInterpolator * const interpolator, const bo
 
     transformer->SetParameters(parameters2Minus);
     const typename MetricType::MeasureType measure2Minus = metric->GetValue();
+
+    const typename MetricType::MeasureType new_values[4]{ measure1Plus, measure1Minus, measure2Plus, measure2Minus };
+    const typename MetricType::MeasureType known_values[4]{
+      -1.297994750907097, -1.297995377157083, -1.297994448222851, -1.297995700722833
+    };
+
+    for (size_t v = 0; v < 4; ++v)
+    {
+      constexpr double max_percent_diff_in_metric = 0.05;
+      if (itk::Math::abs(itk::Math::abs(new_values[v] / known_values[v]) - 1.0) > max_percent_diff_in_metric)
+      {
+        std::cout << "\t[FAILED] known values for metric values not computed correctly." << std::setprecision(16)
+                  << new_values[v] << " != " << known_values[v] << std::endl;
+        testFailed = true;
+      }
+    }
 
     // Computing second order derivative to get a handle on
     // stability of estimates from the metric
@@ -436,7 +452,7 @@ itkMattesMutualInformationImageToImageMetricv4Test(int, char *[])
   // Test metric with a linear interpolator
   using LinearInterpolatorType = itk::LinearInterpolateImageFunction<ImageType, double>;
 
-  LinearInterpolatorType::Pointer linearInterpolator = LinearInterpolatorType::New();
+  auto linearInterpolator = LinearInterpolatorType::New();
 
   std::cout << "Test metric with a linear interpolator." << std::endl;
   bool useSampling = false;
@@ -459,7 +475,7 @@ itkMattesMutualInformationImageToImageMetricv4Test(int, char *[])
   // Test metric with a BSpline interpolator
   using BSplineInterpolatorType = itk::BSplineInterpolateImageFunction<ImageType, double>;
 
-  BSplineInterpolatorType::Pointer bSplineInterpolator = BSplineInterpolatorType::New();
+  auto bSplineInterpolator = BSplineInterpolatorType::New();
 
   bSplineInterpolator->SetSplineOrder(3);
   useSampling = false;

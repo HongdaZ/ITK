@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkCannyEdgeDetectionImageFilter_hxx
 #define itkCannyEdgeDetectionImageFilter_hxx
-#include "itkCannyEdgeDetectionImageFilter.h"
 
 #include "itkZeroCrossingImageFilter.h"
 #include "itkNeighborhoodInnerProduct.h"
@@ -152,7 +151,7 @@ CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::ComputeCannyEdge(const
   //  double alpha = 0.01;
 
   // Calculate 1st & 2nd order derivative
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     dx[i] = innerProduct(m_ComputeCannyEdgeSlice[i], it, m_ComputeCannyEdge1stDerivativeOper);
     dxx[i] = innerProduct(m_ComputeCannyEdgeSlice[i], it, m_ComputeCannyEdge2ndDerivativeOper);
@@ -162,9 +161,9 @@ CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::ComputeCannyEdge(const
 
   int k = 0;
   // Calculate the 2nd derivative
-  for (unsigned int i = 0; i < ImageDimension - 1; i++)
+  for (unsigned int i = 0; i < ImageDimension - 1; ++i)
   {
-    for (unsigned int j = i + 1; j < ImageDimension; j++)
+    for (unsigned int j = i + 1; j < ImageDimension; ++j)
     {
       dxy[k] = 0.25 * it.GetPixel(m_Center - m_Stride[i] - m_Stride[j]) -
                0.25 * it.GetPixel(m_Center - m_Stride[i] + m_Stride[j]) -
@@ -172,12 +171,12 @@ CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::ComputeCannyEdge(const
                0.25 * it.GetPixel(m_Center + m_Stride[i] + m_Stride[j]);
 
       deriv += 2.0 * dx[i] * dx[j] * dxy[k];
-      k++;
+      ++k;
     }
   }
 
   auto gradMag = static_cast<OutputImagePixelType>(0.0001); // alpha * alpha;
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     deriv += dx[i] * dx[i] * dxx[i];
     gradMag += dx[i] * dx[i];
@@ -197,12 +196,12 @@ CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::GenerateData()
 
   // Use grafting of the input and output of this filter to isolate
   // the mini-pipeline and other modifications from the pipeline.
-  typename InputImageType::Pointer input = InputImageType::New();
+  auto input = InputImageType::New();
   input->Graft(const_cast<InputImageType *>(this->GetInput()));
 
   // Allocate the output, and graft
   Superclass::AllocateOutputs();
-  typename OutputImageType::Pointer output = OutputImageType::New();
+  auto output = OutputImageType::New();
   output->Graft(this->GetOutput());
   this->m_OutputImage = output;
 
@@ -215,7 +214,7 @@ CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::GenerateData()
   m_GaussianFilter->SetVariance(m_Variance);
   m_GaussianFilter->SetMaximumError(m_MaximumError);
   m_GaussianFilter->SetInput(input);
-  // Modify to force excution, due to grafting complications
+  // Modify to force execution, due to grafting complications
   m_GaussianFilter->Modified();
   m_GaussianFilter->Update();
   this->UpdateProgress(0.01f);
@@ -361,7 +360,7 @@ CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::FollowEdge(IndexType  
     uit.Value() = 1;
 
     // Search the neighbors for new indices to add to the list.
-    for (int i = 0; i < nSize; i++)
+    for (int i = 0; i < nSize; ++i)
     {
       nIndex = oit.GetIndex(i);
       uit.SetIndex(nIndex);
@@ -442,7 +441,7 @@ CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::ThreadedCompute2ndDeri
     {
       gradMag = 0.0001;
 
-      for (unsigned int i = 0; i < ImageDimension; i++)
+      for (unsigned int i = 0; i < ImageDimension; ++i)
       {
         dx[i] = IP(m_ComputeCannyEdgeSlice[i], bit, m_ComputeCannyEdge1stDerivativeOper);
         gradMag += dx[i] * dx[i];
@@ -450,9 +449,9 @@ CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::ThreadedCompute2ndDeri
         dx1[i] = IP(m_ComputeCannyEdgeSlice[i], bit1, m_ComputeCannyEdge1stDerivativeOper);
       }
 
-      gradMag = std::sqrt((double)gradMag);
+      gradMag = std::sqrt(static_cast<double>(gradMag));
       derivPos = zero;
-      for (unsigned int i = 0; i < ImageDimension; i++)
+      for (unsigned int i = 0; i < ImageDimension; ++i)
       {
         // First calculate the directional derivative
         directional[i] = dx[i] / gradMag;

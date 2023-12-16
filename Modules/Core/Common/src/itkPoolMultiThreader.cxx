@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,6 +38,8 @@ namespace itk
 {
 namespace
 {
+std::chrono::milliseconds threadCompletionPollingInterval = std::chrono::milliseconds(10);
+
 class ExceptionHandler
 {
 public:
@@ -152,21 +154,26 @@ PoolMultiThreader::SingleMethodExecute()
 }
 
 void
-PoolMultiThreader ::ParallelizeArray(SizeValueType             firstIndex,
-                                     SizeValueType             lastIndexPlus1,
-                                     ArrayThreadingFunctorType aFunc,
-                                     ProcessObject *           filter)
+PoolMultiThreader::ParallelizeArray(SizeValueType             firstIndex,
+                                    SizeValueType             lastIndexPlus1,
+                                    ArrayThreadingFunctorType aFunc,
+                                    ProcessObject *           filter)
 {
+  if (!this->GetUpdateProgress())
+  {
+    filter = nullptr;
+  }
+
   if (firstIndex + 1 < lastIndexPlus1)
   {
     SizeValueType chunkSize = (lastIndexPlus1 - firstIndex) / m_NumberOfWorkUnits;
     if ((lastIndexPlus1 - firstIndex) % m_NumberOfWorkUnits > 0)
     {
-      chunkSize++; // we want slightly bigger chunks to be processed first
+      ++chunkSize; // we want slightly bigger chunks to be processed first
     }
 
     auto lambda = [aFunc](SizeValueType start, SizeValueType end) {
-      for (SizeValueType ii = start; ii < end; ii++)
+      for (SizeValueType ii = start; ii < end; ++ii)
       {
         aFunc(ii);
       }
@@ -191,10 +198,18 @@ PoolMultiThreader ::ParallelizeArray(SizeValueType             firstIndex,
     });
 
     // now wait for the other computations to finish
-    for (SizeValueType i = 1; i < workUnit; i++)
+    for (SizeValueType i = 1; i < workUnit; ++i)
     {
-      exceptionHandler.TryAndCatch([this, i, &reporter] {
-        m_ThreadInfoArray[i].Future.get();
+      exceptionHandler.TryAndCatch([this, i, &reporter, &filter] {
+        std::future_status status;
+        do
+        {
+          status = m_ThreadInfoArray[i].Future.wait_for(threadCompletionPollingInterval);
+          if (filter && status == std::future_status::timeout)
+          {
+            filter->IncrementProgress(0);
+          }
+        } while (status != std::future_status::ready);
         reporter.CompletedPixel();
       });
     }
@@ -209,12 +224,17 @@ PoolMultiThreader ::ParallelizeArray(SizeValueType             firstIndex,
 }
 
 void
-PoolMultiThreader ::ParallelizeImageRegion(unsigned int         dimension,
-                                           const IndexValueType index[],
-                                           const SizeValueType  size[],
-                                           ThreadingFunctorType funcP,
-                                           ProcessObject *      filter)
+PoolMultiThreader::ParallelizeImageRegion(unsigned int         dimension,
+                                          const IndexValueType index[],
+                                          const SizeValueType  size[],
+                                          ThreadingFunctorType funcP,
+                                          ProcessObject *      filter)
 {
+  if (!this->GetUpdateProgress())
+  {
+    filter = nullptr;
+  }
+
   if (m_NumberOfWorkUnits == 1) // no multi-threading wanted
   {
     ProgressReporter reporter(filter, 0, 1);
@@ -224,7 +244,7 @@ PoolMultiThreader ::ParallelizeImageRegion(unsigned int         dimension,
   else
   {
     ImageIORegion region(dimension);
-    for (unsigned d = 0; d < dimension; d++)
+    for (unsigned int d = 0; d < dimension; ++d)
     {
       region.SetIndex(d, index[d]);
       region.SetSize(d, size[d]);
@@ -241,7 +261,7 @@ PoolMultiThreader ::ParallelizeImageRegion(unsigned int         dimension,
       itkAssertOrThrowMacro(splitCount <= m_NumberOfWorkUnits, "Split count is greater than number of work units!");
       ImageIORegion iRegion;
       ThreadIdType  total;
-      for (ThreadIdType i = 1; i < splitCount; i++)
+      for (ThreadIdType i = 1; i < splitCount; ++i)
       {
         iRegion = region;
         total = splitter->GetSplit(i, splitCount, iRegion);
@@ -270,9 +290,18 @@ PoolMultiThreader ::ParallelizeImageRegion(unsigned int         dimension,
       });
 
       // now wait for the other computations to finish
-      for (ThreadIdType i = 1; i < splitCount; i++)
+      for (ThreadIdType i = 1; i < splitCount; ++i)
       {
-        exceptionHandler.TryAndCatch([this, i, &reporter] {
+        exceptionHandler.TryAndCatch([this, i, &reporter, &filter] {
+          std::future_status status;
+          do
+          {
+            status = m_ThreadInfoArray[i].Future.wait_for(threadCompletionPollingInterval);
+            if (filter && status == std::future_status::timeout)
+            {
+              filter->IncrementProgress(0);
+            }
+          } while (status != std::future_status::ready);
           m_ThreadInfoArray[i].Future.get();
           reporter.CompletedPixel();
         });

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -64,7 +64,7 @@ public:
   }
 
   void
-  Initialize() throw(itk::ExceptionObject) override
+  Initialize() override
   {}
 
   void
@@ -175,9 +175,11 @@ GradientDescentOptimizerv4RunTest(itk::GradientDescentOptimizerv4::Pointer &    
   std::cout << finalPosition[0] << ",";
   std::cout << finalPosition[1] << ")" << std::endl;
 
+  std::cout << "ConvergenceValue: " << itkOptimizer->GetConvergenceValue() << std::endl;
+
   // check results to see if it is within range
   ParametersType::ValueType eps = 0.03;
-  for (unsigned int j = 0; j < 2; j++)
+  for (unsigned int j = 0; j < 2; ++j)
   {
     if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > eps)
     {
@@ -202,11 +204,15 @@ itkGradientDescentOptimizerv4Test(int, char *[])
 
   using ScalesType = OptimizerType::ScalesType;
 
-  // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  // Declaration of an itkOptimizer
+  auto itkOptimizer = OptimizerType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    itkOptimizer, GradientDescentOptimizerv4Template, GradientDescentOptimizerBasev4Template);
+
 
   // Declaration of the Metric
-  GradientDescentOptimizerv4TestMetric::Pointer metric = GradientDescentOptimizerv4TestMetric::New();
+  auto metric = GradientDescentOptimizerv4TestMetric::New();
 
   itkOptimizer->SetMetric(metric);
 
@@ -221,8 +227,26 @@ itkGradientDescentOptimizerv4Test(int, char *[])
   initialPosition[1] = -100;
   metric->SetParameters(initialPosition);
 
-  itkOptimizer->SetLearningRate(0.1);
-  itkOptimizer->SetNumberOfIterations(50);
+  double learningRate = 0.1;
+  itkOptimizer->SetLearningRate(learningRate);
+  ITK_TEST_SET_GET_VALUE(learningRate, itkOptimizer->GetLearningRate());
+
+  itk::SizeValueType numberOfIterations = 50;
+  itkOptimizer->SetNumberOfIterations(numberOfIterations);
+  ITK_TEST_SET_GET_VALUE(numberOfIterations, itkOptimizer->GetNumberOfIterations());
+
+  double maximumStepSizeInPhysicalUnits = 0.0;
+  itkOptimizer->SetMaximumStepSizeInPhysicalUnits(maximumStepSizeInPhysicalUnits);
+  ITK_TEST_SET_GET_VALUE(maximumStepSizeInPhysicalUnits, itkOptimizer->GetMaximumStepSizeInPhysicalUnits());
+
+  bool doEstimateLearningRateAtEachIteration = false;
+  ITK_TEST_SET_GET_BOOLEAN(itkOptimizer, DoEstimateLearningRateAtEachIteration, doEstimateLearningRateAtEachIteration);
+
+  bool doEstimateLearningRateOnce = true;
+  ITK_TEST_SET_GET_BOOLEAN(itkOptimizer, DoEstimateLearningRateOnce, doEstimateLearningRateOnce);
+
+  bool returnBestParametersAndValue = false;
+  ITK_TEST_SET_GET_BOOLEAN(itkOptimizer, ReturnBestParametersAndValue, returnBestParametersAndValue);
 
   // Truth
   ParametersType trueParameters(2);
@@ -293,23 +317,10 @@ itkGradientDescentOptimizerv4Test(int, char *[])
     result = EXIT_FAILURE;
   }
 
-  // Exercise various member functions.
-  std::cout << "LearningRate: " << itkOptimizer->GetLearningRate();
-  std::cout << std::endl;
-  std::cout << "NumberOfIterations: " << itkOptimizer->GetNumberOfIterations();
-  std::cout << std::endl;
   // For test of learning rate and scales estimation options
   // in an actual registration, see
   // itkAutoScaledGradientDescentRegistrationTest.
-  itkOptimizer->SetDoEstimateLearningRateOnce(false);
-  std::cout << "GetDoEstimateLearningRateOnce: " << itkOptimizer->GetDoEstimateLearningRateOnce() << std::endl;
-  itkOptimizer->SetDoEstimateLearningRateAtEachIteration(true);
-  std::cout << "GetDoEstimateLearningRateAtEachIteration: " << itkOptimizer->GetDoEstimateLearningRateAtEachIteration()
-            << std::endl;
-  itkOptimizer->SetDoEstimateScales(false);
-  std::cout << "GetDoEstimateScales: " << itkOptimizer->GetDoEstimateScales() << std::endl;
 
-  itkOptimizer->Print(std::cout);
   std::cout << "Stop description   = " << itkOptimizer->GetStopConditionDescription() << std::endl;
 
   // Verify that the optimizer doesn't run if the
@@ -333,8 +344,8 @@ itkGradientDescentOptimizerv4Test(int, char *[])
   }
 
   std::cout << "\nTest the Exception if the optimizer is not set properly:" << std::endl;
-  OptimizerType::Pointer badOptimizer = OptimizerType::New();
-  bool                   caught = false;
+  auto badOptimizer = OptimizerType::New();
+  bool caught = false;
   try
   {
     badOptimizer->GetCurrentPosition();

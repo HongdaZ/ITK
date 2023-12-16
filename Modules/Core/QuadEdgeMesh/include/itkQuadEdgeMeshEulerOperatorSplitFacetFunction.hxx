@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,13 +18,12 @@
 #ifndef itkQuadEdgeMeshEulerOperatorSplitFacetFunction_hxx
 #define itkQuadEdgeMeshEulerOperatorSplitFacetFunction_hxx
 
-#include "itkQuadEdgeMeshEulerOperatorSplitFacetFunction.h"
 
 namespace itk
 {
 template <typename TMesh, typename TQEType>
-typename QuadEdgeMeshEulerOperatorSplitFacetFunction<TMesh, TQEType>::OutputType
-QuadEdgeMeshEulerOperatorSplitFacetFunction<TMesh, TQEType>::Evaluate(QEType * h, QEType * g)
+auto
+QuadEdgeMeshEulerOperatorSplitFacetFunction<TMesh, TQEType>::Evaluate(QEType * h, QEType * g) -> OutputType
 {
   //
   //  g->Dest() ---<----- X                    destPid  --------- X        //
@@ -78,7 +77,7 @@ QuadEdgeMeshEulerOperatorSplitFacetFunction<TMesh, TQEType>::Evaluate(QEType * h
   VertexRefType orgPid = h->GetDestination();
   VertexRefType destPid = g->GetDestination();
 
-  // Create an new isolated edge and set it's geometry:
+  // Create an new isolated edge and set its geometry:
   auto *   newEdge = new EdgeCellType;
   QEType * newEdgeGeom = newEdge->GetQEGeom();
 

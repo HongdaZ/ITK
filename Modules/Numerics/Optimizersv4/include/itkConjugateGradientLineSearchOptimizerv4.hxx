@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkConjugateGradientLineSearchOptimizerv4_hxx
 #define itkConjugateGradientLineSearchOptimizerv4_hxx
 
-#include "itkConjugateGradientLineSearchOptimizerv4.h"
 
 namespace itk
 {
@@ -90,13 +89,13 @@ ConjugateGradientLineSearchOptimizerv4Template<TInternalComputationValueType>::A
     /* Pass gradient to transform and let it do its own updating. */
     this->m_Metric->UpdateTransformParameters(this->m_Gradient);
   }
-  catch (ExceptionObject & err)
+  catch (const ExceptionObject &)
   {
     this->m_StopCondition = StopConditionObjectToObjectOptimizerEnum::UPDATE_PARAMETERS_ERROR;
     this->m_StopConditionDescription << "UpdateTransformParameters error";
     this->StopOptimization();
     // Pass exception to caller
-    throw err;
+    throw;
   }
 
   this->InvokeEvent(IterationEvent());

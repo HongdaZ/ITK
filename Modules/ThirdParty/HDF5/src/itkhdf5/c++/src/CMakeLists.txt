@@ -1,11 +1,13 @@
-cmake_minimum_required (VERSION 3.10)
+#[[ ITK --start
+cmake_minimum_required (VERSION 3.12)
+# ITK --stop]]
 project (HDF5_CPP_SRC CXX)
 
 #-----------------------------------------------------------------------------
 # Generate configure file
 #-----------------------------------------------------------------------------
 configure_file (${HDF_RESOURCES_DIR}/H5cxx_config.h.in
-                ${HDF5_BINARY_DIR}/H5cxx_pubconf.h
+                ${HDF5_SRC_BINARY_DIR}/H5cxx_pubconf.h
 )
 
 #-----------------------------------------------------------------------------
@@ -84,39 +86,59 @@ set (CPP_HDRS
     ${HDF5_CPP_SRC_SOURCE_DIR}/H5VarLenType.h
 )
 
-if(NOT BUILD_SHARED_LIBS) # ---- ITK avoid static if BUILD_SHARED_LIBS=ON
-add_library (${HDF5_CPP_LIB_TARGET} STATIC ${CPP_SOURCES} ${CPP_HDRS})
-target_include_directories(${HDF5_CPP_LIB_TARGET}
-    PRIVATE "${HDF5_SRC_DIR};${HDF5_BINARY_DIR};$<$<BOOL:${HDF5_ENABLE_PARALLEL}>:${MPI_C_INCLUDE_DIRS}>"
-    INTERFACE "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
-)
-target_compile_definitions(${HDF5_CPP_LIB_TARGET}
-    PRIVATE $<$<BOOL:${HDF5_ENABLE_PARALLEL}>:MPICH_SKIP_MPICXX;MPICH_IGNORE_CXX_SEEK># Parallel/MPI, prevent spurious cpp/cxx warnings
-)
-TARGET_C_PROPERTIES (${HDF5_CPP_LIB_TARGET} STATIC)
-target_link_libraries (${HDF5_CPP_LIB_TARGET} PUBLIC ${HDF5_LIB_TARGET})
-set_global_variable (HDF5_LIBRARIES_TO_EXPORT "${HDF5_LIBRARIES_TO_EXPORT};${HDF5_CPP_LIB_TARGET}")
-H5_SET_LIB_OPTIONS (${HDF5_CPP_LIB_TARGET} ${HDF5_CPP_LIB_NAME} STATIC 0)
-set_target_properties (${HDF5_CPP_LIB_TARGET} PROPERTIES FOLDER libraries/cpp)
-set (install_targets ${HDF5_CPP_LIB_TARGET})
-endif() # ---- ITK avoid static if BUILD_SHARED_LIBS=ON
+if (NOT ONLY_SHARED_LIBS)
+  add_library (${HDF5_CPP_LIB_TARGET} STATIC ${CPP_SOURCES} ${CPP_HDRS})
+  target_include_directories (${HDF5_CPP_LIB_TARGET}
+      PRIVATE "${HDF5_SRC_DIR};${HDF5_SRC_BINARY_DIR};$<$<BOOL:${HDF5_ENABLE_PARALLEL}>:${MPI_C_INCLUDE_DIRS}>"
+      INTERFACE "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
+  )
+  target_compile_options(${HDF5_CPP_LIB_TARGET} PRIVATE "${HDF5_CMAKE_CXX_FLAGS}")
+  target_compile_definitions(${HDF5_CPP_LIB_TARGET}
+      PRIVATE $<$<BOOL:${HDF5_ENABLE_PARALLEL}>:MPICH_SKIP_MPICXX;MPICH_IGNORE_CXX_SEEK># Parallel/MPI, prevent spurious cpp/cxx warnings
+  )
+  TARGET_C_PROPERTIES (${HDF5_CPP_LIB_TARGET} STATIC)
+  target_link_libraries (${HDF5_CPP_LIB_TARGET} PUBLIC ${HDF5_LIB_TARGET})
+  set_global_variable (HDF5_LIBRARIES_TO_EXPORT "${HDF5_LIBRARIES_TO_EXPORT};${HDF5_CPP_LIB_TARGET}")
+  H5_SET_LIB_OPTIONS (${HDF5_CPP_LIB_TARGET} ${HDF5_CPP_LIB_NAME} STATIC 0)
+  set_target_properties (${HDF5_CPP_LIB_TARGET} PROPERTIES FOLDER libraries/cpp)
+  set (install_targets ${HDF5_CPP_LIB_TARGET})
+endif ()
 
 if (BUILD_SHARED_LIBS)
   add_library (${HDF5_CPP_LIBSH_TARGET} SHARED ${CPP_SOURCES} ${CPP_HDRS})
-  target_include_directories(${HDF5_CPP_LIBSH_TARGET}
-      PRIVATE "${HDF5_SRC_DIR};${HDF5_BINARY_DIR};$<$<BOOL:${HDF5_ENABLE_PARALLEL}>:${MPI_C_INCLUDE_DIRS}>"
+  target_include_directories (${HDF5_CPP_LIBSH_TARGET}
+      PRIVATE "${HDF5_SRC_DIR};${HDF5_SRC_BINARY_DIR};$<$<BOOL:${HDF5_ENABLE_PARALLEL}>:${MPI_C_INCLUDE_DIRS}>"
       INTERFACE "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>"
   )
+  target_compile_options(${HDF5_CPP_LIBSH_TARGET} PRIVATE "${HDF5_CMAKE_CXX_FLAGS}")
   target_compile_definitions(${HDF5_CPP_LIBSH_TARGET}
       PUBLIC "H5_BUILT_AS_DYNAMIC_LIB"
       PRIVATE $<$<BOOL:${HDF5_ENABLE_PARALLEL}>:MPICH_SKIP_MPICXX;MPICH_IGNORE_CXX_SEEK># Parallel/MPI, prevent spurious cpp/cxx warnings
   )
   TARGET_C_PROPERTIES (${HDF5_CPP_LIBSH_TARGET} SHARED)
-  target_link_libraries (${HDF5_CPP_LIBSH_TARGET} PUBLIC ${HDF5_LIBSH_TARGET})
+  target_link_libraries (${HDF5_CPP_LIBSH_TARGET}
+      PUBLIC ${HDF5_LIBSH_TARGET}
+  )
+  if (MINGW AND HDF5_MINGW_STATIC_GCC_LIBS)
+    target_link_options (${HDF5_CPP_LIBSH_TARGET}
+        PRIVATE -static-libgcc -static-libstdc++
+    )
+  endif ()
   set_global_variable (HDF5_LIBRARIES_TO_EXPORT "${HDF5_LIBRARIES_TO_EXPORT};${HDF5_CPP_LIBSH_TARGET}")
   H5_SET_LIB_OPTIONS (${HDF5_CPP_LIBSH_TARGET} ${HDF5_CPP_LIB_NAME} SHARED "CXX")
   set_target_properties (${HDF5_CPP_LIBSH_TARGET} PROPERTIES FOLDER libraries/cpp)
   set (install_targets ${install_targets} ${HDF5_CPP_LIBSH_TARGET})
+endif ()
+
+#-----------------------------------------------------------------------------
+# Add Target to clang-format
+#-----------------------------------------------------------------------------
+if (HDF5_ENABLE_FORMATTERS)
+  if (NOT ONLY_SHARED_LIBS)
+    clang_format (HDF5_CPP_SRC_FORMAT ${HDF5_CPP_LIB_TARGET})
+  else ()
+    clang_format (HDF5_CPP_SRC_FORMAT ${HDF5_CPP_LIBSH_TARGET})
+  endif ()
 endif ()
 
 #-----------------------------------------------------------------------------
@@ -137,9 +159,10 @@ install (
 if (HDF5_EXPORTED_TARGETS)
   if (BUILD_SHARED_LIBS)
     INSTALL_TARGET_PDB (${HDF5_CPP_LIBSH_TARGET} ${HDF5_INSTALL_BIN_DIR} cpplibraries)
-  else () # ITK: Build static library only with BUILD_SHARED_LIBS OFF
-  INSTALL_TARGET_PDB (${HDF5_CPP_LIB_TARGET} ${HDF5_INSTALL_BIN_DIR} cpplibraries)
-  endif() # ITK
+  endif ()
+  if (NOT ONLY_SHARED_LIBS)
+    INSTALL_TARGET_PDB (${HDF5_CPP_LIB_TARGET} ${HDF5_INSTALL_LIB_DIR} cpplibraries)
+  endif ()
 
   install (
       TARGETS
@@ -166,27 +189,33 @@ set (_PKG_CONFIG_VERSION "${HDF5_PACKAGE_VERSION}")
 
 set (_PKG_CONFIG_LIBS_PRIVATE)
 
-set (_PKG_CONFIG_LIBS "${_PKG_CONFIG_LIBS} -l${HDF5_CPP_LIB_CORENAME}")
+if (NOT ONLY_SHARED_LIBS)
+  set (_PKG_CONFIG_LIBS "${_PKG_CONFIG_LIBS} -l${HDF5_CPP_LIB_CORENAME}")
+endif ()
 if (BUILD_SHARED_LIBS)
   set (_PKG_CONFIG_SH_LIBS "${_PKG_CONFIG_SH_LIBS} -l${HDF5_CPP_LIB_CORENAME}")
 endif ()
 
-set (_PKG_CONFIG_REQUIRES "${HDF5_LIB_CORENAME}")
-set (_PKG_CONFIG_REQUIRES_PRIVATE "${HDF5_LIB_CORENAME}")
+set (_PKG_CONFIG_REQUIRES "${HDF5_LIB_CORENAME}-${HDF5_PACKAGE_VERSION}")
+set (_PKG_CONFIG_REQUIRES_PRIVATE "${HDF5_LIB_CORENAME}-${HDF5_PACKAGE_VERSION}")
 
 configure_file (
-    ${HDF_RESOURCES_DIR}/libhdf5.pc.in
-    ${HDF5_BINARY_DIR}/CMakeFiles/${HDF5_CPP_LIB_CORENAME}-${HDF5_PACKAGE_VERSION}.pc
+    ${HDF_CONFIG_DIR}/libhdf5.pc.in
+    ${HDF5_BINARY_DIR}/CMakeFiles/${HDF5_CPP_LIB_CORENAME}.pc
     @ONLY
 )
 install (
-    FILES ${HDF5_BINARY_DIR}/CMakeFiles/${HDF5_CPP_LIB_CORENAME}-${HDF5_PACKAGE_VERSION}.pc
+    FILES ${HDF5_BINARY_DIR}/CMakeFiles/${HDF5_CPP_LIB_CORENAME}.pc
     DESTINATION ${HDF5_INSTALL_LIB_DIR}/pkgconfig
     COMPONENT cpplibraries
 )
 
-if (NOT WIN32)
-  set (_PKG_CONFIG_COMPILER ${CMAKE_CXX_COMPILER})
+if (NOT WIN32 AND NOT MINGW)
+  if (HDF5_ENABLE_PARALLEL AND MPI_CXX_FOUND)
+    set (_PKG_CONFIG_COMPILER ${MPI_CXX_COMPILER})
+  else ()
+    set (_PKG_CONFIG_COMPILER ${CMAKE_CXX_COMPILER})
+  endif ()
   configure_file (
       ${HDF_RESOURCES_DIR}/libh5cc.in
       ${HDF5_BINARY_DIR}/CMakeFiles/h5c++

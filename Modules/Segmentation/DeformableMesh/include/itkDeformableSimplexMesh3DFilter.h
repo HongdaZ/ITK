@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@
 namespace itk
 {
 /**
- *\class DeformableSimplexMesh3DFilter
+ * \class DeformableSimplexMesh3DFilter
  * \brief Three-dimensional deformable model for image segmentation
  *
  * DeformableSimplexMesh3DFilter is a discrete three-dimensional deformable model, which
@@ -77,7 +77,7 @@ template <typename TInputMesh, typename TOutputMesh>
 class ITK_TEMPLATE_EXPORT DeformableSimplexMesh3DFilter : public MeshToMeshFilter<TInputMesh, TOutputMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DeformableSimplexMesh3DFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(DeformableSimplexMesh3DFilter);
 
   /** Standard "Self" type alias. */
   using Self = DeformableSimplexMesh3DFilter;
@@ -249,7 +249,7 @@ protected:
    * Pass in the gradient image, to avoid inner loop calls to GetGradient()
    */
   virtual void
-  ComputeExternalForce(SimplexMeshGeometry * data, const GradientImageType * gradient);
+  ComputeExternalForce(SimplexMeshGeometry * data, const GradientImageType * gradientImage);
 
   /**
    * At the and of the deformation the output mesh is created

@@ -1,3 +1,13 @@
+# Forward include directories to CastXML
+if(NOT VTK_RENDERING_BACKEND STREQUAL "None")
+  foreach(_vtk_lib IN LISTS ITKVtkGlue_VTK_LIBRARIES)
+    get_target_property(_vtk_lib_include_dirs ${_vtk_lib} INTERFACE_INCLUDE_DIRECTORIES)
+    if(_vtk_lib_include_dirs)
+      include_directories(${_vtk_lib_include_dirs})
+    endif()
+  endforeach()
+endif()
+
 itk_wrap_module(ITKVtkGlue)
   if("${VTK_VERSION}" VERSION_LESS 7.0.0)
     message(WARNING
@@ -9,6 +19,5 @@ itk_wrap_module(ITKVtkGlue)
 
     set(WRAPPER_LIBRARY_LINK_LIBRARIES ${ITK_LIBRARIES})
 
-    itk_auto_load_submodules()
+    itk_auto_load_and_end_wrap_submodules()
   endif()
-itk_end_wrap_module()

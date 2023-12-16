@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ namespace itk
 {
 
 /**
- *\class ShotNoiseImageFilter
+ * \class ShotNoiseImageFilter
  *
  * \brief Alter an image with shot noise.
  *
@@ -86,7 +86,7 @@ namespace itk
  * \author Gaetan Lehmann
  *
  * This code was contributed in the Insight Journal paper "Noise
- * Simulation". https://hdl.handle.net/10380/3158
+ * Simulation". https://www.insight-journal.org/browse/publication/721
  *
  * \ingroup ITKImageNoise
  */
@@ -94,7 +94,7 @@ template <class TInputImage, class TOutputImage = TInputImage>
 class ITK_TEMPLATE_EXPORT ShotNoiseImageFilter : public NoiseBaseImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShotNoiseImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ShotNoiseImageFilter);
 
   /** Standard class type aliases. */
   using Self = ShotNoiseImageFilter;
@@ -109,10 +109,10 @@ public:
   itkTypeMacro(ShotNoiseImageFilter, NoiseBaseImageFilter);
 
   /** Superclass type alias. */
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::OutputImagePointer;
+  using typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImagePixelType;
 
   /** Some convenient type alias. */
   using InputImageType = TInputImage;

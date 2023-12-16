@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class MultiGradientOptimizerv4Template
+ * \class MultiGradientOptimizerv4Template
  *  \brief Multiple gradient-based optimizers are combined in order to perform a multi-objective optimization.
  *
  *  This optimizer will do a combined gradient descent optimization using whatever metric/optimizer gradient
@@ -48,7 +48,7 @@ class ITK_TEMPLATE_EXPORT MultiGradientOptimizerv4Template
   : public GradientDescentOptimizerv4Template<TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiGradientOptimizerv4Template);
+  ITK_DISALLOW_COPY_AND_MOVE(MultiGradientOptimizerv4Template);
 
   /** Standard class type aliases. */
   using Self = MultiGradientOptimizerv4Template;
@@ -57,7 +57,7 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(MultiGradientOptimizerv4Template, Superclass);
+  itkTypeMacro(MultiGradientOptimizerv4Template, GradientDescentOptimizerv4Template);
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -65,30 +65,30 @@ public:
   using LocalOptimizerType = itk::GradientDescentOptimizerv4Template<TInternalComputationValueType>;
   using LocalOptimizerPointer =
     typename itk::GradientDescentOptimizerv4Template<TInternalComputationValueType>::Pointer;
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
   using OptimizerType = ObjectToObjectOptimizerBaseTemplate<TInternalComputationValueType>;
   using OptimizerPointer = typename OptimizerType::Pointer;
   using OptimizersListType = std::vector<LocalOptimizerPointer>;
   using OptimizersListSizeType = typename OptimizersListType::size_type;
 
   /** Stop condition return string type */
-  using StopConditionReturnStringType = typename Superclass::StopConditionReturnStringType;
+  using typename Superclass::StopConditionReturnStringType;
 
   /** Stop condition internal string type */
-  using StopConditionDescriptionType = typename Superclass::StopConditionDescriptionType;
+  using typename Superclass::StopConditionDescriptionType;
 
   /** It should be possible to derive the internal computation type from the class object. */
   using InternalComputationValueType = TInternalComputationValueType;
 
   /** Metric type over which this class is templated */
-  using MetricType = typename Superclass::MetricType;
+  using typename Superclass::MetricType;
   using MetricTypePointer = typename MetricType::Pointer;
 
   /** Derivative type */
   using DerivativeType = typename MetricType::DerivativeType;
 
   /** Measure type */
-  using MeasureType = typename Superclass::MeasureType;
+  using typename Superclass::MeasureType;
   using MetricValuesListType = std::vector<MeasureType>;
 
   /** Get stop condition enum */

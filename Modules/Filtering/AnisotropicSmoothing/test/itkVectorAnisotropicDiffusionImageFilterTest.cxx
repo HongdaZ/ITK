@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 #include "itkVectorGradientAnisotropicDiffusionImageFilter.h"
 #include "itkVectorCurvatureAnisotropicDiffusionImageFilter.h"
 #include "itkNullImageToImageFilterDriver.hxx"
+#include "itkTestingMacros.h"
 
 inline std::ostream &
 operator<<(std::ostream & o, const itk::Vector<float, 3> & v)
@@ -38,6 +39,11 @@ itkVectorAnisotropicDiffusionImageFilterTest(int itkNotUsed(argc), char * itkNot
     // Set up Gradient diffusion filter
     itk::VectorGradientAnisotropicDiffusionImageFilter<ImageType, ImageType>::Pointer filter =
       itk::VectorGradientAnisotropicDiffusionImageFilter<ImageType, ImageType>::New();
+
+    ITK_EXERCISE_BASIC_OBJECT_METHODS(
+      filter, VectorGradientAnisotropicDiffusionImageFilter, AnisotropicDiffusionImageFilter);
+
+
     filter->SetNumberOfIterations(1);
     filter->SetConductanceParameter(3.0f);
     filter->SetTimeStep(0.125f);
@@ -61,6 +67,11 @@ itkVectorAnisotropicDiffusionImageFilterTest(int itkNotUsed(argc), char * itkNot
     // Set up Curvature diffusion filter
     itk::VectorCurvatureAnisotropicDiffusionImageFilter<ImageType, ImageType>::Pointer filter2 =
       itk::VectorCurvatureAnisotropicDiffusionImageFilter<ImageType, ImageType>::New();
+
+    ITK_EXERCISE_BASIC_OBJECT_METHODS(
+      filter2, VectorCurvatureAnisotropicDiffusionImageFilter, AnisotropicDiffusionImageFilter);
+
+
     filter2->SetNumberOfIterations(1);
     filter2->SetConductanceParameter(3.0f);
     filter2->SetTimeStep(0.1f);
@@ -77,7 +88,7 @@ itkVectorAnisotropicDiffusionImageFilterTest(int itkNotUsed(argc), char * itkNot
   }
   catch (const itk::ExceptionObject & err)
   {
-    (&err)->Print(std::cerr);
+    err.Print(std::cerr);
     return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class SquareImageFilter
+ * \class SquareImageFilter
  * \brief Computes the square of the intensity values pixel-wise
  *
  * \ingroup IntensityImageFilters  MultiThreaded
@@ -44,16 +44,12 @@ public:
   Square() = default;
   ~Square() = default;
   bool
-  operator!=(const Square &) const
+  operator==(const Square &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const Square & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Square);
 
   inline TOutput
   operator()(const TInput & A) const
@@ -65,10 +61,10 @@ public:
 };
 } // namespace Functor
 template <typename TInputImage, typename TOutputImage>
-class SquareImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT SquareImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SquareImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SquareImageFilter);
 
   /** Standard class type aliases. */
   using Self = SquareImageFilter;

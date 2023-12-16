@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -109,14 +109,14 @@ public:
 
   /** Cast the container to a STL container type */
   STLContainerType &
-  CastToSTLContainer() ITK_NOEXCEPT
+  CastToSTLContainer() noexcept
   {
     return *this;
   }
 
   /** Cast the container to a const STL container type */
   const STLContainerType &
-  CastToSTLConstContainer() const ITK_NOEXCEPT
+  CastToSTLConstContainer() const noexcept
   {
     return *this;
   }
@@ -192,10 +192,6 @@ public:
       : m_Pos(d)
       , m_Iter(i)
     {}
-    Iterator(const Iterator & r)
-      : m_Pos(r.m_Pos)
-      , m_Iter(r.m_Iter)
-    {}
     Iterator & operator*() { return *this; }
     Iterator * operator->() { return this; }
     Iterator &
@@ -240,21 +236,17 @@ public:
     {
       return m_Iter == r.m_Iter;
     }
-    bool
-    operator!=(const Iterator & r) const
-    {
-      return m_Iter != r.m_Iter;
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Iterator);
+
     bool
     operator==(const ConstIterator & r) const
     {
       return m_Iter == r.m_Iter;
     }
-    bool
-    operator!=(const ConstIterator & r) const
-    {
-      return m_Iter != r.m_Iter;
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
+
     bool
     operator<(const Iterator & r) const
     {
@@ -388,21 +380,17 @@ public:
     {
       return m_Iter == r.m_Iter;
     }
-    bool
-    operator!=(const Iterator & r) const
-    {
-      return m_Iter != r.m_Iter;
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Iterator);
+
     bool
     operator==(const ConstIterator & r) const
     {
       return m_Iter == r.m_Iter;
     }
-    bool
-    operator!=(const ConstIterator & r) const
-    {
-      return m_Iter != r.m_Iter;
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
+
     bool
     operator<(const ConstIterator & r) const
     {

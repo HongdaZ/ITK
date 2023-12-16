@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,10 +21,12 @@
 #include "itkPathAndImageToPathFilter.h"
 #include "itkOrthogonallyCorrected2DParametricPath.h"
 
+#include <memory> // For unique_ptr.
+
 namespace itk
 {
 /**
- *\class OrthogonalSwath2DPathFilter
+ * \class OrthogonalSwath2DPathFilter
  * \brief Filter that optimizes a 2D path relative to an image.
  *
  * OrthogonalSwath2DPathFilter produces an OrthogonallyCorrected2DParametricPath
@@ -53,7 +55,7 @@ class ITK_TEMPLATE_EXPORT OrthogonalSwath2DPathFilter
   : public PathAndImageToPathFilter<TFourierSeriesPath, TSwathMeritImage, OrthogonallyCorrected2DParametricPath>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(OrthogonalSwath2DPathFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(OrthogonalSwath2DPathFilter);
 
   /** Standard class type aliases. */
   using Self = OrthogonalSwath2DPathFilter;
@@ -87,8 +89,8 @@ public:
   using SizeType = typename ImageType::SizeType;
 
 protected:
-  OrthogonalSwath2DPathFilter();
-  ~OrthogonalSwath2DPathFilter() override;
+  OrthogonalSwath2DPathFilter() = default;
+  ~OrthogonalSwath2DPathFilter() override = default;
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 
@@ -131,16 +133,16 @@ private:
     return m_MeritValues[(x * rows * rows) + (f * rows) + (l)];
   }
 
-  int * m_StepValues; // best y=error coordinate @ x of image for (0,F) ->
-                      // (x+1,L)
-  double * m_MeritValues;
+  std::unique_ptr<int[]> m_StepValues{ nullptr }; // best y=error coordinate @ x of image for (0,F) ->
+                                                  // (x+1,L)
+  std::unique_ptr<double[]> m_MeritValues{ nullptr };
 
-  int * m_OptimumStepsValues; // best step (e value)
-                              // sequence for a
-                              // closed path
-  OrthogonalCorrectionTablePointer m_FinalOffsetValues;
+  std::unique_ptr<int[]> m_OptimumStepsValues{ nullptr }; // best step (e value)
+                                                          // sequence for a
+                                                          // closed path
+  OrthogonalCorrectionTablePointer m_FinalOffsetValues{ OrthogonalCorrectionTableType::New() };
 
-  SizeType m_SwathSize;
+  SizeType m_SwathSize{ { 0 } };
 };
 } // end namespace itk
 

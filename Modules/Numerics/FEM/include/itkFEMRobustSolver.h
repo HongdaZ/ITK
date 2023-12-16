@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,10 +41,10 @@ namespace fem
  *
    \code
          using FEMObjectType = itk::fem::FEMObject<3>;
-         FEMObjectObjectType::Pointer fem = FEMObjectObjectType::New();
+         auto fem = FEMObjectObjectType::New();
          ...
          using FEMSolverType = itk::fem::RobustSolver<3>;
-         FEMSolverType::Pointer solver = FEMSolverType::New();
+         auto solver = FEMSolverType::New();
 
          solver->SetInput( fem );
          solver->Update();
@@ -83,7 +83,7 @@ template <unsigned int VDimension = 3>
 class ITK_TEMPLATE_EXPORT RobustSolver : public Solver<VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RobustSolver);
+  ITK_DISALLOW_COPY_AND_MOVE(RobustSolver);
 
   /** Standard class type aliases. */
   using Self = RobustSolver;
@@ -98,20 +98,20 @@ public:
   itkTypeMacro(RobustSolver, Solver);
 
   /** Inherit some types from the superclass. */
-  using VectorType = typename Superclass::VectorType;
-  using Float = typename Superclass::Float;
-  using InterpolationGridType = typename Superclass::InterpolationGridType;
-  using InterpolationGridPointerType = typename Superclass::InterpolationGridPointerType;
-  using InterpolationGridSizeType = typename Superclass::InterpolationGridSizeType;
-  using InterpolationGridRegionType = typename Superclass::InterpolationGridRegionType;
-  using InterpolationGridPointType = typename Superclass::InterpolationGridPointType;
-  using InterpolationGridSpacingType = typename Superclass::InterpolationGridSpacingType;
-  using InterpolationGridIndexType = typename Superclass::InterpolationGridIndexType;
+  using typename Superclass::VectorType;
+  using typename Superclass::Float;
+  using typename Superclass::InterpolationGridType;
+  using typename Superclass::InterpolationGridPointerType;
+  using typename Superclass::InterpolationGridSizeType;
+  using typename Superclass::InterpolationGridRegionType;
+  using typename Superclass::InterpolationGridPointType;
+  using typename Superclass::InterpolationGridSpacingType;
+  using typename Superclass::InterpolationGridIndexType;
   using InterpolationGridDirectionType = typename InterpolationGridType::DirectionType;
 
   static constexpr unsigned int FEMDimension = VDimension;
 
-  using FEMObjectType = typename Superclass::FEMObjectType;
+  using typename Superclass::FEMObjectType;
 
   /** Some convenient types */
   using MatrixType = typename Element::MatrixType;
@@ -312,7 +312,7 @@ protected:
   RescaleLandmarkStiffnessMatrix(double oldPointTensorPonderation);
 
   /**
-   * Calculate KU, which will  be added on the righ hand side to reach
+   * Calculate KU, which will  be added on the right hand side to reach
    * the effect of zeroing mesh energy
    */
   void

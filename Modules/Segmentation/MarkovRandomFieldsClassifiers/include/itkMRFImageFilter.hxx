@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkMRFImageFilter_hxx
 #define itkMRFImageFilter_hxx
-#include "itkMRFImageFilter.h"
 #include "itkPrintHelper.h"
 
 namespace itk
@@ -26,7 +25,7 @@ template <typename TInputImage, typename TClassifiedImage>
 MRFImageFilter<TInputImage, TClassifiedImage>::MRFImageFilter()
   : m_ClassifierPtr(nullptr)
 {
-  if ((int)InputImageDimension != (int)ClassifiedImageDimension)
+  if (static_cast<int>(InputImageDimension) != static_cast<int>(ClassifiedImageDimension))
   {
     std::ostringstream msg;
     msg << "Input image dimension: " << InputImageDimension
@@ -249,7 +248,7 @@ MRFImageFilter<TInputImage, TClassifiedImage>::SetDefaultMRFNeighborhoodWeight()
   //-----------------------------------------------------
   m_NeighborhoodSize = 1;
   int neighborhoodRadius = 1; // Default assumes a radius of 1
-  for (unsigned int i = 0; i < InputImageDimension; i++)
+  for (unsigned int i = 0; i < InputImageDimension; ++i)
   {
     m_NeighborhoodSize *= (2 * neighborhoodRadius + 1);
   }
@@ -258,17 +257,17 @@ MRFImageFilter<TInputImage, TClassifiedImage>::SetDefaultMRFNeighborhoodWeight()
     // Assumes a default 3x3x3 window size
     m_MRFNeighborhoodWeight.resize(m_NeighborhoodSize);
 
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 9; ++i)
     {
       m_MRFNeighborhoodWeight[i] = 1.3 * m_SmoothingFactor;
     }
 
-    for (int i = 9; i < 18; i++)
+    for (int i = 9; i < 18; ++i)
     {
       m_MRFNeighborhoodWeight[i] = 1.7 * m_SmoothingFactor;
     }
 
-    for (int i = 18; i < 27; i++)
+    for (int i = 18; i < 27; ++i)
     {
       m_MRFNeighborhoodWeight[i] = 1.3 * m_SmoothingFactor;
     }
@@ -283,7 +282,7 @@ MRFImageFilter<TInputImage, TClassifiedImage>::SetDefaultMRFNeighborhoodWeight()
     // Assumes a default 3x3x3 window size
     m_MRFNeighborhoodWeight.resize(m_NeighborhoodSize);
 
-    for (int i = 0; i < m_NeighborhoodSize; i++)
+    for (int i = 0; i < m_NeighborhoodSize; ++i)
     {
       m_MRFNeighborhoodWeight[i] = 1.7 * m_SmoothingFactor;
     }
@@ -295,7 +294,7 @@ MRFImageFilter<TInputImage, TClassifiedImage>::SetDefaultMRFNeighborhoodWeight()
   {
     if ((InputImageDimension > 3))
     {
-      for (int i = 0; i < m_NeighborhoodSize; i++)
+      for (int i = 0; i < m_NeighborhoodSize; ++i)
       {
         m_MRFNeighborhoodWeight[i] = 1;
       }
@@ -315,7 +314,7 @@ MRFImageFilter<TInputImage, TClassifiedImage>::SetMRFNeighborhoodWeight(std::vec
   else
   {
     m_NeighborhoodSize = 1;
-    for (unsigned int i = 0; i < InputImageDimension; i++)
+    for (unsigned int i = 0; i < InputImageDimension; ++i)
     {
       m_NeighborhoodSize *= (2 * m_InputImageNeighborhoodRadius[i] + 1);
     }
@@ -329,7 +328,7 @@ MRFImageFilter<TInputImage, TClassifiedImage>::SetMRFNeighborhoodWeight(std::vec
     // and corresponding memory offsets.
     m_MRFNeighborhoodWeight.resize(m_NeighborhoodSize);
 
-    for (unsigned int i = 0; i < betaMatrix.size(); i++)
+    for (unsigned int i = 0; i < betaMatrix.size(); ++i)
     {
       m_MRFNeighborhoodWeight[i] = (betaMatrix[i] * m_SmoothingFactor);
     }
@@ -355,7 +354,7 @@ MRFImageFilter<TInputImage, TClassifiedImage>::Allocate()
   // Get the number of valid pixels in the output MRF image
   //---------------------------------------------------------------------
   int tmp;
-  for (unsigned int i = 0; i < InputImageDimension; i++)
+  for (unsigned int i = 0; i < InputImageDimension; ++i)
   {
     tmp = static_cast<int>(inputImageSize[i]);
 
@@ -365,12 +364,7 @@ MRFImageFilter<TInputImage, TClassifiedImage>::Allocate()
   }
 
   // Allocate the label image status
-  LabelStatusIndexType index;
-  index.Fill(0);
-
-  LabelStatusRegionType region;
-  region.SetSize(inputImageSize);
-  region.SetIndex(index);
+  const LabelStatusRegionType region(inputImageSize);
 
   m_LabelStatusImage = LabelStatusImageType::New();
   m_LabelStatusImage->SetLargestPossibleRegion(region);
@@ -400,7 +394,7 @@ MRFImageFilter<TInputImage, TClassifiedImage>::ApplyMRFImageFilter()
 
   int totalNumberOfPixelsInInputImage = 1;
 
-  for (unsigned int i = 0; i < InputImageDimension; i++)
+  for (unsigned int i = 0; i < InputImageDimension; ++i)
   {
     totalNumberOfPixelsInInputImage *= static_cast<int>(inputImageSize[i]);
   }
@@ -549,7 +543,7 @@ MRFImageFilter<TInputImage, TClassifiedImage>::DoNeighborhoodOperation(
 
   // Reinitialize the neighborhood influence at the beginning of the
   // neighborhood operation
-  for (index = 0; index < m_NeighborInfluence.size(); index++)
+  for (index = 0; index < m_NeighborInfluence.size(); ++index)
   {
     m_NeighborInfluence[index] = 0;
   }
@@ -560,12 +554,12 @@ MRFImageFilter<TInputImage, TClassifiedImage>::DoNeighborhoodOperation(
   for (int i = 0; i < m_NeighborhoodSize; ++i)
   {
     labelledPixel = labelledIter.GetPixel(i);
-    index = (unsigned int)labelledPixel;
+    index = static_cast<unsigned int>(labelledPixel);
     m_NeighborInfluence[index] += m_MRFNeighborhoodWeight[i];
   } // End neighborhood processing
 
   // Add the prior probability to the pixel probability
-  for (index = 0; index < m_NumberOfClasses; index++)
+  for (index = 0; index < m_NumberOfClasses; ++index)
   {
     m_MahalanobisDistance[index] = m_NeighborInfluence[index] - pixelMembershipValue[index];
   }
@@ -574,7 +568,7 @@ MRFImageFilter<TInputImage, TClassifiedImage>::DoNeighborhoodOperation(
   double maximumDistance = -1e+20;
   int    pixLabel = -1;
   double tmpPixDistance;
-  for (index = 0; index < m_NumberOfClasses; index++)
+  for (index = 0; index < m_NumberOfClasses; ++index)
   {
     tmpPixDistance = m_MahalanobisDistance[index];
     if (tmpPixDistance > maximumDistance)
@@ -590,7 +584,7 @@ MRFImageFilter<TInputImage, TClassifiedImage>::DoNeighborhoodOperation(
   // Check if the labelled pixel value in the previous iteration has changed
   // If the value has changed then update the m_LabelStatus set;
 
-  if (pixLabel != (int)(*previousLabel))
+  if (pixLabel != static_cast<int>(*previousLabel))
   {
     labelledIter.SetCenterPixel(pixLabel);
     for (int i = 0; i < m_NeighborhoodSize; ++i)

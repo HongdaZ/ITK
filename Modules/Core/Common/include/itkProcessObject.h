@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,6 +32,7 @@
 #include "itkObjectFactory.h"
 #include "itkNumericTraits.h"
 #include "itkThreadSupport.h"
+#include "itkIntTypes.h"
 #include <vector>
 #include <map>
 #include <set>
@@ -138,7 +139,7 @@ class MultiThreaderBase;
 class ITKCommon_EXPORT ProcessObject : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ProcessObject);
+  ITK_DISALLOW_COPY_AND_MOVE(ProcessObject);
 
   /** Standard class type aliases. */
   using Self = ProcessObject;
@@ -459,7 +460,7 @@ public:
    * options for controlling memory utilization is the
    * ReleaseDataBeforeUpdateFlag. */
   virtual void
-  SetReleaseDataFlag(bool flag);
+  SetReleaseDataFlag(bool val);
   virtual bool
   GetReleaseDataFlag() const;
   void
@@ -561,7 +562,7 @@ protected:
   virtual void
   SetInput(const DataObjectIdentifierType & key, DataObject * input);
   virtual void
-  SetNthInput(DataObjectPointerArraySizeType num, DataObject * input);
+  SetNthInput(DataObjectPointerArraySizeType idx, DataObject * input);
 
   /** Sets first nullptr indexed input, appends to the end otherwise */
   virtual void
@@ -617,7 +618,7 @@ protected:
 
   /** Set the main input */
   virtual void
-  SetPrimaryInput(DataObject * input);
+  SetPrimaryInput(DataObject * object);
 
   /** \brief Define the number of indexed inputs defined.
    *
@@ -711,13 +712,13 @@ protected:
 
   /** Method used internally for getting an indexed output. */
   DataObject *
-  GetOutput(DataObjectPointerArraySizeType idx);
+  GetOutput(DataObjectPointerArraySizeType i);
   const DataObject *
-  GetOutput(DataObjectPointerArraySizeType idx) const;
+  GetOutput(DataObjectPointerArraySizeType i) const;
 
   /** Set an output */
   virtual void
-  SetOutput(const DataObjectIdentifierType & key, DataObject * output);
+  SetOutput(const DataObjectIdentifierType & name, DataObject * output);
 
   /** Remove an output */
   virtual void
@@ -737,12 +738,12 @@ protected:
 
   /** Set the main output */
   virtual void
-  SetPrimaryOutput(DataObject * output);
+  SetPrimaryOutput(DataObject * object);
 
   /** Protected methods for setting outputs.
    * Subclasses make use of them for getting output. */
   virtual void
-  SetNthOutput(DataObjectPointerArraySizeType num, DataObject * output);
+  SetNthOutput(DataObjectPointerArraySizeType idx, DataObject * output);
 
   virtual void
   AddOutput(DataObject * output);
@@ -779,11 +780,11 @@ protected:
    * correctly, that all required inputs are set, and needed parameters
    * are set appropriately. If not valid an exceptions will be thrown.
    *
-   * This method is called before UpdateOutputInformation is
+   * This method is called before UpdateOutputInformation() is
    * propagated to the inputs.
    *
    * The ProcessObject's implementation verifies that the
-   * NumberOfRequiredInputs are set and not null.
+   * #m_NumberOfRequiredInputs are set and not null.
    *
    */
   virtual void
@@ -903,7 +904,7 @@ protected:
   static inline constexpr float
   progressFixedToFloat(uint32_t fixed)
   {
-    return double(fixed) / double(std::numeric_limits<uint32_t>::max());
+    return static_cast<double>(fixed) / static_cast<double>(std::numeric_limits<uint32_t>::max());
   };
 
   /**
@@ -982,6 +983,9 @@ private:
 
   /** Friends of ProcessObject */
   friend class DataObject;
+
+  friend class ProgressReporter;
+  friend class TotalProgressReporter;
 
   friend class DataObjectConstIterator;
   friend class InputDataObjectConstIterator;

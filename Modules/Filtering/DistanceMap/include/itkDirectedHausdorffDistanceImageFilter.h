@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,11 +22,12 @@
 #include "itkNumericTraits.h"
 #include "itkArray.h"
 #include "itkCompensatedSummation.h"
+#include <mutex>
 
 namespace itk
 {
 /**
- *\class DirectedHausdorffDistanceImageFilter
+ * \class DirectedHausdorffDistanceImageFilter
  * \brief Computes the directed Hausdorff distance between the set of
  * non-zero pixels of two images.
  *
@@ -73,7 +74,7 @@ template <typename TInputImage1, typename TInputImage2>
 class ITK_TEMPLATE_EXPORT DirectedHausdorffDistanceImageFilter : public ImageToImageFilter<TInputImage1, TInputImage1>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DirectedHausdorffDistanceImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(DirectedHausdorffDistanceImageFilter);
 
   /** Standard Self type alias */
   using Self = DirectedHausdorffDistanceImageFilter;
@@ -124,9 +125,10 @@ public:
   const InputImage2Type *
   GetInput2();
 
-  /** Set if image spacing should be used in computing distances. */
+  /** Set/Get if image spacing should be used in computing distances. */
   itkSetMacro(UseImageSpacing, bool);
   itkGetConstMacro(UseImageSpacing, bool);
+  itkBooleanMacro(UseImageSpacing);
 
   /** Return the computed directed Hausdorff distance. */
   itkGetConstMacro(DirectedHausdorffDistance, RealType);
@@ -160,13 +162,8 @@ protected:
 
   /** Multi-thread version GenerateData. */
   void
-  ThreadedGenerateData(const RegionType & outputRegionForThread, ThreadIdType threadId) override;
+  DynamicThreadedGenerateData(const RegionType & outputRegionForThread) override;
 
-  void
-  DynamicThreadedGenerateData(const RegionType &) override
-  {
-    itkExceptionMacro("This class requires threadId so it must use classic multi-threading model");
-  }
 
   // Override since the filter needs all the data for the algorithm
   void
@@ -177,21 +174,23 @@ protected:
   EnlargeOutputRequestedRegion(DataObject * data) override;
 
 private:
+  using CompensatedSummationType = itk::CompensatedSummation<RealType>;
+
   using DistanceMapType = Image<RealType, Self::ImageDimension>;
   using DistanceMapPointer = typename DistanceMapType::Pointer;
 
+  DistanceMapPointer m_DistanceMap{ nullptr };
 
-  DistanceMapPointer m_DistanceMap;
+  RealType       m_MaxDistance{ NumericTraits<RealType>::ZeroValue() };
+  IdentifierType m_PixelCount{};
 
-  Array<RealType>       m_MaxDistance;
-  Array<IdentifierType> m_PixelCount;
+  CompensatedSummationType m_Sum;
 
-  using CompensatedSummationType = itk::CompensatedSummation<RealType>;
-  std::vector<CompensatedSummationType> m_Sum;
+  RealType m_DirectedHausdorffDistance{ NumericTraits<RealType>::ZeroValue() };
+  RealType m_AverageHausdorffDistance{ NumericTraits<RealType>::ZeroValue() };
+  bool     m_UseImageSpacing{ true };
 
-  RealType m_DirectedHausdorffDistance;
-  RealType m_AverageHausdorffDistance;
-  bool     m_UseImageSpacing;
+  std::mutex m_Mutex;
 }; // end of class
 } // end namespace itk
 

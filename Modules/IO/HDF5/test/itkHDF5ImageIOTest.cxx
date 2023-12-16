@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,13 +30,13 @@ HDF5ReadWriteTest(const char * fileName)
   std::cout << fileName << std::endl;
   int success(EXIT_SUCCESS);
   using ImageType = typename itk::Image<TPixel, 3>;
-  typename ImageType::RegionType    imageRegion;
-  typename ImageType::SizeType      size;
-  typename ImageType::IndexType     index;
-  typename ImageType::SpacingType   spacing;
-  typename ImageType::PointType     origin;
-  typename ImageType::DirectionType myDirection;
-  for (unsigned i = 0; i < 3; i++)
+  typename ImageType::RegionType  imageRegion;
+  typename ImageType::SizeType    size;
+  typename ImageType::IndexType   index;
+  typename ImageType::SpacingType spacing;
+  typename ImageType::PointType   origin;
+
+  for (unsigned int i = 0; i < 3; ++i)
   {
     size[i] = 5;
     index[i] = 0;
@@ -282,7 +282,7 @@ HDF5ReadWriteTest(const char * fileName)
   }
 
   itk::Array<double> metaDataDoubleArray2;
-  metaDataDoubleArray2.Fill(itk::NumericTraits<double>::ZeroValue());
+  metaDataDoubleArray2.Fill(0.0);
   if (!itk::ExposeMetaData<itk::Array<double>>(metaDict2, "TestDoubleArray", metaDataDoubleArray2) ||
       metaDataDoubleArray2 != metaDataDoubleArray)
   {
@@ -340,13 +340,13 @@ HDF5ReuseReadWriteTest(const char * fileName)
 }
 
 int
-itkHDF5ImageIOTest(int ac, char * av[])
+itkHDF5ImageIOTest(int argc, char * argv[])
 {
   std::string prefix("");
-  if (ac > 1)
+  if (argc > 1)
   {
-    prefix = *++av;
-    --ac;
+    prefix = *++argv;
+    --argc;
     itksys::SystemTools::ChangeDirectory(prefix.c_str());
   }
   itk::ObjectFactoryBase::RegisterFactory(itk::HDF5ImageIOFactory::New());

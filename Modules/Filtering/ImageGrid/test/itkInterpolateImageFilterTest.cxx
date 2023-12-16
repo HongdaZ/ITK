@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,12 +37,12 @@ itkInterpolateImageFilterTest(int, char *[])
   SizeType size;
   size.Fill(5);
 
-  InputImageType::Pointer image1 = InputImageType::New();
+  auto image1 = InputImageType::New();
   image1->SetRegions(size);
   image1->Allocate();
   image1->FillBuffer(100);
 
-  InputImageType::Pointer image2 = InputImageType::New();
+  auto image2 = InputImageType::New();
   image2->SetRegions(size);
   image2->Allocate();
 
@@ -58,7 +58,7 @@ itkInterpolateImageFilterTest(int, char *[])
   }
 
   using FilterType = itk::InterpolateImageFilter<InputImageType, OutputImageType>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   filter->SetInput1(image1);
   filter->SetInput2(image2);

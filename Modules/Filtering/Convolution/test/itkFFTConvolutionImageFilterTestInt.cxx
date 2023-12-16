@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,14 +22,23 @@
 #include "itkSimpleFilterWatcher.h"
 #include "itkTestingMacros.h"
 
+#include "itkObjectFactoryBase.h"
+#include "itkVnlRealToHalfHermitianForwardFFTImageFilter.h"
+#include "itkVnlHalfHermitianToRealInverseFFTImageFilter.h"
+#if defined(ITK_USE_FFTWD) || defined(ITK_USE_FFTWF)
+#  include "itkFFTWRealToHalfHermitianForwardFFTImageFilter.h"
+#  include "itkFFTWHalfHermitianToRealInverseFFTImageFilter.h"
+#endif
+
 int
 itkFFTConvolutionImageFilterTestInt(int argc, char * argv[])
 {
 
   if (argc < 4)
   {
-    std::cout << "Usage: " << argv[0] << " inputImage kernelImage outputImage [normalizeImage] [outputRegionMode]"
-              << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " inputImage kernelImage outputImage [normalizeImage] [outputRegionMode]" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -39,18 +48,18 @@ itkFFTConvolutionImageFilterTestInt(int argc, char * argv[])
   using ImageType = itk::Image<PixelType, ImageDimension>;
   using ReaderType = itk::ImageFileReader<ImageType>;
 
-  ReaderType::Pointer reader1 = ReaderType::New();
+  auto reader1 = ReaderType::New();
   reader1->SetFileName(argv[1]);
 
   ITK_TRY_EXPECT_NO_EXCEPTION(reader1->Update());
 
-  ReaderType::Pointer reader2 = ReaderType::New();
+  auto reader2 = ReaderType::New();
   reader2->SetFileName(argv[2]);
 
   ITK_TRY_EXPECT_NO_EXCEPTION(reader2->Update());
 
   using ConvolutionFilterType = itk::FFTConvolutionImageFilter<ImageType>;
-  ConvolutionFilterType::Pointer convolver = ConvolutionFilterType::New();
+  auto convolver = ConvolutionFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(convolver, FFTConvolutionImageFilter, ConvolutionImageFilterBase);
 
@@ -96,7 +105,7 @@ itkFFTConvolutionImageFilterTestInt(int argc, char * argv[])
   ITK_TRY_EXPECT_NO_EXCEPTION(convolver->Update());
 
   using WriterType = itk::ImageFileWriter<ImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(argv[3]);
   writer->SetInput(convolver->GetOutput());
 

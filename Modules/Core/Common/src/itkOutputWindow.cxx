@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,20 +27,27 @@
  *=========================================================================*/
 #include "itkOutputWindow.h"
 #include "itkObjectFactory.h"
+#include "itkSingleton.h"
+#include <mutex>
 
 namespace itk
 {
-OutputWindow::Pointer OutputWindow::m_Instance = nullptr;
+
+struct OutputWindowGlobals
+{
+  OutputWindow::Pointer m_Instance{ nullptr };
+  std::recursive_mutex  m_StaticInstanceLock;
+};
 
 /**
  * Prompting off by default
  */
-OutputWindow ::OutputWindow()
+OutputWindow::OutputWindow()
 {
   m_PromptUser = false;
 }
 
-OutputWindow ::~OutputWindow() = default;
+OutputWindow::~OutputWindow() = default;
 
 void
 OutputWindowDisplayText(const char * message)
@@ -73,11 +80,12 @@ OutputWindowDisplayDebugText(const char * message)
 }
 
 void
-OutputWindow ::PrintSelf(std::ostream & os, Indent indent) const
+OutputWindow::PrintSelf(std::ostream & os, Indent indent) const
 {
+  itkInitGlobalsMacro(PimplGlobals);
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "OutputWindow (single instance): " << (void *)OutputWindow::m_Instance << std::endl;
+  os << indent << "OutputWindow (single instance): " << (void *)m_PimplGlobals->m_Instance << std::endl;
 
   os << indent << "Prompt User: " << (m_PromptUser ? "On\n" : "Off\n");
 }
@@ -86,8 +94,9 @@ OutputWindow ::PrintSelf(std::ostream & os, Indent indent) const
  * default implementation outputs to cerr only
  */
 void
-OutputWindow ::DisplayText(const char * txt)
+OutputWindow::DisplayText(const char * txt)
 {
+  std::lock_guard<std::mutex> cerrLock(m_cerrMutex);
   std::cerr << txt;
   if (m_PromptUser)
   {
@@ -105,41 +114,50 @@ OutputWindow ::DisplayText(const char * txt)
  * Return the single instance of the OutputWindow
  */
 OutputWindow::Pointer
-OutputWindow ::GetInstance()
+OutputWindow::GetInstance()
 {
-  if (!OutputWindow::m_Instance)
+  itkInitGlobalsMacro(PimplGlobals);
+  std::lock_guard<std::recursive_mutex> mutexHolder(m_PimplGlobals->m_StaticInstanceLock);
+  if (!m_PimplGlobals->m_Instance)
   {
     // Try the factory first
-    OutputWindow::m_Instance = ObjectFactory<Self>::Create();
+    m_PimplGlobals->m_Instance = ObjectFactory<Self>::Create();
     // if the factory did not provide one, then create it here
-    if (!OutputWindow::m_Instance)
+    if (!m_PimplGlobals->m_Instance)
     {
-      OutputWindow::m_Instance = new OutputWindow;
+      m_PimplGlobals->m_Instance = new OutputWindow;
       // Remove extra reference from construction.
-      OutputWindow::m_Instance->UnRegister();
+      m_PimplGlobals->m_Instance->UnRegister();
     }
   }
   /**
    * return the instance
    */
-  return OutputWindow::m_Instance;
+  return m_PimplGlobals->m_Instance;
 }
 
+itkGetGlobalSimpleMacro(OutputWindow, OutputWindowGlobals, PimplGlobals);
+
+OutputWindowGlobals * OutputWindow::m_PimplGlobals;
+
 void
-OutputWindow ::SetInstance(OutputWindow * instance)
+OutputWindow::SetInstance(OutputWindow * instance)
 {
-  if (OutputWindow::m_Instance == instance)
+  itkInitGlobalsMacro(PimplGlobals);
+
+  std::lock_guard<std::recursive_mutex> mutexHolder(m_PimplGlobals->m_StaticInstanceLock);
+  if (m_PimplGlobals->m_Instance == instance)
   {
     return;
   }
-  OutputWindow::m_Instance = instance;
+  m_PimplGlobals->m_Instance = instance;
 }
 
 /**
  * This just calls GetInstance
  */
 OutputWindow::Pointer
-OutputWindow ::New()
+OutputWindow::New()
 {
   return GetInstance();
 }

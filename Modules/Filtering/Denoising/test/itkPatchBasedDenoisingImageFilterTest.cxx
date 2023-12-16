@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,6 +73,8 @@ doDenoising(const std::string & inputFileName,
             const unsigned int  numIterations,
             const int           numThreads,
             char *              kernelBandwithSigma,
+            bool                alwaysTreatComponentsAsEuclidean,
+            bool                manualReinitialization,
             const int           numToSample,
             bool                computeConditionalDerivatives,
             const double        kernelBandwidthMultiplicationFactor,
@@ -91,14 +93,14 @@ doDenoising(const std::string & inputFileName,
   using WriterType = itk::ImageFileWriter<OutputImageType>;
 
   // Read the noisy image to be denoised
-  typename ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(inputFileName);
 
   ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
 
 
   // Create filter and initialize
-  typename FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   typename FilterType::InputImageType::Pointer inputImage = reader->GetOutput();
   filter->SetInput(inputImage);
@@ -151,11 +153,15 @@ doDenoising(const std::string & inputFileName,
   filter->SetNumberOfIterations(numIterations);
   ITK_TEST_SET_GET_VALUE(numIterations, filter->GetNumberOfIterations());
 
+  ITK_TEST_SET_GET_BOOLEAN(filter, AlwaysTreatComponentsAsEuclidean, alwaysTreatComponentsAsEuclidean);
+
+  ITK_TEST_SET_GET_BOOLEAN(filter, ManualReinitialization, manualReinitialization);
+
   // Number of threads to use in parallel
   filter->SetNumberOfWorkUnits(numThreads);
 
   // Sampling the image to find similar patches
-  typename SamplerType::Pointer sampler = SamplerType::New();
+  auto sampler = SamplerType::New();
 
   // Variance (in physical units) for semi-local Gaussian sampling
   sampler->SetVariance(400);
@@ -259,7 +265,7 @@ doDenoising(const std::string & inputFileName,
       double                                        tolerance = 1e-2 * expectedValue;
       if (!itk::Math::FloatAlmostEqual(expectedValue, resultValue, 10, tolerance))
       {
-        std::cout.precision(unsigned(itk::Math::abs(std::log10(tolerance))));
+        std::cout.precision(static_cast<unsigned int>(itk::Math::abs(std::log10(tolerance))));
         std::cout << "Error in GetKernelBandwidthSigma() "
                   << "at index: [" << i << "]" << std::endl;
         std::cout << "Expected value: " << expectedValue << ", but got: " << resultValue << std::endl;
@@ -273,7 +279,7 @@ doDenoising(const std::string & inputFileName,
   }
 
   // Write the denoised image to file
-  typename WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(outputFileName);
   writer->SetInput(filter->GetOutput());
 
@@ -287,12 +293,14 @@ doDenoising(const std::string & inputFileName,
 int
 itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
 {
-  if (argc < 6)
+  if (argc < 8)
   {
     std::cerr << "Missing command line arguments" << std::endl;
     std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " inputImageFileName outputImageFileName"
               << " numDimensions numComponents"
               << " kernelBandwithSigma"
+              << " alwaysTreatComponentsAsEuclidean"
+              << " manualReinitialization"
               << " [numIterations] [numThreads]"
               << " [numPatchesToSample]"
               << " [computeConditionalDerivatives]"
@@ -308,7 +316,7 @@ itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
   using ImageType = itk::Image<PixelType, 3>;
   using FilterType = itk::PatchBasedDenoisingImageFilter<ImageType, ImageType>;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, PatchBasedDenoisingImageFilter, PatchBasedDenoisingBaseImageFilter);
 
@@ -322,43 +330,46 @@ itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
 
   char * kernelBandwithSigma = argv[5];
 
+  const bool alwaysTreatComponentsAsEuclidean = std::stoi(argv[6]);
+  const bool manualReinitialization = std::stoi(argv[7]);
+
   unsigned int numIterations = 1;
-  if (argc > 6)
+  if (argc > 8)
   {
-    numIterations = std::stoi(argv[6]);
+    numIterations = std::stoi(argv[8]);
   }
 
   unsigned int numThreads = 1;
-  if (argc > 7)
+  if (argc > 9)
   {
-    numThreads = std::stoi(argv[7]);
+    numThreads = std::stoi(argv[9]);
   }
 
   unsigned int numToSample = 1000;
-  if (argc > 8)
+  if (argc > 10)
   {
-    numToSample = std::stoi(argv[8]);
+    numToSample = std::stoi(argv[10]);
   }
 
   bool computeConditionalDerivatives = false;
-  if (argc > 9)
+  if (argc > 11)
   {
-    computeConditionalDerivatives = static_cast<bool>(std::stoi(argv[9]));
+    computeConditionalDerivatives = static_cast<bool>(std::stoi(argv[11]));
   }
 
   double kernelBandwidthMultFactor = 1.0;
-  if (argc > 10)
+  if (argc > 12)
   {
-    kernelBandwidthMultFactor = std::stod(argv[10]);
+    kernelBandwidthMultFactor = std::stod(argv[12]);
   }
 
   const std::vector<std::string> modelChoices{ "GAUSSIAN", "RICIAN", "POISSON", "NOMODEL" };
   std::string                    noiseModel = modelChoices[0];
 
   double noiseModelFidelityWeight = 0.0;
-  if (argc > 11)
+  if (argc > 13)
   {
-    noiseModel = argv[11];
+    noiseModel = argv[13];
     bool validChoice = false;
     for (const auto & modelChoice : modelChoices)
     {
@@ -377,9 +388,9 @@ itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
       }
       return EXIT_FAILURE;
     }
-    if (argc > 12)
+    if (argc > 14)
     {
-      noiseModelFidelityWeight = std::stod(argv[12]);
+      noiseModelFidelityWeight = std::stod(argv[14]);
     }
     else
     {
@@ -450,6 +461,8 @@ itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
                                             numIterations,
                                             numThreads,
                                             kernelBandwithSigma,
+                                            alwaysTreatComponentsAsEuclidean,
+                                            manualReinitialization,
                                             numToSample,
                                             computeConditionalDerivatives,
                                             kernelBandwidthMultFactor,
@@ -461,6 +474,8 @@ itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
      return doDenoising< TwoComponent2DImage >( inFileName, outFileName,
                                               numIterations, numThreads,
                                               kernelBandwithSigma,
+                                              alwaysTreatComponentsAsEuclidean,
+                                              manualReinitialization,
                                               numToSample,
                                               computeConditionalDerivatives,
                                               kernelBandwidthMultFactor,
@@ -473,6 +488,8 @@ itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
                                               numIterations,
                                               numThreads,
                                               kernelBandwithSigma,
+                                              alwaysTreatComponentsAsEuclidean,
+                                              manualReinitialization,
                                               numToSample,
                                               computeConditionalDerivatives,
                                               kernelBandwidthMultFactor,
@@ -486,6 +503,8 @@ itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
                                              numIterations,
                                              numThreads,
                                              kernelBandwithSigma,
+                                             alwaysTreatComponentsAsEuclidean,
+                                             manualReinitialization,
                                              numToSample,
                                              computeConditionalDerivatives,
                                              kernelBandwidthMultFactor,
@@ -499,6 +518,8 @@ itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
                                             numIterations,
                                             numThreads,
                                             kernelBandwithSigma,
+                                            alwaysTreatComponentsAsEuclidean,
+                                            manualReinitialization,
                                             numToSample,
                                             computeConditionalDerivatives,
                                             kernelBandwidthMultFactor,
@@ -512,6 +533,8 @@ itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
                                             numIterations,
                                             numThreads,
                                             kernelBandwithSigma,
+                                            alwaysTreatComponentsAsEuclidean,
+                                            manualReinitialization,
                                             numToSample,
                                             computeConditionalDerivatives,
                                             kernelBandwidthMultFactor,
@@ -523,6 +546,8 @@ itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
     return doDenoising< TwoComponent3DImage >( inFileName, outFileName,
                                              numIterations, numThreads,
                                              kernelBandwithSigma,
+                                             alwaysTreatComponentsAsEuclidean,
+                                             manualReinitialization,
                                              numToSample,
                                              computeConditionalDerivatives,
                                              kernelBandwidthMultFactor,
@@ -535,6 +560,8 @@ itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
                                               numIterations,
                                               numThreads,
                                               kernelBandwithSigma,
+                                              alwaysTreatComponentsAsEuclidean,
+                                              manualReinitialization,
                                               numToSample,
                                               computeConditionalDerivatives,
                                               kernelBandwidthMultFactor,
@@ -548,6 +575,8 @@ itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
                                              numIterations,
                                              numThreads,
                                              kernelBandwithSigma,
+                                             alwaysTreatComponentsAsEuclidean,
+                                             manualReinitialization,
                                              numToSample,
                                              computeConditionalDerivatives,
                                              kernelBandwidthMultFactor,
@@ -561,6 +590,8 @@ itkPatchBasedDenoisingImageFilterTest(int argc, char * argv[])
                                             numIterations,
                                             numThreads,
                                             kernelBandwithSigma,
+                                            alwaysTreatComponentsAsEuclidean,
+                                            manualReinitialization,
                                             numToSample,
                                             computeConditionalDerivatives,
                                             kernelBandwidthMultFactor,

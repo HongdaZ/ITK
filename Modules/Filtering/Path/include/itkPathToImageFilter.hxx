@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkPathToImageFilter_hxx
 #define itkPathToImageFilter_hxx
 
-#include "itkPathToImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkPathIterator.h"
 #include "itkNumericTraits.h"
@@ -33,7 +32,7 @@ PathToImageFilter<TInputPath, TOutputImage>::PathToImageFilter()
   this->SetNumberOfRequiredInputs(1);
   m_Size.Fill(0);
 
-  for (unsigned int i = 0; i < OutputImageDimension; i++)
+  for (unsigned int i = 0; i < OutputImageDimension; ++i)
   {
     // Set an image spacing for the user
     m_Spacing[i] = 1.0;
@@ -64,16 +63,16 @@ PathToImageFilter<TInputPath, TOutputImage>::SetInput(unsigned int index, const 
 
 /** Get the input Path */
 template <typename TInputPath, typename TOutputImage>
-const typename PathToImageFilter<TInputPath, TOutputImage>::InputPathType *
-PathToImageFilter<TInputPath, TOutputImage>::GetInput()
+auto
+PathToImageFilter<TInputPath, TOutputImage>::GetInput() -> const InputPathType *
 {
   return itkDynamicCastInDebugMode<const TInputPath *>(this->GetPrimaryInput());
 }
 
 /** Get the input Path */
 template <typename TInputPath, typename TOutputImage>
-const typename PathToImageFilter<TInputPath, TOutputImage>::InputPathType *
-PathToImageFilter<TInputPath, TOutputImage>::GetInput(unsigned int idx)
+auto
+PathToImageFilter<TInputPath, TOutputImage>::GetInput(unsigned int idx) -> const InputPathType *
 {
   return itkDynamicCastInDebugMode<const TInputPath *>(this->ProcessObject::GetInput(idx));
 }
@@ -85,7 +84,7 @@ PathToImageFilter<TInputPath, TOutputImage>::SetSpacing(const double * spacing)
 {
   unsigned int i;
 
-  for (i = 0; i < OutputImageDimension; i++)
+  for (i = 0; i < OutputImageDimension; ++i)
   {
     if (Math::NotExactlyEquals(spacing[i], m_Spacing[i]))
     {
@@ -94,7 +93,7 @@ PathToImageFilter<TInputPath, TOutputImage>::SetSpacing(const double * spacing)
   }
   if (i < OutputImageDimension)
   {
-    for (i = 0; i < OutputImageDimension; i++)
+    for (i = 0; i < OutputImageDimension; ++i)
     {
       m_Spacing[i] = spacing[i];
     }
@@ -107,16 +106,16 @@ PathToImageFilter<TInputPath, TOutputImage>::SetSpacing(const float * spacing)
 {
   unsigned int i;
 
-  for (i = 0; i < OutputImageDimension; i++)
+  for (i = 0; i < OutputImageDimension; ++i)
   {
-    if (Math::NotExactlyEquals((double)spacing[i], m_Spacing[i]))
+    if (Math::NotExactlyEquals(static_cast<double>(spacing[i]), m_Spacing[i]))
     {
       break;
     }
   }
   if (i < OutputImageDimension)
   {
-    for (i = 0; i < OutputImageDimension; i++)
+    for (i = 0; i < OutputImageDimension; ++i)
     {
       m_Spacing[i] = spacing[i];
     }
@@ -137,7 +136,7 @@ PathToImageFilter<TInputPath, TOutputImage>::SetOrigin(const double * origin)
 {
   unsigned int i;
 
-  for (i = 0; i < OutputImageDimension; i++)
+  for (i = 0; i < OutputImageDimension; ++i)
   {
     if (Math::NotExactlyEquals(origin[i], m_Origin[i]))
     {
@@ -146,7 +145,7 @@ PathToImageFilter<TInputPath, TOutputImage>::SetOrigin(const double * origin)
   }
   if (i < OutputImageDimension)
   {
-    for (i = 0; i < OutputImageDimension; i++)
+    for (i = 0; i < OutputImageDimension; ++i)
     {
       m_Origin[i] = origin[i];
     }
@@ -159,16 +158,16 @@ PathToImageFilter<TInputPath, TOutputImage>::SetOrigin(const float * origin)
 {
   unsigned int i;
 
-  for (i = 0; i < OutputImageDimension; i++)
+  for (i = 0; i < OutputImageDimension; ++i)
   {
-    if (Math::NotExactlyEquals((double)origin[i], m_Origin[i]))
+    if (Math::NotExactlyEquals(static_cast<double>(origin[i]), m_Origin[i]))
     {
       break;
     }
   }
   if (i < OutputImageDimension)
   {
-    for (i = 0; i < OutputImageDimension; i++)
+    for (i = 0; i < OutputImageDimension; ++i)
     {
       m_Origin[i] = origin[i];
     }
@@ -200,7 +199,7 @@ PathToImageFilter<TInputPath, TOutputImage>::GenerateData()
   double   origin[OutputImageDimension];
   SizeType size;
 
-  for (i = 0; i < OutputImageDimension; i++)
+  for (i = 0; i < OutputImageDimension; ++i)
   {
     // Set Image size to the size of the path's bounding box
     // size[i] = (SizeValueType)
@@ -211,8 +210,6 @@ PathToImageFilter<TInputPath, TOutputImage>::GenerateData()
     origin[i] = 0;
   }
 
-  typename OutputImageType::IndexType index;
-  index.Fill(0);
   typename OutputImageType::RegionType region;
 
   // If the size of the output has been explicitly specified, the filter
@@ -221,7 +218,7 @@ PathToImageFilter<TInputPath, TOutputImage>::GenerateData()
   // paths's bounding box will be used as default.
 
   bool specified = false;
-  for (i = 0; i < OutputImageDimension; i++)
+  for (i = 0; i < OutputImageDimension; ++i)
   {
     if (m_Size[i] != 0)
     {
@@ -236,14 +233,12 @@ PathToImageFilter<TInputPath, TOutputImage>::GenerateData()
   }
   else
   {
-    itkExceptionMacro(<< "Currently, the user MUST specify an image size")
+    itkExceptionMacro(<< "Currently, the user MUST specify an image size");
     // region.SetSize( size );
   }
-  region.SetIndex(index);
+  region.SetIndex({ { 0 } });
 
-  OutputImage->SetLargestPossibleRegion(region); //
-  OutputImage->SetBufferedRegion(region);        // set the region
-  OutputImage->SetRequestedRegion(region);       //
+  OutputImage->SetRegions(region); // set the region
 
   // If the spacing has been explicitly specified, the filter
   // will set the output spacing to that explicit spacing, otherwise the spacing
@@ -251,7 +246,7 @@ PathToImageFilter<TInputPath, TOutputImage>::GenerateData()
   // the spatial object is used as default.
 
   specified = false;
-  for (i = 0; i < OutputImageDimension; i++)
+  for (i = 0; i < OutputImageDimension; ++i)
   {
     if (m_Spacing[i] != 0.0)
     {
@@ -266,7 +261,7 @@ PathToImageFilter<TInputPath, TOutputImage>::GenerateData()
   }
   else
   {
-    itkExceptionMacro(<< "Currently, the user MUST specify an image spacing")
+    itkExceptionMacro(<< "Currently, the user MUST specify an image spacing");
     // OutputImage->SetSpacing(InputObject->GetIndexToObjectTransform()->GetScaleComponent());
     //   // set spacing
   }

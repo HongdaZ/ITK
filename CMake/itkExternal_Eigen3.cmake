@@ -15,7 +15,7 @@ if(ITK_USE_EIGEN_MPL2_ONLY)
 endif()
 
 if(ITK_USE_SYSTEM_EIGEN)
-  find_package( Eigen3 )
+  find_package(Eigen3)
 else()
   # Set variables used to configure and install Eigen
   # _eigen3_cmake_install_prefix work also with relative CMAKE_INSTALL_PREFIX
@@ -29,13 +29,14 @@ else()
   # too late for our purposes of find_package at configure time.
   # We execute the configuration manually to create the Config and Targets.cmake files.
   # Nothing to link or compile, so no need to pass compiler flags.
-  # However, generators and c,cxx compilers have to be explictily passed
+  # However, generators and c,cxx compilers have to be explicitly passed
   # for CMake configuration to work.
   # Configure Eigen
   file(MAKE_DIRECTORY ${_eigen3_build_dir})
   execute_process(
     COMMAND
     ${CMAKE_COMMAND} ${_eigen3_source_dir}
+    "-DCMAKE_APPLE_SILICON_PROCESSOR=${CMAKE_APPLE_SILICON_PROCESSOR}"
     "-DCMAKE_INSTALL_PREFIX=${_eigen3_cmake_install_prefix}"
     "-DCMAKE_INSTALL_INCLUDEDIR=${_eigen3_cmake_install_includedir}"
     "-DCMAKE_INSTALL_DATADIR=${_eigen3_cmake_install_datadir}"
@@ -55,7 +56,7 @@ else()
     ERROR_VARIABLE ITKEigen3Config_STDERR
     )
   set(ITKInternalEigen3_DIR ${_eigen3_build_dir})
-  find_package( ITKInternalEigen3 )
+  find_package(ITKInternalEigen3)
   if(NOT ITKInternalEigen3_FOUND)
     message(FATAL_ERROR "ITKInternalEigen3 configuration faileed\nREPORT:\n${ITKEigen3Config_STDOUT}\n${ITKEigen3Config_STDERR}")
   endif()

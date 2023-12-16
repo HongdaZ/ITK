@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@
 namespace itk
 {
 /**
- *\class ThresholdImageFilter
+ * \class ThresholdImageFilter
  * \brief Set image values to a user-specified value if they are below,
  * above, or between simple threshold values.
  *
@@ -71,7 +71,7 @@ template <typename TImage>
 class ITK_TEMPLATE_EXPORT ThresholdImageFilter : public InPlaceImageFilter<TImage, TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ThresholdImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ThresholdImageFilter);
 
   /** Standard class type aliases. */
   using Self = ThresholdImageFilter;

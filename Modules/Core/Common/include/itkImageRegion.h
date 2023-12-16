@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,7 +62,7 @@ class ITK_TEMPLATE_EXPORT ImageBase;
  * \sphinxexample{Core/Common/CreateAnImageRegion,An object which holds the index (start) and size of a region of an
  * image} \sphinxexample{Core/Common/ImageRegionIntersection,Determine image region intersection}
  * \sphinxexample{Core/Common/IsPixelInsideRegion,Determine if a pixel is inside of a region}
- * \sphinxexample{Core/Common/RegionOverlap,Determine the overlap of two regions}
+ * \sphinxexample{Core/Common/ImageRegionOverlap,Determine the overlap of two regions}
  * \endsphinx
  */
 template <unsigned int VImageDimension>
@@ -115,7 +115,7 @@ public:
   /** Constructor. ImageRegion is a lightweight object that is not reference
    * counted, so the constructor is public. Its two data members are filled
    * with zeros (using C++11 default member initializers). */
-  ImageRegion() ITK_NOEXCEPT = default;
+  ImageRegion() noexcept = default;
 
   /** Destructor. ImageRegion is a lightweight object that is not reference
    * counted, so the destructor is public. */
@@ -123,14 +123,13 @@ public:
 
   /** Copy constructor. ImageRegion is a lightweight object that is not
    * reference counted, so the copy constructor is public. */
-  ImageRegion(const Self &) ITK_NOEXCEPT = default;
+  ImageRegion(const Self &) noexcept = default;
 
   /** Constructor that takes an index and size. ImageRegion is a lightweight
    * object that is not reference counted, so this constructor is public. */
-  ImageRegion(const IndexType & index, const SizeType & size) ITK_NOEXCEPT
-    :
-    // Note: Use parentheses instead of curly braces to initialize data members,
-    // to avoid AppleClang 6.0.0.6000056 compile errors, "no viable conversion..."
+  ImageRegion(const IndexType & index, const SizeType & size) noexcept
+    : // Note: Use parentheses instead of curly braces to initialize data members,
+      // to avoid AppleClang 6.0.0.6000056 compile errors, "no viable conversion..."
     m_Index(index)
     , m_Size(size)
   {}
@@ -138,7 +137,8 @@ public:
   /** Constructor that takes a size and assumes an index of zeros. ImageRegion
    * is lightweight object that is not reference counted so this constructor
    * is public. */
-  ImageRegion(const SizeType & size) ITK_NOEXCEPT : m_Size(size)
+  ImageRegion(const SizeType & size) noexcept
+    : m_Size(size)
   {
     // Note: m_Index is initialized by its C++11 default member initializer.
   }
@@ -146,7 +146,7 @@ public:
   /** operator=. ImageRegion is a lightweight object that is not reference
    * counted, so operator= is public. */
   Self &
-  operator=(const Self &) ITK_NOEXCEPT = default;
+  operator=(const Self &) noexcept = default;
 
   /** Set the index defining the corner of the region. */
   void
@@ -227,29 +227,20 @@ public:
 
   /** Compare two regions. */
   bool
-  operator==(const Self & region) const ITK_NOEXCEPT
+  operator==(const Self & region) const noexcept
   {
     return (m_Index == region.m_Index) && (m_Size == region.m_Size);
   }
 
-  /** Compare two regions. */
-  bool
-  operator!=(const Self & region) const ITK_NOEXCEPT
-  {
-    return !(*this == region);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
 
   /** Test if an index is inside */
   bool
   IsInside(const IndexType & index) const
   {
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
-      if (index[i] < m_Index[i])
-      {
-        return false;
-      }
-      if (index[i] >= (m_Index[i] + static_cast<IndexValueType>(m_Size[i])))
+      if (index[i] < m_Index[i] || index[i] >= m_Index[i] + static_cast<IndexValueType>(m_Size[i]))
       {
         return false;
       }
@@ -260,27 +251,16 @@ public:
   /** Test if a continuous index is inside the region.
    * We take into account the fact that each voxel has its
    * center at the integer coordinate and extends half way
-   * to the next integer coordinate. */
+   * to the next integer coordinate, inclusive on all sides. */
   template <typename TCoordRepType>
   bool
   IsInside(const ContinuousIndex<TCoordRepType, VImageDimension> & index) const
   {
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    constexpr TCoordRepType half = 0.5;
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
-      if (Math::RoundHalfIntegerUp<IndexValueType>(index[i]) < static_cast<IndexValueType>(m_Index[i]))
-      {
-        return false;
-      }
-      // bound is the last valid pixel location
-      const auto bound = static_cast<TCoordRepType>(m_Index[i] + m_Size[i] - 0.5);
-
-      /* Note for NaN: test using negation of a positive test in order
-       * to always evaluate to true (and thus return false) when index[i]
-       * is NaN. The cast above to integer via RoundHalfIntegerUp will cast
-       * NaN into a platform-dependent value (large negative, -1 or large
-       * positive, empirically). Thus this test here is relied on
-       * to 'catch' NaN's. */
-      if (!(index[i] <= bound))
+      // Use negation of tests so that index[i]==NaN leads to returning false.
+      if (!(index[i] >= m_Index[i] - half && index[i] <= (m_Index[i] + static_cast<IndexValueType>(m_Size[i])) - half))
       {
         return false;
       }
@@ -293,23 +273,19 @@ public:
    * zero, then it will not be considered to be inside of the current region,
    * even its starting index is inside. */
   bool
-  IsInside(const Self & region) const
+  IsInside(const Self & otherRegion) const
   {
-    IndexType beginCorner = region.GetIndex();
+    const auto otherIndex = otherRegion.m_Index;
+    const auto otherSize = otherRegion.m_Size;
 
-    if (!this->IsInside(beginCorner))
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
-      return false;
-    }
-    IndexType        endCorner;
-    const SizeType & size = region.GetSize();
-    for (unsigned int i = 0; i < ImageDimension; i++)
-    {
-      endCorner[i] = beginCorner[i] + static_cast<OffsetValueType>(size[i]) - 1;
-    }
-    if (!this->IsInside(endCorner))
-    {
-      return false;
+      if (otherIndex[i] < m_Index[i] || otherSize[i] == 0 ||
+          otherIndex[i] + static_cast<IndexValueType>(otherSize[i]) >
+            m_Index[i] + static_cast<IndexValueType>(m_Size[i]))
+      {
+        return false;
+      }
     }
     return true;
   }

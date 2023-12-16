@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkGaussianDerivativeOperator_hxx
 #define itkGaussianDerivativeOperator_hxx
 
-#include "itkGaussianDerivativeOperator.h"
 #include "itkCompensatedSummation.h"
 #include "itkOutputWindow.h"
 #include "itkMacro.h"
@@ -28,8 +27,8 @@ namespace itk
 {
 
 template <typename TPixel, unsigned int VDimension, typename TAllocator>
-typename GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::CoefficientVector
-GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients()
+auto
+GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients() -> CoefficientVector
 {
 
   // compute gaussian kernel of 0-order
@@ -101,8 +100,8 @@ GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients
 }
 
 template <typename TPixel, unsigned int VDimension, typename TAllocator>
-typename GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::CoefficientVector
-GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::GenerateGaussianCoefficients() const
+auto
+GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::GenerateGaussianCoefficients() const -> CoefficientVector
 {
 
   CoefficientVector coeff;
@@ -121,14 +120,14 @@ GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::GenerateGaussianCoef
   coeff.push_back(et * ModifiedBesselI1(pixelVariance));
   sum += coeff[1] * 2.0;
 
-  for (int i = 2; sum.GetSum() < cap; i++)
+  for (int i = 2; sum.GetSum() < cap; ++i)
   {
     coeff.push_back(et * ModifiedBesselI(i, pixelVariance));
     sum += coeff[i] * 2.0;
     if (coeff[i] < sum.GetSum() * NumericTraits<double>::epsilon())
     {
       // if the coeff is less then this value then the value of cap
-      // will not change, and it's will not contribute to the operator
+      // will not change, and it will not contribute to the operator
       itkWarningMacro("Kernel failed to accumulate to approximately one with current remainder "
                       << cap - sum.GetSum() << " and current coefficient " << coeff[i] << ".");
 
@@ -171,7 +170,7 @@ GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::ModifiedBesselI0(dou
   double d, accumulator;
   double m;
 
-  if ((d = std::fabs(y)) < 3.75)
+  if ((d = itk::Math::abs(y)) < 3.75)
   {
     m = y / 3.75;
     m *= m;
@@ -200,7 +199,7 @@ GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::ModifiedBesselI1(dou
   double d, accumulator;
   double m;
 
-  if ((d = std::fabs(y)) < 3.75)
+  if ((d = itk::Math::abs(y)) < 3.75)
   {
     m = y / 3.75;
     m *= m;
@@ -248,15 +247,15 @@ GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::ModifiedBesselI(int 
   }
   else
   {
-    toy = 2.0 / std::fabs(y);
+    toy = 2.0 / itk::Math::abs(y);
     qip = accumulator = 0.0;
     qi = 1.0;
-    for (j = 2 * (n + (int)(DIGITS * std::sqrt((double)n))); j > 0; j--)
+    for (j = 2 * (n + static_cast<int>(DIGITS * std::sqrt(static_cast<double>(n)))); j > 0; j--)
     {
       qim = qip + j * toy * qi;
       qip = qi;
       qi = qim;
-      if (std::fabs(qi) > 1.0e10)
+      if (itk::Math::abs(qi) > 1.0e10)
       {
         accumulator *= 1.0e-10;
         qi *= 1.0e-10;
@@ -281,13 +280,16 @@ GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::ModifiedBesselI(int 
 
 template <typename TPixel, unsigned int VDimension, typename TAllocator>
 void
-GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::PrintSelf(std::ostream & os, Indent i) const
+GaussianDerivativeOperator<TPixel, VDimension, TAllocator>::PrintSelf(std::ostream & os, Indent indent) const
 {
-  os << i << "GaussianDerivativeOperator { this=" << this << ", m_NormalizeAcrossScale = " << m_NormalizeAcrossScale
-     << ", m_Order = " << m_Order << ", m_Spacing = " << m_Spacing << ", m_Variance = " << m_Variance
-     << ", m_MaximumError = " << m_MaximumError << ", m_MaximumKernelWidth = " << m_MaximumKernelWidth << "} "
-     << std::endl;
-  Superclass::PrintSelf(os, i.GetNextIndent());
+  Superclass::PrintSelf(os, indent);
+
+  os << indent << "NormalizeAcrossScale: " << m_NormalizeAcrossScale << std::endl;
+  os << indent << "Variance: " << m_Variance << std::endl;
+  os << indent << "MaximumError: " << m_MaximumError << std::endl;
+  os << indent << "MaximumKernelWidth: " << m_MaximumKernelWidth << std::endl;
+  os << indent << "Order: " << m_Order << std::endl;
+  os << indent << "Spacing: " << m_Spacing << std::endl;
 }
 
 } // end namespace itk

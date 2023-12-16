@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,16 +36,12 @@ public:
   Minimum() = default;
   ~Minimum() = default;
   bool
-  operator!=(const Minimum &) const
+  operator==(const Minimum &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const Minimum & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Minimum);
 
   inline TOutput
   operator()(const TInput1 & A, const TInput2 & B) const
@@ -74,10 +70,11 @@ public:
  * \endsphinx
  */
 template <typename TInputImage1, typename TInputImage2 = TInputImage1, typename TOutputImage = TInputImage1>
-class MinimumImageFilter : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
+class ITK_TEMPLATE_EXPORT MinimumImageFilter
+  : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MinimumImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MinimumImageFilter);
 
   /** Standard class type aliases. */
   using Self = MinimumImageFilter;

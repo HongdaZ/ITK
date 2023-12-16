@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,16 +52,16 @@ namespace itk
  *
  * \ingroup ITKDisplacementField
  */
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 class ITK_TEMPLATE_EXPORT BSplineExponentialDiffeomorphicTransform
-  : public ConstantVelocityFieldTransform<TParametersValueType, NDimensions>
+  : public ConstantVelocityFieldTransform<TParametersValueType, VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineExponentialDiffeomorphicTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(BSplineExponentialDiffeomorphicTransform);
 
   /** Standard class type aliases. */
   using Self = BSplineExponentialDiffeomorphicTransform;
-  using Superclass = ConstantVelocityFieldTransform<TParametersValueType, NDimensions>;
+  using Superclass = ConstantVelocityFieldTransform<TParametersValueType, VDimension>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
@@ -72,25 +72,25 @@ public:
   itkNewMacro(Self);
 
   /** Dimension of the velocity field . */
-  static constexpr unsigned int ConstantVelocityFieldDimension = NDimensions;
+  static constexpr unsigned int ConstantVelocityFieldDimension = VDimension;
 
   /** Dimension of the vector spaces. */
-  static constexpr unsigned int Dimension = NDimensions;
+  static constexpr unsigned int Dimension = VDimension;
 
   /** Types from superclass */
-  using ScalarType = typename Superclass::ScalarType;
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::ScalarType;
+  using typename Superclass::DerivativeType;
   using DerivativeValueType = typename DerivativeType::ValueType;
 
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename Superclass::FixedParametersValueType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::ParametersValueType;
+  using typename Superclass::FixedParametersType;
+  using typename Superclass::FixedParametersValueType;
 
-  using DisplacementFieldType = typename Superclass::DisplacementFieldType;
-  using DisplacementFieldPointer = typename Superclass::DisplacementFieldPointer;
-  using ConstantVelocityFieldType = typename Superclass::ConstantVelocityFieldType;
-  using ConstantVelocityFieldPointer = typename Superclass::ConstantVelocityFieldPointer;
+  using typename Superclass::DisplacementFieldType;
+  using typename Superclass::DisplacementFieldPointer;
+  using typename Superclass::ConstantVelocityFieldType;
+  using typename Superclass::ConstantVelocityFieldPointer;
 
   using DisplacementVectorType = typename DisplacementFieldType::PixelType;
 

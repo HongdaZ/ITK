@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,7 +72,7 @@ namespace itk
 class ITKOptimizers_EXPORT InitializationBiasedParticleSwarmOptimizer : public ParticleSwarmOptimizerBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InitializationBiasedParticleSwarmOptimizer);
+  ITK_DISALLOW_COPY_AND_MOVE(InitializationBiasedParticleSwarmOptimizer);
 
   /** Standard "Self" type alias. */
   using Self = InitializationBiasedParticleSwarmOptimizer;
@@ -83,34 +83,38 @@ public:
   using CoefficientType = double;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(InitializationBiasedParticleSwarmOptimizer, ParticleSwarmOptimizerBase)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(InitializationBiasedParticleSwarmOptimizer, ParticleSwarmOptimizerBase);
 
-    /** The Particle swarm optimizer uses the following update formula:
-     * \f[c_3 =  c_{3initial}(1.0 - IterationIndex/MaximalNumberOfIterations)\f]
-     * \f[v_i(t+1) = w*v_i(t) +
-     *            c_1*uniform(0,1)*(p_i-x_i(t)) +
-     *            c_2*uniform(0,1)*(p_g-x_i(t)) +
-     *            c_3*uniform(0,1)*(x_{init}-x_i(t))\f]
-     * \f[x_i(t+1) = clampToBounds(x_i(t) + v_i(t+1))\f]
-     * where
-     * \f$w\f$ - inertia constant
-     * \f$c_1\f$ - personal coefficient
-     * \f$c_2\f$ - global coefficient
-     * \f$c_3\f$ - initial location coefficient
-     * \f$p_i\f$ - parameters yielding the best function value obtained by this particle
-     * \f$p_g\f$ - parameters yielding the best function value obtained by all particles
-     * \f$x_{init}\f$ - initial parameter values provided by user
-     */
-    itkSetMacro(InertiaCoefficient, CoefficientType) itkGetMacro(InertiaCoefficient, CoefficientType)
-      itkSetMacro(PersonalCoefficient, CoefficientType) itkGetMacro(PersonalCoefficient, CoefficientType)
-        itkSetMacro(GlobalCoefficient, CoefficientType) itkGetMacro(GlobalCoefficient, CoefficientType)
-          itkSetMacro(InitializationCoefficient, CoefficientType)
-            itkGetMacro(InitializationCoefficient, CoefficientType)
+  /** The Particle swarm optimizer uses the following update formula:
+   * \f[c_3 =  c_{3initial}(1.0 - IterationIndex/MaximalNumberOfIterations)\f]
+   * \f[v_i(t+1) = w*v_i(t) +
+   *            c_1*uniform(0,1)*(p_i-x_i(t)) +
+   *            c_2*uniform(0,1)*(p_g-x_i(t)) +
+   *            c_3*uniform(0,1)*(x_{init}-x_i(t))\f]
+   * \f[x_i(t+1) = clampToBounds(x_i(t) + v_i(t+1))\f]
+   * where
+   * \f$w\f$ - inertia constant
+   * \f$c_1\f$ - personal coefficient
+   * \f$c_2\f$ - global coefficient
+   * \f$c_3\f$ - initial location coefficient
+   * \f$p_i\f$ - parameters yielding the best function value obtained by this particle
+   * \f$p_g\f$ - parameters yielding the best function value obtained by all particles
+   * \f$x_{init}\f$ - initial parameter values provided by user
+   */
+  itkSetMacro(InertiaCoefficient, CoefficientType);
+  itkGetMacro(InertiaCoefficient, CoefficientType);
+  itkSetMacro(PersonalCoefficient, CoefficientType);
+  itkGetMacro(PersonalCoefficient, CoefficientType);
+  itkSetMacro(GlobalCoefficient, CoefficientType);
+  itkGetMacro(GlobalCoefficient, CoefficientType);
+  itkSetMacro(InitializationCoefficient, CoefficientType);
+  itkGetMacro(InitializationCoefficient, CoefficientType);
 
-              protected : InitializationBiasedParticleSwarmOptimizer();
+protected:
+  InitializationBiasedParticleSwarmOptimizer();
   ~InitializationBiasedParticleSwarmOptimizer() override = default;
   void
   PrintSelf(std::ostream & os, Indent indent) const override;

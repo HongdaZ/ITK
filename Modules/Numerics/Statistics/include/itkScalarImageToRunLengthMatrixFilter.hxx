@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkScalarImageToRunLengthMatrixFilter_hxx
 #define itkScalarImageToRunLengthMatrixFilter_hxx
 
-#include "itkScalarImageToRunLengthMatrixFilter.h"
 
 #include "itkConstNeighborhoodIterator.h"
 #include "itkNeighborhood.h"
@@ -106,8 +105,8 @@ ScalarImageToRunLengthMatrixFilter<TImageType, THistogramFrequencyContainer>::Ge
 }
 
 template <typename TImageType, typename THistogramFrequencyContainer>
-const typename ScalarImageToRunLengthMatrixFilter<TImageType, THistogramFrequencyContainer>::HistogramType *
-ScalarImageToRunLengthMatrixFilter<TImageType, THistogramFrequencyContainer>::GetOutput() const
+auto
+ScalarImageToRunLengthMatrixFilter<TImageType, THistogramFrequencyContainer>::GetOutput() const -> const HistogramType *
 {
   const auto * output = static_cast<const HistogramType *>(this->ProcessObject::GetOutput(0));
   return output;
@@ -157,7 +156,7 @@ ScalarImageToRunLengthMatrixFilter<TImageType, THistogramFrequencyContainer>::Ge
   // moving the allocation out of loop of offsets
   // while keeping FillBuffer with boolean false in each loop
   using BoolImageType = Image<bool, ImageDimension>;
-  typename BoolImageType::Pointer alreadyVisitedImage = BoolImageType::New();
+  auto alreadyVisitedImage = BoolImageType::New();
   alreadyVisitedImage->CopyInformation(inputImage);
   alreadyVisitedImage->SetRegions(inputImage->GetRequestedRegion());
   alreadyVisitedImage->Allocate();

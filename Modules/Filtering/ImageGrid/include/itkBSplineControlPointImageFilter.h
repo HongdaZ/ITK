@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,8 +49,7 @@ namespace itk
  * This code was contributed in the Insight Journal paper:
  * "N-D C^k B-Spline Scattered Data Approximation"
  * by Nicholas J. Tustison, James C. Gee
- * https://hdl.handle.net/1926/140
- * http://www.insight-journal.org/browse/publication/57
+ * https://www.insight-journal.org/browse/publication/57
  *
  * \author Nicholas J. Tustison
  * \ingroup ITKImageGrid
@@ -60,7 +59,7 @@ template <typename TInputImage, typename TOutputImage = TInputImage>
 class ITK_TEMPLATE_EXPORT BSplineControlPointImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineControlPointImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BSplineControlPointImageFilter);
 
   using Self = BSplineControlPointImageFilter;
   using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
@@ -96,7 +95,7 @@ public:
   using RealImageType = Image<RealType, Self::ImageDimension>;
   using RealImagePointer = typename RealImageType::Pointer;
 
-  using ArrayType = FixedArray<unsigned, Self::ImageDimension>;
+  using ArrayType = FixedArray<unsigned int, Self::ImageDimension>;
   using RealArrayType = FixedArray<RealType, Self::ImageDimension>;
 
   /** PointSet type alias support */
@@ -265,12 +264,12 @@ private:
     typename RealImageType::IndexType k;
     k[0] = 1;
 
-    for (unsigned int i = 1; i < ImageDimension; i++)
+    for (unsigned int i = 1; i < ImageDimension; ++i)
     {
       k[i] = size[ImageDimension - i - 1] * k[i - 1];
     }
     typename RealImageType::IndexType index;
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       index[ImageDimension - i - 1] = static_cast<unsigned int>(number / k[ImageDimension - i - 1]);
       number %= k[ImageDimension - i - 1];

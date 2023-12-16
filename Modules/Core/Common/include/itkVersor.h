@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -116,7 +116,7 @@ public:
   Versor(const Self & v);
 
   /** Assignment operator =.  Copy the versor argument. */
-  const Self &
+  Self &
   operator=(const Self & v);
 
   /** Composition operator *=.  Compose the current versor
@@ -158,21 +158,18 @@ public:
 
   /** Versor operator*.  Performs the composition of two versors.
    * this operation is NOT commutative. */
-  Self operator*(const Self & vec) const;
+  Self operator*(const Self & v) const;
 
   /** Versor operator/.  Performs the division of two versors. */
   Self
-  operator/(const Self & vec) const;
+  operator/(const Self & v) const;
 
   /** Versor operator==  Performs the comparison between two versors.
    * this operation uses an arbitrary threshold for the comparison.  */
   bool
-  operator==(const Self & vec) const;
+  operator==(const Self & v) const;
 
-  /** Versor operator!=  Performs the comparison between two versors.
-   * this operation uses an arbitrary threshold for the comparison.  */
-  bool
-  operator!=(const Self & vec) const;
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
 
   /** Returns the Scalar part. */
   ValueType
@@ -230,11 +227,11 @@ public:
 
   /** Set the versor using an orthogonal matrix.
    *  Based on code from:
-   *  http://www.euclideanspace.com/maths/geometry/rotations/
+   *  https://www.euclideanspace.com/maths/geometry/rotations/
    *  conversions/matrixToQuaternion/index.htm
    */
   void
-  Set(const MatrixType & m);
+  Set(const MatrixType & mat);
 
   /** Set the versor using the right part.
    * the magnitude of the vector given is assumed to

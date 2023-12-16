@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkBinaryStatisticsKeepNObjectsImageFilter_hxx
 #define itkBinaryStatisticsKeepNObjectsImageFilter_hxx
 
-#include "itkBinaryStatisticsKeepNObjectsImageFilter.h"
 #include "itkProgressAccumulator.h"
 
 namespace itk
@@ -59,14 +58,14 @@ void
 BinaryStatisticsKeepNObjectsImageFilter<TInputImage, TFeatureImage>::GenerateData()
 {
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
 
   progress->SetMiniPipelineFilter(this);
 
   // Allocate the output
   this->AllocateOutputs();
 
-  typename LabelizerType::Pointer labelizer = LabelizerType::New();
+  auto labelizer = LabelizerType::New();
   labelizer->SetInput(this->GetInput());
   labelizer->SetInputForegroundValue(m_ForegroundValue);
   labelizer->SetOutputBackgroundValue(m_BackgroundValue);
@@ -74,7 +73,7 @@ BinaryStatisticsKeepNObjectsImageFilter<TInputImage, TFeatureImage>::GenerateDat
   labelizer->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   progress->RegisterInternalFilter(labelizer, .3f);
 
-  typename LabelObjectValuatorType::Pointer valuator = LabelObjectValuatorType::New();
+  auto valuator = LabelObjectValuatorType::New();
   valuator->SetInput(labelizer->GetOutput());
   valuator->SetFeatureImage(this->GetFeatureImage());
   valuator->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
@@ -89,7 +88,7 @@ BinaryStatisticsKeepNObjectsImageFilter<TInputImage, TFeatureImage>::GenerateDat
   }
   progress->RegisterInternalFilter(valuator, .3f);
 
-  typename KeepNObjectsType::Pointer opening = KeepNObjectsType::New();
+  auto opening = KeepNObjectsType::New();
   opening->SetInput(valuator->GetOutput());
   opening->SetNumberOfObjects(m_NumberOfObjects);
   opening->SetReverseOrdering(m_ReverseOrdering);
@@ -97,7 +96,7 @@ BinaryStatisticsKeepNObjectsImageFilter<TInputImage, TFeatureImage>::GenerateDat
   opening->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   progress->RegisterInternalFilter(opening, .2f);
 
-  typename BinarizerType::Pointer binarizer = BinarizerType::New();
+  auto binarizer = BinarizerType::New();
   binarizer->SetInput(opening->GetOutput());
   binarizer->SetForegroundValue(m_ForegroundValue);
   binarizer->SetBackgroundValue(m_BackgroundValue);

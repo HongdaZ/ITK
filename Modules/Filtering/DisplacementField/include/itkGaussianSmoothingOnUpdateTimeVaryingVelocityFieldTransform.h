@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ namespace itk
 
 /** \class GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform
  * \brief Modifies the UpdateTransformParameters method
- * to peform a Gaussian smoothing of the
+ * to perform a Gaussian smoothing of the
  * velocity field after adding the update array.
  *
  * This class is the same as \c TimeVaryingVelocityFieldTransform, except
@@ -35,16 +35,16 @@ namespace itk
  *
  * \ingroup ITKDisplacementField
  */
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 class ITK_TEMPLATE_EXPORT GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform
-  : public TimeVaryingVelocityFieldTransform<TParametersValueType, NDimensions>
+  : public TimeVaryingVelocityFieldTransform<TParametersValueType, VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform);
 
   /** Standard class type aliases. */
   using Self = GaussianSmoothingOnUpdateTimeVaryingVelocityFieldTransform;
-  using Superclass = TimeVaryingVelocityFieldTransform<TParametersValueType, NDimensions>;
+  using Superclass = TimeVaryingVelocityFieldTransform<TParametersValueType, VDimension>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
@@ -55,16 +55,16 @@ public:
   itkNewMacro(Self);
 
   /** Dimension of the time varying velocity field. */
-  static constexpr unsigned int TimeVaryingVelocityFieldDimension = NDimensions + 1;
+  static constexpr unsigned int TimeVaryingVelocityFieldDimension = VDimension + 1;
 
   /** Types from superclass */
-  using ScalarType = typename Superclass::ScalarType;
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::ScalarType;
+  using typename Superclass::DerivativeType;
   using DerivativeValueType = typename DerivativeType::ValueType;
-  using VelocityFieldType = typename Superclass::VelocityFieldType;
+  using typename Superclass::VelocityFieldType;
 
-  using TimeVaryingVelocityFieldType = typename Superclass::TimeVaryingVelocityFieldType;
-  using TimeVaryingVelocityFieldPointer = typename Superclass::TimeVaryingVelocityFieldPointer;
+  using typename Superclass::TimeVaryingVelocityFieldType;
+  using typename Superclass::TimeVaryingVelocityFieldPointer;
 
   using DisplacementVectorType = typename VelocityFieldType::PixelType;
   using DisplacementVectorValueType = typename DisplacementVectorType::ValueType;

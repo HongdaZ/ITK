@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,11 +41,11 @@ TestFormat(vidl_pixel_format expectedFormat)
   return out;
 }
 
-#define TestFormatMacro(PixelType, expectedFormat)                                                                     \
-  if (!TestFormat<PixelType>(expectedFormat))                                                                          \
-  {                                                                                                                    \
-    std::cerr << "format() did not return expected result for pixel type " << typeid(PixelType).name() << std::endl;   \
-    return EXIT_FAILURE;                                                                                               \
+#define TestFormatMacro(PixelType, expectedFormat)                                                                   \
+  if (!TestFormat<PixelType>(expectedFormat))                                                                        \
+  {                                                                                                                  \
+    std::cerr << "format() did not return expected result for pixel type " << typeid(PixelType).name() << std::endl; \
+    return EXIT_FAILURE;                                                                                             \
   }
 
 //
@@ -117,10 +117,10 @@ vidl_itk_istreamTestWithPixelType(char * argv[], vidl_pixel_format expectedForma
   return EXIT_SUCCESS;
 }
 
-#define TemplatedTestMacro(PixelType, expectedFormat)                                                                  \
-  if (vidl_itk_istreamTestWithPixelType<PixelType>(argv, expectedFormat) == EXIT_FAILURE)                              \
-  {                                                                                                                    \
-    return EXIT_FAILURE;                                                                                               \
+#define TemplatedTestMacro(PixelType, expectedFormat)                                     \
+  if (vidl_itk_istreamTestWithPixelType<PixelType>(argv, expectedFormat) == EXIT_FAILURE) \
+  {                                                                                       \
+    return EXIT_FAILURE;                                                                  \
   }
 
 //

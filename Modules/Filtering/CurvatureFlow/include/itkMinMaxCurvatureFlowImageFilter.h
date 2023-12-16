@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class MinMaxCurvatureFlowImageFilter
+ * \class MinMaxCurvatureFlowImageFilter
  * \brief Denoise an image using min/max curvature flow.
  *
  * MinMaxCurvatureFlowImageFilter implements a curvature driven image denoising
@@ -83,7 +83,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT MinMaxCurvatureFlowImageFilter : public CurvatureFlowImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MinMaxCurvatureFlowImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MinMaxCurvatureFlowImageFilter);
 
   /** Standard class type aliases. */
   using Self = MinMaxCurvatureFlowImageFilter;
@@ -98,8 +98,8 @@ public:
   itkTypeMacro(MinMaxCurvatureFlowImageFilter, CurvatureFlowImageFilter);
 
   /** Inherit type alias from Superclass. */
-  using FiniteDifferenceFunctionType = typename Superclass::FiniteDifferenceFunctionType;
-  using OutputImageType = typename Superclass::OutputImageType;
+  using typename Superclass::FiniteDifferenceFunctionType;
+  using typename Superclass::OutputImageType;
 
   /** MinMaxCurvatureFlowFunction type. */
   using MinMaxCurvatureFlowFunctionType = MinMaxCurvatureFlowFunction<OutputImageType>;

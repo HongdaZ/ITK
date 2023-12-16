@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkVideoSource_hxx
 #define itkVideoSource_hxx
 
-#include "itkVideoSource.h"
 #include "itkMultiThreaderBase.h"
 
 namespace itk
@@ -54,8 +53,8 @@ VideoSource<TOutputVideoStream>::PrintSelf(std::ostream & os, Indent indent) con
 // GetOutput()
 //
 template <typename TOutputVideoStream>
-typename VideoSource<TOutputVideoStream>::OutputVideoStreamType *
-VideoSource<TOutputVideoStream>::GetOutput()
+auto
+VideoSource<TOutputVideoStream>::GetOutput() -> OutputVideoStreamType *
 {
   // Make sure there is at least 1 output
   if (this->GetNumberOfOutputs() < 1)
@@ -314,8 +313,8 @@ VideoSource<TOutputVideoStream>::SplitRequestedSpatialRegion(
   }
   else
   {
-    valuesPerThread = Math::Ceil<int>(range / (double)num);
-    maxThreadIdUsed = Math::Ceil<int>(range / (double)valuesPerThread) - 1;
+    valuesPerThread = Math::Ceil<int>(range / static_cast<double>(num));
+    maxThreadIdUsed = Math::Ceil<int>(range / static_cast<double>(valuesPerThread)) - 1;
   }
 
   // Split the region
@@ -348,9 +347,9 @@ ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
 VideoSource<TOutputVideoStream>::ThreaderCallback(void * arg)
 {
   ThreadStruct * str;
-  int            total, threadId, threadCount;
+  int            total, workUnitID, threadCount;
 
-  threadId = ((MultiThreaderBase::WorkUnitInfo *)(arg))->WorkUnitID;
+  workUnitID = ((MultiThreaderBase::WorkUnitInfo *)(arg))->WorkUnitID;
   threadCount = ((MultiThreaderBase::WorkUnitInfo *)(arg))->NumberOfWorkUnits;
 
   str = (ThreadStruct *)(((MultiThreaderBase::WorkUnitInfo *)(arg))->UserData);
@@ -358,11 +357,11 @@ VideoSource<TOutputVideoStream>::ThreaderCallback(void * arg)
   // execute the actual method with appropriate output region
   // first find out how many pieces extent can be split into.
   typename TOutputVideoStream::SpatialRegionType splitRegion;
-  total = str->Filter->SplitRequestedSpatialRegion(threadId, threadCount, splitRegion);
+  total = str->Filter->SplitRequestedSpatialRegion(workUnitID, threadCount, splitRegion);
 
-  if (threadId < total)
+  if (workUnitID < total)
   {
-    str->Filter->ThreadedGenerateData(splitRegion, threadId);
+    str->Filter->ThreadedGenerateData(splitRegion, workUnitID);
   }
   // else
   //   {

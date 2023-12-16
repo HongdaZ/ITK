@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkPolylineMaskImageFilter_hxx
 #define itkPolylineMaskImageFilter_hxx
 
-#include "itkPolylineMaskImageFilter.h"
 #include "itkRigid3DPerspectiveTransform.h"
 #include "itkImageRegionConstIterator.h"
 #include "itkProgressReporter.h"
@@ -35,10 +34,10 @@ namespace itk
 
 template <typename TInputImage, typename TPolyline, typename TVector, typename TOutputImage>
 PolylineMaskImageFilter<TInputImage, TPolyline, TVector, TOutputImage>::PolylineMaskImageFilter()
-  : m_ViewVector(1)
-  , m_UpVector(1)
+  : m_ViewVector(MakeFilled<VectorType>(1))
+  , m_UpVector(MakeFilled<VectorType>(1))
   , m_CameraCenterPoint(0)
-  , m_FocalPoint(0.0)
+  , m_FocalPoint()
 
 {
   this->SetNumberOfRequiredInputs(2);
@@ -124,8 +123,9 @@ PolylineMaskImageFilter<TInputImage, TPolyline, TVector, TOutputImage>::Generate
 }
 
 template <typename TInputImage, typename TPolyline, typename TVector, typename TOutputImage>
-typename PolylineMaskImageFilter<TInputImage, TPolyline, TVector, TOutputImage>::ProjPlanePointType
+auto
 PolylineMaskImageFilter<TInputImage, TPolyline, TVector, TOutputImage>::TransformProjectPoint(PointType inputPoint)
+  -> ProjPlanePointType
 {
   PointType centered;
 
@@ -201,8 +201,6 @@ PolylineMaskImageFilter<TInputImage, TPolyline, TVector, TOutputImage>::Generate
   using ProjectionImageRegionType = typename ProjectionImageType::RegionType;
   using ProjectionImageSizeType = typename ProjectionImageType::SizeType;
 
-  ProjectionImageRegionType projectionRegion;
-
   // Determine the projection image size by transforming the eight corners
   // of the 3D input image
 
@@ -210,13 +208,13 @@ PolylineMaskImageFilter<TInputImage, TPolyline, TVector, TOutputImage>::Generate
   using CornerPointType = Point<double, 3>;
   using CornerPointProjectionType = Point<double, 2>;
 
-  using BoundingBoxType = BoundingBox<unsigned long int, 2, double>;
+  using BoundingBoxType = BoundingBox<unsigned long, 2, double>;
   using CornerPointProjectionContainer = BoundingBoxType::PointsContainer;
 
-  CornerPointProjectionContainer::Pointer cornerPointProjectionlist = CornerPointProjectionContainer::New();
-  CornerPointType                         cornerPoint;
-  CornerPointType                         originPoint;
-  CornerPointProjectionType               cornerProjectionPoint;
+  auto                      cornerPointProjectionlist = CornerPointProjectionContainer::New();
+  CornerPointType           cornerPoint;
+  CornerPointType           originPoint;
+  CornerPointProjectionType cornerProjectionPoint;
 
   originPoint[0] = 0.0;
   originPoint[1] = 0.0;
@@ -284,7 +282,7 @@ PolylineMaskImageFilter<TInputImage, TPolyline, TVector, TOutputImage>::Generate
   cornerPointProjectionlist->push_back(cornerProjectionPoint);
 
   // Compute the bounding box of the projected points
-  BoundingBoxType::Pointer boundingBox = BoundingBoxType::New();
+  auto boundingBox = BoundingBoxType::New();
 
   boundingBox->SetPoints(cornerPointProjectionlist);
 
@@ -308,10 +306,9 @@ PolylineMaskImageFilter<TInputImage, TPolyline, TVector, TOutputImage>::Generate
   projectionSize[0] = (IndexValueType)(bounds[1] - bounds[0]) + pad;
   projectionSize[1] = (IndexValueType)(bounds[3] - bounds[2]) + pad;
 
-  projectionRegion.SetIndex(projectionStart);
-  projectionRegion.SetSize(projectionSize);
+  const ProjectionImageRegionType projectionRegion(projectionStart, projectionSize);
 
-  typename ProjectionImageType::Pointer projectionImagePtr = ProjectionImageType::New();
+  auto projectionImagePtr = ProjectionImageType::New();
 
   ProjectionImagePointType origin;
   origin[0] = bounds[0];
@@ -330,9 +327,7 @@ PolylineMaskImageFilter<TInputImage, TPolyline, TVector, TOutputImage>::Generate
   itkDebugMacro(<< "Projection image start index:" << projectionStart);
   itkDebugMacro(<< "Projection image origin:" << origin);
 
-  projectionImagePtr->SetRequestedRegion(projectionRegion);
-  projectionImagePtr->SetBufferedRegion(projectionRegion);
-  projectionImagePtr->SetLargestPossibleRegion(projectionRegion);
+  projectionImagePtr->SetRegions(projectionRegion);
   projectionImagePtr->Allocate(true); // initialize buffer to zero
 
   using ProjectionImageIteratorType = ImageRegionIterator<ProjectionImageType>;

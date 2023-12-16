@@ -27,12 +27,12 @@
 #--   - [ ] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -59,10 +59,9 @@ itk_fetch_module(AnisotropicDiffusionLBR
     \"Anisotropic Diffusion in ITK\"
     Mirebeau J., Fehrenbach J., Risser L., Tobji S.
     The Insight Journal. 2014 January-December.
-    https://hdl.handle.net/10380/3505
-    http://insight-journal.org/browse/publication/953
+    https://insight-journal.org/browse/publication/953
   "
   MODULE_COMPLIANCE_LEVEL 2
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKAnisotropicDiffusionLBR.git
-  GIT_TAG 19012bddfc66c9b11482c26d9227b9c5e1212776
+  GIT_TAG d46aab0e0c8f02b89eaa0420e61970559177683f
   )

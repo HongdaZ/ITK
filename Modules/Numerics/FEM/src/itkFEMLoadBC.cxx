@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,11 +24,11 @@ namespace fem
 {
 
 // Overload the CreateAnother() method.
-::itk::LightObject::Pointer
+itk::LightObject::Pointer
 LoadBC::CreateAnother() const
 {
-  ::itk::LightObject::Pointer smartPtr;
-  Pointer                     copyPtr = Self::New();
+  itk::LightObject::Pointer smartPtr;
+  Pointer                   copyPtr = Self::New();
 
   // Copy Load Contents
   copyPtr->m_DegreeOfFreedom = this->m_DegreeOfFreedom;

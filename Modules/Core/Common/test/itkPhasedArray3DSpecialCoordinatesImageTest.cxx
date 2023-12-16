@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ itkPhasedArray3DSpecialCoordinatesImageTest(int, char *[])
   using IndexType = Image::IndexType;
   using ContinuousIndexType = itk::ContinuousIndex<itk::SpacePrecisionType, 3>;
 
-  Image::Pointer image = Image::New();
+  auto image = Image::New();
   // image->DebugOn();
   // image->GetSource();
   SizeType size;
@@ -93,7 +93,7 @@ itkPhasedArray3DSpecialCoordinatesImageTest(int, char *[])
   }
 
   using WindowedSincInterpolatorType = itk::WindowedSincInterpolateImageFunction<Image, 3>;
-  WindowedSincInterpolatorType::Pointer interpolator = WindowedSincInterpolatorType::New();
+  auto interpolator = WindowedSincInterpolatorType::New();
   interpolator->SetInputImage(image);
 
   std::cout << std::endl;

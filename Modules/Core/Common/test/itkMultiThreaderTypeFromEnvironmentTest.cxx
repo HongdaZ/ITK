@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,10 +26,10 @@ using ThreaderEnum = itk::MultiThreaderBase::ThreaderEnum;
 bool
 checkThreaderByName(ThreaderEnum expectedThreaderType)
 {
-  using ImageType = itk::Image<unsigned, 3>;
+  using ImageType = itk::Image<unsigned int, 3>;
   // any filter type which does not manually specify threader type will do
   using FilterType = itk::AbsImageFilter<ImageType, ImageType>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   std::string realThreaderName = filter->GetMultiThreader()->GetNameOfClass();
   std::string expectedThreaderName =
@@ -79,7 +79,7 @@ itkMultiThreaderTypeFromEnvironmentTest(int argc, char * argv[])
 
   // When implementing a new multi-threader:
   // 1. insert it into threadersToTest set
-  // 2. add tests to Modules/Core/Common/test/CMakeLists.txt similarily to tests for other multi-threaders
+  // 2. add tests to Modules/Core/Common/test/CMakeLists.txt similarly to tests for other multi-threaders
   // 3. rewrite the condition below to use whatever is really the last threader type
   itkAssertOrThrowMacro(ThreaderEnum::TBB == ThreaderEnum::Last,
                         "All multi-threader implementation have to be tested!");

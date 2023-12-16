@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,16 +56,18 @@
 // Leave ()'s off the sizeof to force the caller to pass them in the
 // concept argument of the itkConceptMacro.  This is necessary because
 // the argument may contain commas.
-#  define itkConceptConstraintsMacro()                                                                                 \
-    template <void (Constraints::*)()>                                                                                 \
-    struct Enforcer                                                                                                    \
-    {};                                                                                                                \
-    using EnforcerInstantiation = Enforcer<&Constraints::constraints>;
-#  define itkConceptMacro(name, concept)                                                                               \
-    enum                                                                                                               \
-    {                                                                                                                  \
-      name = sizeof concept                                                                                            \
-    }
+#  define itkConceptConstraintsMacro()                                 \
+    template <void (Constraints::*)()>                                 \
+    struct Enforcer                                                    \
+    {};                                                                \
+    using EnforcerInstantiation = Enforcer<&Constraints::constraints>; \
+    ITK_MACROEND_NOOP_STATEMENT
+#  define itkConceptMacro(name, concept) \
+    enum                                 \
+    {                                    \
+      name = sizeof concept              \
+    };                                   \
+    ITK_MACROEND_NOOP_STATEMENT
 
 #elif defined(ITK_CONCEPT_IMPLEMENTATION_VTABLE)
 
@@ -74,32 +76,32 @@
  * run-time overhead.  The "vtable" approach was invented for this
  * project by Brad King at Kitware.
  */
-#  define itkConceptConstraintsMacro()                                                                                 \
+#  define itkConceptConstraintsMacro() \
     virtual void Enforcer() { &Constraints::constraints; }
-#  define itkConceptMacro(name, concept)                                                                               \
-    enum                                                                                                               \
-    {                                                                                                                  \
-      name = sizeof concept                                                                                            \
+#  define itkConceptMacro(name, concept) \
+    enum                                 \
+    {                                    \
+      name = sizeof concept              \
     }
 
 #elif defined(ITK_CONCEPT_IMPLEMENTATION_CALL)
 
 /** Not implemented.  */
 #  define itkConceptConstraintsMacro()
-#  define itkConceptMacro(name, concept)                                                                               \
-    enum                                                                                                               \
-    {                                                                                                                  \
-      name = 0                                                                                                         \
+#  define itkConceptMacro(name, concept) \
+    enum                                 \
+    {                                    \
+      name = 0                           \
     }
 
 #else
 
 /** Disable concept checking.  */
 #  define itkConceptConstraintsMacro()
-#  define itkConceptMacro(name, concept)                                                                               \
-    enum                                                                                                               \
-    {                                                                                                                  \
-      name = 0                                                                                                         \
+#  define itkConceptMacro(name, concept) \
+    enum                                 \
+    {                                    \
+      name = 0                           \
     }
 
 #endif
@@ -704,8 +706,7 @@ struct HasNumericTraits
       Detail::UniqueType<typename NumericTraits<T>::RealType>();
       Detail::UniqueType<typename NumericTraits<T>::ScalarRealType>();
       Detail::UniqueType<typename NumericTraits<T>::FloatType>();
-      T    a;
-      bool b;
+      T a{ 0 };
 
       // Test these methods that take an instance of T to
       // allow for types with variable length.
@@ -713,10 +714,10 @@ struct HasNumericTraits
       a = NumericTraits<T>::ZeroValue(a);
       a = NumericTraits<T>::OneValue(a);
 
-      b = NumericTraits<T>::IsPositive(a);
-      b = NumericTraits<T>::IsNonpositive(a);
-      b = NumericTraits<T>::IsNegative(a);
-      b = NumericTraits<T>::IsNonnegative(a);
+      bool b = NumericTraits<T>::IsPositive(a);
+      b &= NumericTraits<T>::IsNonpositive(a);
+      b &= NumericTraits<T>::IsNegative(a);
+      b &= NumericTraits<T>::IsNonnegative(a);
       Detail::IgnoreUnusedVariable(a);
       Detail::IgnoreUnusedVariable(b);
     }
@@ -794,7 +795,7 @@ struct HasJoinTraits
   itkConceptConstraintsMacro();
 };
 
-/** Concept requiring D1 and D2 to be the same dimension or D2-1 = D1. */
+/** Concept requiring D1 and D2 to be the same dimension or D1-1 = D2. */
 template <unsigned int D1, unsigned int D2>
 struct SameDimensionOrMinusOne
 {
@@ -818,7 +819,7 @@ struct SameDimensionOrMinusOne
   itkConceptConstraintsMacro();
 };
 
-/** Concept requiring D1 and D2 to be the same dimension or D2-1 = D1. */
+/** Concept requiring D1 and D2 to be the same dimension, D1-1 = D2 or D1-2 = D2. */
 template <unsigned int D1, unsigned int D2>
 struct SameDimensionOrMinusOneOrTwo
 {
@@ -851,7 +852,7 @@ template <typename T>
 struct IsInteger
 {
   using Self = IsInteger;
-  static constexpr bool Integral = NumericTraits<T>::IsInteger;
+  static constexpr bool Integral = std::is_integral<T>::value;
   struct Constraints
   {
     using TrueT = Detail::UniqueType_bool<true>;
@@ -897,7 +898,7 @@ template <typename T>
 struct IsNonInteger
 {
   using Self = IsNonInteger;
-  static constexpr bool NonIntegral = NumericTraits<T>::IsInteger;
+  static constexpr bool NonIntegral = std::is_integral<T>::value;
   struct Constraints
   {
     using FalseT = Detail::UniqueType_bool<false>;
@@ -919,7 +920,7 @@ template <typename T>
 struct IsFloatingPoint
 {
   using Self = IsFloatingPoint;
-  static constexpr bool Integral = NumericTraits<T>::IsInteger;
+  static constexpr bool Integral = std::is_integral<T>::value;
   static constexpr bool IsExact = std::numeric_limits<typename NumericTraits<T>::ValueType>::is_exact;
   struct Constraints
   {
@@ -945,7 +946,7 @@ template <typename T>
 struct IsFixedPoint
 {
   using Self = IsFixedPoint;
-  static constexpr bool Integral = NumericTraits<T>::IsInteger;
+  static constexpr bool Integral = std::is_integral<T>::value;
   static constexpr bool IsExact = std::numeric_limits<typename NumericTraits<T>::ValueType>::is_exact;
   struct Constraints
   {

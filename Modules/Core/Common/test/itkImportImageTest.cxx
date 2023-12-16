@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ itkImportImageTest(int, char *[])
   using ShortImage = itk::Image<PixelType, Dimension>;
 
   // Create an ImportImageFilter filter
-  ImportImageFilter::Pointer basicImport = ImportImageFilter::New();
+  auto basicImport = ImportImageFilter::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(basicImport, ImportImageFilter, ImageSource);
 
@@ -86,15 +86,8 @@ itkImportImageTest(int, char *[])
 
   shrink->SetInput(image);
   shrink->SetShrinkFactors(2); // Also tested with factors 3 and 4, with 12x12 image
-  try
-  {
-    shrink->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cerr << "Exception detected: " << e.GetDescription();
-    return EXIT_FAILURE;
-  }
+
+  ITK_TRY_EXPECT_NO_EXCEPTION(shrink->Update());
 
   //
   // The rest of this code determines whether the shrink code produced

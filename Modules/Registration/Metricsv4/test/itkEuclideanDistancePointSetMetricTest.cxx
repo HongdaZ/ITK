@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,15 +30,15 @@ itkEuclideanDistancePointSetMetricTestRun()
 
   using PointType = typename PointSetType::PointType;
 
-  typename PointSetType::Pointer fixedPoints = PointSetType::New();
+  auto fixedPoints = PointSetType::New();
   fixedPoints->Initialize();
 
-  typename PointSetType::Pointer movingPoints = PointSetType::New();
+  auto movingPoints = PointSetType::New();
   movingPoints->Initialize();
 
   // Produce two simple point sets of 1) a circle and 2) the same circle with an offset;
   PointType offset;
-  for (unsigned int d = 0; d < Dimension; d++)
+  for (unsigned int d = 0; d < Dimension; ++d)
   {
     offset[d] = 1.1 + d;
   }
@@ -71,12 +71,12 @@ itkEuclideanDistancePointSetMetricTestRun()
   // Simple translation transform for moving point set
   //
   using TranslationTransformType = itk::TranslationTransform<double, Dimension>;
-  typename TranslationTransformType::Pointer translationTransform = TranslationTransformType::New();
+  auto translationTransform = TranslationTransformType::New();
   translationTransform->SetIdentity();
 
   // Instantiate the metric
   using PointSetMetricType = itk::EuclideanDistancePointSetToPointSetMetricv4<PointSetType>;
-  typename PointSetMetricType::Pointer metric = PointSetMetricType::New();
+  auto metric = PointSetMetricType::New();
   metric->SetFixedPointSet(fixedPoints);
   metric->SetMovingPointSet(movingPoints);
   metric->SetMovingTransform(translationTransform);
@@ -89,9 +89,9 @@ itkEuclideanDistancePointSetMetricTestRun()
 
   std::cout << "value: " << value << std::endl;
   std::cout << "derivative: " << derivative << std::endl;
-  for (unsigned int d = 0; d < metric->GetNumberOfParameters(); d++)
+  for (unsigned int d = 0; d < metric->GetNumberOfParameters(); ++d)
   {
-    if (std::fabs(derivative[d] - offset[d]) / offset[d] > 0.01)
+    if (itk::Math::abs(derivative[d] - offset[d]) / offset[d] > 0.01)
     {
       std::cerr << "derivative does not match expected offset of " << offset << std::endl;
       return EXIT_FAILURE;
@@ -120,7 +120,7 @@ itkEuclideanDistancePointSetMetricTestRun()
   moving_str2 << "0 0 0 0" << std::endl;
 
   typename PointType::VectorType vector;
-  for (unsigned int d = 0; d < metric->GetNumberOfParameters(); d++)
+  for (unsigned int d = 0; d < metric->GetNumberOfParameters(); ++d)
   {
     vector[d] = derivative[count++];
   }
@@ -131,7 +131,7 @@ itkEuclideanDistancePointSetMetricTestRun()
     PointType sourcePoint = ItM.Value();
     PointType targetPoint = sourcePoint + vector;
 
-    for (unsigned int d = 0; d < metric->GetNumberOfParameters(); d++)
+    for (unsigned int d = 0; d < metric->GetNumberOfParameters(); ++d)
     {
       moving_str1 << sourcePoint[d] << " ";
       moving_str2 << targetPoint[d] << " ";

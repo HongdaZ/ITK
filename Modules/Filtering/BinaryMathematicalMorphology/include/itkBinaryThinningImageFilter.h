@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class BinaryThinningImageFilter
+ * \class BinaryThinningImageFilter
  *
  * \brief This filter computes one-pixel-wide edges of the input image.
  *
@@ -62,7 +62,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT BinaryThinningImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryThinningImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BinaryThinningImageFilter);
 
   /** Standard class type aliases. */
   using Self = BinaryThinningImageFilter;
@@ -101,7 +101,7 @@ public:
   using OutputImagePointer = typename OutputImageType::Pointer;
 
   /** Superclass type alias. */
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  using typename Superclass::OutputImagePixelType;
 
   /** Neighborhood iterator type */
   using NeighborhoodIteratorType = NeighborhoodIterator<TInputImage>;

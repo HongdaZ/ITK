@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,8 @@
 #ifndef itkMultiphaseSparseFiniteDifferenceImageFilter_hxx
 #define itkMultiphaseSparseFiniteDifferenceImageFilter_hxx
 
-#include "itkMultiphaseSparseFiniteDifferenceImageFilter.h"
+#include "itkPrintHelper.h"
+
 
 namespace itk
 {
@@ -124,7 +125,7 @@ void
 MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputImage, TFunction, TIdCell>::
   CopyInputToOutput()
 {
-  for (IdCellType i = 0; i < this->m_FunctionCount; i++)
+  for (IdCellType i = 0; i < this->m_FunctionCount; ++i)
   {
     InputImagePointer input = this->m_LevelSet[i];
 
@@ -683,7 +684,7 @@ MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputI
 
   double temp;
 
-  for (IdCellType i = 0; i < this->m_FunctionCount; i++)
+  for (IdCellType i = 0; i < this->m_FunctionCount; ++i)
   {
     SparseDataStruct * sparsePtr = this->m_SparseData[i];
 
@@ -721,7 +722,7 @@ MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputI
         {
           //  Neighbors are same sign OR at least one neighbor is zero.
           // Pick the larger magnitude derivative.
-          if (::itk::Math::abs(forward - center) > ::itk::Math::abs(center - backward))
+          if (itk::Math::abs(forward - center) > itk::Math::abs(center - backward))
           {
             dx = (forward - current) / spacing[j];
           }
@@ -761,7 +762,7 @@ MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputI
       // Update the accumulator value using the update buffer
       temp = static_cast<double>(sparsePtr->m_UpdateBuffer.front() - levelset->GetPixel(activeIt->m_Value));
       m_RMSSum += temp * temp;
-      m_RMSCounter++;
+      ++m_RMSCounter;
 
       levelset->SetPixel(activeIt->m_Value, sparsePtr->m_UpdateBuffer.front());
       ++activeIt;
@@ -774,7 +775,7 @@ void
 MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputImage, TFunction, TIdCell>::
   PropagateAllLayerValues()
 {
-  for (IdCellType i = 0; i < this->m_FunctionCount; i++)
+  for (IdCellType i = 0; i < this->m_FunctionCount; ++i)
   {
     // Calls the UpdatePixel(...) function inside
     PropagateFunctionLayerValues(i);
@@ -878,7 +879,7 @@ MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputI
         ValueType      dist = 0; // compute the distance between neighbors
         this->m_LevelSet[sparsePtr->m_Index]->TransformIndexToPhysicalPoint(statusIt.GetIndex(indexNeighbor), p1);
         this->m_LevelSet[sparsePtr->m_Index]->TransformIndexToPhysicalPoint(indexCurrent, p2);
-        for (unsigned int j = 0; j < ImageDimension; j++)
+        for (unsigned int j = 0; j < ImageDimension; ++j)
         {
           dist += (p1[j] - p2[j]) * (p1[j] - p2[j]);
         }
@@ -929,7 +930,7 @@ MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputI
 
       // Update the rms change
       m_RMSSum += (value - outputIt.GetCenterPixel()) * (value - outputIt.GetCenterPixel());
-      m_RMSCounter++;
+      ++m_RMSCounter;
 
       ++toIt;
     }
@@ -1002,7 +1003,7 @@ MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputI
   {
     offset = m_NeighborList.GetNeighborhoodOffset(i);
     m_PixelDistance[i] = 0;
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       m_PixelDistance[i] += offset[j] * spacing[j] * offset[j] * spacing[j];
     }
@@ -1122,7 +1123,7 @@ MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputI
   float            maxSpacing = NumericTraits<float>::min();
   InputSpacingType spacing = this->m_LevelSet[0]->GetSpacing();
 
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     maxSpacing = std::max(maxSpacing, static_cast<float>(spacing[i]));
   }
@@ -1141,7 +1142,7 @@ void
 MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputImage, TFunction, TIdCell>::
   InitializeBackgroundPixels()
 {
-  for (IdCellType fId = 0; fId < this->m_FunctionCount; fId++)
+  for (IdCellType fId = 0; fId < this->m_FunctionCount; ++fId)
   {
     SparseDataStruct * sparsePtr = this->m_SparseData[fId];
 
@@ -1178,7 +1179,7 @@ MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputI
   ConstructActiveLayer()
 {
   // We construct active layers for all level-set functions
-  for (IdCellType fId = 0; fId < this->m_FunctionCount; fId++)
+  for (IdCellType fId = 0; fId < this->m_FunctionCount; ++fId)
   {
     SparseDataStruct * sparsePtr = this->m_SparseData[fId];
 
@@ -1225,7 +1226,7 @@ MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputI
 
         // Check to see if any of the sparse field touches a boundary.  If so,
         // then activate bounds checking.
-        for (unsigned int i = 0; i < ImageDimension; i++)
+        for (unsigned int i = 0; i < ImageDimension; ++i)
         {
           if ((center_index[i] + static_cast<InputOffsetValueType>(this->m_NumberOfLayers) >=
                (static_cast<InputIndexValueType>(upperBounds[i]) - 1)) ||
@@ -1343,7 +1344,7 @@ MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputI
   // filter.
   this->InitializeBackgroundPixels();
 
-  for (IdCellType fId = 0; fId < this->m_FunctionCount; fId++)
+  for (IdCellType fId = 0; fId < this->m_FunctionCount; ++fId)
   {
     InputImagePointer input = this->m_LevelSet[fId];
     InputPointType    origin = input->GetOrigin();
@@ -1390,17 +1391,42 @@ MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputI
   std::ostream & os,
   Indent         indent) const
 {
+  using namespace print_helper;
+
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "m_IsoSurfaceValue: " << this->m_IsoSurfaceValue << std::endl;
-  os << indent << "m_BoundsCheckingActive: " << m_BoundsCheckingActive;
+  os << indent << "ConstantGradientValue: " << m_ConstantGradientValue << std::endl;
+  os << indent << "ValueOne: " << static_cast<typename NumericTraits<ValueType>::PrintType>(m_ValueOne) << std::endl;
+  os << indent << "ValueZero: " << static_cast<typename NumericTraits<ValueType>::PrintType>(m_ValueZero) << std::endl;
+  os << indent << "StatusChanging: " << static_cast<typename NumericTraits<StatusType>::PrintType>(m_StatusChanging)
+     << std::endl;
+  os << indent << "StatusActiveChangingUp: "
+     << static_cast<typename NumericTraits<StatusType>::PrintType>(m_StatusActiveChangingUp) << std::endl;
+  os << indent << "StatusActiveChangingDown: "
+     << static_cast<typename NumericTraits<StatusType>::PrintType>(m_StatusActiveChangingDown) << std::endl;
+  os << indent
+     << "StatusBoundaryPixel: " << static_cast<typename NumericTraits<StatusType>::PrintType>(m_StatusBoundaryPixel)
+     << std::endl;
+  os << indent << "StatusNull: " << static_cast<typename NumericTraits<StatusType>::PrintType>(m_StatusNull)
+     << std::endl;
+  os << indent << "SparseData: " << m_SparseData << std::endl;
+  os << indent << "NumberOfLayers: " << m_NumberOfLayers << std::endl;
+  os << indent << "IsoSurfaceValue: " << static_cast<typename NumericTraits<ValueType>::PrintType>(m_IsoSurfaceValue)
+     << std::endl;
+  os << indent << "BackgroundValue: " << static_cast<typename NumericTraits<ValueType>::PrintType>(m_BackgroundValue)
+     << std::endl;
+  os << indent << "InterpolateSurfaceLocation: " << m_InterpolateSurfaceLocation << std::endl;
+  os << indent << "CurrentFunctionIndex: " << m_CurrentFunctionIndex << std::endl;
+  os << indent << "RMSSum: " << m_RMSSum << std::endl;
+  os << indent << "RMSCounter: " << m_RMSCounter << std::endl;
+  os << indent << "BoundsCheckingActive: " << m_BoundsCheckingActive << std::endl;
 
-  for (IdCellType i = 0; i < this->m_FunctionCount; i++)
+  for (IdCellType i = 0; i < this->m_FunctionCount; ++i)
   {
     SparseDataStruct * sparsePtr = this->m_SparseData[i];
     os << indent << "m_LayerNodeStore: " << std::endl;
     sparsePtr->m_LayerNodeStore->Print(os, indent.GetNextIndent());
-    for (i = 0; i < sparsePtr->m_Layers.size(); i++)
+    for (i = 0; i < sparsePtr->m_Layers.size(); ++i)
     {
       os << indent << "m_Layers[" << i << "]: size=" << sparsePtr->m_Layers[i]->Size() << std::endl;
       os << indent << sparsePtr->m_Layers[i];
@@ -1409,11 +1435,6 @@ MultiphaseSparseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputI
     os << indent << "m_UpdateBuffer: size=" << static_cast<InputSizeValueType>(sparsePtr->m_UpdateBuffer.size())
        << " capacity = " << static_cast<InputSizeValueType>(sparsePtr->m_UpdateBuffer.capacity()) << std::endl;
   }
-
-  os << indent << "Interpolate Surface Location " << m_InterpolateSurfaceLocation << std::endl;
-  os << indent << "Number of Layers " << m_NumberOfLayers << std::endl;
-  os << indent << "Value Zero " << static_cast<typename NumericTraits<ValueType>::PrintType>(m_ValueZero) << std::endl;
-  os << indent << "Value One  " << static_cast<typename NumericTraits<ValueType>::PrintType>(m_ValueOne) << std::endl;
 }
 } // end namespace itk
 

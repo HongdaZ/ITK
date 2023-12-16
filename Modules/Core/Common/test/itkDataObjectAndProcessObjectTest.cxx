@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -170,6 +170,17 @@ itkDataObjectAndProcessObjectTest(int, char *[])
   ITK_TEST_SET_GET_VALUE(0.0, process->GetProgress());
   process->UpdateProgress(0.0);
   ITK_TEST_SET_GET_VALUE(0.0, process->GetProgress());
+
+  // verify no progress overflow
+  for (size_t i = 0; i < 10; ++i)
+  {
+    process->IncrementProgress(0.1);
+  }
+  if (!itk::Math::FloatAlmostEqual(process->GetProgress(), 1.0f))
+  {
+    std::cerr << "Progress is not reported correctly!" << std::endl;
+    return EXIT_FAILURE;
+  }
 
   // shouldn't do anything: there is no output at this point
   mtime = process->GetMTime();
@@ -355,7 +366,7 @@ itkDataObjectAndProcessObjectTest(int, char *[])
   process->SetNumberOfRequiredInputs(1);
   process->AddOptionalInputName("OptImage", 1);
   ITK_TEST_EXPECT_EQUAL(1, process->GetRequiredInputNames().size());
-  ITK_TEST_EXPECT_EQUAL(2, process->GetInputNames().size())
+  ITK_TEST_EXPECT_EQUAL(2, process->GetInputNames().size());
   ITK_TEST_EXPECT_TRUE(!process->IsRequiredInputName("OptImage"));
   process->SetInput("OptImage", input0);
   ITK_TEST_EXPECT_EQUAL(input0, process->GetInput("OptImage"));

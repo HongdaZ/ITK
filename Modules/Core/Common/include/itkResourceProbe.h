@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkMacro.h"
 #include "itkIntTypes.h"
 
+#include <iostream> // For cout.
 #include <string>
 #include <vector>
 
@@ -173,7 +174,7 @@ protected:
   /** Prints a varName: varValue pair. */
   template <typename T>
   void
-  PrintJSONvar(std::ostream & os, const char * varName, T varValue, unsigned indent = 4, bool comma = true);
+  PrintJSONvar(std::ostream & os, const char * varName, T varValue, unsigned int indent = 4, bool comma = true);
 
   /** Obsolete member function from ITK 4.8 - 4.13. Does not do anything anymore. */
   itkLegacyMacro(virtual void GetSystemInformation());

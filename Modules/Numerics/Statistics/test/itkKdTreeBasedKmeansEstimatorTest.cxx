@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,7 +60,7 @@ itkKdTreeBasedKmeansEstimatorTest(int argc, char * argv[])
 
   /* Loading point data */
   using PointSetType = itk::PointSet<double, 2>;
-  PointSetType::Pointer                pointSet = PointSetType::New();
+  auto                                 pointSet = PointSetType::New();
   PointSetType::PointsContainerPointer pointsContainer = PointSetType::PointsContainer::New();
   pointsContainer->Reserve(dataSize);
   pointSet->SetPoints(pointsContainer);
@@ -71,7 +71,7 @@ itkKdTreeBasedKmeansEstimatorTest(int argc, char * argv[])
   std::ifstream                         dataStream(dataFileName);
   while (p_iter != pointsContainer->End())
   {
-    for (i = 0; i < PointSetType::PointDimension; i++)
+    for (i = 0; i < PointSetType::PointDimension; ++i)
     {
       dataStream >> temp;
       point[i] = temp;
@@ -85,13 +85,13 @@ itkKdTreeBasedKmeansEstimatorTest(int argc, char * argv[])
   /* Importing the point set to the sample */
   using DataSampleType = stat::PointSetToListSampleAdaptor<PointSetType>;
 
-  DataSampleType::Pointer sample = DataSampleType::New();
+  auto sample = DataSampleType::New();
 
   sample->SetPointSet(pointSet);
 
   /* Creating k-d tree */
   using Generator = stat::WeightedCentroidKdTreeGenerator<DataSampleType>;
-  Generator::Pointer generator = Generator::New();
+  auto generator = Generator::New();
 
   generator->SetSample(sample);
   generator->SetBucketSize(bucketSize);
@@ -99,7 +99,7 @@ itkKdTreeBasedKmeansEstimatorTest(int argc, char * argv[])
 
   /* Searching kmeans */
   using Estimator = stat::KdTreeBasedKmeansEstimator<Generator::KdTreeType>;
-  Estimator::Pointer estimator = Estimator::New();
+  auto estimator = Estimator::New();
   std::cout << estimator->GetNameOfClass() << std::endl;
   estimator->Print(std::cout);
 
@@ -120,7 +120,7 @@ itkKdTreeBasedKmeansEstimatorTest(int argc, char * argv[])
   // Set the centroid position change threshold
   estimator->SetCentroidPositionChangesThreshold(0.0);
   constexpr double tolerance = 0.1;
-  if (std::fabs(estimator->GetCentroidPositionChangesThreshold() - 0.0) > tolerance)
+  if (itk::Math::abs(estimator->GetCentroidPositionChangesThreshold() - 0.0) > tolerance)
   {
     std::cerr << "Set/GetCentroidPositionChangesThreshold() " << std::endl;
     return EXIT_FAILURE;
@@ -134,14 +134,14 @@ itkKdTreeBasedKmeansEstimatorTest(int argc, char * argv[])
   int                index;
   const unsigned int numberOfMeasurements = sample->GetMeasurementVectorSize();
   const unsigned int numberOfClasses = trueMeans.size() / numberOfMeasurements;
-  for (i = 0; i < numberOfClasses; i++)
+  for (i = 0; i < numberOfClasses; ++i)
   {
     std::cout << "cluster[" << i << "] " << std::endl;
     double displacement = 0.0;
     std::cout << "    true mean :" << std::endl;
     std::cout << "        ";
     index = numberOfMeasurements * i;
-    for (j = 0; j < numberOfMeasurements; j++)
+    for (j = 0; j < numberOfMeasurements; ++j)
     {
       std::cout << trueMeans[index] << " ";
       ++index;
@@ -151,7 +151,7 @@ itkKdTreeBasedKmeansEstimatorTest(int argc, char * argv[])
     std::cout << "        ";
 
     index = numberOfMeasurements * i;
-    for (j = 0; j < numberOfMeasurements; j++)
+    for (j = 0; j < numberOfMeasurements; ++j)
     {
       std::cout << estimatedMeans[index] << " ";
       temp = estimatedMeans[index] - trueMeans[index];

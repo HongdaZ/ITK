@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSimplexMeshToTriangleMeshFilter_hxx
 #define itkSimplexMeshToTriangleMeshFilter_hxx
 
-#include "itkSimplexMeshToTriangleMeshFilter.h"
 
 namespace itk
 {
@@ -49,7 +48,7 @@ template <typename TInputMesh, typename TOutputMesh>
 void
 SimplexMeshToTriangleMeshFilter<TInputMesh, TOutputMesh>::CreateTriangles()
 {
-  typename AutoMeshSourceType::Pointer   meshSource = AutoMeshSourceType::New();
+  auto                                   meshSource = AutoMeshSourceType::New();
   typename AutoMeshSourceType::PointType p1, p2, p3;
 
   typename TInputMesh::ConstPointer                 inputMesh = this->GetInput(0);
@@ -103,7 +102,7 @@ SimplexMeshToTriangleMeshFilter<TInputMesh, TOutputMesh>::FindCellId(CellIdentif
     {
       break;
     }
-    cellIt++;
+    ++cellIt;
   }
 
   if (cellIt == cells1.end())

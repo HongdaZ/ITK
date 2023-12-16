@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -74,7 +74,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT VectorExpandImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorExpandImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(VectorExpandImageFilter);
 
   /** Standard class type aliases. */
   using Self = VectorExpandImageFilter;
@@ -97,8 +97,8 @@ public:
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
 
   /** Inherit some types from superclass */
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::OutputImageType;
 
   /** Input/output vector types. */
   using OutputPixelType = typename OutputImageType::PixelType;
@@ -187,10 +187,10 @@ private:
   InterpolatorPointer    m_Interpolator;
 };
 } // end namespace itk
+
+#  ifndef ITK_MANUAL_INSTANTIATION
+#    include "itkVectorExpandImageFilter.hxx"
+#  endif
+
 #endif // ITK_LEGACY_REMOVE
-
-#ifndef ITK_MANUAL_INSTANTIATION
-#  include "itkVectorExpandImageFilter.hxx"
-#endif
-
 #endif

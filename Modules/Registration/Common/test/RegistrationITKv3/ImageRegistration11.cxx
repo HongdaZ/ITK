@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -81,7 +81,7 @@ public:
     }
     double currentValue = optimizer->GetValue();
     // Only print out when the Metric value changes
-    if (std::fabs(m_LastMetricValue - currentValue) > 1e-7)
+    if (itk::Math::abs(m_LastMetricValue - currentValue) > 1e-7)
     {
       std::cout << optimizer->GetCurrentIteration() << "   ";
       std::cout << currentValue << "   ";
@@ -95,7 +95,7 @@ private:
 };
 
 
-#include "itkTestDriverIncludeRequiredIOFactories.h"
+#include "itkTestDriverIncludeRequiredFactories.h"
 int
 main(int argc, char * argv[])
 {

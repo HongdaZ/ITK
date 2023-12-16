@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ protected:
 class TestFactory3 : public itk::ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TestFactory3);
+  ITK_DISALLOW_COPY_AND_MOVE(TestFactory3);
 
   using Self = TestFactory3;
   using Superclass = itk::ObjectFactoryBase;
@@ -63,7 +63,7 @@ public:
   static void
   RegisterOneFactory()
   {
-    TestFactory3::Pointer factory = TestFactory3::New();
+    auto factory = TestFactory3::New();
     itk::ObjectFactoryBase::RegisterFactory(factory);
   }
 
@@ -127,13 +127,13 @@ ListRegisteredFactories(const std::string & TestName, const DescriptionListType 
 int
 itkObjectFactoryTest3(int, char *[])
 {
-  TestFactory3::Pointer factory1 = TestFactory3::New();
-  TestFactory3::Pointer factory2 = TestFactory3::New();
-  TestFactory3::Pointer factory3 = TestFactory3::New();
-  TestFactory3::Pointer factory4 = TestFactory3::New();
-  TestFactory3::Pointer factory5 = TestFactory3::New();
-  TestFactory3::Pointer factory6 = TestFactory3::New();
-  TestFactory3::Pointer factory7 = TestFactory3::New();
+  auto factory1 = TestFactory3::New();
+  auto factory2 = TestFactory3::New();
+  auto factory3 = TestFactory3::New();
+  auto factory4 = TestFactory3::New();
+  auto factory5 = TestFactory3::New();
+  auto factory6 = TestFactory3::New();
+  auto factory7 = TestFactory3::New();
 
   factory1->SetDescription("factory1");
   factory2->SetDescription("factory2");

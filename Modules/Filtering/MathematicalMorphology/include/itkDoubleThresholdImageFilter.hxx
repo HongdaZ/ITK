@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkDoubleThresholdImageFilter_hxx
 #define itkDoubleThresholdImageFilter_hxx
 
-#include "itkDoubleThresholdImageFilter.h"
 #include "itkReconstructionByDilationImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkProgressAccumulator.h"
@@ -74,10 +73,10 @@ DoubleThresholdImageFilter<TInputImage, TOutputImage>::GenerateData()
   using ThresholdFilterType = BinaryThresholdImageFilter<TInputImage, TOutputImage>;
   using DilationFilterType = ReconstructionByDilationImageFilter<TOutputImage, TOutputImage>;
 
-  typename ThresholdFilterType::Pointer narrowThreshold = ThresholdFilterType::New();
+  auto narrowThreshold = ThresholdFilterType::New();
 
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
 
   narrowThreshold->SetLowerThreshold(m_Threshold2);
@@ -86,14 +85,14 @@ DoubleThresholdImageFilter<TInputImage, TOutputImage>::GenerateData()
   narrowThreshold->SetOutsideValue(m_OutsideValue);
   narrowThreshold->SetInput(this->GetInput());
 
-  typename ThresholdFilterType::Pointer wideThreshold = ThresholdFilterType::New();
+  auto wideThreshold = ThresholdFilterType::New();
   wideThreshold->SetLowerThreshold(m_Threshold1);
   wideThreshold->SetUpperThreshold(m_Threshold4);
   wideThreshold->SetInsideValue(m_InsideValue);
   wideThreshold->SetOutsideValue(m_OutsideValue);
   wideThreshold->SetInput(this->GetInput());
 
-  typename DilationFilterType::Pointer dilate = DilationFilterType::New();
+  auto dilate = DilationFilterType::New();
   dilate->SetMarkerImage(narrowThreshold->GetOutput());
   dilate->SetMaskImage(wideThreshold->GetOutput());
   dilate->SetFullyConnected(m_FullyConnected);

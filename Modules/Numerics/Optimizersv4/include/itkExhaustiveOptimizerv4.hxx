@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,19 +18,12 @@
 #ifndef itkExhaustiveOptimizerv4_hxx
 #define itkExhaustiveOptimizerv4_hxx
 
-#include "itkExhaustiveOptimizerv4.h"
 
 namespace itk
 {
 
 template <typename TInternalComputationValueType>
 ExhaustiveOptimizerv4<TInternalComputationValueType>::ExhaustiveOptimizerv4()
-  : m_CurrentValue(0)
-  , m_NumberOfSteps(0)
-  , m_CurrentIndex(0)
-  , m_MaximumMetricValue(0.0)
-  , m_MinimumMetricValue(0.0)
-  , m_StopConditionDescription("")
 {
   this->m_NumberOfIterations = 0;
 }
@@ -52,6 +45,10 @@ ExhaustiveOptimizerv4<TInternalComputationValueType>::StartWalking()
   m_StopConditionDescription << this->GetNameOfClass() << ": Running";
 
   ParametersType initialPos = this->m_Metric->GetParameters();
+  if (this->m_InitialPosition.GetSize() == initialPos.GetSize())
+  {
+    initialPos = this->m_InitialPosition; // correct size, so must have been set by the user
+  }
   m_MinimumMetricValuePosition = initialPos;
   m_MaximumMetricValuePosition = initialPos;
 
@@ -66,7 +63,7 @@ ExhaustiveOptimizerv4<TInternalComputationValueType>::StartWalking()
 
   const unsigned int spaceDimension = this->m_Metric->GetParameters().GetSize();
 
-  for (unsigned int i = 0; i < spaceDimension; i++)
+  for (unsigned int i = 0; i < spaceDimension; ++i)
   {
     this->m_NumberOfIterations *= (2 * m_NumberOfSteps[i] + 1);
   }
@@ -84,7 +81,7 @@ ExhaustiveOptimizerv4<TInternalComputationValueType>::StartWalking()
 
   // Setup first grid position.
   ParametersType position(spaceDimension);
-  for (unsigned int i = 0; i < spaceDimension; i++)
+  for (unsigned int i = 0; i < spaceDimension; ++i)
   {
     position[i] = this->GetCurrentPosition()[i] - m_NumberOfSteps[i] * m_StepLength * scales[i];
   }
@@ -181,7 +178,7 @@ ExhaustiveOptimizerv4<TInternalComputationValueType>::IncrementIndex(ParametersT
     if (m_CurrentIndex[idx] > (2 * m_NumberOfSteps[idx]))
     {
       m_CurrentIndex[idx] = 0;
-      idx++;
+      ++idx;
     }
     else
     {
@@ -198,7 +195,7 @@ ExhaustiveOptimizerv4<TInternalComputationValueType>::IncrementIndex(ParametersT
   }
 
   const ScalesType & scales = this->GetScales();
-  for (unsigned int i = 0; i < spaceDimension; i++)
+  for (unsigned int i = 0; i < spaceDimension; ++i)
   {
     newPosition[i] =
       (m_CurrentIndex[i] - m_NumberOfSteps[i]) * m_StepLength * scales[i] + this->GetInitialPosition()[i];

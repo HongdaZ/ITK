@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,14 +28,14 @@
 
 namespace itk
 {
-/**\class LaplacianDeformationQuadEdgeMeshFilterEnums
+/** \class LaplacianDeformationQuadEdgeMeshFilterEnums
  * \brief Contains all enum classes used by LaplacianDeformationQuadEdgeMeshFilter class.
  * \ingroup ITKQuadEdgeMeshFiltering
  */
 class LaplacianDeformationQuadEdgeMeshFilterEnums
 {
 public:
-  /**\class Area
+  /** \class Area
    * \ingroup ITKQuadEdgeMeshFiltering
    * Type of area*/
   enum class Area : uint8_t
@@ -107,7 +107,7 @@ extern ITKQuadEdgeMeshFiltering_EXPORT std::ostream &
  * \tparam TOutputMesh Output Mesh Type
  * \tparam TSolverTraits Linear Sparse Solver Traits see VNLIterativeSparseSolverTraits and VNLSparseLUSolverTraits
  *
- *  For details, see https://hdl.handle.net/10380/3410
+ *  For details, see https://www.insight-journal.org/browse/publication/890
  *
  *  \ingroup ITKQuadEdgeMeshFiltering
  */
@@ -116,7 +116,7 @@ class ITK_TEMPLATE_EXPORT LaplacianDeformationQuadEdgeMeshFilter
   : public QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LaplacianDeformationQuadEdgeMeshFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(LaplacianDeformationQuadEdgeMeshFilter);
 
   /** Basic types. */
   using Self = LaplacianDeformationQuadEdgeMeshFilter;
@@ -124,22 +124,22 @@ public:
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
-  itkTypeMacro(LaplacianDeformationQuadEdgeMeshFilter, QuadEdgeMeshToQuadEdgeMeshFilter)
+  itkTypeMacro(LaplacianDeformationQuadEdgeMeshFilter, QuadEdgeMeshToQuadEdgeMeshFilter);
 
-    /** Input types. */
-    using InputMeshType = TInputMesh;
-  using InputPointType = typename Superclass::InputPointType;
+  /** Input types. */
+  using InputMeshType = TInputMesh;
+  using typename Superclass::InputPointType;
 
   static constexpr unsigned int InputPointDimension = InputMeshType::PointDimension;
 
   /** Output types. */
   using OutputMeshType = TOutputMesh;
-  using OutputCoordRepType = typename Superclass::OutputCoordRepType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using OutputPointIdentifier = typename Superclass::OutputPointIdentifier;
-  using OutputQEPrimal = typename Superclass::OutputQEPrimal;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using OutputQEIterator = typename Superclass::OutputQEIterator;
+  using typename Superclass::OutputCoordRepType;
+  using typename Superclass::OutputPointType;
+  using typename Superclass::OutputPointIdentifier;
+  using typename Superclass::OutputQEPrimal;
+  using typename Superclass::OutputVectorType;
+  using typename Superclass::OutputQEIterator;
 
   static constexpr unsigned int OutputPointDimension = OutputMeshType::PointDimension;
 
@@ -243,7 +243,7 @@ protected:
   PrintSelf(std::ostream & os, Indent indent) const override;
 
   OutputCoordRepType
-  ComputeMixedAreaForGivenVertex(OutputPointIdentifier vId);
+  ComputeMixedAreaForGivenVertex(OutputPointIdentifier iId);
   OutputCoordRepType
   ComputeMixedArea(OutputQEPrimal * iQE1, OutputQEPrimal * iQE2);
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -69,9 +69,9 @@ FillWithCircle(TImage *                   image,
   {
     index = it.GetIndex();
     double distance = 0;
-    for (unsigned int j = 0; j < TImage::ImageDimension; j++)
+    for (unsigned int j = 0; j < TImage::ImageDimension; ++j)
     {
-      distance += itk::Math::sqr((double)index[j] - center[j]);
+      distance += itk::Math::sqr(static_cast<double>(index[j]) - center[j]);
     }
     if (distance <= r2)
       it.Set(foregnd);
@@ -128,9 +128,9 @@ itkCurvatureRegistrationFilterTest(int, char *[])
   region.SetSize(size);
   region.SetIndex(index);
 
-  ImageType::Pointer moving = ImageType::New();
-  ImageType::Pointer fixed = ImageType::New();
-  FieldType::Pointer initField = FieldType::New();
+  auto moving = ImageType::New();
+  auto fixed = ImageType::New();
+  auto initField = FieldType::New();
 
   moving->SetLargestPossibleRegion(region);
   moving->SetBufferedRegion(region);
@@ -170,7 +170,7 @@ itkCurvatureRegistrationFilterTest(int, char *[])
   std::cout << "Run registration and warp moving" << std::endl;
 
   using RegistrationType = itk::CurvatureRegistrationFilter<ImageType, ImageType, FieldType, ForcesType>;
-  RegistrationType::Pointer registrator = RegistrationType::New();
+  auto registrator = RegistrationType::New();
 
   registrator->SetInitialDisplacementField(initField);
   registrator->SetMovingImage(moving);
@@ -197,11 +197,11 @@ itkCurvatureRegistrationFilterTest(int, char *[])
 
   // warp moving image
   using WarperType = itk::WarpImageFilter<ImageType, ImageType, FieldType>;
-  WarperType::Pointer warper = WarperType::New();
+  auto warper = WarperType::New();
 
   using CoordRepType = WarperType::CoordRepType;
   using InterpolatorType = itk::NearestNeighborInterpolateImageFunction<ImageType, CoordRepType>;
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
 
 
   warper->SetInput(moving);
@@ -242,7 +242,7 @@ itkCurvatureRegistrationFilterTest(int, char *[])
     std::cout << "Test failed - too many pixels different." << std::endl;
 
     using WriterType = itk::ImageFileWriter<ImageType>;
-    WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
     writer->SetInput(warper->GetOutput());
     writer->SetFileName("warped.png");
     writer->Update();

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkCurvatureFlowImageFilter_hxx
 #define itkCurvatureFlowImageFilter_hxx
 
-#include "itkCurvatureFlowImageFilter.h"
 #include "itkMacro.h"
 
 namespace itk
@@ -73,7 +72,8 @@ CurvatureFlowImageFilter<TInputImage, TOutputImage>::InitializeIteration()
   // progress feedback
   if (this->GetNumberOfIterations() != 0)
   {
-    this->UpdateProgress(((float)(this->GetElapsedIterations())) / ((float)(this->GetNumberOfIterations())));
+    this->UpdateProgress((static_cast<float>(this->GetElapsedIterations())) /
+                         (static_cast<float>(this->GetNumberOfIterations())));
   }
 }
 
@@ -124,7 +124,7 @@ CurvatureFlowImageFilter<TInputImage, TOutputImage>::EnlargeOutputRequestedRegio
   // radius is supplied by the difference function we are using.
   typename FiniteDifferenceFunctionType::RadiusType radius = this->GetDifferenceFunction()->GetRadius();
 
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     radius[j] *= this->GetNumberOfIterations();
   }

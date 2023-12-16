@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -67,13 +67,13 @@ namespace itk
  * first.
  *
  * All inputs to ImageToImageFilter (if there is more than one) are
- * checked in the VerifyInputInformation method to verify that they
+ * checked in the VerifyInputInformation() method to verify that they
  * occupy the same physical space.  If the input images are in the
  * same physical space, then the location of each voxel is identical,
  * and the filter can operate voxel-by-voxel in index space.  Some
  * filters -- registration filters, for example -- will violate this
  * precondition, in which case they should redefine
- * VerifyInputInformation to relax or eliminate this requirement.
+ * VerifyInputInformation() to relax or eliminate this requirement.
  *
  * Access methods -- Set/GetCoordinateTolerance and
  * Set/GetDirectionTolerance -- are provided for cases where the
@@ -99,7 +99,7 @@ namespace itk
  * \sphinxexample{Core/Common/MultipleInputsOfSameType,Multiple Inputs Of Same Type}
  * \sphinxexample{Core/Common/MultipleInputsOfDifferentType,Multiple Inputs Of Different Type}
  * \sphinxexample{Core/Common/MultipleOutputsOfSameType,Multiple Outputs Of Same Type}
- * \sphinxexample{Core/Common/MultThreadOilPainting,Mult-thread Oil Painting}
+ * \sphinxexample{Core/Common/MultiThreadOilPainting,Multi-thread Oil Painting}
  * \sphinxexample{Core/Common/MultipleOutputsOfDifferentType,Multiple Outputs Of Different Type}
  * \sphinxexample{Core/Common/FilterImageUsingMultipleThreads,Filter Image Using Multiple Threads}
  * \endsphinx
@@ -110,7 +110,7 @@ class ITK_TEMPLATE_EXPORT ImageToImageFilter
   , private ImageToImageFilterCommon
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageToImageFilter);
 
   /** Standard class type aliases. */
   using Self = ImageToImageFilter;
@@ -122,8 +122,8 @@ public:
   itkTypeMacro(ImageToImageFilter, ImageSource);
 
   /** Superclass type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  using typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImagePixelType;
 
   /** Some convenient type alias. */
   using InputImageType = TInputImage;
@@ -139,7 +139,7 @@ public:
   /** Set/Get the image input of this process object.  */
   using Superclass::SetInput;
   virtual void
-  SetInput(const InputImageType * image);
+  SetInput(const InputImageType * input);
 
   virtual void
   SetInput(unsigned int, const TInputImage * image);
@@ -170,13 +170,13 @@ public:
    * an input to a filter.
    */
   virtual void
-  PushBackInput(const InputImageType * image);
+  PushBackInput(const InputImageType * input);
 
   void
   PopBackInput() override;
 
   virtual void
-  PushFrontInput(const InputImageType * image);
+  PushFrontInput(const InputImageType * input);
 
   void
   PopFrontInput() override;
@@ -227,7 +227,7 @@ protected:
   /** \brief Verifies that the input images occupy the same physical
    * space and the each index is at the same physical location.
    *
-   * The default implementation of the PropagateRequestedRegion
+   * The default implementation of the PropagateRequestedRegion()
    * methods copies the index and size from the output to the
    * input. This makes an implicit assumption that the images occupy
    * the same physical location at each voxel. This method enforces

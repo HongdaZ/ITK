@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,14 +28,14 @@ ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
 execute(void * ptr)
 {
   // Here - get any args from ptr.
-  auto * threadInfo = static_cast<itk::MultiThreaderBase::WorkUnitInfo *>(ptr);
+  auto * workUnitInfo = static_cast<itk::MultiThreaderBase::WorkUnitInfo *>(ptr);
 
-  auto * data = static_cast<int *>(threadInfo->UserData);
+  auto * data = static_cast<int *>(workUnitInfo->UserData);
 
   sharedMutex->lock();
   if (debugPrint)
   {
-    std::cout << "Pointer:" << ptr << "  Value: " << *data << "  WUID: " << threadInfo->WorkUnitID << std::endl;
+    std::cout << "Pointer:" << ptr << "  Value: " << *data << "  WUID: " << workUnitInfo->WorkUnitID << std::endl;
   }
   sharedMutex->unlock();
 
@@ -43,10 +43,10 @@ execute(void * ptr)
   int    m = *data;
   double sum = 1.0;
 
-  for (int j = 0; j < m; j++)
+  for (int j = 0; j < m; ++j)
   {
     sum = 1.0;
-    for (int i = 1; i <= n; i++)
+    for (int i = 1; i <= n; ++i)
     {
       sum = sum + i + j;
     }
@@ -82,7 +82,7 @@ itkMultithreadingTest(int argc, char * argv[])
   itk::TimeProbe                timeProbe;
   itk::TimeProbe::TimeStampType startTime = timeProbe.GetInstantValue();
   int                           data = 123;
-  for (int i = 0; i < count; i++)
+  for (int i = 0; i < count; ++i)
   {
     threader->SetSingleMethod(&execute, &data);
     threader->SingleMethodExecute();

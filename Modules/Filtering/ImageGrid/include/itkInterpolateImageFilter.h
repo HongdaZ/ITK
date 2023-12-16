@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class InterpolateImageFilter
+ * \class InterpolateImageFilter
  * \brief Interpolate an image from two N-D images.
  *
  * Interpolates an image from two input images of the same type
@@ -45,7 +45,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT InterpolateImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InterpolateImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(InterpolateImageFilter);
 
   /** Standard class type aliases. */
   using Self = InterpolateImageFilter;
@@ -60,11 +60,11 @@ public:
   itkTypeMacro(InterpolateImageFilter, ImageToImageFilter);
 
   /** Inherit type alias from Superclass */
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::InputImagePointer;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::OutputImagePointer;
+  using typename Superclass::OutputImageRegionType;
 
   /** Number of dimensions. */
   static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
@@ -100,7 +100,8 @@ public:
   itkGetConstMacro(Distance, double);
 
   /** Get/Set the interpolator function */
-  itkSetObjectMacro(Interpolator, InterpolatorType) itkGetModifiableObjectMacro(Interpolator, InterpolatorType);
+  itkSetObjectMacro(Interpolator, InterpolatorType);
+  itkGetModifiableObjectMacro(Interpolator, InterpolatorType);
 
   /** This method is used to set the state of the filter before
    * multi-threading. */

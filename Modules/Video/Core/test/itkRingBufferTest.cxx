@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 #include <iostream>
 
 #include "itkRingBuffer.h"
+#include "itkTestingMacros.h"
 
 /**
  * This test is basically a duplicate of RingBufferImageSetTest with a few
@@ -31,7 +32,10 @@ itkRingBufferTest(int, char *[])
   // Test instantiation
   //////
   using RingBufferType = itk::RingBuffer<itk::Object>;
-  RingBufferType::Pointer ringBuffer = RingBufferType::New();
+  auto ringBuffer = RingBufferType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(ringBuffer, RingBuffer, Object);
+
 
   // Check that the default number of buffers (3) was properly set
   if (ringBuffer->GetNumberOfBuffers() != 3)

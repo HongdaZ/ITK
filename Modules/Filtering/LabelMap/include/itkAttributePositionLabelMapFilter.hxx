@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkAttributePositionLabelMapFilter_hxx
 #define itkAttributePositionLabelMapFilter_hxx
 
-#include "itkAttributePositionLabelMapFilter.h"
 #include "itkProgressReporter.h"
 #include "itkLabelMapUtilities.h"
 
@@ -27,8 +26,7 @@
  * This code was contributed in the Insight Journal paper:
  * "Label object representation and manipulation with ITK"
  * by Lehmann G.
- * https://hdl.handle.net/1926/584
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  */
 
@@ -49,7 +47,7 @@ AttributePositionLabelMapFilter<TImage, TAttributeAccessor, VPhysicalPosition>::
   {
     Point<double, ImageDimension> point;
     // copy the position to a point, required by TransformPhysicalPointToIndex
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       point[i] = position[i];
     }
@@ -58,7 +56,7 @@ AttributePositionLabelMapFilter<TImage, TAttributeAccessor, VPhysicalPosition>::
   else
   {
     // copy the position to the index, to avoid warnings
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       idx[i] = position[i];
     }

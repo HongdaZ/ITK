@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkLabelMapMaskImageFilter_hxx
 #define itkLabelMapMaskImageFilter_hxx
 
-#include "itkLabelMapMaskImageFilter.h"
 #include "itkNumericTraits.h"
 #include "itkProgressReporter.h"
 #include "itkImageRegionConstIterator.h"
@@ -121,7 +120,7 @@ LabelMapMaskImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
               LengthType        length = lit.GetLine().GetLength();
 
               // Update the mins and maxs
-              for (unsigned int i = 0; i < ImageDimension; i++)
+              for (unsigned int i = 0; i < ImageDimension; ++i)
               {
                 if (idx[i] < mins[i])
                 {
@@ -144,7 +143,7 @@ LabelMapMaskImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 
         // Final computation
         SizeType regionSize;
-        for (unsigned int i = 0; i < ImageDimension; i++)
+        for (unsigned int i = 0; i < ImageDimension; ++i)
         {
           regionSize[i] = maxs[i] - mins[i] + 1;
         }
@@ -181,7 +180,7 @@ LabelMapMaskImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
           LengthType        length = lit.GetLine().GetLength();
 
           // Update the mins and maxs
-          for (unsigned int i = 0; i < ImageDimension; i++)
+          for (unsigned int i = 0; i < ImageDimension; ++i)
           {
             if (idx[i] < mins[i])
             {
@@ -201,7 +200,7 @@ LabelMapMaskImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
         }
         // Final computation
         SizeType regionSize;
-        for (unsigned int i = 0; i < ImageDimension; i++)
+        for (unsigned int i = 0; i < ImageDimension; ++i)
         {
           regionSize[i] = maxs[i] - mins[i] + 1;
         }

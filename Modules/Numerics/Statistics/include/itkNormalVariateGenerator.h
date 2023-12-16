@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ namespace Statistics
  * You should run Initialize() function before call GetNormalVariate()
  * function.
  *
- * The followings are original comments.
+ * The following are original comments.
  *
  *  Revision date 31 May 1996
  *      This is a revised version of the algorithm described in
@@ -68,7 +68,7 @@ namespace Statistics
  * and three variables used in the macro.
  *        Read below for calling conventions.
  *
- * THIS CODE ASSUMES TWO'S-COMPLEMENT 32-BIT INTEGER ARITHMATIC.  IT ALSO
+ * THIS CODE ASSUMES TWO'S-COMPLEMENT 32-BIT INTEGER ARITHMETIC.  IT ALSO
  * ASSUMES THE 'C' COMPILER COMPILES THE LEFT-SHIFT OPERATOR "<<" AS A LOGICAL
  * SHIFT, DISCARDING THE SIGN DIGIT AND SHIFTING IN ZEROS ON THE RIGHT, SO
  * " X << 1" IS EQUIVALENT TO " X+X ".   IT ALSO ASSUMES THE RIGHT-SHIFT
@@ -142,17 +142,19 @@ private:
   double m_Scale;
   double m_Rscale;
   double m_Rcons;
-  int    m_ELEN;
-  int    m_LEN;
-  int    m_LMASK;
-  int    m_TLEN;
+
+  static constexpr int m_ELEN{ 7 };
+  // LEN must be 2 ** ELEN
+  static constexpr int m_LEN{ 128 };
+  static constexpr int m_LMASK{ 4 * (m_LEN - 1) };
+  static constexpr int m_TLEN{ 8 * m_LEN };
 
   int   m_Gaussfaze;
   int * m_Gausssave;
 
   double m_GScale;
 
-  int *  m_Vec1;
+  int    m_Vec1[m_TLEN];
   int    m_Nslew;
   int    m_Irs;
   int    m_Lseed;

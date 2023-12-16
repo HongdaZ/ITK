@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,8 +28,8 @@ itkBinShrinkImageFilterTest1(int, char *[])
 
   // type alias to simplify the syntax
   using InputImageType = itk::Image<int, 2>;
-  using OutputImageType = itk::Image<long int, 2>;
-  InputImageType::Pointer sourceImage = InputImageType::New();
+  using OutputImageType = itk::Image<long, 2>;
+  auto sourceImage = InputImageType::New();
 
   // fill in an image
   InputImageType::IndexType  index = { { 100, 100 } };
@@ -49,13 +49,13 @@ itkBinShrinkImageFilterTest1(int, char *[])
     }
   }
 
-  // assemple pipeline
+  // assemble pipeline
   using InputMonitorFilterType = itk::PipelineMonitorImageFilter<InputImageType>;
-  InputMonitorFilterType::Pointer monitor1 = InputMonitorFilterType::New();
+  auto monitor1 = InputMonitorFilterType::New();
   monitor1->SetInput(sourceImage);
 
   using BinShrinkFilterType = itk::BinShrinkImageFilter<InputImageType, OutputImageType>;
-  BinShrinkFilterType::Pointer bin = BinShrinkFilterType::New();
+  auto bin = BinShrinkFilterType::New();
 
   // Exercise some methods for coverage
   ITK_EXERCISE_BASIC_OBJECT_METHODS(bin, BinShrinkImageFilter, ImageToImageFilter);
@@ -89,7 +89,7 @@ itkBinShrinkImageFilterTest1(int, char *[])
 
 
   using OutputMonitorFilterType = itk::PipelineMonitorImageFilter<OutputImageType>;
-  OutputMonitorFilterType::Pointer monitor2 = OutputMonitorFilterType::New();
+  auto monitor2 = OutputMonitorFilterType::New();
   monitor2->SetInput(bin->GetOutput());
 
   bool failed = false;
@@ -323,7 +323,7 @@ itkBinShrinkImageFilterTest1(int, char *[])
           if (lfailed)
           {
             monitor2->GetOutput()->Print(std::cout);
-            exit(1);
+            return EXIT_FAILURE;
           }
         }
         catch (const itk::ExceptionObject & e)

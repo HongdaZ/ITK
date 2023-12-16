@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,16 +43,12 @@ public:
   {}
   ~MaskNegatedInput() = default;
   bool
-  operator!=(const MaskNegatedInput &) const
+  operator==(const MaskNegatedInput &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const MaskNegatedInput & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(MaskNegatedInput);
 
   inline TOutput
   operator()(const TInput & A, const TMask & B) const
@@ -136,10 +132,11 @@ private:
  * \endsphinx
  */
 template <typename TInputImage, typename TMaskImage, typename TOutputImage = TInputImage>
-class MaskNegatedImageFilter : public BinaryGeneratorImageFilter<TInputImage, TMaskImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT MaskNegatedImageFilter
+  : public BinaryGeneratorImageFilter<TInputImage, TMaskImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MaskNegatedImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MaskNegatedImageFilter);
 
   /** Standard class type aliases. */
   using Self = MaskNegatedImageFilter;

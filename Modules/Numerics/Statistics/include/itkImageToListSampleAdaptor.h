@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,7 +55,7 @@ class ITK_TEMPLATE_EXPORT ImageToListSampleAdaptor
   : public ListSample<typename MeasurementVectorPixelTraits<typename TImage::PixelType>::MeasurementVectorType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToListSampleAdaptor);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageToListSampleAdaptor);
 
   /** Standard class type aliases */
   using Self = ImageToListSampleAdaptor;
@@ -94,10 +94,10 @@ public:
   using MeasurementVectorTraitsType = MeasurementVectorTraitsTypes<MeasurementVectorType>;
   using MeasurementType = typename MeasurementVectorTraitsType::ValueType;
 
-  using AbsoluteFrequencyType = typename Superclass::AbsoluteFrequencyType;
-  using TotalAbsoluteFrequencyType = typename Superclass::TotalAbsoluteFrequencyType;
-  using MeasurementVectorSizeType = typename Superclass::MeasurementVectorSizeType;
-  using InstanceIdentifier = typename Superclass::InstanceIdentifier;
+  using typename Superclass::AbsoluteFrequencyType;
+  using typename Superclass::TotalAbsoluteFrequencyType;
+  using typename Superclass::MeasurementVectorSizeType;
+  using typename Superclass::InstanceIdentifier;
 
   using ValueType = MeasurementVectorType;
 
@@ -195,16 +195,12 @@ public:
     }
 
     bool
-    operator!=(const ConstIterator & it)
-    {
-      return (m_Iter != it.m_Iter);
-    }
-
-    bool
-    operator==(const ConstIterator & it)
+    operator==(const ConstIterator & it) const
     {
       return (m_Iter == it.m_Iter);
     }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
 
   protected:
     // This method should only be available to the ListSample class

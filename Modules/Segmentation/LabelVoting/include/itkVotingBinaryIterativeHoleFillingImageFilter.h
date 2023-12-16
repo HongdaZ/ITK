@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class VotingBinaryIterativeHoleFillingImageFilter
+ * \class VotingBinaryIterativeHoleFillingImageFilter
  * \brief Fills in holes and cavities by iteratively applying a voting operation.
  *
  * This filter uses internally the VotingBinaryHoleFillingImageFilter, and runs
@@ -56,7 +56,7 @@ template <typename TImage>
 class ITK_TEMPLATE_EXPORT VotingBinaryIterativeHoleFillingImageFilter : public ImageToImageFilter<TImage, TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VotingBinaryIterativeHoleFillingImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(VotingBinaryIterativeHoleFillingImageFilter);
 
   /** Convenient type alias for simplifying declarations. */
   using InputImageType = TImage;

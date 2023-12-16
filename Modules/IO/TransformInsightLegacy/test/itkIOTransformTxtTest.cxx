@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,6 +26,7 @@
 #include "itkTransformFactory.h"
 #include "itkSimilarity2DTransform.h"
 #include "itkBSplineTransform.h"
+#include "itkTestingMacros.h"
 #include "itksys/SystemTools.hxx"
 
 template <typename ScalarType>
@@ -35,14 +36,14 @@ oneTest(const std::string & outputDirectory, const char * goodname, const char *
   unsigned int i;
   using AffineTransformType = itk::AffineTransform<ScalarType, 4>;
   using AffineTransformTypeNotRegistered = itk::AffineTransform<ScalarType, 10>;
-  typename AffineTransformType::Pointer affine = AffineTransformType::New();
+  auto affine = AffineTransformType::New();
 
   itk::ObjectFactoryBase::RegisterFactory(itk::TxtTransformIOFactory::New());
 
-  // Set it's parameters
+  // Set its parameters
   {
     typename AffineTransformType::ParametersType p = affine->GetParameters();
-    for (i = 0; i < p.GetSize(); i++)
+    for (i = 0; i < p.GetSize(); ++i)
     {
       p[i] = i;
     }
@@ -50,7 +51,7 @@ oneTest(const std::string & outputDirectory, const char * goodname, const char *
   }
   {
     typename AffineTransformType::FixedParametersType p = affine->GetFixedParameters();
-    for (i = 0; i < p.GetSize(); i++)
+    for (i = 0; i < p.GetSize(); ++i)
     {
       p[i] = i;
     }
@@ -60,11 +61,19 @@ oneTest(const std::string & outputDirectory, const char * goodname, const char *
   typename itk::TransformFileReaderTemplate<ScalarType>::Pointer reader;
 
   reader = itk::TransformFileReaderTemplate<ScalarType>::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(reader, TransformFileReaderTemplate, LightProcessObject);
+
+
   writer = itk::TransformFileWriterTemplate<ScalarType>::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(writer, TransformFileWriterTemplate, LightProcessObject);
+
   writer->AddTransform(affine);
 
   writer->SetFileName(outputDirectory + goodname);
   reader->SetFileName(outputDirectory + goodname);
+  ITK_TEST_SET_GET_VALUE(outputDirectory + goodname, reader->GetFileName());
 
   // Testing writing std::cout << "Testing write : ";
   affine->Print(std::cout);
@@ -116,12 +125,12 @@ oneTest(const std::string & outputDirectory, const char * goodname, const char *
 
 
   std::cout << "Creating bad writer" << std::endl;
-  typename AffineTransformTypeNotRegistered::Pointer Bogus = AffineTransformTypeNotRegistered::New();
+  auto Bogus = AffineTransformTypeNotRegistered::New();
 
-  // Set it's parameters
+  // Set its parameters
   {
     typename AffineTransformType::ParametersType p = Bogus->GetParameters();
-    for (i = 0; i < p.GetSize(); i++)
+    for (i = 0; i < p.GetSize(); ++i)
     {
       p[i] = i;
     }
@@ -129,7 +138,7 @@ oneTest(const std::string & outputDirectory, const char * goodname, const char *
   }
   {
     typename AffineTransformType::FixedParametersType p = Bogus->GetFixedParameters();
-    for (i = 0; i < p.GetSize(); i++)
+    for (i = 0; i < p.GetSize(); ++i)
     {
       p[i] = i;
     }
@@ -188,7 +197,7 @@ oneTest(const std::string & outputDirectory, const char * goodname, const char *
 // test endless loop bug in transform reader, triggered by no
 // EOL at end of file.
 // This test will exercise this reported bug:
-// http://public.kitware.com/Bug/view.php?id=7028
+// https://public.kitware.com/Bug/view.php?id=7028
 template <typename ScalarType>
 int
 secondTest(const std::string & outputDirectory)
@@ -236,7 +245,7 @@ templatelessTest(const std::string & outputDirectory)
   const std::string outputFile = outputDirectory + "itkIOTransformTxtTestRigid2DTransform.tfm";
 
   using TransformType = itk::Rigid2DTransform<float>;
-  TransformType::Pointer transform = TransformType::New();
+  auto transform = TransformType::New();
 
   itk::TransformFileWriter::Pointer writer = itk::TransformFileWriter::New();
   writer->SetInput(transform);

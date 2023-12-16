@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class PathToPathFilter
+ * \class PathToPathFilter
  * \brief Base class for filters that take a path as input and produce a path as output.
  *
  * PathToPathFilter is the base class for all process objects that output
@@ -38,7 +38,7 @@ template <typename TInputPath, typename TOutputPath>
 class ITK_TEMPLATE_EXPORT PathToPathFilter : public PathSource<TOutputPath>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PathToPathFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(PathToPathFilter);
 
   /** Standard class type aliases. */
   using Self = PathToPathFilter;

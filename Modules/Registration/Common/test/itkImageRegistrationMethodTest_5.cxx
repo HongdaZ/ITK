@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -69,13 +69,13 @@ itkImageRegistrationMethodTest_5_Func(int argc, char * argv[], bool subtractMean
   using CommandIterationType = itk::CommandIterationUpdate<OptimizerType>;
 
 
-  MetricType::Pointer       metric = MetricType::New();
-  TransformType::Pointer    transform = TransformType::New();
-  OptimizerType::Pointer    optimizer = OptimizerType::New();
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
-  RegistrationType::Pointer registration = RegistrationType::New();
+  auto metric = MetricType::New();
+  auto transform = TransformType::New();
+  auto optimizer = OptimizerType::New();
+  auto interpolator = InterpolatorType::New();
+  auto registration = RegistrationType::New();
 
-  ImageSourceType::Pointer imageSource = ImageSourceType::New();
+  auto imageSource = ImageSourceType::New();
 
   SizeType size;
   size[0] = 100;
@@ -105,7 +105,7 @@ itkImageRegistrationMethodTest_5_Func(int argc, char * argv[], bool subtractMean
   metric->SetSubtractMean(subtractMean);
 
   // Instantiate an Observer to report the progress of the Optimization
-  CommandIterationType::Pointer iterationCommand = CommandIterationType::New();
+  auto iterationCommand = CommandIterationType::New();
   iterationCommand->SetOptimizer(optimizer);
 
   // Scale the translation components of the Transform in the Optimizer
@@ -140,7 +140,7 @@ itkImageRegistrationMethodTest_5_Func(int argc, char * argv[], bool subtractMean
     learningRate = std::stod(argv[3]);
     std::cout << "learningRate = " << learningRate << std::endl;
   }
-  for (unsigned int i = 0; i < dimension; i++)
+  for (unsigned int i = 0; i < dimension; ++i)
   {
     scales[i + dimension * dimension] = translationScale;
   }
@@ -177,7 +177,7 @@ itkImageRegistrationMethodTest_5_Func(int argc, char * argv[], bool subtractMean
   const unsigned int offsetOrder = finalParameters.Size() - actualParameters.Size();
   constexpr double   tolerance = 1.0; // equivalent to 1 pixel.
 
-  for (unsigned int i = 0; i < numbeOfParameters; i++)
+  for (unsigned int i = 0; i < numbeOfParameters; ++i)
   {
     // the parameters are negated in order to get the inverse transformation.
     // this only works for comparing translation parameters....

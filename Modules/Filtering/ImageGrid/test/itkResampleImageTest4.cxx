@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,11 +27,11 @@ int
 itkResampleImageTest4(int argc, char * argv[])
 {
 
-  constexpr unsigned int NDimensions = 2;
+  constexpr unsigned int VDimension = 2;
 
   using PixelType = float;
 
-  using ImageType = itk::Image<PixelType, NDimensions>;
+  using ImageType = itk::Image<PixelType, VDimension>;
   using ImageIndexType = ImageType::IndexType;
   using ImagePointerType = ImageType::Pointer;
   using ImageRegionType = ImageType::RegionType;
@@ -39,7 +39,7 @@ itkResampleImageTest4(int argc, char * argv[])
 
   using CoordRepType = double;
 
-  using AffineTransformType = itk::AffineTransform<CoordRepType, NDimensions>;
+  using AffineTransformType = itk::AffineTransform<CoordRepType, VDimension>;
 
   using InterpolatorType = itk::LinearInterpolateImageFunction<ImageType, CoordRepType>;
 
@@ -78,11 +78,11 @@ itkResampleImageTest4(int argc, char * argv[])
   }
 
   // Create an affine transformation
-  AffineTransformType::Pointer aff = AffineTransformType::New();
+  auto aff = AffineTransformType::New();
   aff->Scale(0.9);
 
   // Create a linear interpolation image function
-  InterpolatorType::Pointer interp = InterpolatorType::New();
+  auto interp = InterpolatorType::New();
   interp->SetInputImage(image);
 
   // Create and configure a resampling filter

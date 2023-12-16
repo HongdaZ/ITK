@@ -3,8 +3,8 @@
            - Written by Bob Cox, SSCC NIMH
            - Revisions by Rick Reynolds, SSCC NIMH
  */
-#ifndef _NIFTI_IO_HEADER_
-#define _NIFTI_IO_HEADER_
+#ifndef NIFTI1_IO_HEADER
+#define NIFTI1_IO_HEADER
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +17,7 @@
 #endif
 #include "nifti1.h"                  /*** NIFTI-1 header specification ***/
 
-#include <znzlib.h>
+#include "znzlib.h"
 
 /*=================*/
 #ifdef  __cplusplus
@@ -45,7 +45,7 @@ extern "C" {
 
       Mainly adding low-level IO and changing things to allow gzipped files
       to be read and written
-      Full backwards compatability should have been maintained
+      Full backwards compatibility should have been maintained
 
    Modified by: Rick Reynolds (SSCC/DIRP/NIMH, National Institutes of Health)
    Date: December 2004
@@ -295,12 +295,16 @@ int          nifti_read_collapsed_image( nifti_image * nim, const int dims [8],
                                          void ** data );
 
 int          nifti_read_subregion_image( nifti_image * nim,
-                                         int *start_index, int *region_size,
+                                         const int *start_index, const int *region_size,
                                          void ** data );
 
 void         nifti_image_write   ( nifti_image * nim ) ;
+int          nifti_image_write_status( nifti_image *nim );
+
 void         nifti_image_write_bricks(nifti_image * nim,
                                       const nifti_brick_list * NBL);
+int          nifti_image_write_bricks_status(nifti_image * nim,
+                                             const nifti_brick_list * NBL);
 void         nifti_image_infodump( const nifti_image * nim ) ;
 
 void         nifti_disp_lib_hist( void ) ;     /* to display library history */
@@ -340,7 +344,7 @@ znzFile nifti_image_write_hdr_img(nifti_image *nim, int write_data,
                                   const char* opts);
 znzFile nifti_image_write_hdr_img2( nifti_image *nim , int write_opts ,
                const char* opts, znzFile imgfile, const nifti_brick_list * NBL);
-size_t  nifti_read_buffer(znzFile fp, void* datatptr, size_t ntot,
+size_t  nifti_read_buffer(znzFile fp, void* dataptr, size_t ntot,
                          nifti_image *nim);
 int     nifti_write_all_data(znzFile fp, nifti_image * nim,
                              const nifti_brick_list * NBL);
@@ -480,8 +484,15 @@ int    valid_nifti_extensions(const nifti_image *nim);
 /* http://www.mathworks.com/matlabcentral/fileexchange/42997-dicom-to-nifti-converter */
 #define NIFTI_ECODE_MATLAB          40  /* MATLAB extension */
 
+/* Quantiphyse extension
+   https://quantiphyse.readthedocs.io/en/latest/advanced/nifti_extension.html*/
+#define NIFTI_ECODE_QUANTIPHYSE     42  /* Quantiphyse extension */
 
-#define NIFTI_MAX_ECODE             40  /******* maximum extension code *******/
+/* Magnetic Resonance Spectroscopy (MRS)
+   link to come... */
+#define NIFTI_ECODE_MRS             44  /* MRS extension */
+
+#define NIFTI_MAX_ECODE             44  /******* maximum extension code *******/
 
 /* nifti_type file codes */
 #define NIFTI_FTYPE_ANALYZE   0
@@ -491,9 +502,9 @@ int    valid_nifti_extensions(const nifti_image *nim);
 #define NIFTI_MAX_FTYPE       3    /* this should match the maximum code */
 
 /*------------------------------------------------------------------------*/
-/*-- the rest of these apply only to nifti1_io.c, check for _NIFTI1_IO_C_ */
+/*-- the rest of these apply only to nifti1_io.c, check for NIFTI1_IO_C */
 /*                                                    Feb 9, 2005 [rickr] */
-#ifdef _NIFTI1_IO_C_
+#ifdef NIFTI1_IO_C
 
 typedef struct {
     int debug;               /*!< debug level for status reports  */
@@ -508,7 +519,7 @@ typedef struct {
     char const * const name;           /* text string to match #define */
 } nifti_type_ele;
 
-#undef  LNI_FERR /* local nifti file error, to be compact and repetative */
+#undef  LNI_FERR /* local nifti file error, to be compact and repetitive */
 #define LNI_FERR(func,msg,file)                                      \
             fprintf(stderr,"** ERROR (%s): %s '%s'\n",func,msg,file)
 
@@ -543,7 +554,7 @@ typedef struct {
 
 #define LNI_MAX_NIA_EXT_LEN 100000  /* consider a longer extension invalid */
 
-#endif  /* _NIFTI1_IO_C_ section */
+#endif  /* NIFTI1_IO_C section */
 /*------------------------------------------------------------------------*/
 
 /*=================*/
@@ -552,4 +563,4 @@ typedef struct {
 #endif
 /*=================*/
 
-#endif /* _NIFTI_IO_HEADER_ */
+#endif /* NIFTI1_IO_HEADER */

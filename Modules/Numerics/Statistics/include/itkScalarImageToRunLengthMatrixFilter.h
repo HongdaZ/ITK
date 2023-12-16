@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@ namespace Statistics
 {
 
 /**
- *\class ScalarImageToRunLengthMatrixFilter
+ * \class ScalarImageToRunLengthMatrixFilter
  *  \brief This class computes a run length matrix (histogram) from
  *  a given image and a mask image if provided. Run length matrices are
  *  used for image texture description.
@@ -93,7 +93,7 @@ namespace Statistics
  * NumericTraits class is the same, and thus cannot hold any larger values,
  * this would cause a float overflow.
  *
- * IJ article: https://hdl.handle.net/1926/1374
+ * IJ article: https://www.insight-journal.org/browse/publication/231
  *
  * \sa ScalarImageToRunLengthFeaturesFilter
  * \sa ScalarImageToRunLengthMatrixFilter
@@ -257,7 +257,7 @@ protected:
 
   /**
    * Normalize the direction of the offset before it is applied.
-   * The last non-zero dimension of the offest has to be positive in order
+   * The last non-zero dimension of the offset has to be positive in order
    * to match to scanning order of the iterator. Only the sign is changed.
    * For example, the input offset (-1, 0) will be normalized as
    * (1, 0).

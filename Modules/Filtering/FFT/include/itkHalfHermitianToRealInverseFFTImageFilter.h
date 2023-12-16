@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,12 +19,13 @@
 #define itkHalfHermitianToRealInverseFFTImageFilter_h
 
 #include "itkImageToImageFilter.h"
+#include "itkMacro.h"
 #include "itkSimpleDataObjectDecorator.h"
 
 namespace itk
 {
 /**
- *\class HalfHermitianToRealInverseFFTImageFilter
+ * \class HalfHermitianToRealInverseFFTImageFilter
  *
  * \brief Base class for specialized complex-to-real inverse Fast Fourier Transform.
  *
@@ -58,7 +59,7 @@ class ITK_TEMPLATE_EXPORT HalfHermitianToRealInverseFFTImageFilter
 
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HalfHermitianToRealInverseFFTImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(HalfHermitianToRealInverseFFTImageFilter);
 
   /** Standard class type aliases. */
   using InputImageType = TInputImage;
@@ -73,12 +74,14 @@ public:
 
   static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
 
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(HalfHermitianToRealInverseFFTImageFilter, ImageToImageFilter);
+
   /** Customized object creation methods that support configuration-based
    * selection of FFT implementation.
    *
    * Default implementation is VnlFFT. */
-  static Pointer
-  New();
+  itkFactoryOnlyNewMacro(Self);
 
   /** Was the original truncated dimension size odd? */
   itkSetGetDecoratedInputMacro(ActualXDimensionIsOdd, bool);
@@ -113,6 +116,10 @@ protected:
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkHalfHermitianToRealInverseFFTImageFilter.hxx"
+#endif
+
+#ifdef ITK_FFTIMAGEFILTERINIT_FACTORY_REGISTER_MANAGER
+#  include "itkFFTImageFilterInitFactoryRegisterManager.h"
 #endif
 
 #endif

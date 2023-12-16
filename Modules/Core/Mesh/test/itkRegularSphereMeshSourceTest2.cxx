@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ itkRegularSphereMeshSourceTest2(int, char *[])
   scale[1] = 2.;
   scale[2] = 3.;
 
-  SphereMeshSourceType::Pointer source1 = SphereMeshSourceType::New();
+  auto source1 = SphereMeshSourceType::New();
   source1->SetResolution(1);
   source1->SetScale(scale);
   source1->Update();
@@ -47,7 +47,7 @@ itkRegularSphereMeshSourceTest2(int, char *[])
   }
 
 
-  SphereMeshSourceType::Pointer source2 = SphereMeshSourceType::New();
+  auto source2 = SphereMeshSourceType::New();
   source2->SetResolution(2);
   source2->SetScale(scale);
   source2->Update();
@@ -72,8 +72,8 @@ itkRegularSphereMeshSourceTest2(int, char *[])
   while (it != end)
   {
     const MeshType::PointType p = it->Value();
-    double                    d = itk::NumericTraits<double>::ZeroValue();
-    for (unsigned int dim = 0; dim < Dimension; dim++)
+    double                    d = 0.0;
+    for (unsigned int dim = 0; dim < Dimension; ++dim)
     {
       d += (center[dim] - p[dim]) * (center[dim] - p[dim]) / (scale[dim] * scale[dim]);
     }

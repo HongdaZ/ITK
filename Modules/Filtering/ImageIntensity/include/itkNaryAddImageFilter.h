@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ public:
   {
     AccumulatorType sum = NumericTraits<TOutput>::ZeroValue();
 
-    for (unsigned int i = 0; i < B.size(); i++)
+    for (unsigned int i = 0; i < B.size(); ++i)
     {
       sum += static_cast<AccumulatorType>(B[i]);
     }
@@ -55,11 +55,7 @@ public:
     return true;
   }
 
-  bool
-  operator!=(const Add1 &) const
-  {
-    return false;
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Add1);
 };
 } // namespace Functor
 
@@ -104,7 +100,7 @@ class NaryAddImageFilter
                                   Functor::Add1<typename TInputImage::PixelType, typename TInputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NaryAddImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(NaryAddImageFilter);
 
   /** Standard class type aliases. */
   using Self = NaryAddImageFilter;

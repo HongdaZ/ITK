@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,7 @@
 #ifndef itkKittlerIllingworthThresholdCalculator_hxx
 #define itkKittlerIllingworthThresholdCalculator_hxx
 
-#include "itkKittlerIllingworthThresholdCalculator.h"
 #include "itkProgressReporter.h"
-#include "itkMath.h"
 #include "itkMath.h"
 
 namespace itk
@@ -35,7 +33,7 @@ KittlerIllingworthThresholdCalculator<THistogram, TOutput>::Mean()
   auto   tot = static_cast<double>(data->GetTotalFrequency());
   double sum = 0;
 
-  for (InstanceIdentifier i = 0; i < data->GetSize(0); i++)
+  for (InstanceIdentifier i = 0; i < data->GetSize(0); ++i)
   {
     sum += static_cast<double>(data->GetMeasurement(i, 0) * data->GetFrequency(i, 0));
   }
@@ -62,7 +60,7 @@ KittlerIllingworthThresholdCalculator<THistogram, TOutput>::A(InstanceIdentifier
 {
   const HistogramType * y = this->GetInput();
   double                x = 0;
-  for (InstanceIdentifier i = 0; i <= j; i++)
+  for (InstanceIdentifier i = 0; i <= j; ++i)
   {
     x += static_cast<double>(y->GetFrequency(i, 0));
   }
@@ -75,7 +73,7 @@ KittlerIllingworthThresholdCalculator<THistogram, TOutput>::B(InstanceIdentifier
 {
   const HistogramType * y = this->GetInput();
   double                x = 0;
-  for (InstanceIdentifier i = 0; i <= j; i++)
+  for (InstanceIdentifier i = 0; i <= j; ++i)
   {
     x += static_cast<double>(y->GetMeasurement(i, 0)) * static_cast<double>(y->GetFrequency(i, 0));
   }
@@ -88,7 +86,7 @@ KittlerIllingworthThresholdCalculator<THistogram, TOutput>::C(InstanceIdentifier
 {
   const HistogramType * y = this->GetInput();
   double                x = 0;
-  for (InstanceIdentifier i = 0; i <= j; i++)
+  for (InstanceIdentifier i = 0; i <= j; ++i)
   {
     auto temp = static_cast<double>(y->GetMeasurement(i, 0));
     x += temp * temp * static_cast<double>(y->GetFrequency(i, 0));

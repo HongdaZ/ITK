@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,15 +26,14 @@
 namespace itk
 {
 /**
- *\class JPEG2000ImageIOFactory
+ * \class JPEG2000ImageIOFactory
  * \brief Supports for the JPEG2000 file format based on openjpeg
  *
  *
  * This code was contributed in the Insight Journal paper:
  * "Support for Streaming the JPEG2000 File Format"
  * by Mosaliganti K., Ibanez L., Megason S
- * https://hdl.handle.net/10380/3187
- * http://www.insight-journal.org/browse/publication/741
+ * https://www.insight-journal.org/browse/publication/741
  *
  *
  *  JPEG2000 offers a large collection of interesting features including:
@@ -45,7 +44,7 @@ namespace itk
 class ITKIOJPEG2000_EXPORT JPEG2000ImageIOFactory : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(JPEG2000ImageIOFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(JPEG2000ImageIOFactory);
 
   /** Standard class type aliases. */
   using Self = JPEG2000ImageIOFactory;
@@ -75,7 +74,7 @@ public:
   static void
   RegisterOneFactory()
   {
-    JPEG2000ImageIOFactory::Pointer factory = JPEG2000ImageIOFactory::New();
+    auto factory = JPEG2000ImageIOFactory::New();
 
     ObjectFactoryBase::RegisterFactoryInternal(factory);
   }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -90,11 +90,13 @@ namespace Statistics
  * \ingroup ITKStatistics
  */
 
-template <typename TImageType, typename THistogramFrequencyContainer = DenseFrequencyContainer2>
+template <typename TImageType,
+          typename THistogramFrequencyContainer = DenseFrequencyContainer2,
+          typename TMaskImageType = TImageType>
 class ITK_TEMPLATE_EXPORT ScalarImageToCooccurrenceMatrixFilter : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarImageToCooccurrenceMatrixFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ScalarImageToCooccurrenceMatrixFilter);
 
   /** Standard type alias */
   using Self = ScalarImageToCooccurrenceMatrixFilter;
@@ -118,6 +120,10 @@ public:
   using OffsetVector = VectorContainer<unsigned char, OffsetType>;
   using OffsetVectorPointer = typename OffsetVector::Pointer;
   using OffsetVectorConstPointer = typename OffsetVector::ConstPointer;
+  using MaskImageType = TMaskImageType;
+  using MaskPointer = typename MaskImageType::Pointer;
+  using MaskConstPointer = typename MaskImageType::ConstPointer;
+  using MaskPixelType = typename MaskImageType::PixelType;
 
   using MeasurementType = typename NumericTraits<PixelType>::RealType;
 
@@ -164,9 +170,9 @@ public:
 
   /** Method to set/get the mask image */
   void
-  SetMaskImage(const ImageType * image);
+  SetMaskImage(const MaskImageType * image);
 
-  const ImageType *
+  const MaskImageType *
   GetMaskImage() const;
 
   /** method to get the Histogram */
@@ -175,8 +181,8 @@ public:
 
   /** Set the pixel value of the mask that should be considered "inside" the
     object. Defaults to one. */
-  itkSetMacro(InsidePixelValue, PixelType);
-  itkGetConstMacro(InsidePixelValue, PixelType);
+  itkSetMacro(InsidePixelValue, MaskPixelType);
+  itkGetConstMacro(InsidePixelValue, MaskPixelType);
 
 protected:
   ScalarImageToCooccurrenceMatrixFilter();
@@ -188,7 +194,7 @@ protected:
   FillHistogram(RadiusType radius, RegionType region);
 
   virtual void
-  FillHistogramWithMask(RadiusType radius, RegionType region, const ImageType * maskImage);
+  FillHistogramWithMask(RadiusType radius, RegionType region, const MaskImageType * maskImage);
 
   /** Standard itk::ProcessObject subclass method. */
   using DataObjectPointer = DataObject::Pointer;
@@ -215,7 +221,7 @@ private:
   MeasurementVectorType m_UpperBound;
   bool                  m_Normalize;
 
-  PixelType m_InsidePixelValue;
+  MaskPixelType m_InsidePixelValue;
 };
 } // end of namespace Statistics
 } // end of namespace itk

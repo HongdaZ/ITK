@@ -2,7 +2,19 @@
 
 %pythonbegin %{
 from . import _ITKPyBasePython
+import collections
+
+from sys import version_info as _version_info
+if _version_info < (3, 7, 0):
+    raise RuntimeError("Python 3.7 or later required")
+
+from . import _ITKCommonPython
 %}
+
+//By including pyabc.i and using the -py3 command line option when calling SWIG,
+//the proxy classes of the STL containers will automatically gain an appropriate
+//abstract base class.
+%include <pyabc.i>
 
 %include <exception.i>
 %include <typemaps.i>
@@ -58,7 +70,7 @@ str = str
 
 // This macro replaces the use of itk::SmartPointer.
 // class_name is class name without namespace qualifiers.
-// Reference: http://www.nabble.com/attachment/16653644/0/SwigRefCount.i
+// Reference: https://www.nabble.com/attachment/16653644/0/SwigRefCount.i
 %define DECLARE_REF_COUNT_CLASS(class_name)
 
         // pointers and references
@@ -179,6 +191,24 @@ str = str
 //    $1 = ptr;
 //    }
 
+%define DECL_PYIMAGEFILTER_CLASS(swig_name)
+    %extend swig_name {
+        %pythoncode {
+            def Update(self):
+                """Internal method to pass a pointer to the Python object wrapper, then call Update() on the filter."""
+                self._SetSelf(self)
+                super().Update()
+            def UpdateLargestPossibleRegion(self):
+                """Internal method to pass a pointer to the Python object wrapper, then call UpdateLargestPossibleRegion() on the filter."""
+                self._SetSelf(self)
+                super().UpdateLargestPossibleRegion()
+            def UpdateOutputInformation(self):
+                """Internal method to pass a pointer to the Python object wrapper, then call UpdateOutputInformation() on the filter."""
+                self._SetSelf(self)
+                super().UpdateOutputInformation()
+        }
+    }
+%enddef
 
 %extend itkComponentTreeNode {
     %pythoncode {
@@ -243,6 +273,36 @@ str = str
 %enddef
 
 
+%define DECL_PYTHON_VARIABLELENGTHVECTOR_CLASS(swig_name, type)
+
+    %extend swig_name {
+        swig_name __add__(swig_name v2) {
+            return *self + v2;
+        }
+        swig_name __sub__(swig_name v2) {
+            return *self - v2;
+        }
+        type __getitem__(unsigned long d) {
+            if (d >= self->GetNumberOfElements()) { throw std::out_of_range("swig_name index out of range."); }
+            return self->operator[]( d );
+        }
+        void __setitem__(unsigned long d, type v) {
+            if (d >= self->GetNumberOfElements()) { throw std::out_of_range("swig_name index out of range."); }
+            self->operator[]( d ) = v;
+        }
+        unsigned int __len__() {
+            return self->GetNumberOfElements();
+        }
+        std::string __repr__() {
+            std::ostringstream msg;
+            msg << "swig_name (" << *self << ")";
+            return msg.str();
+        }
+    }
+
+%enddef
+
+
 %define DECL_PYTHON_OBJECT_CLASS(swig_name)
 
     %pythonprepend itkObject::AddObserver %{
@@ -301,11 +361,11 @@ str = str
                 return the first up-to-date output of a filter with multiple
                 outputs.
                 """
-                import itkHelpers
+                from itk.support import helpers
                 import warnings
 
                 name = self.GetNameOfClass()
-                snake = itkHelpers.camel_to_snake_case(name)
+                snake = helpers.camel_to_snake_case(name)
 
                 warnings.warn("WrapITK warning: itk.%s() is deprecated for procedural"
                 " interface. Use snake case function itk.%s() instead."
@@ -341,6 +401,67 @@ str = str
                     # and therefore the `GetOutput()` method should not be called. However,
                     # there is no garranty that this is always the case.
                     print("This filter cannot be called functionally. Use Object call instead.")
+            %}
+    }
+
+%enddef
+
+
+%define DECL_PYTHON_TRANSFORMBASETEMPLATE_CLASS(swig_name)
+    %extend swig_name {
+        %pythoncode %{
+            def keys(self):
+                """
+                Return keys related to the transform's metadata.
+                These keys are used in the dictionary resulting from dict(transform).
+                """
+                result = ['name', 'inputDimension', 'outputDimension', 'inputSpaceName', 'outputSpaceName', 'numberOfParameters', 'numberOfFixedParameters', 'parameters', 'fixedParameters']
+                return result
+
+            def __getitem__(self, key):
+                """Access metadata keys, see help(transform.keys), for string keys."""
+                import itk
+                if isinstance(key, str):
+                    state = itk.dict_from_transform(self)
+                    return state[0][key]
+
+            def __setitem__(self, key, value):
+                if isinstance(key, str):
+                    import numpy as np
+                    if key == 'name':
+                        self.SetObjectName(value)
+                    elif key == 'inputSpaceName':
+                        self.SetInputSpaceName(value)
+                    elif key == 'outputSpaceName':
+                        self.SetOutputSpaceName(value)
+                    elif key == 'fixedParameters' or key == 'parameters':
+                        if key == 'fixedParameters':
+                            o1 = self.GetFixedParameters()
+                        else:
+                            o1 = self.GetParameters()
+
+                        o1.SetSize(value.shape[0])
+                        for i, v in enumerate(value):
+                            o1.SetElement(i, v)
+
+                        if key == 'fixedParameters':
+                            self.SetFixedParameters(o1)
+                        else:
+                            self.SetParameters(o1)
+
+
+            def __getstate__(self):
+                """Get object state, necessary for serialization with pickle."""
+                import itk
+                state = itk.dict_from_transform(self)
+                return state
+
+            def __setstate__(self, state):
+                """Set object state, necessary for serialization with pickle."""
+                import itk
+                import numpy as np
+                deserialized = itk.transform_from_dict(state)
+                self.__dict__['this'] = deserialized
             %}
     }
 
@@ -385,7 +506,7 @@ str = str
 
             @property
             def ndim(self):
-                """Equivalant to the np.ndarray ndim attribute when converted
+                """Equivalent to the np.ndarray ndim attribute when converted
                 to an image with itk.array_view_from_image."""
                 spatial_dims = self.GetImageDimension()
                 if self.GetNumberOfComponentsPerPixel() > 1:
@@ -395,7 +516,7 @@ str = str
 
             @property
             def shape(self):
-                """Equivalant to the np.ndarray shape attribute when converted
+                """Equivalent to the np.ndarray shape attribute when converted
                 to an image with itk.array_view_from_image."""
                 itksize = self.GetLargestPossibleRegion().GetSize()
                 dim = len(itksize)
@@ -403,12 +524,22 @@ str = str
 
                 if(self.GetNumberOfComponentsPerPixel() > 1):
                     result = [self.GetNumberOfComponentsPerPixel(), ] + result
-                result.reverse()
+                # ITK is C-order. The shape needs to be reversed unless we are a view on
+                # a NumPy array that is Fortran-order.
+                reverse = True
+                base = self
+                while hasattr(base, 'base'):
+                    if hasattr(base, 'flags'):
+                        reverse = not base.flags.f_contiguous
+                        break
+                    base = base.base
+                if reverse:
+                    result.reverse()
                 return tuple(result)
 
             @property
             def dtype(self):
-                """Equivalant to the np.ndarray dtype attribute when converted
+                """Equivalent to the np.ndarray dtype attribute when converted
                 to an image with itk.array_view_from_image."""
                 import itk
                 first_template_arg = itk.template(self)[1][0]
@@ -419,9 +550,30 @@ str = str
                     # CovariantVector, etc.
                     return itk.template(first_template_arg)[1][0].dtype
 
+            def astype(self, pixel_type):
+                """Cast the image to the provided itk pixel type or equivalent NumPy dtype."""
+                import itk
+                import numpy as np
+                from itk.support import types
+
+                # if both a numpy dtype and a ctype exist, use the latter.
+                if type(pixel_type) is type:
+                    c_pixel_type = types.itkCType.GetCTypeForDType(pixel_type)
+                    if c_pixel_type is not None:
+                        pixel_type = c_pixel_type
+
+                # input_image_template is Image or VectorImage
+                (input_image_template, (input_pixel_type, input_image_dimension)) = itk.template(self)
+
+                if input_pixel_type is pixel_type:
+                    return self
+                OutputImageType = input_image_template[pixel_type, input_image_dimension]
+                cast = itk.cast_image_filter(self, ttype=(type(self), OutputImageType))
+                return cast
+
             def SetDirection(self, direction):
-                import itkHelpers
-                if itkHelpers.is_arraylike(direction):
+                from itk.support import helpers
+                if helpers.is_arraylike(direction):
                     import itk
                     import numpy as np
 
@@ -434,6 +586,80 @@ str = str
                     self.__SetDirection_orig__(matrix)
                 else:
                     self.__SetDirection_orig__(direction)
+
+            def keys(self):
+                """Return keys related to the image's metadata.
+
+                These keys are used in the dictionary resulting from dict(image).
+
+                These keys include MetaDataDictionary keys along with
+                'origin', 'spacing', and 'direction' keys, which
+                correspond to the image's Origin, Spacing, and Direction. However,
+                they are in (z, y, x) order as opposed to (x, y, z) order to
+                correspond to the indexing of the shape of the pixel buffer
+                array resulting from np.array(image).
+                """
+                meta_keys = self.GetMetaDataDictionary().GetKeys()
+                # Ignore deprecated, legacy members that cause issues
+                result = list(filter(lambda k: not k.startswith('ITK_original'), meta_keys))
+                result.extend(['origin', 'spacing', 'direction'])
+                return result
+
+            def __getitem__(self, key):
+                """Access metadata keys, see help(image.keys), for string
+                keys, otherwise provide NumPy indexing to the pixel buffer
+                array view. The index order follows NumPy array indexing
+                order, i.e. [z, y, x] versus [x, y, z]."""
+                import itk
+                if isinstance(key, str):
+                    import numpy as np
+                    if key == 'origin':
+                        return np.flip(np.asarray(self.GetOrigin()), axis=None)
+                    elif key == 'spacing':
+                        return np.flip(np.asarray(self.GetSpacing()), axis=None)
+                    elif key == 'direction':
+                        return np.flip(itk.array_from_matrix(self.GetDirection()), axis=None)
+                    else:
+                        return self.GetMetaDataDictionary()[key]
+                else:
+                    return itk.array_view_from_image(self).__getitem__(key)
+
+            def __setitem__(self, key, value):
+                """Set metadata keys, see help(image.keys), for string
+                keys, otherwise provide NumPy indexing to the pixel buffer
+                array view. The index order follows NumPy array indexing
+                order, i.e. [z, y, x] versus [x, y, z]."""
+                if isinstance(key, str):
+                    import numpy as np
+                    if key == 'origin':
+                        self.SetOrigin(np.flip(value, axis=None))
+                    elif key == 'spacing':
+                        self.SetSpacing(np.flip(value, axis=None))
+                    elif key == 'direction':
+                        self.SetDirection(np.flip(value, axis=None))
+                    else:
+                        self.GetMetaDataDictionary()[key] = value
+                else:
+                    import itk
+                    itk.array_view_from_image(self).__setitem__(key, value)
+
+            def __getstate__(self):
+                """Get object state, necessary for serialization with pickle."""
+                import itk
+                state = itk.dict_from_image(self)
+                return state
+
+            def __setstate__(self, state):
+                """Set object state, necessary for serialization with pickle."""
+                import itk
+                import numpy as np
+                deserialized = itk.image_from_dict(state)
+                self.__dict__['this'] = deserialized
+                self.SetOrigin(state['origin'])
+                self.SetSpacing(state['spacing'])
+                direction = np.asarray(self.GetDirection())
+                self.SetDirection(direction)
+
             %}
 
         // TODO: also add that method. But with which types?
@@ -457,6 +683,105 @@ str = str
   }
 %enddef
 
+%define DECL_PYTHON_POINTSET_CLASS(swig_name)
+    %extend swig_name {
+        %pythoncode %{
+            def keys(self):
+                """
+                Return keys related to the pointset's metadata.
+                These keys are used in the dictionary resulting from dict(pointset).
+                """
+                result = ['name', 'dimension', 'numberOfPoints', 'points', 'numberOfPointPixels', 'pointData']
+                return result
+
+            def __getitem__(self, key):
+                """Access metadata keys, see help(pointset.keys), for string keys."""
+                import itk
+                if isinstance(key, str):
+                    state = itk.dict_from_pointset(self)
+                    return state[key]
+
+            def __setitem__(self, key, value):
+                if isinstance(key, str):
+                    import numpy as np
+                    if key == 'name':
+                        self.SetObjectName(value)
+                    elif key == 'points':
+                        self.SetPoints(itk.vector_container_from_array(value))
+                    elif key == 'pointData':
+                        self.SetPointData(itk.vector_container_from_array(value))
+
+            def __getstate__(self):
+                """Get object state, necessary for serialization with pickle."""
+                import itk
+                state = itk.dict_from_pointset(self)
+                return state
+
+            def __setstate__(self, state):
+                """Set object state, necessary for serialization with pickle."""
+                import itk
+                import numpy as np
+                deserialized = itk.pointset_from_dict(state)
+                self.__dict__['this'] = deserialized
+            %}
+    }
+
+%enddef
+
+%define DECL_PYTHON_MESH_CLASS(swig_name)
+    %extend swig_name {
+        %pythoncode %{
+            def keys(self):
+                """
+                Return keys related to the mesh's metadata.
+                These keys are used in the dictionary resulting from dict(mesh).
+                """
+                result = ['meshType', 'name', 'dimension', 'numberOfPoints', 'points', 'numberOfPointPixels', 'pointData',
+                            'numberOfCells', 'cells', 'numberOfCellPixels', 'cellData', 'cellBufferSize']
+                return result
+
+            def __getitem__(self, key):
+                """Access metadata keys, see help(mesh.keys), for string keys."""
+                import itk
+                if isinstance(key, str):
+                    state = itk.dict_from_mesh(self)
+                    return state[key]
+
+            def __setitem__(self, key, value):
+                """Set metadata keys, see help(image.keys), for string
+                keys, otherwise provide NumPy indexing to the pixel buffer
+                array view. The index order follows NumPy array indexing
+                order, i.e. [z, y, x] versus [x, y, z]."""
+                if isinstance(key, str):
+                    import numpy as np
+                    if key == 'name':
+                        self.SetObjectName(value)
+                    elif key == 'points':
+                        self.SetPoints(itk.vector_container_from_array(value))
+                    elif key == 'cells':
+                        self.SetCellsArray(itk.vector_container_from_array(value))
+                    elif key == 'pointData':
+                        self.SetPointData(itk.vector_container_from_array(value))
+                    elif key == 'cellData':
+                        self.SetCellData(itk.vector_container_from_array(value))
+
+            def __getstate__(self):
+                """Get object state, necessary for serialization with pickle."""
+                import itk
+                state = itk.dict_from_mesh(self)
+                return state
+
+            def __setstate__(self, state):
+                """Set object state, necessary for serialization with pickle."""
+                import itk
+                import numpy as np
+                deserialized = itk.mesh_from_dict(state)
+                self.__dict__['this'] = deserialized
+            %}
+    }
+
+%enddef
+
 
 %define DECL_PYTHON_ITK_MATRIX(class_name)
   %rename(__GetVnlMatrix_orig__) class_name::GetVnlMatrix;
@@ -466,6 +791,21 @@ str = str
                 vnl_reference = self.__GetVnlMatrix_orig__()
                 vnl_copy = type(vnl_reference)(vnl_reference)
                 return vnl_copy
+
+            def __repr__(self):
+                vnl_mat = self.GetVnlMatrix()
+                python_list_mat = [
+                  [vnl_mat.get(i, j) for j in range(vnl_mat.cols())]
+                  for i in range(vnl_mat.rows())
+                ]
+                return type(self).__name__ + " (" + repr(python_list_mat) + ")"
+
+            def __array__(self, dtype=None):
+                import itk
+                import numpy as np
+                array = itk.array_from_matrix(self)
+                return np.asarray(array, dtype=dtype)
+
             %}
         }
 
@@ -515,9 +855,11 @@ str = str
                     } else if (PyFloat_Check(o)) {
                         itks[i] = (type)PyFloat_AsDouble(o);
                     } else {
+                        Py_DECREF(o);
                         PyErr_SetString(PyExc_ValueError,"Expecting a sequence of int or float");
                         return NULL;
                     }
+                    Py_DECREF(o);
                 }
                 $1 = &itks;
             }else if (PyInt_Check($input)) {
@@ -561,9 +903,11 @@ str = str
                     } else if (PyFloat_Check(o)) {
                         itks[i] = (type)PyFloat_AsDouble(o);
                     } else {
+                        Py_DECREF(o);
                         PyErr_SetString(PyExc_ValueError,"Expecting a sequence of int or float");
                         return NULL;
                     }
+                    Py_DECREF(o);
                 }
                 $1 = itks;
             }else if (PyInt_Check($input)) {
@@ -635,9 +979,11 @@ str = str
                 } else if (PyFloat_Check(o)) {
                     itks[i] = (value_type)PyFloat_AsDouble(o);
                 } else {
+                    Py_DECREF(o);
                     PyErr_SetString(PyExc_ValueError,"Expecting a sequence of int or float");
                     return NULL;
                 }
+                Py_DECREF(o);
             }
             $1 = &itks;
         }
@@ -666,9 +1012,11 @@ str = str
             } else if (PyFloat_Check(o)) {
                 itks[i] = (value_type)PyFloat_AsDouble(o);
             } else {
+                Py_DECREF(o);
                 PyErr_SetString(PyExc_ValueError,"Expecting a sequence of int or float");
                 return NULL;
             }
+            Py_DECREF(o);
         }
         $1 = itks;
     }
@@ -718,9 +1066,11 @@ str = str
                     if (PyInt_Check(o) || PyLong_Check(o)) {
                         itks[i] = PyInt_AsLong(o);
                     } else {
+                        Py_DECREF(o);
                         PyErr_SetString(PyExc_ValueError,"Expecting a sequence of int (or long)");
                         return NULL;
                     }
+                    Py_DECREF(o);
                 }
                 $1 = &itks;
             }else if (PyInt_Check($input) || PyLong_Check($input)) {
@@ -757,9 +1107,11 @@ str = str
                     if (PyInt_Check(o) || PyLong_Check(o)) {
                         itks[i] = PyInt_AsLong(o);
                     } else {
+                        Py_DECREF(o);
                         PyErr_SetString(PyExc_ValueError,"Expecting a sequence of int (or long)");
                         return NULL;
                     }
+                    Py_DECREF(o);
                 }
                 $1 = itks;
             }else if (PyInt_Check($input) || PyLong_Check($input)) {
@@ -844,9 +1196,11 @@ str = str
                     if(SWIG_ConvertPtr(o,(void **)(&raw_ptr),$descriptor(swig_name *), 0) == 0) {
                         vec_smartptr.push_back(raw_ptr);
                     } else {
+                        Py_DECREF(o);
                         PyErr_SetString(PyExc_ValueError,"Expecting a sequence of raw pointers (" #swig_name ")." );
                         SWIG_fail;
                     }
+                    Py_DECREF(o);
                 }
                 $1 = vec_smartptr;
             }

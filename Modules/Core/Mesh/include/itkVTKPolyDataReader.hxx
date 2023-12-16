@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkVTKPolyDataReader_hxx
 #define itkVTKPolyDataReader_hxx
 
-#include "itkVTKPolyDataReader.h"
 #include "itkMath.h"
 #include <fstream>
 #include <cstdio>
@@ -35,7 +34,7 @@ VTKPolyDataReader<TOutputMesh>::VTKPolyDataReader()
   //
   // Create the output
   //
-  typename TOutputMesh::Pointer output = TOutputMesh::New();
+  auto output = TOutputMesh::New();
   this->ProcessObject::SetNumberOfRequiredOutputs(1);
   this->ProcessObject::SetNthOutput(0, output.GetPointer());
 }
@@ -122,7 +121,7 @@ VTKPolyDataReader<TOutputMesh>::GenerateData()
   itkDebugMacro("pointLine " << pointLine);
 
   // we must use long here because this is the exact type specified by scanf
-  long int numberOfPoints = NumericTraits<PointIdentifier>::ZeroValue();
+  long numberOfPoints = NumericTraits<PointIdentifier>::ZeroValue();
 
   if (sscanf(pointLine.c_str(), "%ld", &numberOfPoints) != 1)
   {
@@ -146,7 +145,7 @@ VTKPolyDataReader<TOutputMesh>::GenerateData()
 
   PointType point;
 
-  for (PointIdentifier i = 0; i < itk::Math::CastWithRangeCheck<PointIdentifier>(numberOfPoints); i++)
+  for (PointIdentifier i = 0; i < itk::Math::CastWithRangeCheck<PointIdentifier>(numberOfPoints); ++i)
   {
     inputFile >> point;
     if (inputFile.eof())
@@ -188,8 +187,8 @@ VTKPolyDataReader<TOutputMesh>::GenerateData()
   //
 
   // we must use long here because this is the exact type specified by scanf
-  long int numberOfPolygons = NumericTraits<CellIdentifier>::ZeroValue();
-  long int numberOfIndices = NumericTraits<CellIdentifier>::ZeroValue();
+  long numberOfPolygons = NumericTraits<CellIdentifier>::ZeroValue();
+  long numberOfIndices = NumericTraits<CellIdentifier>::ZeroValue();
 
   if (sscanf(polygonLine.c_str(), "%ld %ld", &numberOfPolygons, &numberOfIndices) != 2)
   {
@@ -217,10 +216,10 @@ VTKPolyDataReader<TOutputMesh>::GenerateData()
   // Load the polygons into the itk::Mesh
   //
 
-  long int numberOfCellPoints;
-  long int ids[3]; // need a signed type on input.
+  long numberOfCellPoints;
+  long ids[3]; // need a signed type on input.
 
-  for (CellIdentifier i = 0; i < itk::Math::CastWithRangeCheck<CellIdentifier>(numberOfPolygons); i++)
+  for (CellIdentifier i = 0; i < itk::Math::CastWithRangeCheck<CellIdentifier>(numberOfPolygons); ++i)
   {
     std::getline(inputFile, line, '\n');
     if (inputFile.eof())
@@ -320,7 +319,7 @@ VTKPolyDataReader<TOutputMesh>::GenerateData()
 
     double pointData;
 
-    for (PointIdentifier pid = 0; pid < itk::Math::CastWithRangeCheck<PointIdentifier>(numberOfPoints); pid++)
+    for (PointIdentifier pid = 0; pid < itk::Math::CastWithRangeCheck<PointIdentifier>(numberOfPoints); ++pid)
     {
       if (inputFile.eof())
       {

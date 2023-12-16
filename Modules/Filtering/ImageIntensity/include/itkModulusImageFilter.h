@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 {
 
 /**
- *\class ModulusImageFilter
+ * \class ModulusImageFilter
  * \brief Computes the modulus (x % dividend) pixel-wise
  *
  * The input pixel type must support the c++ modulus operator (%).
@@ -44,7 +44,7 @@ class ITK_TEMPLATE_EXPORT ModulusImageFilter
   : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ModulusImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ModulusImageFilter);
 
   /** Standard class type aliases. */
   using Self = ModulusImageFilter;

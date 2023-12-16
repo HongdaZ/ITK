@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,27 +30,27 @@ namespace itk
  *
  * \ingroup ITKIOSpatialObjects
  */
-template <unsigned int NDimensions = 3,
+template <unsigned int VDimension = 3,
           typename PixelType = unsigned char,
-          typename TMeshTraits = DefaultStaticMeshTraits<PixelType, NDimensions, NDimensions>>
+          typename TMeshTraits = DefaultStaticMeshTraits<PixelType, VDimension, VDimension>>
 class ITK_TEMPLATE_EXPORT SpatialObjectReader : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SpatialObjectReader);
+  ITK_DISALLOW_COPY_AND_MOVE(SpatialObjectReader);
 
   /** SmartPointer type alias support */
   using Self = SpatialObjectReader;
   using Pointer = SmartPointer<Self>;
-  using SpatialObjectType = SpatialObject<NDimensions>;
+  using SpatialObjectType = SpatialObject<VDimension>;
   using SpatialObjectPointer = typename SpatialObjectType::Pointer;
-  using GroupType = GroupSpatialObject<NDimensions>;
+  using GroupType = GroupSpatialObject<VDimension>;
   using GroupPointer = typename GroupType::Pointer;
 
   /** base type for MetaConverters -- bidirections conversion btw
    *  SpatialObject & MetaObject
    */
-  using MetaConverterBaseType = MetaConverterBase<NDimensions>;
-  using MetaSceneConverterType = MetaSceneConverter<NDimensions, PixelType, TMeshTraits>;
+  using MetaConverterBaseType = MetaConverterBase<VDimension>;
+  using MetaSceneConverterType = MetaSceneConverter<VDimension, PixelType, TMeshTraits>;
 
   /** Method for creation through the object factory */
   itkNewMacro(Self);

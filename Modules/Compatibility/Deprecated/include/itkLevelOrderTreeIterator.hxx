@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkLevelOrderTreeIterator_hxx
 #define itkLevelOrderTreeIterator_hxx
 
-#include "itkLevelOrderTreeIterator.h"
 
 namespace itk
 {
@@ -73,8 +72,8 @@ LevelOrderTreeIterator<TTreeType>::LevelOrderTreeIterator(TTreeType *          t
 
 /** Return the type of iterator */
 template <typename TTreeType>
-typename LevelOrderTreeIterator<TTreeType>::NodeType
-LevelOrderTreeIterator<TTreeType>::GetType() const
+auto
+LevelOrderTreeIterator<TTreeType>::GetType() const -> NodeType
 {
   return TreeIteratorBaseEnums::TreeIteratorBaseNode::LEVELORDER;
 }
@@ -93,8 +92,8 @@ LevelOrderTreeIterator<TTreeType>::HasNext() const
 
 /** Return the next node */
 template <typename TTreeType>
-const typename LevelOrderTreeIterator<TTreeType>::ValueType &
-LevelOrderTreeIterator<TTreeType>::Next()
+auto
+LevelOrderTreeIterator<TTreeType>::Next() -> const ValueType &
 {
   this->m_Position = const_cast<TreeNodeType *>(FindNextNode());
   if (this->m_Position == nullptr)
@@ -122,8 +121,8 @@ LevelOrderTreeIterator<TTreeType>::GetEndLevel() const
 
 /** Find the next available node */
 template <typename TTreeType>
-const typename LevelOrderTreeIterator<TTreeType>::TreeNodeType *
-LevelOrderTreeIterator<TTreeType>::FindNextNode() const
+auto
+LevelOrderTreeIterator<TTreeType>::FindNextNode() const -> const TreeNodeType *
 {
   int                  level;
   const TreeNodeType * node;
@@ -160,7 +159,7 @@ LevelOrderTreeIterator<TTreeType>::GetLevel() const
   while (node->HasParent() && node != this->m_Root)
   {
     node = dynamic_cast<TreeNodeType *>(node->GetParent());
-    level++;
+    ++level;
   }
   return level;
 }
@@ -179,15 +178,15 @@ LevelOrderTreeIterator<TTreeType>::GetLevel(const TreeNodeType * node) const
   while (node->HasParent() && node != this->m_Root)
   {
     node = dynamic_cast<const TreeNodeType *>(node->GetParent());
-    level++;
+    ++level;
   }
   return level;
 }
 
 /** Helper function to find the next node */
 template <typename TTreeType>
-const typename LevelOrderTreeIterator<TTreeType>::TreeNodeType *
-LevelOrderTreeIterator<TTreeType>::FindNextNodeHelp() const
+auto
+LevelOrderTreeIterator<TTreeType>::FindNextNodeHelp() const -> const TreeNodeType *
 {
   if (m_Queue.empty())
   {
@@ -204,7 +203,7 @@ LevelOrderTreeIterator<TTreeType>::FindNextNodeHelp() const
 
   int size = currentNode->CountChildren();
 
-  for (int i = 0; i < size; i++)
+  for (int i = 0; i < size; ++i)
   {
     auto * child = dynamic_cast<TreeNodeType *>(currentNode->GetChild(i));
     if (child != nullptr)

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,14 +18,13 @@
 #ifndef itkMultiTransform_hxx
 #define itkMultiTransform_hxx
 
-#include "itkMultiTransform.h"
 
 namespace itk
 {
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int NSubDimensions>
-MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::MultiTransform()
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSubDimensions>
+MultiTransform<TParametersValueType, VDimension, VSubDimensions>::MultiTransform()
   : Superclass(0)
 {
   this->m_NumberOfLocalParameters = NumericTraits<NumberOfParametersType>::ZeroValue();
@@ -33,15 +32,15 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::MultiTransfor
   this->m_TransformQueue.clear();
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int NSubDimensions>
-typename MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::TransformCategoryEnum
-MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetTransformCategory() const
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSubDimensions>
+auto
+MultiTransform<TParametersValueType, VDimension, VSubDimensions>::GetTransformCategory() const -> TransformCategoryEnum
 {
   // If all sub-transforms are the same, return that type. Otherwise
   // return Unknown.
   TransformCategoryEnum result = Self::TransformCategoryEnum::UnknownTransformCategory;
 
-  for (SizeValueType tind = 0; tind < this->GetNumberOfTransforms(); tind++)
+  for (SizeValueType tind = 0; tind < this->GetNumberOfTransforms(); ++tind)
   {
     const TransformCategoryEnum type = this->GetNthTransformConstPointer(tind)->GetTransformCategory();
     if (tind == 0)
@@ -62,12 +61,12 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetTransformC
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int NSubDimensions>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSubDimensions>
 bool
-MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::IsLinear() const
+MultiTransform<TParametersValueType, VDimension, VSubDimensions>::IsLinear() const
 {
   // If all sub-transforms are linear, return true.
-  for (SizeValueType tind = 0; tind < this->GetNumberOfTransforms(); tind++)
+  for (SizeValueType tind = 0; tind < this->GetNumberOfTransforms(); ++tind)
   {
     if (!this->GetNthTransformConstPointer(tind)->IsLinear())
     {
@@ -78,9 +77,9 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::IsLinear() co
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int NSubDimensions>
-const typename MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::ParametersType &
-MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetParameters() const
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSubDimensions>
+auto
+MultiTransform<TParametersValueType, VDimension, VSubDimensions>::GetParameters() const -> const ParametersType &
 {
   /* Resize destructively. But if it's already this size, nothing is done so
    * it's efficient. */
@@ -103,9 +102,9 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetParameters
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int NSubDimensions>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSubDimensions>
 void
-MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::SetParameters(const ParametersType & inputParameters)
+MultiTransform<TParametersValueType, VDimension, VSubDimensions>::SetParameters(const ParametersType & inputParameters)
 {
   /* We do not copy inputParameters into m_Parameters,
    * to avoid unnecessary copying. */
@@ -147,9 +146,10 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::SetParameters
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int NSubDimensions>
-const typename MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::FixedParametersType &
-MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetFixedParameters() const
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSubDimensions>
+auto
+MultiTransform<TParametersValueType, VDimension, VSubDimensions>::GetFixedParameters() const
+  -> const FixedParametersType &
 {
   /* Resize destructively. But if it's already this size, nothing is done so
    * it's efficient. */
@@ -174,9 +174,9 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetFixedParam
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int NSubDimensions>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSubDimensions>
 void
-MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::SetFixedParameters(
+MultiTransform<TParametersValueType, VDimension, VSubDimensions>::SetFixedParameters(
   const FixedParametersType & inputParameters)
 {
   /* Verify proper input size. */
@@ -206,9 +206,10 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::SetFixedParam
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int NSubDimensions>
-typename MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::NumberOfParametersType
-MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetNumberOfParameters() const
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSubDimensions>
+auto
+MultiTransform<TParametersValueType, VDimension, VSubDimensions>::GetNumberOfParameters() const
+  -> NumberOfParametersType
 {
   /* Returns to total number of params in all transforms currently
    * set to be used for optimized.
@@ -220,7 +221,7 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetNumberOfPa
   NumberOfParametersType result = NumericTraits<NumberOfParametersType>::ZeroValue();
 
 
-  for (SizeValueType tind = 0; tind < this->GetNumberOfTransforms(); tind++)
+  for (SizeValueType tind = 0; tind < this->GetNumberOfTransforms(); ++tind)
   {
     /* Use raw pointer for efficiency */
     const TransformType * transform = this->GetNthTransformConstPointer(tind);
@@ -230,9 +231,10 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetNumberOfPa
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int NSubDimensions>
-typename MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::NumberOfParametersType
-MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetNumberOfLocalParameters() const
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSubDimensions>
+auto
+MultiTransform<TParametersValueType, VDimension, VSubDimensions>::GetNumberOfLocalParameters() const
+  -> NumberOfParametersType
 {
   if (this->GetMTime() == this->m_LocalParametersUpdateTime)
   {
@@ -246,7 +248,7 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetNumberOfLo
    * the value. */
   NumberOfParametersType result = NumericTraits<NumberOfParametersType>::ZeroValue();
 
-  for (SizeValueType tind = 0; tind < this->GetNumberOfTransforms(); tind++)
+  for (SizeValueType tind = 0; tind < this->GetNumberOfTransforms(); ++tind)
   {
     const TransformType * transform = this->GetNthTransformConstPointer(tind);
     result += transform->GetNumberOfLocalParameters();
@@ -256,13 +258,14 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetNumberOfLo
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int NSubDimensions>
-typename MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::NumberOfParametersType
-MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetNumberOfFixedParameters() const
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSubDimensions>
+auto
+MultiTransform<TParametersValueType, VDimension, VSubDimensions>::GetNumberOfFixedParameters() const
+  -> NumberOfParametersType
 {
   NumberOfParametersType result = NumericTraits<NumberOfParametersType>::ZeroValue();
 
-  for (SizeValueType tind = 0; tind < this->GetNumberOfTransforms(); tind++)
+  for (SizeValueType tind = 0; tind < this->GetNumberOfTransforms(); ++tind)
   {
     const TransformType * transform = this->GetNthTransformConstPointer(tind);
     result += transform->GetFixedParameters().Size();
@@ -271,9 +274,9 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetNumberOfFi
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int NSubDimensions>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSubDimensions>
 void
-MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::UpdateTransformParameters(
+MultiTransform<TParametersValueType, VDimension, VSubDimensions>::UpdateTransformParameters(
   const DerivativeType & update,
   ScalarType             factor)
 {
@@ -281,7 +284,7 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::UpdateTransfo
   /* NOTE: We might want to thread this over each sub-transform, if we
    * find we're working with longer lists of sub-transforms that do
    * not implement any threading of their own for UpdateTransformParameters.
-   * Since the plan is for a UpdateTransformParameters functor that is
+   * Since the plan is for an UpdateTransformParameters functor that is
    * user-assignable, we would need a method in the
    * functor to return whether or not it does therading. If all sub-transforms
    * return that they don't thread, we could do each sub-transform in its
@@ -298,7 +301,7 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::UpdateTransfo
 
   NumberOfParametersType offset = NumericTraits<NumberOfParametersType>::ZeroValue();
 
-  for (SizeValueType tind = 0; tind < this->GetNumberOfTransforms(); tind++)
+  for (SizeValueType tind = 0; tind < this->GetNumberOfTransforms(); ++tind)
   {
     // HACK:  The following line looks wrong.  We should not need to const_cast
     TransformType * subtransform = this->GetNthTransformModifiablePointer(tind);
@@ -321,9 +324,9 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::UpdateTransfo
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int NSubDimensions>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSubDimensions>
 bool
-MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetInverse(Self * inverse) const
+MultiTransform<TParametersValueType, VDimension, VSubDimensions>::GetInverse(Self * inverse) const
 {
   typename TransformQueueType::const_iterator it;
 
@@ -333,7 +336,7 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetInverse(Se
   inverse->ClearTransformQueue();
   for (it = this->m_TransformQueue.begin(); it != this->m_TransformQueue.end(); ++it)
   {
-    TransformTypePointer inverseTransform = dynamic_cast<TransformType *>(((*it)->GetInverseTransform()).GetPointer());
+    TransformTypePointer inverseTransform = ((*it)->GetInverseTransform()).GetPointer();
     if (!inverseTransform)
     {
       inverse->ClearTransformQueue();
@@ -350,9 +353,9 @@ MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::GetInverse(Se
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int NSubDimensions>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSubDimensions>
 void
-MultiTransform<TParametersValueType, NDimensions, NSubDimensions>::PrintSelf(std::ostream & os, Indent indent) const
+MultiTransform<TParametersValueType, VDimension, VSubDimensions>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

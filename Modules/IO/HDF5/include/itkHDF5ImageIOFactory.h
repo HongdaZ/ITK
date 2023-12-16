@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class HDF5ImageIOFactory
+ * \class HDF5ImageIOFactory
  * \author KEnt Williams
  * \brief Create instances of HDF5ImageIO objects using an object
  * factory.
@@ -35,7 +35,7 @@ namespace itk
 class ITKIOHDF5_EXPORT HDF5ImageIOFactory : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HDF5ImageIOFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(HDF5ImageIOFactory);
 
   /** Standard class type aliases. */
   using Self = HDF5ImageIOFactory;
@@ -60,7 +60,7 @@ public:
   static void
   RegisterOneFactory()
   {
-    HDF5ImageIOFactory::Pointer metaFactory = HDF5ImageIOFactory::New();
+    auto metaFactory = HDF5ImageIOFactory::New();
 
     ObjectFactoryBase::RegisterFactoryInternal(metaFactory);
   }

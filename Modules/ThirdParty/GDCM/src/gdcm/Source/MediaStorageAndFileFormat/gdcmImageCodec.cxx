@@ -553,7 +553,7 @@ bool ImageCodec::DoOverlayCleanup(std::istream &is, std::ostream &os)
           *it = ((*it >> (PF.GetBitsStored() - PF.GetHighBit() - 1)) & pmask);
           }
         os.write((char *)&buffer[0], bytesRead);
-        };
+        }
 #else
       //std::ostreambuf_iterator<char> end_of_stream_iterator;
       //std::ostreambuf_iterator<char> out_iter(os.rdbuf());
@@ -593,7 +593,7 @@ bool ImageCodec::DecodeByStreams(std::istream &is, std::ostream &os)
   assert( PI != PhotometricInterpretation::UNKNOWN );
   std::stringstream bs_os; // ByteSwap
   std::stringstream pcpc_os; // Padded Composite Pixel Code
-  std::stringstream pi_os; // PhotometricInterpretation
+  //std::stringstream pi_os; // PhotometricInterpretation
   std::stringstream pl_os; // PlanarConf
   std::istream *cur_is = &is;
 
@@ -645,6 +645,7 @@ bool ImageCodec::DecodeByStreams(std::istream &is, std::ostream &os)
     // Nothing needs to be done
     break;
   case PhotometricInterpretation::YBR_FULL_422:
+  case PhotometricInterpretation::YBR_PARTIAL_422:
       {
       // US-GE-4AICL142.dcm
       // Hopefully it has been done by the JPEG decoder itself...
@@ -665,7 +666,6 @@ bool ImageCodec::DecodeByStreams(std::istream &is, std::ostream &os)
   default:
     gdcmErrorMacro( "Unhandled PhotometricInterpretation: " << PI );
     return false;
-    assert(0);
     }
 
   if( /*PlanarConfiguration ||*/ RequestPlanarConfiguration )

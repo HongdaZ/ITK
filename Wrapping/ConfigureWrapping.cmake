@@ -5,9 +5,7 @@
 # projects.
 #
 # The following variables should be set before including this file:
-# ITK_WRAP_TCL
 # ITK_WRAP_PYTHON
-# ITK_WRAP_JAVA
 # ITK_WRAP_unsigned_char
 # ITK_WRAP_unsigned_short
 # ITK_WRAP_unsigned_long_long
@@ -21,7 +19,6 @@
 # ITK_WRAP_covariant_vector_float
 # ITK_WRAP_covariant_vector_double
 # ITK_WRAP_IMAGE_DIMS
-# ITK_WRAP_JAVA_DIR -- directory for java classes to be placed
 # WRAP_ITK_CONFIG_DIR -- directory where XXX.in files for CONFIGURE_FILE
 #                        commands are to be found.
 # WRAP_ITK_CMAKE_DIR -- directory where XXX.cmake files are to be found
@@ -47,6 +44,10 @@
 # Find ITK
 #-----------------------------------------------------------------------------
 find_package(ITK REQUIRED)
+set(ITK_NO_IMAGEIO_FACTORY_REGISTER_MANAGER ON)
+set(ITK_NO_MESHIO_FACTORY_REGISTER_MANAGER ON)
+set(ITK_NO_TRANSFORMIO_FACTORY_REGISTER_MANAGER ON)
+set(ITK_NO_FFTIMAGEFILTERINIT_FACTORY_REGISTER_MANAGER ON)
 include(${ITK_USE_FILE})
 
 ###############################################################################
@@ -55,33 +56,14 @@ include(${ITK_USE_FILE})
 # set(CMAKE_SKIP_RPATH ON CACHE BOOL "ITK wrappers must not have runtime path information." FORCE)
 
 #------------------------------------------------------------------------------
-# System dependant wrapping stuff
-
-# Make a variable that expands to nothing if there are no configuration types,
-# otherwise it expands to the active type plus a /, so that in either case,
-# the variable can be used in the middle of a path.
-if(CMAKE_CONFIGURATION_TYPES)
-  set(WRAP_ITK_BUILD_INTDIR "${CMAKE_CFG_INTDIR}/")
-  set(WRAP_ITK_INSTALL_INTDIR "\${BUILD_TYPE}/")
-
-  # horrible hack to avoid having ${BUILD_TYPE} expanded to an empty string
-  # while passing through the macros.
-  # Instead of expanding to an empty string, it expands to ${BUILD_TYPE}
-  # and so can be reexpanded again and again (and again)
-  set(BUILD_TYPE "\${BUILD_TYPE}")
-
-else()
-  set(WRAP_ITK_BUILD_INTDIR "")
-  set(WRAP_ITK_INSTALL_INTDIR "")
-endif()
-
+# System dependent wrapping stuff
 
 set(ITK_WRAP_NEEDS_DEPEND 1)
 if(${CMAKE_MAKE_PROGRAM} MATCHES make)
   set(ITK_WRAP_NEEDS_DEPEND 0)
 endif()
 
-set(CSWIG_EXTRA_LINKFLAGS )
+set(CSWIG_EXTRA_LINKFLAGS)
 if(CMAKE_BUILD_TOOL MATCHES "(msdev|devenv|nmake)")
   set(CSWIG_EXTRA_LINKFLAGS "/IGNORE:4049 /IGNORE:4109")
 endif()
@@ -102,8 +84,6 @@ else()
   set(WRAP_ITK_LIBNAME_PREFIX "")
 endif()
 
-# generators dir
-set(GENERATORS_SRC_DIR "${WRAP_ITK_CMAKE_DIR}/Generators" CACHE INTERNAL "generators source directory")
 
 ###############################################################################
 # Define install files macro. If we are building WrapITK, the generated files
@@ -154,6 +134,6 @@ include("${WRAP_ITK_CMAKE_DIR}/WrapITKTypes.cmake")
 # Lets the target generators do their job
 ###############################################################################
 add_subdirectory("${WRAP_ITK_CMAKE_DIR}/Generators" "${CMAKE_CURRENT_BINARY_DIR}/Generators")
-# get the porperties from the generators dirs - there should be others than this one
+# get the properties from the generators dirs - there should be others than this one
 get_directory_property(inc DIRECTORY "${WRAP_ITK_CMAKE_DIR}/Generators" INCLUDE_DIRECTORIES)
 include_directories(${inc})

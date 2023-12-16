@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
  *
  *=========================================================================*/
 
-#include "itkTestDriverIncludeRequiredIOFactories.h"
+#include "itkTestDriverIncludeRequiredFactories.h"
 
 
 /* Select the environment variable holding the shared library runtime
@@ -126,7 +126,7 @@ AddEntriesBeforeLibraryPath(const ArgumentsList & args)
       itksys::SystemTools::PutEnv(libpath64.c_str());
     }
 
-    i++;
+    ++i;
   }
 }
 
@@ -182,7 +182,7 @@ TestDriverInvokeProcess(const ArgumentsList & args)
 {
   // a nullptr is required at the end of the table
   auto ** argv = new char *[args.size() + 1];
-  for (unsigned int i = 0; i < args.size(); i++)
+  for (unsigned int i = 0; i < args.size(); ++i)
   {
     argv[i] = args[i];
   }
@@ -263,7 +263,7 @@ TestDriverInvokeProcess(const ArgumentsList & args)
 
 
 int
-main(int ac, char * av[])
+main(int argc, char * argv[])
 {
   try
   {
@@ -278,7 +278,7 @@ main(int ac, char * av[])
 
   ProcessedOutputType po;
 
-  int result = ProcessArguments(&ac, &av, &po);
+  int result = ProcessArguments(&argc, &argv, &po);
 
   if (result)
   {

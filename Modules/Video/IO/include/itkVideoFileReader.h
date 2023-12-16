@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 {
 
 /**
- *\class VideoFileReader
+ * \class VideoFileReader
  * \brief Reader that creates a VideoStream
  *
  * This class is responsible for reading video information from files. It is a
@@ -42,7 +42,7 @@ template <typename TOutputVideoStream>
 class ITK_TEMPLATE_EXPORT VideoFileReader : public VideoSource<TOutputVideoStream>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VideoFileReader);
+  ITK_DISALLOW_COPY_AND_MOVE(VideoFileReader);
 
   /** Standard class type aliases. */
   using Self = VideoFileReader;
@@ -84,6 +84,7 @@ public:
    * frame for the largest possible temporal region */
   itkSetMacro(IFrameSafe, bool);
   itkGetMacro(IFrameSafe, bool);
+  itkBooleanMacro(IFrameSafe);
 
   /** Set up the output information */
   void

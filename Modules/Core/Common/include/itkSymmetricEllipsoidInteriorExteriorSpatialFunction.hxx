@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSymmetricEllipsoidInteriorExteriorSpatialFunction_hxx
 #define itkSymmetricEllipsoidInteriorExteriorSpatialFunction_hxx
 
-#include "itkSymmetricEllipsoidInteriorExteriorSpatialFunction.h"
 #include <cmath>
 
 namespace itk
@@ -32,8 +31,9 @@ SymmetricEllipsoidInteriorExteriorSpatialFunction<VDimension,
 }
 
 template <unsigned int VDimension, typename TInput>
-typename SymmetricEllipsoidInteriorExteriorSpatialFunction<VDimension, TInput>::OutputType
+auto
 SymmetricEllipsoidInteriorExteriorSpatialFunction<VDimension, TInput>::Evaluate(const InputType & position) const
+  -> OutputType
 {
   double uniqueTerm;    // Term in ellipsoid equation for unique axis
   double symmetricTerm; // Term in ellipsoid equation for symmetric axes
@@ -43,7 +43,7 @@ SymmetricEllipsoidInteriorExteriorSpatialFunction<VDimension, TInput>::Evaluate(
 
   // Project the position onto the major axis, normalize by axis length,
   // and determine whether position is inside ellipsoid.
-  for (unsigned int i = 0; i < VDimension; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     pointVector[i] = position[i] - m_Center[i];
   }

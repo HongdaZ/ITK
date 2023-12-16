@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@
 
 #include "itkTestingComparisonImageFilter.h"
 #include "itkExtractImageFilter.h"
+#include "itkTestingMacros.h"
 
 using PixelType = unsigned char;
 using ImageType = itk::Image<PixelType, 3>;
@@ -42,14 +43,14 @@ SameRegionImage(ImageConstPointer test, ImageConstPointer baseline)
   unsigned int numberOfPixelTolerance = 0;
 
   using ExtractImageFilter = itk::ExtractImageFilter<ImageType, ImageType>;
-  ExtractImageFilter::Pointer extractor = ExtractImageFilter::New();
+  auto extractor = ExtractImageFilter::New();
   extractor->SetDirectionCollapseToSubmatrix();
   extractor->SetExtractionRegion(test->GetLargestPossibleRegion());
   extractor->SetInput(baseline);
 
 
   using DiffType = itk::Testing::ComparisonImageFilter<ImageType, ImageType>;
-  DiffType::Pointer diff = DiffType::New();
+  auto diff = DiffType::New();
   diff->SetValidInput(extractor->GetOutput());
   diff->SetTestInput(test);
   diff->SetDifferenceThreshold(intensityTolerance);
@@ -71,30 +72,32 @@ itkImageFileReaderStreamingTest2(int argc, char * argv[])
 {
   if (argc < 2)
   {
-    std::cerr << "Usage: " << argv[0] << " input " << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " input " << std::endl;
     return EXIT_FAILURE;
   }
 
   using ReaderType = itk::ImageFileReader<ImageType>;
 
-  ReaderType::Pointer baselineReader = ReaderType::New();
+  auto baselineReader = ReaderType::New();
   baselineReader->SetFileName(argv[1]);
   baselineReader->UpdateLargestPossibleRegion();
 
   ImageType::ConstPointer baselineImage = baselineReader->GetOutput();
 
-  ReaderType::Pointer streamingReader = ReaderType::New();
+  auto streamingReader = ReaderType::New();
   streamingReader->SetFileName(argv[1]);
   streamingReader->UseStreamingOn();
 
 
   using MonitorFilter = itk::PipelineMonitorImageFilter<ImageType>;
-  MonitorFilter::Pointer monitor = MonitorFilter::New();
+  auto monitor = MonitorFilter::New();
   monitor->SetInput(streamingReader->GetOutput());
 
 
   using ExtractImageFilter = itk::ExtractImageFilter<ImageType, ImageType>;
-  ExtractImageFilter::Pointer extractor = ExtractImageFilter::New();
+  auto extractor = ExtractImageFilter::New();
   extractor->SetDirectionCollapseToSubmatrix();
   extractor->SetInput(monitor->GetOutput());
 

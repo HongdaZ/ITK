@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkGridImageSource_hxx
 
 #include "itkGaussianKernelFunction.h"
-#include "itkGridImageSource.h"
 #include "itkImageLinearIteratorWithIndex.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkTotalProgressReporter.h"
@@ -49,7 +48,7 @@ GridImageSource<TOutputImage>::BeforeThreadedGenerateData()
   this->m_PixelArrays = PixelArrayContainerType::New();
   m_PixelArrays->Initialize();
 
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     if (this->m_GridOffset[i] > this->m_GridSpacing[i])
     {
@@ -74,7 +73,7 @@ GridImageSource<TOutputImage>::BeforeThreadedGenerateData()
         output->TransformIndexToPhysicalPoint(index, point);
 
         RealType val = 0;
-        for (unsigned int j = 0; j < numberOfGaussians; j++)
+        for (unsigned int j = 0; j < numberOfGaussians; ++j)
         {
           RealType num = point[i] - static_cast<RealType>(j - 2) * this->m_GridSpacing[i] - output->GetOrigin()[i] -
                          this->m_GridOffset[i];
@@ -102,7 +101,7 @@ GridImageSource<TOutputImage>::DynamicThreadedGenerateData(const ImageRegionType
   {
     RealType                      val = 1.0;
     typename ImageType::IndexType index = It.GetIndex();
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       val *= this->m_PixelArrays->GetElement(i)[index[i]];
     }

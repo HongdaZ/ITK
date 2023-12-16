@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkLevelSetMotionRegistrationFunction_hxx
 #define itkLevelSetMotionRegistrationFunction_hxx
 
-#include "itkLevelSetMotionRegistrationFunction.h"
 #include "itkMacro.h"
 #include "itkMath.h"
 
@@ -33,7 +32,7 @@ LevelSetMotionRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField
   RadiusType   r;
   unsigned int j;
 
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     r[j] = 0;
   }
@@ -46,7 +45,7 @@ LevelSetMotionRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField
   this->SetMovingImage(nullptr);
   this->SetFixedImage(nullptr);
 
-  typename DefaultInterpolatorType::Pointer interp = DefaultInterpolatorType::New();
+  auto interp = DefaultInterpolatorType::New();
 
   m_MovingImageInterpolator = static_cast<InterpolatorType *>(interp.GetPointer());
 
@@ -249,13 +248,13 @@ LevelSetMotionRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField
   // Get fixed image related information
   // Note: no need to check the index is within
   // fixed image buffer. This is done by the external filter.
-  const auto fixedValue = (double)this->GetFixedImage()->GetPixel(index);
+  const auto fixedValue = static_cast<double>(this->GetFixedImage()->GetPixel(index));
 
   // Get moving image related information
   PointType mappedPoint;
 
   this->GetFixedImage()->TransformIndexToPhysicalPoint(index, mappedPoint);
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     mappedPoint[j] += it.GetCenterPixel()[j];
   }
@@ -292,7 +291,7 @@ LevelSetMotionRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField
   const double centralValue = m_SmoothMovingImageInterpolator->Evaluate(mPoint);
   double       forwardDifferences[ImageDimension];
   double       backwardDifferences[ImageDimension];
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     mPoint[j] += mSpacing[j];
     if (m_SmoothMovingImageInterpolator->IsInsideBuffer(mPoint))
@@ -329,7 +328,7 @@ LevelSetMotionRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField
   //
   CovariantVectorType gradient;
   double              gradientMagnitude = 0.0;
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     if (forwardDifferences[j] * backwardDifferences[j] > 0.0)
     {
@@ -368,7 +367,7 @@ LevelSetMotionRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField
   }
 
   double L1norm = 0.0;
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     update[j] = speedValue * gradient[j] / (gradientMagnitude + m_Alpha);
     if (globalData)

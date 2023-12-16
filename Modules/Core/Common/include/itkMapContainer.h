@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ class ITK_TEMPLATE_EXPORT MapContainer
   , private std::map<TElementIdentifier, TElement>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MapContainer);
+  ITK_DISALLOW_COPY_AND_MOVE(MapContainer);
 
   /** Standard class type aliases. */
   using Self = MapContainer;
@@ -97,22 +97,26 @@ public:
 
   /** Cast the container to a STL container type */
   STLContainerType &
-  CastToSTLContainer() ITK_NOEXCEPT
+  CastToSTLContainer() noexcept
   {
     return *this;
   }
 
   /** Cast the container to a const STL container type */
   const STLContainerType &
-  CastToSTLConstContainer() const ITK_NOEXCEPT
+  CastToSTLConstContainer() const noexcept
   {
     return *this;
   }
 
   using STLContainerType::begin;
+  using STLContainerType::cbegin;
   using STLContainerType::end;
+  using STLContainerType::cend;
   using STLContainerType::rbegin;
+  using STLContainerType::crbegin;
   using STLContainerType::rend;
+  using STLContainerType::crend;
 
   using STLContainerType::empty;
   using STLContainerType::size;
@@ -173,18 +177,9 @@ public:
     using reference = typename MapIterator::reference;
 
     Iterator() = default;
-    Iterator(const Iterator & i)
-      : m_Iter(i.m_Iter)
-    {}
     Iterator(const MapIterator & i)
       : m_Iter(i)
     {}
-    Iterator &
-    operator=(const Iterator & r)
-    {
-      m_Iter = r.m_Iter;
-      return *this;
-    }
 
     Iterator & operator*() { return *this; }
     Iterator * operator->() { return this; }
@@ -220,21 +215,16 @@ public:
     {
       return m_Iter == r.m_Iter;
     }
-    bool
-    operator!=(const Iterator & r) const
-    {
-      return m_Iter != r.m_Iter;
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Iterator);
+
     bool
     operator==(const ConstIterator & r) const
     {
       return m_Iter == r.m_Iter;
     }
-    bool
-    operator!=(const ConstIterator & r) const
-    {
-      return m_Iter != r.m_Iter;
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
 
     /** Get the index into the MapContainer associated with this iterator.   */
     ElementIdentifier
@@ -275,12 +265,6 @@ public:
     ConstIterator(const Iterator & r)
       : m_Iter(r.m_Iter)
     {}
-    ConstIterator &
-    operator=(const ConstIterator & r)
-    {
-      m_Iter = r.m_Iter;
-      return *this;
-    }
 
     ConstIterator & operator*() { return *this; }
     ConstIterator * operator->() { return this; }
@@ -316,21 +300,16 @@ public:
     {
       return m_Iter == r.m_Iter;
     }
-    bool
-    operator!=(const Iterator & r) const
-    {
-      return m_Iter != r.m_Iter;
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Iterator);
+
     bool
     operator==(const ConstIterator & r) const
     {
       return m_Iter == r.m_Iter;
     }
-    bool
-    operator!=(const ConstIterator & r) const
-    {
-      return m_Iter != r.m_Iter;
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
 
     /** Get the index into the MapContainer associated with this iterator.   */
     ElementIdentifier

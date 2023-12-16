@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkVectorContainerToListSampleAdaptor_hxx
 #define itkVectorContainerToListSampleAdaptor_hxx
 
-#include "itkVectorContainerToListSampleAdaptor.h"
 
 namespace itk
 {
@@ -36,21 +35,12 @@ VectorContainerToListSampleAdaptor<TVectorContainer>::PrintSelf(std::ostream & o
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "VectorContainer: ";
-  if (this->m_VectorContainer.IsNotNull())
-  {
-    os << this->m_VectorContainer << std::endl;
-  }
-  else
-  {
-    os << "not set." << std::endl;
-  }
+  itkPrintSelfObjectMacro(VectorContainer);
 }
 
-/** returns the number of measurement vectors in this container*/
 template <typename TVectorContainer>
-typename VectorContainerToListSampleAdaptor<TVectorContainer>::InstanceIdentifier
-VectorContainerToListSampleAdaptor<TVectorContainer>::Size() const
+auto
+VectorContainerToListSampleAdaptor<TVectorContainer>::Size() const -> InstanceIdentifier
 {
   if (this->m_VectorContainer.IsNull())
   {
@@ -85,8 +75,8 @@ inline typename VectorContainerToListSampleAdaptor<TVectorContainer>::AbsoluteFr
 }
 
 template <typename TVectorContainer>
-typename VectorContainerToListSampleAdaptor<TVectorContainer>::TotalAbsoluteFrequencyType
-VectorContainerToListSampleAdaptor<TVectorContainer>::GetTotalFrequency() const
+auto
+VectorContainerToListSampleAdaptor<TVectorContainer>::GetTotalFrequency() const -> TotalAbsoluteFrequencyType
 {
   if (this->m_VectorContainer.IsNull())
   {

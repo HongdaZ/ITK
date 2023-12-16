@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@
 namespace itk
 {
 /**
- *\class MultiLabelSTAPLEImageFilter
+ * \class MultiLabelSTAPLEImageFilter
  *
  * \brief This filter performs a pixelwise combination of an arbitrary number
  * of input images, where each of them represents a segmentation of the same
@@ -119,7 +119,7 @@ template <typename TInputImage, typename TOutputImage = TInputImage, typename TW
 class ITK_TEMPLATE_EXPORT MultiLabelSTAPLEImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiLabelSTAPLEImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MultiLabelSTAPLEImageFilter);
 
   /** Standard class type aliases. */
   using Self = MultiLabelSTAPLEImageFilter;
@@ -149,7 +149,7 @@ public:
   using OutputImagePointer = typename OutputImageType::Pointer;
 
   /** Superclass type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
 
   /** Iterator types. */
   using InputConstIteratorType = ImageRegionConstIterator<TInputImage>;

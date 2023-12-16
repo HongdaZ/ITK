@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  *=========================================================================*/
 #include "itkRecursiveGaussianImageFilter.h"
 #include "itkVectorImage.h"
+#include "itkTestingMacros.h"
 
 int
 itkRecursiveGaussianImageFiltersOnVectorImageTest(int, char *[])
@@ -53,10 +54,8 @@ itkRecursiveGaussianImageFiltersOnVectorImageTest(int, char *[])
   ImageType::RegionType region;
   region.SetSize(size);
   region.SetIndex(index);
-  ImageType::Pointer inputImage = ImageType::New();
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  auto inputImage = ImageType::New();
+  inputImage->SetRegions(region);
   inputImage->SetNumberOfComponentsPerPixel(NumberOfComponents);
   inputImage->Allocate();
   inputImage->FillBuffer(vector0);
@@ -78,8 +77,8 @@ itkRecursiveGaussianImageFiltersOnVectorImageTest(int, char *[])
   // is filtered independently.
   //
   using FilterType = itk::RecursiveGaussianImageFilter<ImageType, ImageType>;
-  FilterType::Pointer filterX = FilterType::New();
-  FilterType::Pointer filterY = FilterType::New();
+  auto filterX = FilterType::New();
+  auto filterY = FilterType::New();
   filterX->SetDirection(0); // 0 --> X direction
   filterY->SetDirection(1); // 1 --> Y direction
   filterX->SetOrder(itk::GaussianOrderEnum::ZeroOrder);
@@ -90,16 +89,9 @@ itkRecursiveGaussianImageFiltersOnVectorImageTest(int, char *[])
   filterY->SetInput(filterX->GetOutput());
   filterX->SetSigma(sigma);
   filterY->SetSigma(sigma);
-  try
-  {
-    filterY->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
-    std::cout << "ExceptionObject caught a !" << std::endl;
-    std::cout << err << std::endl;
-    return -1;
-  }
+
+  ITK_TRY_EXPECT_NO_EXCEPTION(filterY->Update());
+
 
   // Test a few pixels of the  fitlered image
   //

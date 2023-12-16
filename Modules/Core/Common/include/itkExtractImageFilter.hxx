@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkExtractImageFilter_hxx
 #define itkExtractImageFilter_hxx
 
-#include "itkExtractImageFilter.h"
 #include "itkImageAlgorithm.h"
 #include "itkObjectFactory.h"
 #include "itkProgressReporter.h"
@@ -85,7 +84,7 @@ ExtractImageFilter<TInputImage, TOutputImage>::SetExtractionRegion(InputImageReg
     {
       outputSize[nonzeroSizeCount] = inputSize[i];
       outputIndex[nonzeroSizeCount] = extractRegion.GetIndex()[i];
-      nonzeroSizeCount++;
+      ++nonzeroSizeCount;
     }
   }
 
@@ -195,7 +194,7 @@ ExtractImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
               ++nonZeroCount2;
             }
           }
-          nonZeroCount++;
+          ++nonZeroCount;
         }
       }
     }

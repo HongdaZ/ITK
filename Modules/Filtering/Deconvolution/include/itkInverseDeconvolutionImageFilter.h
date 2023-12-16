@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,11 +19,12 @@
 #define itkInverseDeconvolutionImageFilter_h
 
 #include "itkFFTConvolutionImageFilter.h"
+#include "itkMath.h"
 
 namespace itk
 {
 /**
- *\class InverseDeconvolutionImageFilter
+ * \class InverseDeconvolutionImageFilter
  * \brief The direct linear inverse deconvolution filter.
  *
  * The inverse filter is the most straightforward deconvolution
@@ -59,7 +60,7 @@ class ITK_TEMPLATE_EXPORT InverseDeconvolutionImageFilter
   : public FFTConvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InverseDeconvolutionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(InverseDeconvolutionImageFilter);
 
   using Self = InverseDeconvolutionImageFilter;
   using Superclass = FFTConvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>;
@@ -78,26 +79,26 @@ public:
   using InputImageType = TInputImage;
   using OutputImageType = TOutputImage;
   using KernelImageType = TKernelImage;
-  using InputPixelType = typename Superclass::InputPixelType;
-  using OutputPixelType = typename Superclass::OutputPixelType;
-  using KernelPixelType = typename Superclass::KernelPixelType;
-  using InputIndexType = typename Superclass::InputIndexType;
-  using OutputIndexType = typename Superclass::OutputIndexType;
-  using KernelIndexType = typename Superclass::KernelIndexType;
-  using InputSizeType = typename Superclass::InputSizeType;
-  using OutputSizeType = typename Superclass::OutputSizeType;
-  using KernelSizeType = typename Superclass::KernelSizeType;
-  using SizeValueType = typename Superclass::SizeValueType;
-  using InputRegionType = typename Superclass::InputRegionType;
-  using OutputRegionType = typename Superclass::OutputRegionType;
-  using KernelRegionType = typename Superclass::KernelRegionType;
+  using typename Superclass::InputPixelType;
+  using typename Superclass::OutputPixelType;
+  using typename Superclass::KernelPixelType;
+  using typename Superclass::InputIndexType;
+  using typename Superclass::OutputIndexType;
+  using typename Superclass::KernelIndexType;
+  using typename Superclass::InputSizeType;
+  using typename Superclass::OutputSizeType;
+  using typename Superclass::KernelSizeType;
+  using typename Superclass::SizeValueType;
+  using typename Superclass::InputRegionType;
+  using typename Superclass::OutputRegionType;
+  using typename Superclass::KernelRegionType;
 
   /** Internal image types. */
-  using InternalImageType = typename Superclass::InternalImageType;
-  using InternalImagePointerType = typename Superclass::InternalImagePointerType;
-  using InternalComplexType = typename Superclass::InternalComplexType;
-  using InternalComplexImageType = typename Superclass::InternalComplexImageType;
-  using InternalComplexImagePointerType = typename Superclass::InternalComplexImagePointerType;
+  using typename Superclass::InternalImageType;
+  using typename Superclass::InternalImagePointerType;
+  using typename Superclass::InternalComplexType;
+  using typename Superclass::InternalComplexImageType;
+  using typename Superclass::InternalComplexImagePointerType;
 
   /** Set/get the threshold value used to determine whether a
    * frequency of the Fourier transform of the blurring kernel is
@@ -130,19 +131,17 @@ public:
   ~InverseDeconvolutionFunctor() = default;
 
   bool
-  operator!=(const InverseDeconvolutionFunctor &) const
+  operator==(const InverseDeconvolutionFunctor &) const
   {
-    return false;
+    return true;
   }
-  bool
-  operator==(const InverseDeconvolutionFunctor & other) const
-  {
-    return !(*this != other);
-  }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(InverseDeconvolutionFunctor);
+
   inline TOutput
   operator()(const TInput1 & I, const TInput2 & H) const
   {
-    const double absH = std::abs(H);
+    const double absH = itk::Math::abs(H);
     TOutput      value = NumericTraits<TOutput>::ZeroValue();
     if (absH >= m_KernelZeroMagnitudeThreshold)
     {

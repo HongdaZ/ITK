@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageToSpatialObjectMetric_hxx
 #define itkImageToSpatialObjectMetric_hxx
 
-#include "itkImageToSpatialObjectMetric.h"
 
 namespace itk
 {
@@ -74,10 +73,7 @@ ImageToSpatialObjectMetric<TFixedImage, TMovingSpatialObject>::Initialize()
   }
 
   // If the image is provided by a source, update the source.
-  if (m_FixedImage->GetSource())
-  {
-    m_FixedImage->GetSource()->Update();
-  }
+  m_FixedImage->UpdateSource();
 
   m_Interpolator->SetInputImage(m_FixedImage);
 

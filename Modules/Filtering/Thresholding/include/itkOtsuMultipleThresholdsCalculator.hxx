@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkOtsuMultipleThresholdsCalculator_hxx
 
 #include "itkMath.h"
-#include "itkOtsuMultipleThresholdsCalculator.h"
 
 namespace itk
 {
@@ -32,8 +31,8 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::OtsuMultipleThresholdsCalcula
 }
 
 template <typename TInputHistogram>
-const typename OtsuMultipleThresholdsCalculator<TInputHistogram>::OutputType &
-OtsuMultipleThresholdsCalculator<TInputHistogram>::GetOutput()
+auto
+OtsuMultipleThresholdsCalculator<TInputHistogram>::GetOutput() -> const OutputType &
 {
   return m_Output;
 }
@@ -83,7 +82,7 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::IncrementThresholds(InstanceI
 
       // Set higher thresholds adjacent to their previous ones, and update mean
       // and frequency of the respective classes
-      for (k = j + 1; k < m_NumberOfThresholds; k++)
+      for (k = j + 1; k < m_NumberOfThresholds; ++k)
       {
         thresholdIndexes[k] = thresholdIndexes[k - 1] + 1;
         classFrequency[k] = histogram->GetFrequency(thresholdIndexes[k]);
@@ -101,7 +100,7 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::IncrementThresholds(InstanceI
       classFrequency[numberOfClasses - 1] = histogram->GetTotalFrequency();
       classMean[numberOfClasses - 1] = globalMean * histogram->GetTotalFrequency();
 
-      for (k = 0; k < numberOfClasses - 1; k++)
+      for (k = 0; k < numberOfClasses - 1; ++k)
       {
         classFrequency[numberOfClasses - 1] -= classFrequency[k];
         classMean[numberOfClasses - 1] -= classMean[k] * static_cast<MeanType>(classFrequency[k]);
@@ -166,7 +165,7 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::Compute()
   InstanceIdentifierVectorType thresholdIndexes(m_NumberOfThresholds);
 
   SizeValueType j;
-  for (j = 0; j < m_NumberOfThresholds; j++)
+  for (j = 0; j < m_NumberOfThresholds; ++j)
   {
     thresholdIndexes[j] = j;
   }
@@ -176,7 +175,7 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::Compute()
   // Compute frequency and mean of initial classes
   FrequencyType       freqSum = NumericTraits<FrequencyType>::ZeroValue();
   FrequencyVectorType classFrequency(numberOfClasses);
-  for (j = 0; j < numberOfClasses - 1; j++)
+  for (j = 0; j < numberOfClasses - 1; ++j)
   {
     classFrequency[j] = histogram->GetFrequency(thresholdIndexes[j]);
     freqSum += classFrequency[j];
@@ -186,14 +185,14 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::Compute()
   // Convert the frequencies to probabilities (i.e. normalize the histogram).
   SizeValueType    histSize = histogram->GetSize()[0];
   WeightVectorType imgPDF(histSize);
-  for (j = 0; j < histSize; j++)
+  for (j = 0; j < histSize; ++j)
   {
     imgPDF[j] = (WeightType)histogram->GetFrequency(j) / (WeightType)globalFrequency;
   }
 
   MeanType       meanSum = NumericTraits<MeanType>::ZeroValue();
   MeanVectorType classMean(numberOfClasses);
-  for (j = 0; j < numberOfClasses - 1; j++)
+  for (j = 0; j < numberOfClasses - 1; ++j)
   {
     if (NumericTraits<FrequencyType>::IsPositive(classFrequency[j]))
     {
@@ -219,7 +218,7 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::Compute()
   //
   // The "volatile" modifier is used here for preventing the variable from
   // being kept in 80 bit FPU registers when using 32-bit x86 processors with
-  // SSE instructions disabled. A case that arised in the Debian 32-bits
+  // SSE instructions disabled. A case that arose in the Debian 32-bits
   // distribution.
   //
 #ifndef ITK_COMPILER_SUPPORTS_SSE2_32
@@ -233,7 +232,7 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::Compute()
   // format. In this way making numerical results consistent across platforms.
   //
 
-  for (j = 0; j < numberOfClasses; j++)
+  for (j = 0; j < numberOfClasses; ++j)
   {
     maxVarBetween +=
       (static_cast<VarianceType>(classFrequency[j])) * static_cast<VarianceType>((classMean[j]) * (classMean[j]));
@@ -244,7 +243,7 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::Compute()
   WeightType valleyEmphasisFactor = NumericTraits<WeightType>::ZeroValue();
   if (m_ValleyEmphasis)
   {
-    for (j = 0; j < numberOfClasses - 1; j++)
+    for (j = 0; j < numberOfClasses - 1; ++j)
     {
       valleyEmphasisFactor = imgPDF[thresholdIndexes[j]];
     }
@@ -260,7 +259,7 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::Compute()
     //
     // The "volatile" modifier is used here for preventing the variable from
     // being kept in 80 bit FPU registers when using 32-bit x86 processors with
-    // SSE instructions disabled. A case that arised in the Debian 32-bits
+    // SSE instructions disabled. A case that arose in the Debian 32-bits
     // distribution.
     //
 #ifndef ITK_COMPILER_SUPPORTS_SSE2_32
@@ -274,7 +273,7 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::Compute()
     // format. In this way making numerical results consistent across platforms.
     //
 
-    for (j = 0; j < numberOfClasses; j++)
+    for (j = 0; j < numberOfClasses; ++j)
     {
       // The true between-class variance \sigma_B^2 for any number of classes is defined as:
       // \sigma_B^2 = \sum_{k=1}^{M} \omega_k (\mu_k - \mu_T)^2
@@ -299,7 +298,7 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::Compute()
     {
       // Sum relevant weights to get valley emphasis factor
       valleyEmphasisFactor = NumericTraits<WeightType>::ZeroValue();
-      for (j = 0; j < numberOfClasses - 1; j++)
+      for (j = 0; j < numberOfClasses - 1; ++j)
       {
         valleyEmphasisFactor += imgPDF[thresholdIndexes[j]];
       }
@@ -318,7 +317,7 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::Compute()
   // Copy corresponding bin max to threshold vector
   m_Output.resize(m_NumberOfThresholds);
 
-  for (j = 0; j < m_NumberOfThresholds; j++)
+  for (j = 0; j < m_NumberOfThresholds; ++j)
   {
     if (m_ReturnBinMidpoint)
     {
@@ -340,7 +339,7 @@ OtsuMultipleThresholdsCalculator<TInputHistogram>::PrintSelf(std::ostream & os, 
   os << indent << "NumberOfThresholds: " << m_NumberOfThresholds;
 
   os << indent << "Output: ";
-  for (SizeValueType j = 0; j < m_NumberOfThresholds; j++)
+  for (SizeValueType j = 0; j < m_NumberOfThresholds; ++j)
   {
     os << m_Output[j] << " ";
   }

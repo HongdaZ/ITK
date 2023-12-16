@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkVideoFileWriter_hxx
 #define itkVideoFileWriter_hxx
 
-#include "itkVideoFileWriter.h"
 
 #include "itkNumericTraits.h"
 #include "itkTemporalDataObject.h"
@@ -56,8 +55,8 @@ VideoFileWriter<TInputVideoStream>::SetInput(const VideoStreamType * input)
 }
 
 template <typename TInputVideoStream>
-const typename VideoFileWriter<TInputVideoStream>::VideoStreamType *
-VideoFileWriter<TInputVideoStream>::GetInput()
+auto
+VideoFileWriter<TInputVideoStream>::GetInput() -> const VideoStreamType *
 {
   if (this->GetNumberOfInputs() < 1)
   {
@@ -158,7 +157,7 @@ VideoFileWriter<TInputVideoStream>::Write()
   // temporal streaming in TemporalProcessObject's GenerateData. We set the
   // buffered region to an empty region so that the entire requested region is
   // unbuffered and gets written.
-  TemporalDataObject::Pointer output = TemporalDataObject::New();
+  auto output = TemporalDataObject::New();
   output->SetLargestPossibleTemporalRegion(m_OutputTemporalRegion);
   output->SetRequestedTemporalRegion(m_OutputTemporalRegion);
   output->SetBufferedTemporalRegion(TemporalRegion());
@@ -217,8 +216,8 @@ void
 VideoFileWriter<TInputVideoStream>::TemporalStreamingGenerateData()
 {
   // Get a non-const pointer to the input and output
-  const auto * input = dynamic_cast<const VideoStreamType *>(this->GetInput());
-  auto *       output = dynamic_cast<TemporalDataObject *>(this->GetOutput(0));
+  const VideoStreamType * const input = this->GetInput();
+  auto *                        output = dynamic_cast<TemporalDataObject *>(this->GetOutput(0));
   if (!output)
   {
     itkExceptionMacro("Could not cast output to TemporalDataObject");

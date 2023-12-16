@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkDemonsRegistrationFunction_hxx
 #define itkDemonsRegistrationFunction_hxx
 
-#include "itkDemonsRegistrationFunction.h"
 #include "itkMacro.h"
 #include "itkMath.h"
 
@@ -33,7 +32,7 @@ DemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::Demon
   RadiusType   r;
   unsigned int j;
 
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     r[j] = 0;
   }
@@ -49,7 +48,7 @@ DemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::Demon
   m_Normalizer = 1.0;
   m_FixedImageGradientCalculator = GradientCalculatorType::New();
 
-  typename DefaultInterpolatorType::Pointer interp = DefaultInterpolatorType::New();
+  auto interp = DefaultInterpolatorType::New();
 
   m_MovingImageInterpolator = static_cast<InterpolatorType *>(interp.GetPointer());
 
@@ -136,7 +135,7 @@ DemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::Initi
 
   // compute the normalizer
   m_Normalizer = 0.0;
-  for (unsigned int k = 0; k < ImageDimension; k++)
+  for (unsigned int k = 0; k < ImageDimension; ++k)
   {
     m_Normalizer += fixedImageSpacing[k] * fixedImageSpacing[k];
   }
@@ -169,13 +168,13 @@ DemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::Compu
   // Note: no need to check the index is within
   // fixed image buffer. This is done by the external filter.
   const IndexType index = it.GetIndex();
-  const auto      fixedValue = (double)this->GetFixedImage()->GetPixel(index);
+  const auto      fixedValue = static_cast<double>(this->GetFixedImage()->GetPixel(index));
 
   // Get moving image related information
   PointType mappedPoint;
 
   this->GetFixedImage()->TransformIndexToPhysicalPoint(index, mappedPoint);
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     mappedPoint[j] += it.GetCenterPixel()[j];
   }
@@ -202,7 +201,7 @@ DemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::Compu
   }
 
   double gradientSquaredMagnitude = 0;
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     gradientSquaredMagnitude += itk::Math::sqr(gradient[j]);
   }
@@ -235,9 +234,10 @@ DemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::Compu
   {
     return m_ZeroUpdateReturn;
   }
-
+  static_assert(PixelType::Dimension == CovariantVectorType::Dimension,
+                "ERROR: PixelType and CovariantVectorType must have the same dimension!");
   PixelType update;
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     update[j] = speedValue * gradient[j] / denominator;
     if (globalData)

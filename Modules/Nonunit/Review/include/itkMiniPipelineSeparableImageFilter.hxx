@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMiniPipelineSeparableImageFilter_hxx
 #define itkMiniPipelineSeparableImageFilter_hxx
 
-#include "itkMiniPipelineSeparableImageFilter.h"
 #include "itkProgressAccumulator.h"
 
 /*
@@ -27,7 +26,7 @@
  * "Efficient implementation of kernel filtering"
  * by Beare R., Lehmann G
  * https://hdl.handle.net/1926/555
- * http://www.insight-journal.org/browse/publication/160
+ * https://www.insight-journal.org/browse/publication/160
  *
  */
 
@@ -37,7 +36,7 @@ template <typename TInputImage, typename TOutputImage, typename TFilter>
 MiniPipelineSeparableImageFilter<TInputImage, TOutputImage, TFilter>::MiniPipelineSeparableImageFilter()
 {
   // create the pipeline
-  for (unsigned i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     m_Filters[i] = FilterType::New();
     m_Filters[i]->ReleaseDataFlagOn();
@@ -57,7 +56,7 @@ void
 MiniPipelineSeparableImageFilter<TInputImage, TOutputImage, TFilter>::Modified() const
 {
   Superclass::Modified();
-  for (unsigned i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     m_Filters[i]->Modified();
   }
@@ -69,7 +68,7 @@ void
 MiniPipelineSeparableImageFilter<TInputImage, TOutputImage, TFilter>::SetNumberOfWorkUnits(ThreadIdType nb)
 {
   Superclass::SetNumberOfWorkUnits(nb);
-  for (unsigned i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     m_Filters[i]->SetNumberOfWorkUnits(nb);
   }
@@ -83,7 +82,7 @@ MiniPipelineSeparableImageFilter<TInputImage, TOutputImage, TFilter>::SetRadius(
   Superclass::SetRadius(radius);
 
   // set up the kernels
-  for (unsigned i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     RadiusType rad;
     rad.Fill(0);
@@ -102,9 +101,9 @@ MiniPipelineSeparableImageFilter<TInputImage, TOutputImage, TFilter>::GenerateDa
   m_Filters[0]->SetInput(this->GetInput());
 
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
-  for (unsigned i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     progress->RegisterInternalFilter(m_Filters[i], 1.0 / ImageDimension);
   }

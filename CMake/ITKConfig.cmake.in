@@ -47,6 +47,12 @@ set(ITK_USE_FILE "@ITK_USE_FILE@")
 # Whether ITK was built with shared libraries.
 set(ITK_BUILD_SHARED "@ITK_BUILD_SHARED_LIBS@")
 
+# Export the library build type (SHARED or STATIC) for external builds
+set(ITK_LIBRARY_BUILD_TYPE "@ITK_LIBRARY_BUILD_TYPE@")
+
+# Whether ITK links to MSVC's static CRT (/MT and /MTd).
+set(ITK_MSVC_STATIC_CRT "@ITK_MSVC_STATIC_RUNTIME_LIBRARY_value@")
+
 # Whether ITK examples were built.
 set(ITK_BUILD_EXAMPLES "@BUILD_EXAMPLES@")
 
@@ -84,6 +90,9 @@ else()
   set(ITK_MODULES_REQUESTED ${ITK_MODULES_ENABLED})
 endif()
 
+# Load factory registration manager functions
+include( "${ITK_CMAKE_DIR}/ITKFactoryRegistration.cmake" )
+
 # Add configuration with FFTW
 set(ITK_USE_FFTWD "@ITK_USE_FFTWD@")
 set(ITK_USE_FFTWF "@ITK_USE_FFTWF@")
@@ -102,25 +111,10 @@ set(ITK_USE_GPU "@ITK_USE_GPU@")
 
 # Wrapping
 set(ITK_WRAPPING "@ITK_WRAPPING@")
-# ITK_WRAP_SWIGINTERFACE and ITK_WRAP_CASTXML are set
-# to ITK_WRAPPING value.
-# ITK_WRAP_DOC and ITK_WRAP_EXPLICIT are disabled by
-# default.
+# ITK_WRAP_DOC is disabled by default.
 
 if( NOT DEFINED ITK_WRAP_PYTHON)
   set(ITK_WRAP_PYTHON "@ITK_WRAP_PYTHON@")
-endif()
-if( NOT DEFINED ITK_WRAP_JAVA)
-  set(ITK_WRAP_JAVA "@ITK_WRAP_JAVA@")
-endif()
-if(NOT DEFINED ITK_WRAP_RUBY)
-  set(ITK_WRAP_RUBY "@ITK_WRAP_RUBY@")
-endif()
-if( NOT DEFINED ITK_WRAP_PERL)
-  set(ITK_WRAP_PERL "@ITK_WRAP_PERL@")
-endif()
-if(NOT DEFINED ITK_WRAP_TCL)
-  set(ITK_WRAP_TCL "@ITK_WRAP_TCL@")
 endif()
 
 # Set up the rest of the variables that WrapITK was built with.
@@ -147,4 +141,4 @@ set(ITK_WRAP_complex_double @ITK_WRAP_complex_double@)
 set(ITK_WRAP_IMAGE_DIMS "@ITK_WRAP_IMAGE_DIMS@")
 set(ITK_WRAP_VECTOR_COMPONENTS "@ITK_WRAP_VECTOR_COMPONENTS@")
 
-set(ITK_WRAP_PYTHON_VERSION "@PYTHON_VERSION_STRING@")
+set(ITK_WRAP_PYTHON_VERSION "@ITK_WRAP_PYTHON_VERSION@")

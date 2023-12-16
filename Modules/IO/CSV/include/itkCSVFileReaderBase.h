@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@
 namespace itk
 {
 /**
- *\class CSVFileReaderBase
+ * \class CSVFileReaderBase
  * \brief A base class that contains common methods used for parsing csv files.
  *
  * CSVFileReaderBase is a base abstract class for reading csv files. It
@@ -65,7 +65,7 @@ namespace itk
 class ITKIOCSV_EXPORT CSVFileReaderBase : public LightProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CSVFileReaderBase);
+  ITK_DISALLOW_COPY_AND_MOVE(CSVFileReaderBase);
 
   /** Standard class type aliases */
   using Self = CSVFileReaderBase;
@@ -124,7 +124,7 @@ public:
   /** Counts the number of rows and columns in a file and prepares the file
    * for iterative reading using the GetNextField() method. */
   void
-  GetDataDimension(SizeValueType & rows, SizeValueType & columns);
+  GetDataDimension(SizeValueType & rows, SizeValueType & cols);
 
   /** Gets the next entry in the file. Returns a string. This function
    *  must always only be called after GetDataDimension(). */

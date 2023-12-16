@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,14 +30,14 @@ namespace itk
 {
 namespace Statistics
 {
-TDistribution ::TDistribution()
+TDistribution::TDistribution()
 {
   m_Parameters = ParametersType(1);
   m_Parameters[0] = 1.0;
 }
 
 void
-TDistribution ::SetDegreesOfFreedom(SizeValueType dof)
+TDistribution::SetDegreesOfFreedom(SizeValueType dof)
 {
   bool modified = false;
 
@@ -63,7 +63,7 @@ TDistribution ::SetDegreesOfFreedom(SizeValueType dof)
 }
 
 SizeValueType
-TDistribution ::GetDegreesOfFreedom() const
+TDistribution::GetDegreesOfFreedom() const
 {
   if (m_Parameters.GetSize() != 1)
   {
@@ -74,7 +74,7 @@ TDistribution ::GetDegreesOfFreedom() const
 }
 
 double
-TDistribution ::PDF(double x, SizeValueType degreesOfFreedom)
+TDistribution::PDF(double x, SizeValueType degreesOfFreedom)
 {
   auto   dof = static_cast<double>(degreesOfFreedom);
   double dofplusoneon2 = 0.5 * (dof + 1.0);
@@ -88,7 +88,7 @@ TDistribution ::PDF(double x, SizeValueType degreesOfFreedom)
 }
 
 double
-TDistribution ::PDF(double x, const ParametersType & p)
+TDistribution::PDF(double x, const ParametersType & p)
 {
   if (p.GetSize() != 1)
   {
@@ -99,7 +99,7 @@ TDistribution ::PDF(double x, const ParametersType & p)
 }
 
 double
-TDistribution ::CDF(double x, SizeValueType degreesOfFreedom)
+TDistribution::CDF(double x, SizeValueType degreesOfFreedom)
 {
   double bx;
   double pin, qin;
@@ -145,7 +145,7 @@ TDistribution ::CDF(double x, SizeValueType degreesOfFreedom)
 }
 
 double
-TDistribution ::CDF(double x, const ParametersType & p)
+TDistribution::CDF(double x, const ParametersType & p)
 {
   if (p.GetSize() != 1)
   {
@@ -156,7 +156,7 @@ TDistribution ::CDF(double x, const ParametersType & p)
 }
 
 double
-TDistribution ::InverseCDF(double p, SizeValueType degreesOfFreedom)
+TDistribution::InverseCDF(double p, SizeValueType degreesOfFreedom)
 {
   if (p <= 0.0)
   {
@@ -193,11 +193,11 @@ TDistribution ::InverseCDF(double p, SizeValueType degreesOfFreedom)
   //
   //   0 iterations, error = 1      at 1 degree of freedom
   //   3 iterations, error = 10^-10 at 1 degree of freedom
-  // 100 iterations, erorr = 10^-12 at 1 degree of freedom
+  // 100 iterations, error = 10^-12 at 1 degree of freedom
   //
   //   0 iterations, error = 10^-2  at 11 degrees of freedom
   //   3 iterations, error = 10^-11 at 11 degrees of freedom
-  // 100 iterations, erorr = 10^-12 at 11 degrees of freedom
+  // 100 iterations, error = 10^-12 at 11 degrees of freedom
   //
   //
   // We are trying to find the zero of
@@ -222,7 +222,7 @@ TDistribution ::InverseCDF(double p, SizeValueType degreesOfFreedom)
 }
 
 double
-TDistribution ::InverseCDF(double p, const ParametersType & params)
+TDistribution::InverseCDF(double p, const ParametersType & params)
 {
   if (params.GetSize() != 1)
   {
@@ -233,7 +233,7 @@ TDistribution ::InverseCDF(double p, const ParametersType & params)
 }
 
 double
-TDistribution ::EvaluatePDF(double x) const
+TDistribution::EvaluatePDF(double x) const
 {
   if (m_Parameters.GetSize() != 1)
   {
@@ -244,7 +244,7 @@ TDistribution ::EvaluatePDF(double x) const
 }
 
 double
-TDistribution ::EvaluatePDF(double x, const ParametersType & p) const
+TDistribution::EvaluatePDF(double x, const ParametersType & p) const
 {
   if (p.GetSize() != 1)
   {
@@ -255,13 +255,13 @@ TDistribution ::EvaluatePDF(double x, const ParametersType & p) const
 }
 
 double
-TDistribution ::EvaluatePDF(double x, SizeValueType degreesOfFreedom) const
+TDistribution::EvaluatePDF(double x, SizeValueType degreesOfFreedom) const
 {
   return TDistribution::PDF(x, degreesOfFreedom);
 }
 
 double
-TDistribution ::EvaluateCDF(double x) const
+TDistribution::EvaluateCDF(double x) const
 {
   if (m_Parameters.GetSize() != 1)
   {
@@ -272,7 +272,7 @@ TDistribution ::EvaluateCDF(double x) const
 }
 
 double
-TDistribution ::EvaluateCDF(double x, const ParametersType & p) const
+TDistribution::EvaluateCDF(double x, const ParametersType & p) const
 {
   if (p.GetSize() != 1)
   {
@@ -283,13 +283,13 @@ TDistribution ::EvaluateCDF(double x, const ParametersType & p) const
 }
 
 double
-TDistribution ::EvaluateCDF(double x, SizeValueType degreesOfFreedom) const
+TDistribution::EvaluateCDF(double x, SizeValueType degreesOfFreedom) const
 {
   return TDistribution::CDF(x, degreesOfFreedom);
 }
 
 double
-TDistribution ::EvaluateInverseCDF(double p) const
+TDistribution::EvaluateInverseCDF(double p) const
 {
   if (m_Parameters.GetSize() != 1)
   {
@@ -300,7 +300,7 @@ TDistribution ::EvaluateInverseCDF(double p) const
 }
 
 double
-TDistribution ::EvaluateInverseCDF(double p, const ParametersType & params) const
+TDistribution::EvaluateInverseCDF(double p, const ParametersType & params) const
 {
   if (params.GetSize() != 1)
   {
@@ -311,13 +311,13 @@ TDistribution ::EvaluateInverseCDF(double p, const ParametersType & params) cons
 }
 
 double
-TDistribution ::EvaluateInverseCDF(double p, SizeValueType degreesOfFreedom) const
+TDistribution::EvaluateInverseCDF(double p, SizeValueType degreesOfFreedom) const
 {
   return TDistribution::InverseCDF(p, degreesOfFreedom);
 }
 
 bool
-TDistribution ::HasVariance() const
+TDistribution::HasVariance() const
 {
   if (m_Parameters.GetSize() == 1)
   {
@@ -336,13 +336,13 @@ TDistribution ::HasVariance() const
 }
 
 double
-TDistribution ::GetMean() const
+TDistribution::GetMean() const
 {
   return 0.0;
 }
 
 double
-TDistribution ::GetVariance() const
+TDistribution::GetVariance() const
 {
   if (m_Parameters.GetSize() == 1)
   {
@@ -365,7 +365,7 @@ TDistribution ::GetVariance() const
 }
 
 void
-TDistribution ::PrintSelf(std::ostream & os, Indent indent) const
+TDistribution::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

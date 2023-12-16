@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkTetrahedronCell_hxx
 #define itkTetrahedronCell_hxx
-#include "itkTetrahedronCell.h"
 #include "vnl/algo/vnl_determinant.h"
 
 namespace itk
@@ -60,8 +59,8 @@ TetrahedronCell<TCellInterface>::GetNumberOfPoints() const
  * Get the number of boundary features of the given dimension.
  */
 template <typename TCellInterface>
-typename TetrahedronCell<TCellInterface>::CellFeatureCount
-TetrahedronCell<TCellInterface>::GetNumberOfBoundaryFeatures(int dimension) const
+auto
+TetrahedronCell<TCellInterface>::GetNumberOfBoundaryFeatures(int dimension) const -> CellFeatureCount
 {
   switch (dimension)
   {
@@ -107,7 +106,7 @@ TetrahedronCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
   PointType pt3 = points->GetElement(m_PointIds[2]);
   PointType pt4 = points->GetElement(m_PointIds[3]);
 
-  for (i = 0; i < PointDimension; i++)
+  for (i = 0; i < PointDimension; ++i)
   {
     rhs[i] = x[i] - pt4[i];
     c1[i] = pt1[i] - pt4[i];
@@ -118,7 +117,7 @@ TetrahedronCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
   // Create a vnl_matrix so that the determinant can be computed
   // for any PointDimension
   vnl_matrix_fixed<CoordRepType, 3, PointDimension> mat;
-  for (i = 0; i < PointDimension; i++)
+  for (i = 0; i < PointDimension; ++i)
   {
     mat.put(0, i, c1[i]);
     mat.put(1, i, c2[i]);
@@ -130,7 +129,7 @@ TetrahedronCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
     return false;
   }
 
-  for (i = 0; i < PointDimension; i++)
+  for (i = 0; i < PointDimension; ++i)
   {
     mat.put(0, i, rhs[i]);
     mat.put(1, i, c2[i]);
@@ -139,7 +138,7 @@ TetrahedronCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
 
   pcoords[0] = vnl_determinant(mat) / det;
 
-  for (i = 0; i < PointDimension; i++)
+  for (i = 0; i < PointDimension; ++i)
   {
     mat.put(0, i, c1[i]);
     mat.put(1, i, rhs[i]);
@@ -148,7 +147,7 @@ TetrahedronCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
 
   pcoords[1] = vnl_determinant(mat) / det;
 
-  for (i = 0; i < PointDimension; i++)
+  for (i = 0; i < PointDimension; ++i)
   {
     mat.put(0, i, c1[i]);
     mat.put(1, i, c2[i]);
@@ -179,7 +178,7 @@ TetrahedronCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
   {
     if (closestPoint)
     {
-      for (unsigned int ii = 0; ii < PointDimension; ii++)
+      for (unsigned int ii = 0; ii < PointDimension; ++ii)
       {
         closestPoint[ii] = x[ii];
       }
@@ -199,14 +198,14 @@ TetrahedronCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
     {
       FaceAutoPointer triangle;
       *minDist2 = NumericTraits<double>::max();
-      for (i = 0; i < 4; i++)
+      for (i = 0; i < 4; ++i)
       {
         this->GetFace(i, triangle);
         triangle->EvaluatePosition(x, points, closest, pc, &dist2, nullptr);
 
         if (dist2 < *minDist2)
         {
-          for (unsigned int dim = 0; dim < PointDimension; dim++)
+          for (unsigned int dim = 0; dim < PointDimension; ++dim)
           {
             closestPoint[dim] = closest[dim];
           }
@@ -324,8 +323,8 @@ TetrahedronCell<TCellInterface>::SetPointId(int localId, PointIdentifier ptId)
  * Get a begin iterator to the list of point identifiers used by the cell.
  */
 template <typename TCellInterface>
-typename TetrahedronCell<TCellInterface>::PointIdIterator
-TetrahedronCell<TCellInterface>::PointIdsBegin()
+auto
+TetrahedronCell<TCellInterface>::PointIdsBegin() -> PointIdIterator
 {
   return &m_PointIds[0];
 }
@@ -336,8 +335,8 @@ TetrahedronCell<TCellInterface>::PointIdsBegin()
  * by the cell.
  */
 template <typename TCellInterface>
-typename TetrahedronCell<TCellInterface>::PointIdConstIterator
-TetrahedronCell<TCellInterface>::PointIdsBegin() const
+auto
+TetrahedronCell<TCellInterface>::PointIdsBegin() const -> PointIdConstIterator
 {
   return &m_PointIds[0];
 }
@@ -347,8 +346,8 @@ TetrahedronCell<TCellInterface>::PointIdsBegin() const
  * Get an end iterator to the list of point identifiers used by the cell.
  */
 template <typename TCellInterface>
-typename TetrahedronCell<TCellInterface>::PointIdIterator
-TetrahedronCell<TCellInterface>::PointIdsEnd()
+auto
+TetrahedronCell<TCellInterface>::PointIdsEnd() -> PointIdIterator
 {
   return &m_PointIds[Self::NumberOfPoints - 1] + 1;
 }
@@ -359,8 +358,8 @@ TetrahedronCell<TCellInterface>::PointIdsEnd()
  * by the cell.
  */
 template <typename TCellInterface>
-typename TetrahedronCell<TCellInterface>::PointIdConstIterator
-TetrahedronCell<TCellInterface>::PointIdsEnd() const
+auto
+TetrahedronCell<TCellInterface>::PointIdsEnd() const -> PointIdConstIterator
 {
   return &m_PointIds[Self::NumberOfPoints - 1] + 1;
 }
@@ -370,8 +369,8 @@ TetrahedronCell<TCellInterface>::PointIdsEnd() const
  * Get the number of vertices defining the tetrahedron.
  */
 template <typename TCellInterface>
-typename TetrahedronCell<TCellInterface>::CellFeatureCount
-TetrahedronCell<TCellInterface>::GetNumberOfVertices() const
+auto
+TetrahedronCell<TCellInterface>::GetNumberOfVertices() const -> CellFeatureCount
 {
   return Self::NumberOfVertices;
 }
@@ -381,8 +380,8 @@ TetrahedronCell<TCellInterface>::GetNumberOfVertices() const
  * Get the number of edges defined for the tetrahedron.
  */
 template <typename TCellInterface>
-typename TetrahedronCell<TCellInterface>::CellFeatureCount
-TetrahedronCell<TCellInterface>::GetNumberOfEdges() const
+auto
+TetrahedronCell<TCellInterface>::GetNumberOfEdges() const -> CellFeatureCount
 {
   return Self::NumberOfEdges;
 }
@@ -392,8 +391,8 @@ TetrahedronCell<TCellInterface>::GetNumberOfEdges() const
  * Get the number of faces defined for the tetrahedron.
  */
 template <typename TCellInterface>
-typename TetrahedronCell<TCellInterface>::CellFeatureCount
-TetrahedronCell<TCellInterface>::GetNumberOfFaces() const
+auto
+TetrahedronCell<TCellInterface>::GetNumberOfFaces() const -> CellFeatureCount
 {
   return Self::NumberOfFaces;
 }

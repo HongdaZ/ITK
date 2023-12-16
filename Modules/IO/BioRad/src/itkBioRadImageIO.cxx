@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,6 +28,7 @@
 #include "itkBioRadImageIO.h"
 #include "itkByteSwapper.h"
 #include "itksys/SystemTools.hxx"
+#include "itkMakeUniqueForOverwrite.h"
 
 #define BIORAD_HEADER_LENGTH 76
 #define BIORAD_NOTE_LENGTH 96
@@ -153,7 +154,7 @@ BioRadImageIO::CanReadFile(const char * filename)
   {
     this->OpenFileForReading(file, fname);
   }
-  catch (ExceptionObject &)
+  catch (const ExceptionObject &)
   {
     return false;
   }
@@ -328,7 +329,7 @@ BioRadImageIO::InternalReadImageInformation(std::ifstream & file)
           ss >> spacing;
           spacing *= 1000; // move to millemeters
           m_Spacing[0] = spacing;
-          punt++;
+          ++punt;
         }
         else if (label == "AXIS_3")
         {
@@ -336,7 +337,7 @@ BioRadImageIO::InternalReadImageInformation(std::ifstream & file)
           ss >> spacing;
           spacing *= 1000; // move to millemeters
           m_Spacing[1] = spacing;
-          punt++;
+          ++punt;
         }
         else if (label == "AXIS_4")
         {
@@ -344,7 +345,7 @@ BioRadImageIO::InternalReadImageInformation(std::ifstream & file)
           ss >> spacing;
           spacing *= 1000; // move to millemeters
           m_Spacing[2] = spacing;
-          punt++;
+          ++punt;
         }
       }
     }
@@ -416,11 +417,11 @@ BioRadImageIO::Write(const void * buffer)
   }
   memset(p, 0, BIORAD_HEADER_LENGTH); // Set everything to zero
   // In particular `notes' needs to be set to zero to indicate there is no notes
-  header.nx = static_cast<unsigned short int>(m_Dimensions[0]);
-  header.ny = static_cast<unsigned short int>(m_Dimensions[1]);
+  header.nx = static_cast<unsigned short>(m_Dimensions[0]);
+  header.ny = static_cast<unsigned short>(m_Dimensions[1]);
   if (m_NumberOfDimensions == 3)
   {
-    header.npic = static_cast<unsigned short int>(m_Dimensions[2]);
+    header.npic = static_cast<unsigned short>(m_Dimensions[2]);
   }
   else
   {
@@ -480,17 +481,16 @@ BioRadImageIO::Write(const void * buffer)
   const auto numberOfBytes = static_cast<SizeValueType>(this->GetImageSizeInBytes());
   const auto numberOfComponents = static_cast<SizeValueType>(this->GetImageSizeInComponents());
 
-  auto * tempmemory = new char[numberOfBytes];
-  memcpy(tempmemory, buffer, numberOfBytes);
+  const auto tempmemory = make_unique_for_overwrite<char[]>(numberOfBytes);
+  memcpy(tempmemory.get(), buffer, numberOfBytes);
   if (this->GetComponentType() == IOComponentEnum::USHORT)
   {
-    ByteSwapper<unsigned short>::SwapRangeFromSystemToBigEndian(reinterpret_cast<unsigned short *>(tempmemory),
+    ByteSwapper<unsigned short>::SwapRangeFromSystemToBigEndian(reinterpret_cast<unsigned short *>(tempmemory.get()),
                                                                 numberOfComponents);
   }
 
   // Write the actual pixel data
-  file.write(static_cast<const char *>(tempmemory), numberOfBytes);
-  delete[] tempmemory;
+  file.write(static_cast<const char *>(tempmemory.get()), numberOfBytes);
   file.close();
 }
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,16 +30,17 @@ namespace itk
 {
 
 /** \class PyImageFilter
- *  \brief ImageToImageFilter subclass that calls a Python callable object, e.g.
- *  a Python function.
+ * \brief ImageToImageFilter subclass that calls a Python callable object, e.g.
+ * a Python function or a class with a __call__ method.
+ *
+ * For more information on ITK filters, the GenerateData() method, and other filter pipeline methods,
+ * see the ITK Software Guide.
  */
-
-
 template <class TInputImage, class TOutputImage>
-class PyImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT PyImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PyImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(PyImageFilter);
 
   /** Standard class type aliases. */
   using Self = PyImageFilter;
@@ -67,18 +68,59 @@ public:
   static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
   static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
 
+  /** Python callable called during the filter's GenerateInputRequestedRegion.
+   *
+   *  The callable takes one argument: the PyImageFilter Python instance. */
+  void
+  SetPyGenerateInputRequestedRegion(PyObject * obj);
 
+  /** Python callable called during the filter's GenerateOutputInformation.
+   *
+   *  The callable takes one argument: the PyImageFilter Python instance. */
+  void
+  SetPyGenerateOutputInformation(PyObject * obj);
+
+  /** Python callable called during the filter's EnlargeOutputRequestedRegion.
+   *
+   *  The callable takes two arguments: the PyImageFilter Python instance and the output image instance.*/
+  void
+  SetPyEnlargeOutputRequestedRegion(PyObject * obj);
+
+  /** Python callable called during the filter's GenerateData.
+   *
+   * The callable takes one argument: the PyImageFilter Python instance. */
   void
   SetPyGenerateData(PyObject * obj);
+
+  /** Python internal method to pass a pointer to the wrapping Python object. */
+  void
+  _SetSelf(PyObject * self)
+  {
+    this->m_Self = self;
+  }
 
 protected:
   PyImageFilter();
   virtual ~PyImageFilter();
-  virtual void
-  GenerateData();
+
+  void
+  GenerateInputRequestedRegion() override;
+
+  void
+  GenerateOutputInformation() override;
+
+  void
+  EnlargeOutputRequestedRegion(DataObject * dataObject) override;
+
+  void
+  GenerateData() override;
 
 private:
-  PyObject * m_Object;
+  PyObject * m_Self;
+  PyObject * m_GenerateInputRequestedRegionCallable{ nullptr };
+  PyObject * m_GenerateOutputInformationCallable{ nullptr };
+  PyObject * m_EnlargeOutputRequestedRegionCallable{ nullptr };
+  PyObject * m_GenerateDataCallable{ nullptr };
 };
 
 } // end namespace itk

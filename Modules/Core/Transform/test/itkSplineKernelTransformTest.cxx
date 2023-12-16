@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,6 +28,7 @@
 #include "itkThinPlateR2LogRSplineKernelTransform.h"
 #include "itkVolumeSplineKernelTransform.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 
 int
@@ -39,11 +40,14 @@ itkSplineKernelTransformTest(int, char *[])
   // 2-D case
   int i, j;
 
-  using EBSTransform2DType = itk::ElasticBodySplineKernelTransform<double, 2>;
-  using EBRSTransform2DType = itk::ElasticBodyReciprocalSplineKernelTransform<double, 2>;
-  using TPSTransform2DType = itk::ThinPlateSplineKernelTransform<double, 2>;
-  using TPR2LRSTransform2DType = itk::ThinPlateR2LogRSplineKernelTransform<double, 2>;
-  using VSTransform2DType = itk::VolumeSplineKernelTransform<double, 2>;
+  constexpr unsigned int Dimension = 2;
+  using ParametersValueType = double;
+
+  using EBSTransform2DType = itk::ElasticBodySplineKernelTransform<ParametersValueType, Dimension>;
+  using EBRSTransform2DType = itk::ElasticBodyReciprocalSplineKernelTransform<ParametersValueType, Dimension>;
+  using TPSTransform2DType = itk::ThinPlateSplineKernelTransform<ParametersValueType, Dimension>;
+  using TPR2LRSTransform2DType = itk::ThinPlateR2LogRSplineKernelTransform<ParametersValueType, Dimension>;
+  using VSTransform2DType = itk::VolumeSplineKernelTransform<ParametersValueType, Dimension>;
 
   using PointType2D = EBSTransform2DType::InputPointType;
   using Points2DIteratorType = EBSTransform2DType::PointsIterator;
@@ -53,15 +57,15 @@ itkSplineKernelTransformTest(int, char *[])
   PointType2D targetPoint2D;
   PointType2D mappedPoint2D;
 
-  EBSTransform2DType::Pointer     ebs2D = EBSTransform2DType::New();
-  EBRSTransform2DType::Pointer    ebrs2D = EBRSTransform2DType::New();
-  TPSTransform2DType::Pointer     tps2D = TPSTransform2DType::New();
-  TPR2LRSTransform2DType::Pointer tpr2lrs2D = TPR2LRSTransform2DType::New();
-  VSTransform2DType::Pointer      vs2D = VSTransform2DType::New();
+  auto ebs2D = EBSTransform2DType::New();
+  auto ebrs2D = EBRSTransform2DType::New();
+  auto tps2D = TPSTransform2DType::New();
+  auto tpr2lrs2D = TPR2LRSTransform2DType::New();
+  auto vs2D = VSTransform2DType::New();
 
   // Reserve memory for the number of points
-  PointSetType2D::Pointer sourceLandmarks2D = PointSetType2D::New();
-  PointSetType2D::Pointer targetLandmarks2D = PointSetType2D::New();
+  auto sourceLandmarks2D = PointSetType2D::New();
+  auto targetLandmarks2D = PointSetType2D::New();
 
   sourceLandmarks2D->GetPoints()->Reserve(4);
   targetLandmarks2D->GetPoints()->Reserve(4);
@@ -72,9 +76,9 @@ itkSplineKernelTransformTest(int, char *[])
 
   Points2DIteratorType source2Dend = sourceLandmarks2D->GetPoints()->End();
 
-  for (i = 0; i < 2; i++)
+  for (i = 0; i < 2; ++i)
   {
-    for (j = 0; j < 2; j++)
+    for (j = 0; j < 2; ++j)
     {
       sourcePoint2D[0] = j;
       sourcePoint2D[1] = i;
@@ -92,7 +96,12 @@ itkSplineKernelTransformTest(int, char *[])
   // Poisson's ration = 0.25, Alpha = 12.0 * ( 1 - \nu ) - 1
   ebs2D->SetSourceLandmarks(sourceLandmarks2D);
   ebs2D->SetTargetLandmarks(targetLandmarks2D);
-  ebs2D->SetAlpha(12.0 * (1 - 0.25) - 1.0);
+
+  ParametersValueType alpha = 12.0 * (1 - 0.25) - 1.0;
+  ebs2D->SetAlpha(alpha);
+  ITK_TEST_SET_GET_VALUE(alpha, ebs2D->GetAlpha());
+
+
   ebs2D->ComputeWMatrix();
 
   { // Testing the number of parameters
@@ -132,7 +141,12 @@ itkSplineKernelTransformTest(int, char *[])
   std::cout << "EBRS 2D Test:" << std::endl;
   ebrs2D->SetSourceLandmarks(sourceLandmarks2D);
   ebrs2D->SetTargetLandmarks(targetLandmarks2D);
-  ebrs2D->SetAlpha(12.0 * (1 - 0.25) - 1.0);
+
+  alpha = 12.0 * (1 - 0.25) - 1.0;
+  ebrs2D->SetAlpha(alpha);
+  ITK_TEST_SET_GET_VALUE(alpha, ebrs2D->GetAlpha());
+
+
   ebrs2D->ComputeWMatrix();
 
   source2Dit = sourceLandmarks2D->GetPoints()->Begin();
@@ -344,11 +358,11 @@ itkSplineKernelTransformTest(int, char *[])
   PointType3D mappedPoint3D;
 
   // Reserve memory for the number of points
-  EBSTransform3DType::Pointer ebs3D = EBSTransform3DType::New();
+  auto ebs3D = EBSTransform3DType::New();
   ebs3D->GetModifiableTargetLandmarks()->GetPoints()->Reserve(8);
   ebs3D->GetModifiableSourceLandmarks()->GetPoints()->Reserve(8);
 
-  TPSTransform3DType::Pointer tps3D = TPSTransform3DType::New();
+  auto tps3D = TPSTransform3DType::New();
   tps3D->GetModifiableTargetLandmarks()->GetPoints()->Reserve(8);
   tps3D->GetModifiableSourceLandmarks()->GetPoints()->Reserve(8);
 
@@ -362,11 +376,11 @@ itkSplineKernelTransformTest(int, char *[])
   Points3DIteratorType ebs3DsEnd = ebs3D->GetModifiableSourceLandmarks()->GetPoints()->End();
   Points3DIteratorType tps3DsEnd = tps3D->GetModifiableSourceLandmarks()->GetPoints()->End();
 
-  for (i = 0; i < 2; i++)
+  for (i = 0; i < 2; ++i)
   {
-    for (j = 0; j < 2; j++)
+    for (j = 0; j < 2; ++j)
     {
-      for (k = 0; k < 2; k++)
+      for (k = 0; k < 2; ++k)
       {
         sourcePoint3D[0] = k;
         sourcePoint3D[1] = j;
@@ -388,7 +402,12 @@ itkSplineKernelTransformTest(int, char *[])
 
   std::cout << "EBS 3D Test:" << std::endl;
   // Poisson's ration = 0.25, Alpha = 12.0 * ( 1 - \nu ) - 1
-  ebs3D->SetAlpha(12.0 * (1 - 0.25) - 1.0);
+
+  alpha = 12.0 * (1 - 0.25) - 1.0;
+  ebs3D->SetAlpha(alpha);
+  ITK_TEST_SET_GET_VALUE(alpha, ebs3D->GetAlpha());
+
+
   ebs3D->ComputeWMatrix();
 
   ebs3Ds = ebs3D->GetModifiableSourceLandmarks()->GetPoints()->Begin();
@@ -441,7 +460,7 @@ itkSplineKernelTransformTest(int, char *[])
   TPSTransform3DType::ParametersType parameters2 = tps3D->GetParameters();
   const unsigned int                 numberOfParameters = parameters1.Size();
   const double                       tolerance = 1e-7;
-  for (unsigned int pr = 0; pr < numberOfParameters; pr++)
+  for (unsigned int pr = 0; pr < numberOfParameters; ++pr)
   {
     if (itk::Math::abs(parameters1[pr] - parameters2[pr]) > tolerance)
     {
@@ -464,8 +483,8 @@ itkSplineKernelTransformTest(int, char *[])
   PointType4D targetPoint4D;
   PointType4D mappedPoint4D;
 
-  EBSTransform4DType::Pointer ebs4D = EBSTransform4DType::New();
-  TPSTransform4DType::Pointer tps4D = TPSTransform4DType::New();
+  auto ebs4D = EBSTransform4DType::New();
+  auto tps4D = TPSTransform4DType::New();
 
   // Reserve memory for the number of points
   ebs4D->GetModifiableTargetLandmarks()->GetPoints()->Reserve(16);
@@ -483,13 +502,13 @@ itkSplineKernelTransformTest(int, char *[])
   Points4DIteratorType ebs4DsEnd = ebs4D->GetModifiableSourceLandmarks()->GetPoints()->End();
   Points4DIteratorType tps4DsEnd = tps4D->GetModifiableSourceLandmarks()->GetPoints()->End();
 
-  for (i = 0; i < 2; i++)
+  for (i = 0; i < 2; ++i)
   {
-    for (j = 0; j < 2; j++)
+    for (j = 0; j < 2; ++j)
     {
-      for (k = 0; k < 2; k++)
+      for (k = 0; k < 2; ++k)
       {
-        for (l = 0; l < 2; l++)
+        for (l = 0; l < 2; ++l)
         {
           sourcePoint4D[0] = l;
           sourcePoint4D[1] = k;
@@ -513,7 +532,12 @@ itkSplineKernelTransformTest(int, char *[])
   }
   std::cout << "EBS 4D Test:" << std::endl;
   // Poisson's ration = 0.25, Alpha = 12.0 * ( 1 - \nu ) - 1
-  ebs4D->SetAlpha(12.0 * (1 - 0.25) - 1.0);
+
+  alpha = 12.0 * (1 - 0.25) - 1.0;
+  ebs4D->SetAlpha(alpha);
+  ITK_TEST_SET_GET_VALUE(alpha, ebs4D->GetAlpha());
+
+
   ebs4D->ComputeWMatrix();
 
   ebs4Ds = ebs4D->GetModifiableSourceLandmarks()->GetPoints()->Begin();

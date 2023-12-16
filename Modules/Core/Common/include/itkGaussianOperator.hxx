@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,14 +17,13 @@
  *=========================================================================*/
 #ifndef itkGaussianOperator_hxx
 #define itkGaussianOperator_hxx
-#include "itkGaussianOperator.h"
 #include "itkOutputWindow.h"
 #include "itkMacro.h"
 namespace itk
 {
 template <typename TPixel, unsigned int VDimension, typename TAllocator>
-typename GaussianOperator<TPixel, VDimension, TAllocator>::CoefficientVector
-GaussianOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients()
+auto
+GaussianOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients() -> CoefficientVector
 {
   CoefficientVector coeff;
   double            sum;
@@ -43,7 +42,7 @@ GaussianOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients()
   coeff.push_back(et * ModifiedBesselI1(m_Variance));
   sum += coeff[1] * 2.0;
 
-  for (i = 2; sum < cap; i++)
+  for (i = 2; sum < cap; ++i)
   {
     coeff.push_back(et * ModifiedBesselI(i, m_Variance));
     sum += coeff[i] * 2.0;
@@ -53,9 +52,9 @@ GaussianOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients()
     }
     if (coeff.size() > m_MaximumKernelWidth)
     {
-      itkWarningMacro("Kernel size has exceeded the specified maximum width of "
-                      << m_MaximumKernelWidth << " and has been truncated to " << coeff.size()
-                      << " elements.  You can raise the maximum width using the SetMaximumKernelWidth method.");
+      itkDebugMacro(<< "Kernel size has exceeded the specified maximum width of " << m_MaximumKernelWidth
+                    << " and has been truncated to " << coeff.size()
+                    << " elements.  You can raise the maximum width using the SetMaximumKernelWidth method.");
       break;
     }
   }
@@ -80,7 +79,7 @@ template <typename TPixel, unsigned int VDimension, typename TAllocator>
 double
 GaussianOperator<TPixel, VDimension, TAllocator>::ModifiedBesselI0(double y)
 {
-  const double d = std::fabs(y);
+  const double d = itk::Math::abs(y);
   double       accumulator;
 
   if (d < 3.75)
@@ -109,7 +108,7 @@ template <typename TPixel, unsigned int VDimension, typename TAllocator>
 double
 GaussianOperator<TPixel, VDimension, TAllocator>::ModifiedBesselI1(double y)
 {
-  const double d = std::fabs(y);
+  const double d = itk::Math::abs(y);
   double       accumulator;
 
   if (d < 3.75)
@@ -162,16 +161,16 @@ GaussianOperator<TPixel, VDimension, TAllocator>::ModifiedBesselI(int n, double 
   }
   else
   {
-    toy = 2.0 / std::fabs(y);
+    toy = 2.0 / itk::Math::abs(y);
     qip = accumulator = 0.0;
     qi = 1.0;
 
-    for (j = 2 * (n + (int)std::sqrt(ACCURACY * n)); j > 0; j--)
+    for (j = 2 * (n + static_cast<int>(std::sqrt(ACCURACY * n))); j > 0; j--)
     {
       qim = qip + j * toy * qi;
       qip = qi;
       qi = qim;
-      if (std::fabs(qi) > 1.0e10)
+      if (itk::Math::abs(qi) > 1.0e10)
       {
         accumulator *= 1.0e-10;
         qi *= 1.0e-10;

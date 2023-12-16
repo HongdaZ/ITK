@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -74,14 +74,14 @@ public:
     // Normalize input pixels to [-0.5 0.5] gray level.
     // AdaptiveHistogramEqualization compute kernel components with
     // float, but use double for accumulate and temporaries.
-    const double iscale = (double)m_Maximum - m_Minimum;
+    const double iscale = static_cast<double>(m_Maximum) - m_Minimum;
 
     double         sum = 0.0;
     auto           itMap = m_Map.begin();
-    const RealType u = ((double)pixel - m_Minimum) / iscale - 0.5;
+    const RealType u = (static_cast<double>(pixel) - m_Minimum) / iscale - 0.5;
     while (itMap != m_Map.end())
     {
-      const RealType v = ((double)itMap->first - m_Minimum) / iscale - 0.5;
+      const RealType v = (static_cast<double>(itMap->first) - m_Minimum) / iscale - 0.5;
       const double   ikernel = m_KernelSize - m_BoundaryCount;
       sum += itMap->second * CumulativeFunction(u, v) / ikernel;
 
@@ -131,9 +131,9 @@ public:
   }
 
 private:
-  RealType m_Alpha;
-  RealType m_Beta;
-  RealType m_KernelSize;
+  RealType m_Alpha{};
+  RealType m_Beta{};
+  RealType m_KernelSize{};
 
   TInputPixel m_Minimum;
   TInputPixel m_Maximum;

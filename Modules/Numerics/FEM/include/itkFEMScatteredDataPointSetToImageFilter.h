@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -92,7 +92,7 @@ namespace fem
     <PointSetType, MeshType, VectorImageType,
     ConfidencePointSetType, TensorPointSetType>;
 
-    FilterType::Pointer filter = FilterType::New();
+    auto filter = FilterType::New();
 
     filter->SetInput(displacementPointSet);
     filter->SetConfidencePointSet(confidencePointSet); //optional
@@ -132,7 +132,7 @@ class ITK_TEMPLATE_EXPORT FEMScatteredDataPointSetToImageFilter
   : public PointSetToImageFilter<TInputPointSet, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FEMScatteredDataPointSetToImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(FEMScatteredDataPointSetToImageFilter);
 
   using Self = FEMScatteredDataPointSetToImageFilter;
   using Superclass = PointSetToImageFilter<TInputPointSet, TOutputImage>;

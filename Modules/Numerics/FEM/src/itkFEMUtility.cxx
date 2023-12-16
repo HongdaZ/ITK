@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -75,7 +75,7 @@ GaussIntegrate::Integrate(double (*f)(double), double a, double b, int n)
     ibase = (n * n - 1) / 4;
     sum = w[ibase + m] * (*f)((a + b) / two);
   }
-  for (i = 1; i <= m; i++)
+  for (i = 1; i <= m; ++i)
   {
     t = z[ibase + i - 1];
     tl = (a * (one + t) + (one - t) * b) / two;

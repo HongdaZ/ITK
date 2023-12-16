@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ itkLabelImageGaussianInterpolateImageFunctionTest(int, char *[])
 {
   int                    test_status = EXIT_SUCCESS;
   constexpr unsigned int Dimension = 2;
-  using PixelType = unsigned short int; // Label images should be integer value types
+  using PixelType = unsigned short; // Label images should be integer value types
   using ImageType = itk::Image<PixelType, Dimension>;
   using RegionType = ImageType::RegionType;
   using SizeType = RegionType::SizeType;
@@ -39,7 +39,7 @@ itkLabelImageGaussianInterpolateImageFunctionTest(int, char *[])
   constexpr double              FOV = 10.0;
   constexpr itk::IndexValueType small_xSize = 3;
   constexpr itk::IndexValueType small_ySize = 3;
-  ImageType::Pointer            small_image = ImageType::New();
+  auto                          small_image = ImageType::New();
   {
     RegionType region;
     {
@@ -74,9 +74,9 @@ itkLabelImageGaussianInterpolateImageFunctionTest(int, char *[])
     //
     PixelType valarray[small_xSize][small_ySize] = { { 255, 255, 255 }, { 255, 171, 7 }, { 7, 7, 7 } };
 
-    for (itk::IndexValueType y = 0; y < small_ySize; y++)
+    for (itk::IndexValueType y = 0; y < small_ySize; ++y)
     {
-      for (itk::IndexValueType x = 0; x < small_xSize; x++)
+      for (itk::IndexValueType x = 0; x < small_xSize; ++x)
       {
         const IndexType index = { { x, y } };
         const PixelType value = valarray[x][y];
@@ -88,7 +88,7 @@ itkLabelImageGaussianInterpolateImageFunctionTest(int, char *[])
   }
 
   using InterpolatorType = itk::LabelImageGaussianInterpolateImageFunction<ImageType, CoordRepType>;
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
   interpolator->SetInputImage(small_image);
   {
     double sigma[Dimension];
@@ -112,7 +112,7 @@ itkLabelImageGaussianInterpolateImageFunctionTest(int, char *[])
   constexpr unsigned char       default_background_value = 17;
   const itk::IndexValueType     large_xSize = 5 + 1;
   constexpr itk::IndexValueType large_ySize = 5;
-  ImageType::Pointer            large_image = ImageType::New();
+  auto                          large_image = ImageType::New();
   {
     RegionType region;
     {
@@ -193,9 +193,9 @@ itkLabelImageGaussianInterpolateImageFunctionTest(int, char *[])
                                                        default_background_value,
                                                        default_background_value } };
 
-    for (itk::IndexValueType y = 0; y < large_ySize; y++)
+    for (itk::IndexValueType y = 0; y < large_ySize; ++y)
     {
-      for (itk::IndexValueType x = 0; x < large_xSize; x++)
+      for (itk::IndexValueType x = 0; x < large_xSize; ++x)
       {
         const IndexType      index = { { x, y } };
         const PixelType      known_value = valarray[x][y];
@@ -224,9 +224,9 @@ itkLabelImageGaussianInterpolateImageFunctionTest(int, char *[])
 #if 0
  constexpr double incr = 0.1;
  PointType point;
- for (double yy = 0; yy < static_cast<double>(small_ySize-1); yy++)
+ for (double yy = 0; yy < static_cast<double>(small_ySize-1); ++yy)
    {
-   for (double xx = 0; xx < static_cast<double>(small_xSize-1); xx++)
+   for (double xx = 0; xx < static_cast<double>(small_xSize-1); ++xx)
      {
      for (double yyy = yy; yyy < yy + 1.01; yyy += incr)
        {

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ itkFastMarchingQuadEdgeMeshFilterBaseTest2(int, char *[])
   using PointDataContainerPointer = PointDataContainer::Pointer;
 
   // Let's create here a plane!
-  MeshType::Pointer plane = MeshType::New();
+  auto plane = MeshType::New();
 
   PointsContainerPointer    points = PointsContainer::New();
   PointDataContainerPointer pointdata = PointDataContainer::New();
@@ -65,11 +65,11 @@ itkFastMarchingQuadEdgeMeshFilterBaseTest2(int, char *[])
 
   int k = 0;
 
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 10; ++i)
   {
     p[0] = static_cast<CoordType>(i);
 
-    for (int j = 0; j < 10; j++)
+    for (int j = 0; j < 10; ++j)
     {
       p[1] = static_cast<CoordType>(j);
       points->SetElement(k, p);
@@ -83,9 +83,9 @@ itkFastMarchingQuadEdgeMeshFilterBaseTest2(int, char *[])
 
   k = 0;
 
-  for (int i = 0; i < 9; i++)
+  for (int i = 0; i < 9; ++i)
   {
-    for (int j = 0; j < 9; j++)
+    for (int j = 0; j < 9; ++j)
     {
       plane->AddFaceTriangle(k, k + 1, k + 11);
       plane->AddFaceTriangle(k, k + 11, k + 10);
@@ -98,16 +98,16 @@ itkFastMarchingQuadEdgeMeshFilterBaseTest2(int, char *[])
   //  using NodeContainerType = FastMarchingType::NodeContainerType;
   using NodePairContainerType = FastMarchingType::NodePairContainerType;
 
-  NodePairContainerType::Pointer trial = NodePairContainerType::New();
+  auto trial = NodePairContainerType::New();
 
   NodePairType node_pair(0, 0.);
   trial->push_back(node_pair);
 
   using CriterionType = itk::FastMarchingThresholdStoppingCriterion<MeshType, MeshType>;
-  CriterionType::Pointer criterion = CriterionType::New();
+  auto criterion = CriterionType::New();
   criterion->SetThreshold(100.);
 
-  FastMarchingType::Pointer fmm_filter = FastMarchingType::New();
+  auto fmm_filter = FastMarchingType::New();
   fmm_filter->SetInput(plane);
   fmm_filter->SetTrialPoints(trial);
   fmm_filter->SetStoppingCriterion(criterion);
@@ -151,7 +151,7 @@ itkFastMarchingQuadEdgeMeshFilterBaseTest2(int, char *[])
   }
 
   using WriterType = itk::MeshFileWriter<MeshType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(output);
   writer->SetFileName("itkFastMarchingQuadEdgeMeshFilterBaseTest2.vtk");
   writer->Update();

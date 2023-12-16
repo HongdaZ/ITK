@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,6 +25,8 @@
 #include "itkSpatialObject.h"
 #include "itkCentralDifferenceImageFunction.h"
 #include "itkMultiThreaderBase.h"
+
+#include <memory> // For unique_ptr.
 
 namespace itk
 {
@@ -52,7 +54,7 @@ template <typename TFixedImage, typename TMovingImage>
 class ITK_TEMPLATE_EXPORT ImageToImageMetric : public SingleValuedCostFunction
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToImageMetric);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageToImageMetric);
 
   /** Standard class type aliases. */
   using Self = ImageToImageMetric;
@@ -125,13 +127,13 @@ public:
   using MovingImageMaskConstPointer = typename MovingImageMaskType::ConstPointer;
 
   /**  Type of the measure. */
-  using MeasureType = typename Superclass::MeasureType;
+  using typename Superclass::MeasureType;
 
   /**  Type of the derivative. */
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeType;
 
   /**  Type of the parameters. */
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
 
   /** Get/Set the Fixed Image.  */
   itkSetConstObjectMacro(FixedImage, FixedImageType);
@@ -185,7 +187,7 @@ public:
   SetFixedImageIndexes(const FixedImageIndexContainer & indexes);
 
   void
-  SetUseFixedImageIndexes(bool useIndex);
+  SetUseFixedImageIndexes(bool useIndexes);
 
   itkGetConstReferenceMacro(UseFixedImageIndexes, bool);
 
@@ -283,7 +285,7 @@ public:
    * pixel will be chosen if it meets any mask or threshold limits set.  If
    * set to false, then UseAllPixels will be set to false. */
   void
-  SetUseSequentialSampling(bool sequentialSampling);
+  SetUseSequentialSampling(bool useSequential);
 
   itkGetConstReferenceMacro(UseSequentialSampling, bool);
 
@@ -327,12 +329,12 @@ public:
   const TransformPointer *
   GetThreaderTransform()
   {
-    return m_ThreaderTransform;
+    return m_ThreaderTransform.get();
   }
 
 protected:
   ImageToImageMetric();
-  ~ImageToImageMetric() override;
+  ~ImageToImageMetric() override = default;
 
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
@@ -398,7 +400,7 @@ protected:
   TransformPointer m_Transform;
   /** Copies of Transform helpers per thread (N-1 of them, since m_Transform
    * will do the work for thread=0. */
-  TransformPointer * m_ThreaderTransform;
+  std::unique_ptr<TransformPointer[]> m_ThreaderTransform;
 
   InterpolatorPointer m_Interpolator;
 
@@ -433,7 +435,7 @@ protected:
   static constexpr unsigned int DeformationSplineOrder = 3;
 
   using BSplineTransformType =
-    BSplineBaseTransform<CoordinateRepresentationType, FixedImageType ::ImageDimension, Self::DeformationSplineOrder>;
+    BSplineBaseTransform<CoordinateRepresentationType, FixedImageType::ImageDimension, Self::DeformationSplineOrder>;
 
   using BSplineTransformWeightsType = typename BSplineTransformType::WeightsType;
   using WeightsValueType = typename BSplineTransformWeightsType::ValueType;
@@ -445,7 +447,7 @@ protected:
 
   using MovingImagePointArrayType = std::vector<MovingImagePointType>;
   using BooleanArrayType = std::vector<bool>;
-  using BSplineParametersOffsetType = FixedArray<SizeValueType, FixedImageType ::ImageDimension>;
+  using BSplineParametersOffsetType = FixedArray<SizeValueType, FixedImageType::ImageDimension>;
   /**
    * If a BSplineInterpolationFunction is used, this class obtain
    * image derivatives from the BSpline interpolator. Otherwise,
@@ -471,8 +473,8 @@ protected:
   mutable BSplineTransformWeightsType    m_BSplineTransformWeights;
   mutable BSplineTransformIndexArrayType m_BSplineTransformIndices;
 
-  mutable BSplineTransformWeightsType *    m_ThreaderBSplineTransformWeights;
-  mutable BSplineTransformIndexArrayType * m_ThreaderBSplineTransformIndices;
+  mutable std::unique_ptr<BSplineTransformWeightsType[]>    m_ThreaderBSplineTransformWeights;
+  mutable std::unique_ptr<BSplineTransformIndexArrayType[]> m_ThreaderBSplineTransformIndices;
 
   virtual void
   PreComputeTransformValues();
@@ -482,16 +484,16 @@ protected:
   virtual void
   TransformPoint(unsigned int           sampleNumber,
                  MovingImagePointType & mappedPoint,
-                 bool &                 sampleWithinSupportRegion,
+                 bool &                 sampleOk,
                  double &               movingImageValue,
                  ThreadIdType           threadId) const;
 
   virtual void
   TransformPointWithDerivatives(unsigned int           sampleNumber,
                                 MovingImagePointType & mappedPoint,
-                                bool &                 sampleWithinSupportRegion,
+                                bool &                 sampleOk,
                                 double &               movingImageValue,
-                                ImageDerivativesType & gradient,
+                                ImageDerivativesType & movingImageGradient,
                                 ThreadIdType           threadId) const;
 
   /** Boolean to indicate if the interpolator BSpline. */
@@ -564,11 +566,11 @@ protected:
     const typename MultiThreaderType::WorkUnitInfo * m_WorkUnitInfo;
   };
 
-  MultiThreaderType::Pointer m_Threader;
-  ConstantPointerWrapper *   m_ConstSelfWrapper;
-  mutable unsigned int *     m_ThreaderNumberOfMovingImageSamples{ nullptr };
-  bool                       m_WithinThreadPreProcess{ false };
-  bool                       m_WithinThreadPostProcess{ false };
+  MultiThreaderType::Pointer              m_Threader;
+  std::unique_ptr<ConstantPointerWrapper> m_ConstSelfWrapper;
+  mutable std::unique_ptr<unsigned int[]> m_ThreaderNumberOfMovingImageSamples;
+  bool                                    m_WithinThreadPreProcess{ false };
+  bool                                    m_WithinThreadPostProcess{ false };
 
   void
   GetValueMultiThreadedInitiate() const;
@@ -577,10 +579,10 @@ protected:
   GetValueMultiThreadedPostProcessInitiate() const;
 
   static ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
-  GetValueMultiThreaded(void * arg);
+  GetValueMultiThreaded(void * workunitInfoAsVoid);
 
   static ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
-  GetValueMultiThreadedPostProcess(void * arg);
+  GetValueMultiThreadedPostProcess(void * workunitInfoAsVoid);
 
   virtual inline void
   GetValueThread(ThreadIdType threadId) const;
@@ -607,10 +609,10 @@ protected:
   GetValueAndDerivativeMultiThreadedPostProcessInitiate() const;
 
   static ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
-  GetValueAndDerivativeMultiThreaded(void * arg);
+  GetValueAndDerivativeMultiThreaded(void * workunitInfoAsVoid);
 
   static ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
-  GetValueAndDerivativeMultiThreadedPostProcess(void * arg);
+  GetValueAndDerivativeMultiThreadedPostProcess(void * workunitInfoAsVoid);
 
   virtual inline void
   GetValueAndDerivativeThread(ThreadIdType threadId) const;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,14 +66,14 @@ public:
  *
  * \brief 3D Rasterization algorithm Courtesy of Dr David Gobbi of Atamai Inc.
 
- * \author Leila Baghdadi, MICe, Hospital for Sick Childern, Toronto, Canada,
+ * \author Leila Baghdadi, MICe, Hospital for Sick Children, Toronto, Canada,
  * \ingroup ITKMesh
  */
 template <typename TInputMesh, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT TriangleMeshToBinaryImageFilter : public ImageSource<TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TriangleMeshToBinaryImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(TriangleMeshToBinaryImageFilter);
 
   /** Standard class type aliases. */
   using Self = TriangleMeshToBinaryImageFilter;
@@ -96,7 +96,7 @@ public:
   itkTypeMacro(TriangleMeshToBinaryImageFilter, ImageSource);
 
   /** Superclass type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
 
   /** Some convenient type alias. */
   using InputMeshType = TInputMesh;
@@ -129,7 +129,6 @@ public:
   using PointVector = std::vector<PointType>;
   using PointArray = std::vector<std::vector<PointType>>;
 
-  using StencilIndexVector = std::vector<int>;
   /** Spacing (size of a pixel) of the output image. The
    * spacing is the geometric distance between image samples.
    * It is stored internally as double, but may be set from
@@ -143,7 +142,7 @@ public:
 
   itkGetConstReferenceMacro(Spacing, SpacingType);
 
-  /** The Direction is a matix of direction cosines
+  /** The Direction is a matrix of direction cosines
    *  that specify the direction between samples.
    * */
   itkSetMacro(Direction, DirectionType);
@@ -244,8 +243,6 @@ protected:
   ValueType m_OutsideValue;
 
   DirectionType m_Direction;
-
-  StencilIndexVector m_StencilIndex;
 
   void
   PrintSelf(std::ostream & os, Indent indent) const override;

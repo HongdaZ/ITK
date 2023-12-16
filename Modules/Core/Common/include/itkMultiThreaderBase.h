@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,6 +35,7 @@
 #include "itkImageRegion.h"
 #include "itkImageIORegion.h"
 #include "itkSingletonMacro.h"
+#include <atomic>
 #include <functional>
 #include <thread>
 #include "itkProgressReporter.h"
@@ -105,7 +106,7 @@ class ProcessObject;
 class ITKCommon_EXPORT MultiThreaderBase : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiThreaderBase);
+  ITK_DISALLOW_COPY_AND_MOVE(MultiThreaderBase);
 
   /** Standard class type aliases. */
   using Self = MultiThreaderBase;
@@ -242,7 +243,7 @@ ITK_GCC_PRAGMA_DIAG(ignored "-Wattributes")
 INTEL_PRAGMA_WARN_PUSH
 INTEL_SUPPRESS_warning_1292
 CLANG_PRAGMA_PUSH
-CLANG_SUPPRESS_Wc__14_extensions
+CLANG_SUPPRESS_Wcpp14_extensions
   // clang-format on
 #  ifdef ITK_LEGACY_SILENT
     struct ThreadInfoStruct
@@ -441,7 +442,6 @@ protected:
     unsigned int           dimension;
     const IndexValueType * index;
     const SizeValueType *  size;
-    SizeValueType          pixelCount;
     ProcessObject *        filter;
   };
 
@@ -477,10 +477,15 @@ protected:
   void * m_SingleData{ nullptr };
 
 private:
+  static void
+  SetGlobalDefaultThreaderPrivate(ThreaderEnum threaderType);
+  static ThreaderEnum
+  GetGlobalDefaultThreaderPrivate();
+
   /** Only used to synchronize the global variable across static libraries.*/
   itkGetGlobalDeclarationMacro(MultiThreaderBaseGlobals, PimplGlobals);
 
-  bool m_UpdateProgress{ true };
+  std::atomic<bool> m_UpdateProgress{ true };
 
   static MultiThreaderBaseGlobals * m_PimplGlobals;
   /** Friends of Multithreader.

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,7 +55,7 @@ main(int, char *[])
   using DTITubePointType = DTITubeType::DTITubePointType;
   using PointType = DTITubeType::PointType;
 
-  DTITubeType::Pointer dtiTube = DTITubeType::New();
+  auto dtiTube = DTITubeType::New();
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -99,7 +99,7 @@ main(int, char *[])
     p.AddField("Lambda2", 5 * i);
     p.AddField("Lambda3", 6 * i);
     auto * v = new float[6];
-    for (unsigned int k = 0; k < 6; k++)
+    for (unsigned int k = 0; k < 6; ++k)
     {
       v[k] = k;
     }

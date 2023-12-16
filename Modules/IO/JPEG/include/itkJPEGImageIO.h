@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class JPEGImageIO
+ * \class JPEGImageIO
  *
  * \brief ImageIO object for reading and writing JPEG images
  *
@@ -39,7 +39,7 @@ namespace itk
 class ITKIOJPEG_EXPORT JPEGImageIO : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(JPEGImageIO);
+  ITK_DISALLOW_COPY_AND_MOVE(JPEGImageIO);
 
   /** Standard class type aliases. */
   using Self = JPEGImageIO;
@@ -67,6 +67,12 @@ public:
   /**  */
   itkSetMacro(Progressive, bool);
   itkGetConstMacro(Progressive, bool);
+  itkBooleanMacro(Progressive);
+
+  /** Convert to RGB if out_color_space is CMYK, default is true */
+  itkSetMacro(CMYKtoRGB, bool);
+  itkGetConstMacro(CMYKtoRGB, bool);
+  itkBooleanMacro(CMYKtoRGB);
 
   /*-------- This part of the interface deals with reading data. ------ */
 
@@ -111,10 +117,13 @@ protected:
   PrintSelf(std::ostream & os, Indent indent) const override;
 
   void
-  WriteSlice(std::string & fileName, const void * buffer);
+  WriteSlice(std::string & fileName, const void * const buffer);
 
-  /** Default = true*/
-  bool m_Progressive;
+  bool m_Progressive{ true };
+
+  bool m_CMYKtoRGB{ true };
+
+  bool m_IsCMYK{ false };
 };
 } // end namespace itk
 

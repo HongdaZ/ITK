@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@
  * verifies that the root mean squares error between the two array-like
  * objects doesn't exceed the given error.
  */
-#define ITK_EXPECT_VECTOR_NEAR(val1, val2, rmsError)                                                                   \
+#define ITK_EXPECT_VECTOR_NEAR(val1, val2, rmsError) \
   EXPECT_PRED_FORMAT3(itk::GTest::Predicate::VectorDoubleRMSPredFormat, val1, val2, rmsError)
 
 

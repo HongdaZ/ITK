@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,6 +24,7 @@
 #include "itkVector.h"
 #include "itkDefaultDynamicMeshTraits.h"
 
+#include <memory> // For unique_ptr.
 
 namespace itk
 {
@@ -79,9 +80,9 @@ template <
 class ITK_TEMPLATE_EXPORT BlockMatchingImageFilter : public MeshToMeshFilter<TFeatures, TDisplacements>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BlockMatchingImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BlockMatchingImageFilter);
 
-  static constexpr unsigned ImageDimension = TFixedImage::ImageDimension;
+  static constexpr unsigned int ImageDimension = TFixedImage::ImageDimension;
 
   /** Not input specific type alias */
   using ImageRegionType = ImageRegion<ImageDimension>;
@@ -216,9 +217,9 @@ private:
   ImageSizeType m_SearchRadius;
 
   // temporary dynamic arrays for storing threads outputs
-  SizeValueType         m_PointsCount;
-  DisplacementsVector * m_DisplacementsVectorsArray;
-  SimilaritiesValue *   m_SimilaritiesValuesArray;
+  SizeValueType                          m_PointsCount;
+  std::unique_ptr<DisplacementsVector[]> m_DisplacementsVectorsArray;
+  std::unique_ptr<SimilaritiesValue[]>   m_SimilaritiesValuesArray;
 };
 } // end namespace itk
 

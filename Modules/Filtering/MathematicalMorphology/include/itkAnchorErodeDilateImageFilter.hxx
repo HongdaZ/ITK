@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,8 +17,6 @@
  *=========================================================================*/
 #ifndef itkAnchorErodeDilateImageFilter_hxx
 #define itkAnchorErodeDilateImageFilter_hxx
-
-#include "itkAnchorErodeDilateImageFilter.h"
 
 
 #include "itkAnchorUtilities.h"
@@ -40,7 +38,6 @@ AnchorErodeDilateImageFilter<TImage, TKernel, TFunction1>::DynamicThreadedGenera
   if (!this->GetKernel().GetDecomposable())
   {
     itkExceptionMacro("Anchor morphology only works with decomposable structuring elements");
-    return;
   }
   // TFunction1 will be < for erosions
   // TFunction2 will be <=
@@ -60,7 +57,7 @@ AnchorErodeDilateImageFilter<TImage, TKernel, TFunction1>::DynamicThreadedGenera
   IReg.Crop(this->GetInput()->GetRequestedRegion());
 
   // allocate an internal buffer
-  typename InputImageType::Pointer internalbuffer = InputImageType::New();
+  auto internalbuffer = InputImageType::New();
   internalbuffer->SetRegions(IReg);
   internalbuffer->Allocate();
   InputImagePointer output = internalbuffer;
@@ -69,7 +66,7 @@ AnchorErodeDilateImageFilter<TImage, TKernel, TFunction1>::DynamicThreadedGenera
   InputImageRegionType OReg = outputRegionForThread;
   // maximum buffer length is sum of dimensions
   unsigned int bufflength = 0;
-  for (unsigned i = 0; i < TImage::ImageDimension; i++)
+  for (unsigned int i = 0; i < TImage::ImageDimension; ++i)
   {
     bufflength += IReg.GetSize()[i];
   }
@@ -84,7 +81,7 @@ AnchorErodeDilateImageFilter<TImage, TKernel, TFunction1>::DynamicThreadedGenera
   typename KernelType::DecompType decomposition = this->GetKernel().GetLines();
   BresType                        BresLine;
 
-  for (unsigned i = 0; i < decomposition.size(); i++)
+  for (unsigned int i = 0; i < decomposition.size(); ++i)
   {
     typename KernelType::LType     ThisLine = decomposition[i];
     typename BresType::OffsetArray TheseOffsets = BresLine.BuildLine(ThisLine, bufflength);

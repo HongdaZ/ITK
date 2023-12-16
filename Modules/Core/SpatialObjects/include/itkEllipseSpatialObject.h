@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class EllipseSpatialObject
+ * \class EllipseSpatialObject
  *
  * \ingroup ITKSpatialObjects
  *
@@ -38,7 +38,7 @@ template <unsigned int TDimension = 3>
 class ITK_TEMPLATE_EXPORT EllipseSpatialObject : public SpatialObject<TDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(EllipseSpatialObject);
+  ITK_DISALLOW_COPY_AND_MOVE(EllipseSpatialObject);
 
   using Self = EllipseSpatialObject;
   using ScalarType = double;
@@ -46,9 +46,9 @@ public:
   using ConstPointer = SmartPointer<const Self>;
   using Superclass = SpatialObject<TDimension>;
   using SuperclassPointer = SmartPointer<Superclass>;
-  using PointType = typename Superclass::PointType;
-  using TransformType = typename Superclass::TransformType;
-  using BoundingBoxType = typename Superclass::BoundingBoxType;
+  using typename Superclass::PointType;
+  using typename Superclass::TransformType;
+  using typename Superclass::BoundingBoxType;
   using PointContainerType = VectorContainer<IdentifierType, PointType>;
   using PointContainerPointer = SmartPointer<PointContainerType>;
 
@@ -110,7 +110,7 @@ protected:
   EllipseSpatialObject();
   ~EllipseSpatialObject() override = default;
 
-  /** Print the object informations in a stream. */
+  /** Print the object information in a stream. */
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 

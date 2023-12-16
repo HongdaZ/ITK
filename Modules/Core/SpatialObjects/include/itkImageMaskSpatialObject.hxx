@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkImageMaskSpatialObject_hxx
 
 #include "itkMath.h"
-#include "itkImageMaskSpatialObject.h"
 #include "itkImageRegionRange.h"
 
 #include <cstdint> // For uintmax_t.
@@ -76,7 +75,7 @@ ImageMaskSpatialObject<TDimension, TPixel>::ComputeMyBoundingBox()
     typename Superclass::ContinuousIndexType maxContinuousIndex{ minIndex + boundingBoxInIndexSpace.GetSize() };
 
     // Allow a margin of half a pixel in each direction.
-    const typename SpatialObject<TDimension>::VectorType half_pixel_size{ 0.5 };
+    const auto half_pixel_size = MakeFilled<typename SpatialObject<TDimension>::VectorType>(0.5);
     minContinuousIndex -= half_pixel_size;
     maxContinuousIndex -= half_pixel_size;
 
@@ -89,17 +88,17 @@ ImageMaskSpatialObject<TDimension, TPixel>::ComputeMyBoundingBox()
     boundingBoxInObjectSpace->SetMaximum(firstPoint);
 
     // The total number of corner points of the bounding box.
-    constexpr auto numberOfCorners = std::uintmax_t{ 1 } << TDimension;
+    constexpr auto numberOfCorners = uintmax_t{ 1 } << TDimension;
 
-    for (std::uintmax_t cornerNumber{ 1 }; cornerNumber < numberOfCorners; ++cornerNumber)
+    for (uintmax_t cornerNumber{ 1 }; cornerNumber < numberOfCorners; ++cornerNumber)
     {
       // For each corner, estimate the n-dimensional index.
 
       auto continuousIndex = minContinuousIndex;
 
-      for (unsigned dim{}; dim < TDimension; ++dim)
+      for (unsigned int dim{}; dim < TDimension; ++dim)
       {
-        const std::uintmax_t bitMask{ std::uintmax_t{ 1 } << dim };
+        const uintmax_t bitMask{ uintmax_t{ 1 } << dim };
 
         if ((cornerNumber & bitMask) != 0)
         {
@@ -144,8 +143,8 @@ ImageMaskSpatialObject<TDimension, TPixel>::PrintSelf(std::ostream & os, Indent 
 
 
 template <unsigned int TDimension, typename TPixel>
-typename ImageMaskSpatialObject<TDimension, TPixel>::RegionType
-ImageMaskSpatialObject<TDimension, TPixel>::ComputeMyBoundingBoxInIndexSpace() const
+auto
+ImageMaskSpatialObject<TDimension, TPixel>::ComputeMyBoundingBoxInIndexSpace() const -> RegionType
 {
   const ImagePointer imagePointer = this->GetImage();
 
@@ -157,7 +156,7 @@ ImageMaskSpatialObject<TDimension, TPixel>::ComputeMyBoundingBoxInIndexSpace() c
   const ImageType & image = *imagePointer;
 
   const auto HasForegroundPixels = [&image](const RegionType & region) {
-    for (const PixelType pixelValue : Experimental::ImageRegionRange<const ImageType>{ image, region })
+    for (const PixelType pixelValue : ImageRegionRange<const ImageType>{ image, region })
     {
       constexpr auto zeroValue = NumericTraits<PixelType>::ZeroValue();
 
@@ -172,7 +171,7 @@ ImageMaskSpatialObject<TDimension, TPixel>::ComputeMyBoundingBoxInIndexSpace() c
   const auto CreateRegion = [](const IndexType & minIndex, const IndexType & maxIndex) {
     SizeType regionSize;
 
-    for (unsigned dim = 0; dim < SizeType::Dimension; ++dim)
+    for (unsigned int dim = 0; dim < SizeType::Dimension; ++dim)
     {
       regionSize[dim] = static_cast<SizeValueType>(maxIndex[dim] + 1 - minIndex[dim]);
     }
@@ -231,8 +230,8 @@ ImageMaskSpatialObject<TDimension, TPixel>::ComputeMyBoundingBoxInIndexSpace() c
 
 #if !defined(ITK_LEGACY_REMOVE)
 template <unsigned int TDimension, typename TPixel>
-typename ImageMaskSpatialObject<TDimension, TPixel>::RegionType
-ImageMaskSpatialObject<TDimension, TPixel>::GetAxisAlignedBoundingBoxRegion() const
+auto
+ImageMaskSpatialObject<TDimension, TPixel>::GetAxisAlignedBoundingBoxRegion() const -> RegionType
 {
   return ComputeMyBoundingBoxInIndexSpace();
 }

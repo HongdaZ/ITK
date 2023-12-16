@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,6 +36,9 @@ namespace itk
  * \todo When reviewing this class, the documentation of the  template
  * parameters MUST be fixed.
  *
+ * NOTE: ONLY 3D implementations are instrumented.  All other dimensions
+ *       result in incorrect processing.
+ *
  * \ingroup MeshObjects
  * \ingroup ITKCommon
  */
@@ -46,7 +49,7 @@ class ITK_TEMPLATE_EXPORT HexahedronCell
   , private HexahedronCellTopology
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HexahedronCell);
+  ITK_DISALLOW_COPY_AND_MOVE(HexahedronCell);
 
   /** Standard class type aliases. */
   itkCellCommonTypedefs(HexahedronCell);
@@ -74,6 +77,13 @@ public:
   static constexpr unsigned int NumberOfFaces = 6;
   static constexpr unsigned int CellDimension = 3;
 
+  /** HARDCODE Implementation requirements, while
+   * allowing general interface.  The General interface
+   * is needed to facilitate the general SpatialObject
+   * loader.
+   */
+  static constexpr unsigned int CellDimension3D = 3;
+  static constexpr unsigned int PointDimension3D = 3;
   /** Implement the standard CellInterface. */
   CellGeometryEnum
   GetType() const override
@@ -162,7 +172,7 @@ protected:
 public:
   HexahedronCell()
   {
-    for (unsigned int i = 0; i < Self::NumberOfPoints; i++)
+    for (unsigned int i = 0; i < Self::NumberOfPoints; ++i)
     {
       m_PointIds[i] = NumericTraits<PointIdentifier>::max();
     }

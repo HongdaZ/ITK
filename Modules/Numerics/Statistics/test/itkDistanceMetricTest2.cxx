@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -75,7 +75,7 @@ itkDistanceMetricTest2(int, char *[])
 
   using MeasurementVectorSizeType = DistanceMetricType::MeasurementVectorSizeType;
 
-  DistanceMetricType::Pointer distance = DistanceMetricType::New();
+  auto distance = DistanceMetricType::New();
 
   std::cout << distance->GetNameOfClass() << std::endl;
   std::cout << distance->DistanceMetricType::Superclass::GetNameOfClass() << std::endl;
@@ -91,7 +91,7 @@ itkDistanceMetricTest2(int, char *[])
     return EXIT_FAILURE;
   }
 
-  // try re-setting the measurement vector size to the same value, no exceptins should be
+  // try re-setting the measurement vector size to the same value, no exceptions should be
   // thrown
   try
   {

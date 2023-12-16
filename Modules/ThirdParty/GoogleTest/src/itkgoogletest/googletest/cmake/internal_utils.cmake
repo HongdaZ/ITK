@@ -72,7 +72,7 @@ macro(config_compiler_and_linker)
   if (MSVC)
     # Newlines inside flags variables break CMake's NMake generator.
     # TODO(vladl@google.com): Add -RTCs and -RTCu to debug builds.
-    set(cxx_base_flags "-GS -W4 -WX -wd4251 -wd4275 -nologo -J -Zi")
+    set(cxx_base_flags "-GS -W4 -WX -wd4251 -wd4275 -nologo -J")
     set(cxx_base_flags "${cxx_base_flags} -D_UNICODE -DUNICODE -DWIN32 -D_WIN32")
     set(cxx_base_flags "${cxx_base_flags} -DSTRICT -DWIN32_LEAN_AND_MEAN")
     set(cxx_exception_flags "-EHsc -D_HAS_EXCEPTIONS=1")
@@ -81,14 +81,16 @@ macro(config_compiler_and_linker)
     # Suppress "unreachable code" warning
     # http://stackoverflow.com/questions/3232669 explains the issue.
     set(cxx_base_flags "${cxx_base_flags} -wd4702")
+    # Ensure MSVC treats source files as UTF-8 encoded.
+    set(cxx_base_flags "${cxx_base_flags} -utf-8")
   elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(cxx_base_flags "-Wall -Wshadow -Werror -Wconversion")
+    set(cxx_base_flags "-Wall -Wshadow -Wconversion")
     set(cxx_exception_flags "-fexceptions")
     set(cxx_no_exception_flags "-fno-exceptions")
     set(cxx_strict_flags "-W -Wpointer-arith -Wreturn-type -Wcast-qual -Wwrite-strings -Wswitch -Wunused-parameter -Wcast-align -Wchar-subscripts -Winline -Wredundant-decls")
     set(cxx_no_rtti_flags "-fno-rtti")
   elseif (CMAKE_COMPILER_IS_GNUCXX)
-    set(cxx_base_flags "-Wall -Wshadow -Werror")
+    set(cxx_base_flags "-Wall -Wshadow")
     if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0.0)
       set(cxx_base_flags "${cxx_base_flags} -Wno-error=dangling-else")
     endif()
@@ -148,19 +150,16 @@ function(cxx_library_with_type name type cxx_flags)
   # type can be either STATIC or SHARED to denote a static or shared library.
   # ARGN refers to additional arguments after 'cxx_flags'.
   add_library(${name} ${type} ${ARGN})
+  add_library(${cmake_package_name}::${name} ALIAS ${name})
   set_target_properties(${name}
     PROPERTIES
     COMPILE_FLAGS "${cxx_flags}")
-  # Generate debug library name with a postfix.
-  set_target_properties(${name}
-    PROPERTIES
-    DEBUG_POSTFIX "d")
   # Set the output directory for build artifacts
   set_target_properties(${name}
     PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ITK_INSTALL_RUNTIME_DIR}"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ITK_INSTALL_LIBRARY_DIR}"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ITK_INSTALL_ARCHIVE_DIR}"
     PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
   # make PDBs match library name
   get_target_property(pdb_debug_postfix ${name} DEBUG_POSTFIX)
@@ -187,6 +186,10 @@ function(cxx_library_with_type name type cxx_flags)
       set(threads_spec Threads::Threads)
     endif()
     target_link_libraries(${name} PUBLIC ${threads_spec})
+  endif()
+
+  if (NOT "${CMAKE_VERSION}" VERSION_LESS "3.8")
+    target_compile_features(${name} PUBLIC cxx_std_11)
   endif()
 endfunction()
 
@@ -239,25 +242,13 @@ function(cxx_executable name dir libs)
     ${name} "${cxx_default}" "${libs}" "${dir}/${name}.cc" ${ARGN})
 endfunction()
 
-# Sets PYTHONINTERP_FOUND and PYTHON_EXECUTABLE.
-# ITK The PythonInterp package finding contaminates the cmake cache and
-# ITK may find a different version than is use by wrapping or documentation
-# ITK generation.  DO NOT USE find_package(PythonInterp)
-# ITK find_package(PythonInterp)
-
 # cxx_test_with_flags(name cxx_flags libs srcs...)
 #
 # creates a named C++ test that depends on the given libs and is built
 # from the given source files with the given compiler flags.
 function(cxx_test_with_flags name cxx_flags libs)
   cxx_executable_with_flags(${name} "${cxx_flags}" "${libs}" ${ARGN})
-  if (WIN32 OR MINGW)
-    add_test(NAME ${name}
-      COMMAND "powershell" "-Command" "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/RunTest.ps1" "$<TARGET_FILE:${name}>")
-  else()
-    add_test(NAME ${name}
-      COMMAND "$<TARGET_FILE:${name}>")
-  endif()
+    add_test(NAME ${name} COMMAND "$<TARGET_FILE:${name}>")
 endfunction()
 
 # cxx_test(name libs srcs...)

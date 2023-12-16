@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,8 +18,7 @@
 
 #include "itkPromoteType.h"
 #include <complex>
-#include <itkStaticAssert.h>
-#include <itkIsSame.h>
+#include <type_traits>
 
 namespace itk
 {
@@ -46,7 +45,7 @@ itkPromoteType(int, char *[])
   // This conversion always preserves the value.
   //
   // The following implicit conversions are classified as integral promotions:
-  // * signed char or signed short can be converted to int.
+  // * signed char or short can be converted to int.
   // * unsigned char or unsigned short can be converted to int if it can hold
   //   its entire value range, and unsigned int otherwise.
   // * char can be converted to int or unsigned int depending on the underlying
@@ -55,22 +54,22 @@ itkPromoteType(int, char *[])
   //   the following list able to hold their entire value range: int, unsigned
   //   int, long, unsigned long, long long, unsigned long long.
 
-  itkStaticAssert((IsSame<PromoteType<signed char, int>::Type, int>::Value), "test failed");
-  itkStaticAssert((IsSame<PromoteType<signed char, short>::Type, int>::Value), "test failed");
-  itkStaticAssert((IsSame<PromoteType<unsigned char, int>::Type, int>::Value), "test failed");
-  itkStaticAssert((IsSame<PromoteType<unsigned char, unsigned int>::Type, unsigned int>::Value), "test failed");
-  itkStaticAssert((IsSame<PromoteType<int, int>::Type, int>::Value), "test failed");
-  itkStaticAssert((IsSame<PromoteType<short, int>::Type, int>::Value), "test failed");
-  itkStaticAssert((IsSame<PromoteType<double, int>::Type, double>::Value), "test failed");
-  itkStaticAssert((IsSame<PromoteType<float, int>::Type, float>::Value), "test failed");
-  itkStaticAssert((IsSame<PromoteType<long, int>::Type, long>::Value), "test failed");
-  itkStaticAssert((IsSame<PromoteType<long long, int>::Type, long long>::Value), "test failed");
-  itkStaticAssert((IsSame<PromoteType<int, long long>::Type, long long>::Value), "test failed");
-  itkStaticAssert((IsSame<PromoteType<long, long double>::Type, long double>::Value), "test failed");
-  itkStaticAssert((IsSame<PromoteType<double, std::complex<double>>::Type, std::complex<double>>::Value),
-                  "test failed");
+  static_assert(std::is_same<PromoteType<signed char, int>::Type, int>::value, "test failed");
+  static_assert(std::is_same<PromoteType<signed char, short>::Type, int>::value, "test failed");
+  static_assert(std::is_same<PromoteType<unsigned char, int>::Type, int>::value, "test failed");
+  static_assert(std::is_same<PromoteType<unsigned char, unsigned int>::Type, unsigned int>::value, "test failed");
+  static_assert(std::is_same<PromoteType<int, int>::Type, int>::value, "test failed");
+  static_assert(std::is_same<PromoteType<short, int>::Type, int>::value, "test failed");
+  static_assert(std::is_same<PromoteType<double, int>::Type, double>::value, "test failed");
+  static_assert(std::is_same<PromoteType<float, int>::Type, float>::value, "test failed");
+  static_assert(std::is_same<PromoteType<long, int>::Type, long>::value, "test failed");
+  static_assert(std::is_same<PromoteType<long long, int>::Type, long long>::value, "test failed");
+  static_assert(std::is_same<PromoteType<int, long long>::Type, long long>::value, "test failed");
+  static_assert(std::is_same<PromoteType<long, long double>::Type, long double>::value, "test failed");
+  static_assert(std::is_same<PromoteType<double, std::complex<double>>::Type, std::complex<double>>::value,
+                "test failed");
 
-  itkStaticAssert((IsSame<PromoteType<std::complex<int>, std::complex<double>>::Type, std::complex<double>>::Value),
-                  "test failed");
+  static_assert(std::is_same<PromoteType<std::complex<int>, std::complex<double>>::Type, std::complex<double>>::value,
+                "test failed");
   return EXIT_SUCCESS;
 }

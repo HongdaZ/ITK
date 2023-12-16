@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -79,7 +79,7 @@ public:
   SliceIterator
   operator++()
   {
-    m_Pos++;
+    ++m_Pos;
     return *this;
   }
 
@@ -89,7 +89,7 @@ public:
   {
     SliceIterator ans = *this;
 
-    m_Pos++;
+    ++m_Pos;
     return ans;
   }
 
@@ -104,18 +104,13 @@ public:
   /** Returns the logical && of the boolean == of two slice iterator positions,
    * stride, and start locations. */
   bool
-  operator==(const SliceIterator & orig)
+  operator==(const SliceIterator & orig) const
   {
     return orig.m_Pos == this->m_Pos && orig.m_Slice.stride() == this->m_Slice.stride() &&
            orig.m_Slice.start() == this->m_Slice.start();
   }
 
-  /** Returns the logical inverse of the boolean == of two slice iterators. */
-  bool
-  operator!=(const SliceIterator & orig)
-  {
-    return !operator==(orig);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(SliceIterator);
 
   /** Returns the boolean < of two slice iterator positions.  Result
    * is only true if the slice iterators have the same stride and

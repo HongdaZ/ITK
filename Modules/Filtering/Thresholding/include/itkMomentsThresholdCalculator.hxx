@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkMomentsThresholdCalculator_hxx
 #define itkMomentsThresholdCalculator_hxx
 
-#include "itkMomentsThresholdCalculator.h"
 #include "itkProgressReporter.h"
 #include "itkMath.h"
 
@@ -50,13 +49,13 @@ MomentsThresholdCalculator<THistogram, TOutput>::GenerateData()
   typename HistogramType::InstanceIdentifier threshold = 0;
 
   std::vector<double> histo(size);
-  for (unsigned i = 0; i < size; i++)
+  for (unsigned int i = 0; i < size; ++i)
   {
-    histo[i] = (double)(histogram->GetFrequency(i, 0) / total); // normalised histogram
+    histo[i] = static_cast<double>(histogram->GetFrequency(i, 0) / total); // normalised histogram
   }
 
   // Calculate the first, second, and third order moments
-  for (unsigned i = 0; i < size; i++)
+  for (unsigned int i = 0; i < size; ++i)
   {
     double m = histogram->GetMeasurement(i, 0);
     m1 += m * histo[i];
@@ -79,7 +78,7 @@ MomentsThresholdCalculator<THistogram, TOutput>::GenerateData()
   // The threshold is the gray-level closest to the p0-tile of the normalized
   // histogram
   sum = 0;
-  for (unsigned i = 0; i < size; i++)
+  for (unsigned int i = 0; i < size; ++i)
   {
     sum += histo[i];
     if (sum > p0)

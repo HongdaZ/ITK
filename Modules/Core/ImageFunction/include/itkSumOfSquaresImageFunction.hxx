@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSumOfSquaresImageFunction_hxx
 #define itkSumOfSquaresImageFunction_hxx
 
-#include "itkSumOfSquaresImageFunction.h"
 
 #include "itkShapedImageNeighborhoodRange.h"
 
@@ -33,8 +32,8 @@ SumOfSquaresImageFunction<TInputImage, TCoordRep>::SumOfSquaresImageFunction()
 }
 
 template <typename TInputImage, typename TCoordRep>
-typename SumOfSquaresImageFunction<TInputImage, TCoordRep>::RealType
-SumOfSquaresImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType & index) const
+auto
+SumOfSquaresImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType & index) const -> RealType
 {
   RealType sumOfSquares;
 
@@ -52,8 +51,7 @@ SumOfSquaresImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexTy
     return (NumericTraits<RealType>::max());
   }
 
-  const Experimental::ShapedImageNeighborhoodRange<const InputImageType> neighborhoodRange(
-    *image, index, m_NeighborhoodOffsets);
+  const ShapedImageNeighborhoodRange<const InputImageType> neighborhoodRange(*image, index, m_NeighborhoodOffsets);
 
   // Walk the neighborhood
   for (const InputPixelType pixelValue : neighborhoodRange)

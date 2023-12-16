@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,8 +18,8 @@
 #ifndef itkSymmetricEigenAnalysis_hxx
 #define itkSymmetricEigenAnalysis_hxx
 
-#include "itkSymmetricEigenAnalysis.h"
 #include "itkMath.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 namespace itk
 {
@@ -57,18 +57,17 @@ template <typename TMatrix, typename TVector, typename TEigenMatrix>
 unsigned int
 SymmetricEigenAnalysis<TMatrix, TVector, TEigenMatrix>::ComputeEigenValuesLegacy(const TMatrix & A, TVector & D) const
 {
-  auto * workArea1 = new double[m_Dimension];
+  const auto workArea1 = std::make_unique<double[]>(m_Dimension);
 
   // Copy the input matrix
-  auto * inputMatrix = new double[m_Dimension * m_Dimension];
-  auto * dVector = new double[m_Dimension];
+  const auto inputMatrix = make_unique_for_overwrite<double[]>(m_Dimension * m_Dimension);
+  const auto dVector = make_unique_for_overwrite<double[]>(m_Dimension);
 
   unsigned int k = 0;
 
   for (unsigned int row = 0; row < m_Dimension; ++row)
   {
     dVector[row] = D[row];
-    workArea1[row] = 0;
 
     for (unsigned int col = 0; col < m_Dimension; ++col)
     {
@@ -76,17 +75,13 @@ SymmetricEigenAnalysis<TMatrix, TVector, TEigenMatrix>::ComputeEigenValuesLegacy
     }
   }
 
-  this->ReduceToTridiagonalMatrix(inputMatrix, dVector, workArea1, workArea1);
-  const unsigned int eigenErrIndex = this->ComputeEigenValuesUsingQL(dVector, workArea1);
+  this->ReduceToTridiagonalMatrix(inputMatrix.get(), dVector.get(), workArea1.get(), workArea1.get());
+  const unsigned int eigenErrIndex = this->ComputeEigenValuesUsingQL(dVector.get(), workArea1.get());
 
   for (unsigned int i = 0; i < m_Dimension; ++i)
   {
     D[i] = dVector[i];
   }
-
-  delete[] dVector;
-  delete[] workArea1;
-  delete[] inputMatrix;
 
   return eigenErrIndex; // index of eigenvalue that could not be computed
 }
@@ -98,30 +93,30 @@ SymmetricEigenAnalysis<TMatrix, TVector, TEigenMatrix>::ComputeEigenValuesAndVec
   TVector &       EigenValues,
   TEigenMatrix &  EigenVectors) const
 {
-  auto * workArea1 = new double[m_Dimension];
-  auto * workArea2 = new double[m_Dimension * m_Dimension];
+  const auto workArea1 = std::make_unique<double[]>(m_Dimension);
+  const auto workArea2 = std::make_unique<double[]>(m_Dimension * m_Dimension);
 
   // Copy the input matrix
-  auto * inputMatrix = new double[m_Dimension * m_Dimension];
-  auto * dVector = new double[m_Dimension];
+  const auto inputMatrix = make_unique_for_overwrite<double[]>(m_Dimension * m_Dimension);
+  const auto dVector = make_unique_for_overwrite<double[]>(m_Dimension);
 
   unsigned int k = 0;
 
   for (unsigned int row = 0; row < m_Dimension; ++row)
   {
     dVector[row] = EigenValues[row];
-    workArea1[row] = 0;
 
     for (unsigned int col = 0; col < m_Dimension; ++col)
     {
-      workArea2[k] = 0;
       inputMatrix[k++] = A(row, col);
     }
   }
 
-  this->ReduceToTridiagonalMatrixAndGetTransformation(inputMatrix, dVector, workArea1, workArea2);
+  this->ReduceToTridiagonalMatrixAndGetTransformation(
+    inputMatrix.get(), dVector.get(), workArea1.get(), workArea2.get());
 
-  const unsigned int eigenErrIndex = this->ComputeEigenValuesAndVectorsUsingQL(dVector, workArea1, workArea2);
+  const unsigned int eigenErrIndex =
+    this->ComputeEigenValuesAndVectorsUsingQL(dVector.get(), workArea1.get(), workArea2.get());
 
   // Copy eigenvectors
   k = 0;
@@ -133,11 +128,6 @@ SymmetricEigenAnalysis<TMatrix, TVector, TEigenMatrix>::ComputeEigenValuesAndVec
       EigenVectors[row][col] = workArea2[k++];
     }
   }
-
-  delete[] dVector;
-  delete[] workArea2;
-  delete[] workArea1;
-  delete[] inputMatrix;
 
   return eigenErrIndex; // index of eigenvalue that could not be computed
 }
@@ -261,9 +251,9 @@ SymmetricEigenAnalysis<TMatrix, TVector, TEigenMatrix>::ReduceToTridiagonalMatri
 
 template <typename TMatrix, typename TVector, typename TEigenMatrix>
 void
-SymmetricEigenAnalysis<TMatrix, TVector, TEigenMatrix>::ReduceToTridiagonalMatrixAndGetTransformation(double * a,
-                                                                                                      double * d,
-                                                                                                      double * e,
+SymmetricEigenAnalysis<TMatrix, TVector, TEigenMatrix>::ReduceToTridiagonalMatrixAndGetTransformation(const double * a,
+                                                                                                      double *       d,
+                                                                                                      double *       e,
                                                                                                       double * z) const
 {
   double d__1;

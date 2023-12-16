@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkCovarianceImageFunction_hxx
 #define itkCovarianceImageFunction_hxx
 
-#include "itkCovarianceImageFunction.h"
 #include "itkMatrix.h"
 #include "itkConstNeighborhoodIterator.h"
 
@@ -31,8 +30,8 @@ CovarianceImageFunction<TInputImage, TCoordRep>::CovarianceImageFunction()
   = default;
 
 template <typename TInputImage, typename TCoordRep>
-typename CovarianceImageFunction<TInputImage, TCoordRep>::RealType
-CovarianceImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType & index) const
+auto
+CovarianceImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType & index) const -> RealType
 {
   using PixelType = typename TInputImage::PixelType;
   using PixelComponentType = typename PixelType::ValueType;
@@ -77,10 +76,10 @@ CovarianceImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType
   {
     const PixelType pixel = it.GetPixel(i);
 
-    for (unsigned int dimx = 0; dimx < VectorDimension; dimx++)
+    for (unsigned int dimx = 0; dimx < VectorDimension; ++dimx)
     {
       mean[dimx] += pixel[dimx];
-      for (unsigned int dimy = 0; dimy < VectorDimension; dimy++)
+      for (unsigned int dimy = 0; dimy < VectorDimension; ++dimy)
       {
         covariance[dimx][dimy] +=
           static_cast<PixelComponentRealType>(pixel[dimx]) * static_cast<PixelComponentRealType>(pixel[dimy]);
@@ -92,9 +91,9 @@ CovarianceImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType
 
   mean /= rsize;
 
-  for (unsigned int dimx = 0; dimx < VectorDimension; dimx++)
+  for (unsigned int dimx = 0; dimx < VectorDimension; ++dimx)
   {
-    for (unsigned int dimy = 0; dimy < VectorDimension; dimy++)
+    for (unsigned int dimy = 0; dimy < VectorDimension; ++dimy)
     {
       covariance[dimx][dimy] /= rsize;
       covariance[dimx][dimy] -= mean[dimx] * mean[dimy];

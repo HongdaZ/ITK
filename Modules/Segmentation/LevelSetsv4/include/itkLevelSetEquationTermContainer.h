@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,10 +22,10 @@
 #include "itkLevelSetEquationTermBase.h"
 #include "itkObject.h"
 
-#include <unordered_map>
-
+#include <atomic>
 #include <map>
 #include <string>
+#include <unordered_map>
 
 namespace itk
 {
@@ -34,7 +34,7 @@ namespace itk
  *  \brief Class for container holding the terms of a given level set update equation
  *
  *  \tparam TInputImage Input image or speed image or feature image for segmentation
- *  \tparam TLevelSetContainer Container holding the all the level set functions
+ *  \tparam TLevelSetContainer Container holding all the level set functions
  *
  *  \ingroup ITKLevelSetsv4
  */
@@ -42,7 +42,7 @@ template <typename TInputImage, typename TLevelSetContainer>
 class ITK_TEMPLATE_EXPORT LevelSetEquationTermContainer : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetEquationTermContainer);
+  ITK_DISALLOW_COPY_AND_MOVE(LevelSetEquationTermContainer);
 
   using Self = LevelSetEquationTermContainer;
   using Pointer = SmartPointer<Self>;
@@ -188,21 +188,17 @@ public:
     {
       return (m_Iterator == it.m_Iterator);
     }
-    bool
-    operator!=(const Iterator & it) const
-    {
-      return (m_Iterator != it.m_Iterator);
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Iterator);
+
     bool
     operator==(const ConstIterator & it) const
     {
       return (m_Iterator == it.m_Iterator);
     }
-    bool
-    operator!=(const ConstIterator & it) const
-    {
-      return (m_Iterator != it.m_Iterator);
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
+
     TermIdType
     GetIdentifier() const
     {
@@ -267,21 +263,17 @@ public:
     {
       return (m_Iterator == it.m_Iterator);
     }
-    bool
-    operator!=(const Iterator & it) const
-    {
-      return (m_Iterator != it.m_Iterator);
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Iterator);
+
     bool
     operator==(const ConstIterator & it) const
     {
       return (m_Iterator == it.m_Iterator);
     }
-    bool
-    operator!=(const ConstIterator & it) const
-    {
-      return (m_Iterator != it.m_Iterator);
-    }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
+
     TermIdType
     GetIdentifier() const
     {
@@ -328,7 +320,7 @@ protected:
 
   MapTermContainerType m_Container;
 
-  using MapCFLContainerType = std::map<TermIdType, LevelSetOutputRealType>;
+  using MapCFLContainerType = std::map<TermIdType, std::atomic<LevelSetOutputRealType>>;
   using MapCFLContainerIterator = typename MapCFLContainerType::iterator;
   using MapCFLContainerConstIterator = typename MapCFLContainerType::const_iterator;
 

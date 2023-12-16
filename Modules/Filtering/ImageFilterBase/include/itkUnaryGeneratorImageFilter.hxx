@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkUnaryGeneratorImageFilter_hxx
 #define itkUnaryGeneratorImageFilter_hxx
 
-#include "itkUnaryGeneratorImageFilter.h"
 #include "itkImageScanlineIterator.h"
 #include "itkProgressReporter.h"
 #include "itkTotalProgressReporter.h"
@@ -54,7 +53,7 @@ UnaryGeneratorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation(
   // this filter allows the input the output to be of different dimensions
 
   // get pointers to the input and output
-  auto *                 outputPtr = dynamic_cast<OutputImageType *>(this->GetOutput());
+  OutputImageType *      outputPtr = this->GetOutput();
   const InputImageType * inputPtr = this->GetInput();
 
   if (!outputPtr || !inputPtr)

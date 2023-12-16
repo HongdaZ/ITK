@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,10 +56,8 @@ public:
   template <typename T>
   using EnableIfConvertible = typename std::enable_if<std::is_convertible<T *, TObjectType *>::value>;
 
-  /** Constructor  */
-  constexpr SmartPointer() noexcept
-    : m_Pointer(nullptr)
-  {}
+  /** Default-constructor  */
+  constexpr SmartPointer() noexcept = default;
 
   /** Copy constructor  */
   SmartPointer(const SmartPointer & p) noexcept
@@ -68,9 +66,8 @@ public:
     this->Register();
   }
 
-  constexpr SmartPointer(std::nullptr_t p) noexcept
-    : m_Pointer(p)
-  {}
+  /** Constructor for implicit conversion from nullptr */
+  constexpr SmartPointer(std::nullptr_t) noexcept {}
 
   /** constructor with implicit conversion of pointer type */
   template <typename T, typename = typename EnableIfConvertible<T>::type>
@@ -103,11 +100,7 @@ public:
   }
 
   /** Destructor  */
-  ~SmartPointer()
-  {
-    this->UnRegister();
-    m_Pointer = nullptr;
-  }
+  ~SmartPointer() { this->UnRegister(); }
 
   /** Overload operator ->  */
   ObjectType * operator->() const noexcept { return m_Pointer; }
@@ -176,7 +169,7 @@ public:
     else
     {
       // This prints the object pointed to by the pointer
-      (*m_Pointer).Print(os);
+      m_Pointer->Print(os);
     }
     return m_Pointer;
   }
@@ -199,7 +192,7 @@ public:
 
 private:
   /** The pointer to the object referred to by this smart pointer. */
-  ObjectType * m_Pointer;
+  ObjectType * m_Pointer{ nullptr };
 
   template <typename T>
   friend class SmartPointer;

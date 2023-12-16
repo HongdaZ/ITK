@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,7 +66,7 @@ template <typename TImageType>
 class ITK_TEMPLATE_EXPORT FiniteDifferenceFunction : public LightObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FiniteDifferenceFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(FiniteDifferenceFunction);
 
   /** Standard class type aliases. */
   using Self = FiniteDifferenceFunction;
@@ -153,7 +153,7 @@ public:
    * operators. The defaults a 1.0. These can be set to take the image
    * spacing into account. */
   void
-  SetScaleCoefficients(PixelRealType vals[ImageDimension]);
+  SetScaleCoefficients(const PixelRealType vals[ImageDimension]);
 
   /** Returns the current scale coefficients. */
   void

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@ ThresholdLabelerImageFilterTestHelper(bool useRealTypeThresholds)
   region.SetSize(size);
   region.SetIndex(index);
 
-  InputImageType::Pointer inputImage = InputImageType::New();
+  auto inputImage = InputImageType::New();
   inputImage->SetLargestPossibleRegion(region);
   inputImage->SetBufferedRegion(region);
   inputImage->Allocate();
@@ -95,11 +95,22 @@ ThresholdLabelerImageFilterTestHelper(bool useRealTypeThresholds)
 
   // Apply labeler filter
   using LabelerFilterType = itk::ThresholdLabelerImageFilter<InputImageType, LabeledImageType>;
-  LabelerFilterType::Pointer labelerFilter = LabelerFilterType::New();
+  auto labelerFilter = LabelerFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(labelerFilter, ThresholdLabelerImageFilter, UnaryFunctorImageFilter);
 
+
   labelerFilter->SetInput(inputImage);
+
+  // Test exception when providing unsorted thresholds
+  std::vector<LabelerFilterType::RealThresholdType> unsrtThresholds;
+  unsrtThresholds.push_back(2.0);
+  unsrtThresholds.push_back(1.0);
+  unsrtThresholds.push_back(3.0);
+
+  labelerFilter->SetRealThresholds(unsrtThresholds);
+
+  ITK_TRY_EXPECT_EXCEPTION(labelerFilter->Update());
 
   if (!useRealTypeThresholds)
   {

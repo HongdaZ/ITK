@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,11 +19,12 @@
 #define itkWienerDeconvolutionImageFilter_h
 
 #include "itkInverseDeconvolutionImageFilter.h"
+#include "itkMath.h"
 
 namespace itk
 {
 /**
- *\class WienerDeconvolutionImageFilter
+ * \class WienerDeconvolutionImageFilter
  * \brief The Wiener deconvolution image filter is designed to restore an
  * image convolved with a blurring kernel while keeping noise
  * enhancement to a minimum.
@@ -80,7 +81,7 @@ class ITK_TEMPLATE_EXPORT WienerDeconvolutionImageFilter
   : public InverseDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WienerDeconvolutionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(WienerDeconvolutionImageFilter);
 
   using Self = WienerDeconvolutionImageFilter;
   using Superclass = InverseDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>;
@@ -99,26 +100,26 @@ public:
   using InputImageType = TInputImage;
   using OutputImageType = TOutputImage;
   using KernelImageType = TKernelImage;
-  using InputPixelType = typename Superclass::InputPixelType;
-  using OutputPixelType = typename Superclass::OutputPixelType;
-  using KernelPixelType = typename Superclass::KernelPixelType;
-  using InputIndexType = typename Superclass::InputIndexType;
-  using OutputIndexType = typename Superclass::OutputIndexType;
-  using KernelIndexType = typename Superclass::KernelIndexType;
-  using InputSizeType = typename Superclass::InputSizeType;
-  using OutputSizeType = typename Superclass::OutputSizeType;
-  using KernelSizeType = typename Superclass::KernelSizeType;
-  using SizeValueType = typename Superclass::SizeValueType;
-  using InputRegionType = typename Superclass::InputRegionType;
-  using OutputRegionType = typename Superclass::OutputRegionType;
-  using KernelRegionType = typename Superclass::KernelRegionType;
+  using typename Superclass::InputPixelType;
+  using typename Superclass::OutputPixelType;
+  using typename Superclass::KernelPixelType;
+  using typename Superclass::InputIndexType;
+  using typename Superclass::OutputIndexType;
+  using typename Superclass::KernelIndexType;
+  using typename Superclass::InputSizeType;
+  using typename Superclass::OutputSizeType;
+  using typename Superclass::KernelSizeType;
+  using typename Superclass::SizeValueType;
+  using typename Superclass::InputRegionType;
+  using typename Superclass::OutputRegionType;
+  using typename Superclass::KernelRegionType;
 
   /** Internal image types. */
-  using InternalImageType = typename Superclass::InternalImageType;
-  using InternalImagePointerType = typename Superclass::InternalImagePointerType;
-  using InternalComplexType = typename Superclass::InternalComplexType;
-  using InternalComplexImageType = typename Superclass::InternalComplexImageType;
-  using InternalComplexImagePointerType = typename Superclass::InternalComplexImagePointerType;
+  using typename Superclass::InternalImageType;
+  using typename Superclass::InternalImagePointerType;
+  using typename Superclass::InternalComplexType;
+  using typename Superclass::InternalComplexImageType;
+  using typename Superclass::InternalComplexImagePointerType;
 
   /** Set/get the variance of the zero-mean Gaussian white noise
    * assumed to be added to the input. */
@@ -154,15 +155,13 @@ public:
   {}
 
   bool
-  operator!=(const WienerDeconvolutionFunctor &) const
+  operator==(const WienerDeconvolutionFunctor &) const
   {
-    return false;
+    return true;
   }
-  bool
-  operator==(const WienerDeconvolutionFunctor & other) const
-  {
-    return !(*this != other);
-  }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(WienerDeconvolutionFunctor);
+
   inline TPixel
   operator()(const TPixel & I, const TPixel & H) const
   {
@@ -175,7 +174,7 @@ public:
 
     TPixel denominator = std::norm(H) + (Pn / (Pf - Pn));
     TPixel value = NumericTraits<TPixel>::ZeroValue();
-    if (std::abs(denominator) >= m_KernelZeroMagnitudeThreshold)
+    if (itk::Math::abs(denominator) >= m_KernelZeroMagnitudeThreshold)
     {
       value = I * (std::conj(H) / denominator);
     }

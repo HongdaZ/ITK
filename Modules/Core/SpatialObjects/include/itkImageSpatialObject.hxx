@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageSpatialObject_hxx
 #define itkImageSpatialObject_hxx
 
-#include "itkImageSpatialObject.h"
 #include "itkSize.h"
 #include "itkDefaultConvertPixelTraits.h"
 
@@ -172,8 +171,8 @@ ImageSpatialObject<TDimension, PixelType>::SetImage(const ImageType * image)
 
 /** Get the image inside the spatial object */
 template <unsigned int TDimension, typename PixelType>
-const typename ImageSpatialObject<TDimension, PixelType>::ImageType *
-ImageSpatialObject<TDimension, PixelType>::GetImage() const
+auto
+ImageSpatialObject<TDimension, PixelType>::GetImage() const -> const ImageType *
 {
   return m_Image.GetPointer();
 }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ TestMultipleReads(const std::string & fname, TImage *)
   using ImageType = TImage;
   using ReaderType = itk::ImageFileReader<ImageType>;
 
-  typename ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
 
   itk::TIFFImageIO::Pointer io = itk::TIFFImageIO::New();
   reader->SetFileName(fname.c_str());
@@ -66,8 +66,8 @@ itkTIFFImageIOTestHelper(int, char * argv[])
   using ReaderType = itk::ImageFileReader<ImageType>;
   using WriterType = itk::ImageFileWriter<ImageType>;
 
-  typename ReaderType::Pointer reader = ReaderType::New();
-  typename WriterType::Pointer writer = WriterType::New();
+  auto reader = ReaderType::New();
+  auto writer = WriterType::New();
 
   itk::TIFFImageIO::Pointer io = itk::TIFFImageIO::New();
   reader->SetFileName(argv[1]);

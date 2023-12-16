@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include "itkSpatialNeighborSubsampler.h"
 #include "itkImageToNeighborhoodSampleAdaptor.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
+#include "itkTestingMacros.h"
 
 int
 itkSpatialNeighborSubsamplerTest(int, char *[])
@@ -73,8 +74,8 @@ itkSpatialNeighborSubsamplerTest(int, char *[])
   using SamplerType = itk::Statistics::SpatialNeighborSubsampler<AdaptorType, RegionType>;
   using IteratorType = itk::ImageRegionConstIteratorWithIndex<ImageType>;
 
-  ImageType::Pointer inImage = ImageType::New();
-  SizeType           sz;
+  auto     inImage = ImageType::New();
+  SizeType sz;
   sz.Fill(25);
   IndexType idx;
   idx.Fill(0);
@@ -96,10 +97,14 @@ itkSpatialNeighborSubsamplerTest(int, char *[])
   regionConstraint.SetSize(szConstraint);
   regionConstraint.SetIndex(idxConstraint);
 
-  AdaptorType::Pointer sample = AdaptorType::New();
+  auto sample = AdaptorType::New();
   sample->SetImage(inImage);
 
-  SamplerType::Pointer sampler_orig = SamplerType::New();
+  auto sampler_orig = SamplerType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(sampler_orig, SpatialNeighborSubsampler, RegionConstrainedSubsampler);
+
+
   sampler_orig->SetSample(sample);
   sampler_orig->SetSampleRegion(region);
   sampler_orig->SetRegionConstraint(regionConstraint);

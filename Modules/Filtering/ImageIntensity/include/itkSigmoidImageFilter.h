@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class SigmoidImageFilter
+ * \class SigmoidImageFilter
  * \brief Computes the sigmoid function pixel-wise
  *
  * A linear transformation is applied first on the argument of
@@ -61,23 +61,17 @@ public:
   }
 
   ~Sigmoid() = default;
-  bool
-  operator!=(const Sigmoid & other) const
-  {
-    if (Math::NotExactlyEquals(m_Alpha, other.m_Alpha) || Math::NotExactlyEquals(m_Beta, other.m_Beta) ||
-        Math::NotExactlyEquals(m_OutputMaximum, other.m_OutputMaximum) ||
-        Math::NotExactlyEquals(m_OutputMinimum, other.m_OutputMinimum))
-    {
-      return true;
-    }
-    return false;
-  }
+
 
   bool
   operator==(const Sigmoid & other) const
   {
-    return !(*this != other);
+    return Math::ExactlyEquals(m_Alpha, other.m_Alpha) && Math::ExactlyEquals(m_Beta, other.m_Beta) &&
+           Math::ExactlyEquals(m_OutputMaximum, other.m_OutputMaximum) &&
+           Math::ExactlyEquals(m_OutputMinimum, other.m_OutputMinimum);
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Sigmoid);
 
   inline TOutput
   operator()(const TInput & A) const
@@ -152,7 +146,7 @@ class SigmoidImageFilter
                                    Functor::Sigmoid<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SigmoidImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SigmoidImageFilter);
 
   /** Standard class type aliases. */
   using Self = SigmoidImageFilter;

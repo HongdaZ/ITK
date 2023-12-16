@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,6 @@
 #ifndef itkLevelSetEvolution_hxx
 #define itkLevelSetEvolution_hxx
 
-#include "itkLevelSetEvolution.h"
 
 namespace itk
 {
@@ -225,9 +224,9 @@ LevelSetEvolution<TEquationContainer, WhitakerSparseLevelSetImage<TOutput, VDime
 template <typename TEquationContainer, typename TOutput, unsigned int VDimension>
 void
 LevelSetEvolution<TEquationContainer, WhitakerSparseLevelSetImage<TOutput, VDimension>>::SetNumberOfWorkUnits(
-  const ThreadIdType numberOfThreads)
+  const ThreadIdType numberOfWorkUnits)
 {
-  this->m_SplitLevelSetComputeIterationThreader->SetNumberOfWorkUnits(numberOfThreads);
+  this->m_SplitLevelSetComputeIterationThreader->SetNumberOfWorkUnits(numberOfWorkUnits);
 }
 
 template <typename TEquationContainer, typename TOutput, unsigned int VDimension>

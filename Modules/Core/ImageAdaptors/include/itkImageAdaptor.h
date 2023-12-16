@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,7 +56,7 @@ template <typename TImage, typename TAccessor>
 class ITK_TEMPLATE_EXPORT ImageAdaptor : public ImageBase<TImage::ImageDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageAdaptor);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageAdaptor);
 
   /** Dimension of the image.  This constant is used by functions that are
    * templated over image type (as opposed to being templated over pixel
@@ -99,33 +99,33 @@ public:
   using AccessorFunctorType = typename InternalImageType::AccessorFunctorType::template Rebind<Self>::Type;
 
   /** Index type alias support An index is used to access pixel values. */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
   using IndexValueType = typename IndexType::IndexValueType;
 
   /** Size type alias support A size is used to define region bounds. */
-  using SizeType = typename Superclass::SizeType;
+  using typename Superclass::SizeType;
   using SizeValueType = typename SizeType::SizeValueType;
 
   /** Offset type alias support */
-  using OffsetType = typename Superclass::OffsetType;
+  using typename Superclass::OffsetType;
   using OffsetValueType = typename OffsetType::OffsetValueType;
 
   /** Region type alias support A region is used to specify a subset of
    *  an image. */
-  using RegionType = typename Superclass::RegionType;
+  using typename Superclass::RegionType;
 
   /** Spacing type alias support  Spacing holds the size of a pixel.  The
    * spacing is the geometric distance between image samples. */
-  using SpacingType = typename Superclass::SpacingType;
+  using typename Superclass::SpacingType;
 
   /** Origin type alias support  The origin is the geometric coordinates
    * of the index (0,0). */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
-  /** Direction type alias support  The Direction is a matix of
+  /** Direction type alias support  The Direction is a matrix of
    * direction cosines that specify the direction between samples.
    * */
-  using DirectionType = typename Superclass::DirectionType;
+  using typename Superclass::DirectionType;
 
 
   /**
@@ -140,8 +140,8 @@ public:
     using Type = Image<UPixelType, UImageDimension>;
   };
 
-  template <typename UPixelType, unsigned int NUImageDimension = TImage::ImageDimension>
-  using RebindImageType = itk::Image<UPixelType, NUImageDimension>;
+  template <typename UPixelType, unsigned int VUImageDimension = TImage::ImageDimension>
+  using RebindImageType = itk::Image<UPixelType, VUImageDimension>;
 
 
   /** Set the region object that defines the size and starting index
@@ -284,13 +284,13 @@ public:
 
   /** Set the spacing (size of a pixel) of the image. */
   void
-  SetSpacing(const SpacingType & values) override;
+  SetSpacing(const SpacingType & spacing) override;
 
   void
-  SetSpacing(const double * values /*[ImageDimension]*/) override;
+  SetSpacing(const double * spacing /*[ImageDimension]*/) override;
 
   void
-  SetSpacing(const float * values /*[ImageDimension]*/) override;
+  SetSpacing(const float * spacing /*[ImageDimension]*/) override;
 
   /** Get the spacing (size of a pixel) of the image. The
    * spacing is the geometric distance between image samples.
@@ -306,13 +306,13 @@ public:
 
   /** Set the origin of the image. */
   void
-  SetOrigin(const PointType values) override;
+  SetOrigin(const PointType origin) override;
 
   void
-  SetOrigin(const double * values /*[ImageDimension]*/) override;
+  SetOrigin(const double * origin /*[ImageDimension]*/) override;
 
   void
-  SetOrigin(const float * values /*[ImageDimension]*/) override;
+  SetOrigin(const float * origin /*[ImageDimension]*/) override;
 
   /** Set the direction of the image. */
   void
@@ -381,6 +381,14 @@ public:
   bool
   VerifyRequestedRegion() override;
 
+  /** Returns the continuous index from a physical point. */
+  template <typename TIndexRep, typename TCoordRep>
+  ContinuousIndex<TIndexRep, TImage::ImageDimension>
+  TransformPhysicalPointToContinuousIndex(const Point<TCoordRep, TImage::ImageDimension> & point) const
+  {
+    return m_Image->template TransformPhysicalPointToContinuousIndex<TIndexRep>(point);
+  }
+
   /** \brief Get the continuous index from a physical point
    *
    * Returns true if the resulting index is within the image, false otherwise.
@@ -391,6 +399,14 @@ public:
                                           ContinuousIndex<TCoordRep, Self::ImageDimension> & index) const
   {
     return m_Image->TransformPhysicalPointToContinuousIndex(point, index);
+  }
+
+  /** Returns the index (discrete) of a voxel from a physical point. */
+  template <typename TCoordRep>
+  IndexType
+  TransformPhysicalPointToIndex(const Point<TCoordRep, Self::ImageDimension> & point) const
+  {
+    return m_Image->TransformPhysicalPointToIndex(point);
   }
 
   /** Get the index (discrete) from a physical point.
@@ -416,6 +432,14 @@ public:
     m_Image->TransformContinuousIndexToPhysicalPoint(index, point);
   }
 
+  /** Returns a physical point from a continuous index (in the index space) */
+  template <typename TCoordRep, typename TIndexRep>
+  Point<TCoordRep, TImage::ImageDimension>
+  TransformContinuousIndexToPhysicalPoint(const ContinuousIndex<TIndexRep, Self::ImageDimension> & index) const
+  {
+    return m_Image->template TransformContinuousIndexToPhysicalPoint<TIndexRep>(index);
+  }
+
   /** Get a physical point (in the space which
    * the origin and spacing information comes from)
    * from a discrete index (in the index space)
@@ -426,6 +450,14 @@ public:
   TransformIndexToPhysicalPoint(const IndexType & index, Point<TCoordRep, Self::ImageDimension> & point) const
   {
     m_Image->TransformIndexToPhysicalPoint(index, point);
+  }
+
+  /** Returns a physical point from a discrete index (in the index space) */
+  template <typename TCoordRep>
+  Point<TCoordRep, Self::ImageDimension>
+  TransformIndexToPhysicalPoint(const IndexType & index) const
+  {
+    return m_Image->template TransformIndexToPhysicalPoint<TCoordRep>(index);
   }
 
   template <typename TCoordRep>
@@ -476,7 +508,7 @@ private:
   // to have the correct vector length of the image.
   template <typename TPixelType>
   void
-  UpdateAccessor(typename ::itk::VectorImage<TPixelType, ImageDimension> * itkNotUsed(dummy))
+  UpdateAccessor(typename itk::VectorImage<TPixelType, ImageDimension> * itkNotUsed(dummy))
   {
     this->m_PixelAccessor.SetVectorLength(this->m_Image->GetNumberOfComponentsPerPixel());
   }

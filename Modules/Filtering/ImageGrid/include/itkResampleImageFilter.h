@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@
 namespace itk
 {
 /**
- *\class ResampleImageFilter
+ * \class ResampleImageFilter
  * \brief Resample an image via a coordinate transform
  *
  * ResampleImageFilter resamples an existing image through some coordinate
@@ -90,7 +90,7 @@ template <typename TInputImage,
 class ITK_TEMPLATE_EXPORT ResampleImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ResampleImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ResampleImageFilter);
 
   /** Standard class type aliases. */
   using Self = ResampleImageFilter;
@@ -224,7 +224,7 @@ public:
   /** Set the output image spacing. */
   itkSetMacro(OutputSpacing, SpacingType);
   virtual void
-  SetOutputSpacing(const double * values);
+  SetOutputSpacing(const double * spacing);
 
   /** Get the output image spacing. */
   itkGetConstReferenceMacro(OutputSpacing, SpacingType);
@@ -232,7 +232,7 @@ public:
   /** Set the output image origin. */
   itkSetMacro(OutputOrigin, OriginPointType);
   virtual void
-  SetOutputOrigin(const double * values);
+  SetOutputOrigin(const double * origin);
 
   /** Get the output image origin. */
   itkGetConstReferenceMacro(OutputOrigin, OriginPointType);

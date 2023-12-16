@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,11 +24,9 @@ namespace itk
 /**
  * ************************* Constructor ************************
  */
-SPSAOptimizer ::SPSAOptimizer()
+SPSAOptimizer::SPSAOptimizer()
 
 {
-  itkDebugMacro("Constructor");
-
   m_CurrentIteration = 0;
   m_Maximize = false;
   m_StopCondition = StopConditionSPSAOptimizerEnum::Unknown;
@@ -52,7 +50,7 @@ SPSAOptimizer ::SPSAOptimizer()
  * ************************* PrintSelf **************************
  */
 void
-SPSAOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
+SPSAOptimizer::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
@@ -90,11 +88,11 @@ SPSAOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
  * Get the cost function value at a position.
  */
 SPSAOptimizer::MeasureType
-SPSAOptimizer ::GetValue(const ParametersType & parameters) const
+SPSAOptimizer::GetValue(const ParametersType & parameters) const
 {
   /**
    * This method just calls the Superclass' implementation,
-   * but is necessary because GetValue(void) is also declared
+   * but is necessary because GetValue() is also declared
    * in this class.
    */
   return this->Superclass::GetValue(parameters);
@@ -105,7 +103,7 @@ SPSAOptimizer ::GetValue(const ParametersType & parameters) const
  * Get the cost function value at the current position.
  */
 SPSAOptimizer::MeasureType
-SPSAOptimizer ::GetValue() const
+SPSAOptimizer::GetValue() const
 {
   /**
    * The SPSA does not compute the cost function value at
@@ -119,7 +117,7 @@ SPSAOptimizer ::GetValue() const
  * *********************** StartOptimization ********************
  */
 void
-SPSAOptimizer ::StartOptimization()
+SPSAOptimizer::StartOptimization()
 {
   itkDebugMacro("StartOptimization");
 
@@ -148,7 +146,7 @@ SPSAOptimizer ::StartOptimization()
  */
 
 void
-SPSAOptimizer ::ResumeOptimization()
+SPSAOptimizer::ResumeOptimization()
 {
   itkDebugMacro("ResumeOptimization");
 
@@ -165,7 +163,7 @@ SPSAOptimizer ::ResumeOptimization()
       break;
     }
 
-    m_CurrentIteration++;
+    ++m_CurrentIteration;
 
     if (m_CurrentIteration >= m_MaximumNumberOfIterations)
     {
@@ -189,7 +187,7 @@ SPSAOptimizer ::ResumeOptimization()
  * ********************** StopOptimization **********************
  */
 void
-SPSAOptimizer ::StopOptimization()
+SPSAOptimizer::StopOptimization()
 {
   itkDebugMacro("StopOptimization");
   m_Stop = true;
@@ -200,7 +198,7 @@ SPSAOptimizer ::StopOptimization()
  * ********************** AdvanceOneStep ************************
  */
 void
-SPSAOptimizer ::AdvanceOneStep()
+SPSAOptimizer::AdvanceOneStep()
 {
   itkDebugMacro("AdvanceOneStep");
 
@@ -230,14 +228,14 @@ SPSAOptimizer ::AdvanceOneStep()
   {
     this->ComputeGradient(currentPosition, m_Gradient);
   }
-  catch (ExceptionObject & err)
+  catch (const ExceptionObject &)
   {
     // An exception has occurred.
     // Terminate immediately.
     m_StopCondition = StopConditionSPSAOptimizerEnum::MetricError;
     StopOptimization();
     // Pass exception to caller
-    throw err;
+    throw;
   }
 
   /** Compute the gain a_k */
@@ -266,7 +264,7 @@ SPSAOptimizer ::AdvanceOneStep()
  */
 
 double
-SPSAOptimizer ::Compute_a(SizeValueType k) const
+SPSAOptimizer::Compute_a(SizeValueType k) const
 {
   return static_cast<double>(m_Sa / std::pow(m_A + k + 1, m_Alpha));
 } // end Compute_a
@@ -279,7 +277,7 @@ SPSAOptimizer ::Compute_a(SizeValueType k) const
  */
 
 double
-SPSAOptimizer ::Compute_c(SizeValueType k) const
+SPSAOptimizer::Compute_c(SizeValueType k) const
 {
   return static_cast<double>(m_Sc / std::pow(k + 1, m_Gamma));
 } // end Compute_c
@@ -288,12 +286,12 @@ SPSAOptimizer ::Compute_c(SizeValueType k) const
  * ********************** GenerateDelta *************************
  *
  * This function generates a perturbation vector delta.
- * Currently the elements are drawn from a bernouilli
+ * Currently the elements are drawn from a bernoulli
  * distribution. (+- 1)
  */
 
 void
-SPSAOptimizer ::GenerateDelta(const unsigned int spaceDimension)
+SPSAOptimizer::GenerateDelta(const unsigned int spaceDimension)
 {
   m_Delta = DerivativeType(spaceDimension);
 
@@ -350,7 +348,7 @@ SPSAOptimizer::ComputeGradient(const ParametersType & parameters, DerivativeType
     this->GenerateDelta(spaceDimension);
 
     /** Create thetaplus and thetamin */
-    for (unsigned int j = 0; j < spaceDimension; j++)
+    for (unsigned int j = 0; j < spaceDimension; ++j)
     {
       thetaplus[j] = parameters[j] + ck * m_Delta[j];
       thetamin[j] = parameters[j] - ck * m_Delta[j];
@@ -364,7 +362,7 @@ SPSAOptimizer::ComputeGradient(const ParametersType & parameters, DerivativeType
 
     /** Compute the contribution to the gradient g_k  */
     const double valuediff = (valueplus - valuemin) / (2 * ck);
-    for (unsigned int j = 0; j < spaceDimension; j++)
+    for (unsigned int j = 0; j < spaceDimension; ++j)
     {
       // remember to divide the gradient by the NumberOfPerturbations!
       gradient[j] += valuediff / m_Delta[j];
@@ -372,7 +370,7 @@ SPSAOptimizer::ComputeGradient(const ParametersType & parameters, DerivativeType
   } // end for ++perturbation
 
   /** Apply scaling (see below) and divide by the NumberOfPerturbations */
-  for (unsigned int j = 0; j < spaceDimension; j++)
+  for (unsigned int j = 0; j < spaceDimension; ++j)
   {
     gradient[j] /= (itk::Math::sqr(scales[j]) * static_cast<double>(m_NumberOfPerturbations));
   }
@@ -448,9 +446,9 @@ SPSAOptimizer::GuessParameters(SizeValueType numberOfGradientEstimates, double i
   for (SizeValueType n = 1; n <= numberOfGradientEstimates; ++n)
   {
     this->ComputeGradient(initialPosition, m_Gradient);
-    for (unsigned int j = 0; j < spaceDimension; j++)
+    for (unsigned int j = 0; j < spaceDimension; ++j)
     {
-      averageAbsoluteGradient[j] += std::fabs(m_Gradient[j]);
+      averageAbsoluteGradient[j] += itk::Math::abs(m_Gradient[j]);
     }
   } // end for ++n
   averageAbsoluteGradient /= static_cast<double>(numberOfGradientEstimates);

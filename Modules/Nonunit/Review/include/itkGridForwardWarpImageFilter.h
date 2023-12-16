@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,7 +59,7 @@ template <typename TDisplacementField, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT GridForwardWarpImageFilter : public ImageToImageFilter<TDisplacementField, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GridForwardWarpImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(GridForwardWarpImageFilter);
 
   /** Standard class type aliases. */
   using Self = GridForwardWarpImageFilter;
@@ -77,8 +77,8 @@ public:
   using OutputImageRegionType = typename TOutputImage::RegionType;
 
   /** Inherit some types from the superclass. */
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::OutputImagePointer;
   using IndexType = typename OutputImageType::IndexType;
   using SizeType = typename OutputImageType::SizeType;
   using PixelType = typename OutputImageType::PixelType;

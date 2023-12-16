@@ -27,12 +27,12 @@
 #--   - [ ] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -56,11 +56,10 @@ to compute projection images from a 3D image volume.
 A more detailed description can be found in the Insight Journal article::
 
 Wu, J. \"ITK-Based Implementation of Two-Projection 2D/3D Registration Method with an Application in Patient Setup for External Beam Radiotherapy\".
-  https://hdl.handle.net/10380/3245
-  http://www.insight-journal.org/browse/publication/784
+  https://www.insight-journal.org/browse/publication/784
   December, 2010.
 "
   MODULE_COMPLIANCE_LEVEL 2
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKTwoProjectionRegistration.git
-  GIT_TAG df2d0c2beeb0439eafcc002caa60e50d5314cedc
+  GIT_TAG 2cf7d9522031c613a3edcdcd76aee2896536672e
   )

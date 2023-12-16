@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,7 +43,7 @@ itkAddImageAdaptorTest(int, char *[])
   using RegionType = itk::ImageRegion<Dimension>;
 
   // Create input image
-  ImageType::Pointer inputImage = ImageType::New();
+  auto inputImage = ImageType::New();
 
   // Define their size, and start index
   SizeType size;
@@ -61,9 +61,7 @@ itkAddImageAdaptorTest(int, char *[])
   region.SetSize(size);
 
   // Initialize Image
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetRegions(region);
   inputImage->Allocate();
 
   // Declare Iterator type apropriated for this image
@@ -89,7 +87,7 @@ itkAddImageAdaptorTest(int, char *[])
 
   using AdaptorType = itk::AddImageAdaptor<ImageType>;
 
-  AdaptorType::Pointer addAdaptor = AdaptorType::New();
+  auto addAdaptor = AdaptorType::New();
 
   PixelType additiveConstant = 19;
 
@@ -98,7 +96,7 @@ itkAddImageAdaptorTest(int, char *[])
 
   using DiffFilterType = itk::SubtractImageFilter<AdaptorType, ImageType, ImageType>;
 
-  DiffFilterType::Pointer diffFilter = DiffFilterType::New();
+  auto diffFilter = DiffFilterType::New();
 
   diffFilter->SetInput1(addAdaptor);
   diffFilter->SetInput2(inputImage);
@@ -126,7 +124,7 @@ itkAddImageAdaptorTest(int, char *[])
     auto v1 = static_cast<RealPixelType>(dt.Get());
     auto v2 = static_cast<RealPixelType>(additiveConstant);
 
-    RealPixelType diff = std::fabs(v1 - v2);
+    RealPixelType diff = itk::Math::abs(v1 - v2);
 
     if (diff > itk::Math::eps)
     {

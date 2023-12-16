@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@ namespace itk
  * \author Burstein, Pablo D.; Yushkevich, Paul; Gee, James C.
  *
  * This implementation was contributed as a paper to the Insight Journal
- * http://insight-journal.org/midas/handle.php?handle=1926/303
+ * https://insight-journal.org/midas/handle.php?handle=1926/303
  *
  */
 class GenericCUBFileAdaptor
@@ -503,7 +503,7 @@ VoxBoCUBImageIO::ReadImageInformation()
 
     const std::string::size_type keysize = key.size();
 
-    if ((keysize > 0) && (key[key.size() - 1] == ':'))
+    if ((keysize > 0) && (key.back() == ':'))
     {
       // Strip the colon off the key
       key = key.substr(0, key.size() - 1);
@@ -622,7 +622,7 @@ VoxBoCUBImageIO::ReadImageInformation()
 }
 
 void
-VoxBoCUBImageIO ::WriteImageInformation()
+VoxBoCUBImageIO::WriteImageInformation()
 {
   if (m_Writer == nullptr)
   {
@@ -681,9 +681,9 @@ VoxBoCUBImageIO ::WriteImageInformation()
   double x = -m_Origin[0] / m_Spacing[0];
   double y = -m_Origin[1] / m_Spacing[1];
   double z = -m_Origin[2] / m_Spacing[2];
-  header << m_VB_ORIGIN << ":\t" << ((x >= 0) ? (int)(x + .5) : (int)(x - .5)) << "\t"
-         << ((y >= 0) ? (int)(y + .5) : (int)(y - .5)) << "\t" << ((z >= 0) ? (int)(z + .5) : (int)(z - .5))
-         << std::endl;
+  header << m_VB_ORIGIN << ":\t" << ((x >= 0) ? static_cast<int>(x + .5) : static_cast<int>(x - .5)) << "\t"
+         << ((y >= 0) ? static_cast<int>(y + .5) : static_cast<int>(y - .5)) << "\t"
+         << ((z >= 0) ? static_cast<int>(z + .5) : static_cast<int>(z - .5)) << std::endl;
 
   // Write the byte order
   header << m_VB_BYTEORDER << ":\t"
@@ -738,7 +738,7 @@ VoxBoCUBImageIO ::WriteImageInformation()
 
 /** The write function is not implemented */
 void
-VoxBoCUBImageIO ::Write(const void * buffer)
+VoxBoCUBImageIO::Write(const void * buffer)
 {
   m_Writer = CreateWriter(m_FileName.c_str());
   WriteImageInformation();
@@ -786,56 +786,56 @@ VoxBoCUBImageIO::CheckExtension(const char * filename, bool & isCompressed)
 }
 
 void
-VoxBoCUBImageIO ::InitializeOrientationMap()
+VoxBoCUBImageIO::InitializeOrientationMap()
 {
-  m_OrientationMap["RIP"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIP;
-  m_OrientationMap["LIP"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_LIP;
-  m_OrientationMap["RSP"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSP;
-  m_OrientationMap["LSP"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_LSP;
-  m_OrientationMap["RIA"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIA;
-  m_OrientationMap["LIA"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_LIA;
-  m_OrientationMap["RSA"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSA;
-  m_OrientationMap["LSA"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_LSA;
-  m_OrientationMap["IRP"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_IRP;
-  m_OrientationMap["ILP"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_ILP;
-  m_OrientationMap["SRP"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_SRP;
-  m_OrientationMap["SLP"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_SLP;
-  m_OrientationMap["IRA"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_IRA;
-  m_OrientationMap["ILA"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_ILA;
-  m_OrientationMap["SRA"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_SRA;
-  m_OrientationMap["SLA"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_SLA;
-  m_OrientationMap["RPI"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_RPI;
-  m_OrientationMap["LPI"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_LPI;
-  m_OrientationMap["RAI"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI;
-  m_OrientationMap["LAI"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_LAI;
-  m_OrientationMap["RPS"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_RPS;
-  m_OrientationMap["LPS"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_LPS;
-  m_OrientationMap["RAS"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAS;
-  m_OrientationMap["LAS"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_LAS;
-  m_OrientationMap["PRI"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_PRI;
-  m_OrientationMap["PLI"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_PLI;
-  m_OrientationMap["ARI"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_ARI;
-  m_OrientationMap["ALI"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_ALI;
-  m_OrientationMap["PRS"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_PRS;
-  m_OrientationMap["PLS"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_PLS;
-  m_OrientationMap["ARS"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_ARS;
-  m_OrientationMap["ALS"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_ALS;
-  m_OrientationMap["IPR"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_IPR;
-  m_OrientationMap["SPR"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_SPR;
-  m_OrientationMap["IAR"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_IAR;
-  m_OrientationMap["SAR"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_SAR;
-  m_OrientationMap["IPL"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_IPL;
-  m_OrientationMap["SPL"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_SPL;
-  m_OrientationMap["IAL"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_IAL;
-  m_OrientationMap["SAL"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_SAL;
-  m_OrientationMap["PIR"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_PIR;
-  m_OrientationMap["PSR"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_PSR;
-  m_OrientationMap["AIR"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_AIR;
-  m_OrientationMap["ASR"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_ASR;
-  m_OrientationMap["PIL"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_PIL;
-  m_OrientationMap["PSL"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_PSL;
-  m_OrientationMap["AIL"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_AIL;
-  m_OrientationMap["ASL"] = SpatialOrientation::ITK_COORDINATE_ORIENTATION_ASL;
+  m_OrientationMap["RIP"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RIP;
+  m_OrientationMap["LIP"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_LIP;
+  m_OrientationMap["RSP"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RSP;
+  m_OrientationMap["LSP"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_LSP;
+  m_OrientationMap["RIA"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RIA;
+  m_OrientationMap["LIA"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_LIA;
+  m_OrientationMap["RSA"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RSA;
+  m_OrientationMap["LSA"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_LSA;
+  m_OrientationMap["IRP"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_IRP;
+  m_OrientationMap["ILP"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_ILP;
+  m_OrientationMap["SRP"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_SRP;
+  m_OrientationMap["SLP"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_SLP;
+  m_OrientationMap["IRA"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_IRA;
+  m_OrientationMap["ILA"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_ILA;
+  m_OrientationMap["SRA"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_SRA;
+  m_OrientationMap["SLA"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_SLA;
+  m_OrientationMap["RPI"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RPI;
+  m_OrientationMap["LPI"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_LPI;
+  m_OrientationMap["RAI"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RAI;
+  m_OrientationMap["LAI"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_LAI;
+  m_OrientationMap["RPS"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RPS;
+  m_OrientationMap["LPS"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_LPS;
+  m_OrientationMap["RAS"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RAS;
+  m_OrientationMap["LAS"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_LAS;
+  m_OrientationMap["PRI"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_PRI;
+  m_OrientationMap["PLI"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_PLI;
+  m_OrientationMap["ARI"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_ARI;
+  m_OrientationMap["ALI"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_ALI;
+  m_OrientationMap["PRS"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_PRS;
+  m_OrientationMap["PLS"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_PLS;
+  m_OrientationMap["ARS"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_ARS;
+  m_OrientationMap["ALS"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_ALS;
+  m_OrientationMap["IPR"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_IPR;
+  m_OrientationMap["SPR"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_SPR;
+  m_OrientationMap["IAR"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_IAR;
+  m_OrientationMap["SAR"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_SAR;
+  m_OrientationMap["IPL"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_IPL;
+  m_OrientationMap["SPL"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_SPL;
+  m_OrientationMap["IAL"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_IAL;
+  m_OrientationMap["SAL"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_SAL;
+  m_OrientationMap["PIR"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_PIR;
+  m_OrientationMap["PSR"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_PSR;
+  m_OrientationMap["AIR"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_AIR;
+  m_OrientationMap["ASR"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_ASR;
+  m_OrientationMap["PIL"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_PIL;
+  m_OrientationMap["PSL"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_PSL;
+  m_OrientationMap["AIL"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_AIL;
+  m_OrientationMap["ASL"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_ASL;
 
   OrientationMap::const_iterator it;
   for (it = m_OrientationMap.begin(); it != m_OrientationMap.end(); ++it)
@@ -845,7 +845,7 @@ VoxBoCUBImageIO ::InitializeOrientationMap()
 }
 
 void
-VoxBoCUBImageIO ::SwapBytesIfNecessary(void * buffer, BufferSizeType numberOfBytes)
+VoxBoCUBImageIO::SwapBytesIfNecessary(void * buffer, BufferSizeType numberOfBytes)
 {
   if (m_ComponentType == IOComponentEnum::CHAR)
   {

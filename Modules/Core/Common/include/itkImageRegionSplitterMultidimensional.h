@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,7 +58,7 @@ namespace itk
 class ITKCommon_EXPORT ImageRegionSplitterMultidimensional : public ImageRegionSplitterBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageRegionSplitterMultidimensional);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageRegionSplitterMultidimensional);
 
   /** Standard class type aliases. */
   using Self = ImageRegionSplitterMultidimensional;
@@ -84,7 +84,7 @@ protected:
 
   unsigned int
   GetSplitInternal(unsigned int   dim,
-                   unsigned int   i,
+                   unsigned int   splitI,
                    unsigned int   numberOfPieces,
                    IndexValueType regionIndex[],
                    SizeValueType  regionSize[]) const override;

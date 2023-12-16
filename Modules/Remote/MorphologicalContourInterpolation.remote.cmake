@@ -27,12 +27,12 @@
 #--   - [X] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -46,8 +46,7 @@ itk_fetch_module(MorphologicalContourInterpolation
 "nD morphological contour interpolation
 
 Insight Journal article:
-http://www.insight-journal.org/browse/publication/977
-http://hdl.handle.net/10380/3563
+https://www.insight-journal.org/browse/publication/977
 
 An ITK-based implementation of morphological contour interpolation based off the paper:
 Albu AB, Beugeling T, Laurendeau D.
@@ -58,5 +57,5 @@ This work is supported by NIH grant R01 EB014346
 'Continued development and maintenance of the ITK-SNAP 3D image segmentation software'."
   MODULE_COMPLIANCE_LEVEL 3
   GIT_REPOSITORY ${git_protocol}://github.com/KitwareMedical/ITKMorphologicalContourInterpolation.git
-  GIT_TAG c3c830ac4a5db59f4a9a747f13718759c6428cc3
+  GIT_TAG dbe1d9e53a2b9ed595cdda530cb7e863c1b95c20
   )

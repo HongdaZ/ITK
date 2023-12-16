@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class HilbertPath
+ * \class HilbertPath
  * \brief  Represent an n-dimensional Hilbert path for a given order
  *
  * This class is used to construct a Hilbert spacing-filling curve
@@ -54,7 +54,7 @@ template <typename TIndexValue = unsigned int, unsigned int VDimension = 3>
 class ITK_TEMPLATE_EXPORT HilbertPath : public Path<TIndexValue, Index<VDimension>, VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HilbertPath);
+  ITK_DISALLOW_COPY_AND_MOVE(HilbertPath);
 
   /** Standard class type aliases. */
   using Self = HilbertPath<TIndexValue, VDimension>;
@@ -72,8 +72,8 @@ public:
   static constexpr unsigned int Dimension = VDimension;
 
   /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
-  using InputType = typename Superclass::InputType;
+  using typename Superclass::OutputType;
+  using typename Superclass::InputType;
 
   /** The input/output type alias*/
   using PathIndexType = InputType;
@@ -81,7 +81,7 @@ public:
   using HilbertOrderType = unsigned int;
   using HilbertPathType = std::vector<IndexType>;
   using HilbertPathSizeType = typename HilbertPathType::size_type;
-  using OffsetType = typename Superclass::OffsetType;
+  using typename Superclass::OffsetType;
 
   // Functions inherited from Path
 

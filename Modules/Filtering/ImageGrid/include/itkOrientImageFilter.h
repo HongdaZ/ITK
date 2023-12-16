@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@ namespace itk
  *   - Inferior and Superior (Subject's bottom and top, i.e. feet and head)
  *
  * The initials of these directions are used in a 3 letter code in the
- * enumerated type itk::SpatialOrientation::ValidCoordinateOrientationFlags.
+ * enumerated type itk::SpatialOrientationEnums::ValidCoordinateOrientations.
  * The initials are given fastest moving index first, second fastest second,
  * third fastest third.
  * Examples:
@@ -86,7 +86,7 @@ namespace itk
    ImageType::Pointer ReadAnalyzeFile(const char *path)
    {
      itk::AnalyzeImageIO::Pointer io = itk::AnalyzeImageIO::New();
-     ImageReaderType::Pointer fileReader = ImageReaderType::New();
+     auto fileReader = ImageReaderType::New();
      fileReader->SetImageIO(io);
      fileReader->SetFileName(path);
      fileReader->Update();
@@ -119,7 +119,7 @@ namespace itk
    ImageType::Pointer ReadAnalyzeFile(const char *path)
    {
      itk::AnalyzeImageIO::Pointer io = itk::AnalyzeImageIO::New();
-     ImageReaderType::Pointer fileReader = ImageReaderType::New();
+     auto fileReader = ImageReaderType::New();
      fileReader->SetImageIO(io);
      fileReader->SetFileName(path);
      fileReader->Update();
@@ -128,7 +128,8 @@ namespace itk
      itk::OrientImageFilter<ImageType,ImageType>::Pointer orienter =
        itk::OrientImageFilter<ImageType,ImageType>::New();
      orienter->UseImageDirectionOn();
-     orienter->SetDesiredCoordinateOrientation(itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIP);
+     orienter->SetDesiredCoordinateOrientation(
+       itk::SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RIP);
      orienter->SetInput(rval);
      orienter->Update();
      rval = orienter->GetOutput();
@@ -141,7 +142,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT OrientImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(OrientImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(OrientImageFilter);
 
   /** Standard class type aliases. */
   using Self = OrientImageFilter;
@@ -160,7 +161,7 @@ public:
   using OutputImageConstPointer = typename OutputImageType::ConstPointer;
   using OutputImageRegionType = typename OutputImageType::RegionType;
   using OutputImagePixelType = typename OutputImageType::PixelType;
-  using CoordinateOrientationCode = SpatialOrientation::ValidCoordinateOrientationFlags;
+  using CoordinateOrientationCode = SpatialOrientationEnums::ValidCoordinateOrientations;
 
   /** Axes permuter type. */
   using PermuterType = PermuteAxesImageFilter<TInputImage>;
@@ -233,19 +234,22 @@ public:
   void
   SetDesiredCoordinateOrientationToAxial()
   {
-    this->SetDesiredCoordinateOrientation(SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI);
+    this->SetDesiredCoordinateOrientation(
+      SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RAI);
   }
 
   void
   SetDesiredCoordinateOrientationToCoronal()
   {
-    this->SetDesiredCoordinateOrientation(SpatialOrientation::ITK_COORDINATE_ORIENTATION_RSA);
+    this->SetDesiredCoordinateOrientation(
+      SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RSA);
   }
 
   void
   SetDesiredCoordinateOrientationToSagittal()
   {
-    this->SetDesiredCoordinateOrientation(SpatialOrientation::ITK_COORDINATE_ORIENTATION_ASL);
+    this->SetDesiredCoordinateOrientation(
+      SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_ASL);
   }
 
   /** OrientImageFilter produces an image which is a different
@@ -284,8 +288,8 @@ protected:
 
   /*** Member functions used by GenerateData: */
   void
-  DeterminePermutationsAndFlips(const SpatialOrientation::ValidCoordinateOrientationFlags fixed_orient,
-                                const SpatialOrientation::ValidCoordinateOrientationFlags moving_orient);
+  DeterminePermutationsAndFlips(const SpatialOrientationEnums::ValidCoordinateOrientations fixed_orient,
+                                const SpatialOrientationEnums::ValidCoordinateOrientations moving_orient);
 
   /** Returns true if a permute is required. Returns false otherwise. */
   bool
@@ -304,9 +308,13 @@ private:
   std::string
   GetMajorAxisFromPatientRelativeDirectionCosine(double x, double y, double z);
 
-  CoordinateOrientationCode m_GivenCoordinateOrientation{ SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIP };
-  CoordinateOrientationCode m_DesiredCoordinateOrientation{ SpatialOrientation::ITK_COORDINATE_ORIENTATION_RIP };
-  bool                      m_UseImageDirection{ false };
+  CoordinateOrientationCode m_GivenCoordinateOrientation{
+    SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RIP
+  };
+  CoordinateOrientationCode m_DesiredCoordinateOrientation{
+    SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_RIP
+  };
+  bool m_UseImageDirection{ false };
 
   PermuteOrderArrayType m_PermuteOrder;
   FlipAxesArrayType     m_FlipAxes;

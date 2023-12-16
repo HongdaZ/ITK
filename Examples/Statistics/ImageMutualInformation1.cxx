@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -122,8 +122,8 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   using ReaderType = itk::ImageFileReader<ImageType>;
 
-  ReaderType::Pointer reader1 = ReaderType::New();
-  ReaderType::Pointer reader2 = ReaderType::New();
+  auto reader1 = ReaderType::New();
+  auto reader2 = ReaderType::New();
 
   reader1->SetFileName(argv[1]);
   reader2->SetFileName(argv[2]);
@@ -140,7 +140,7 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   using JoinFilterType = itk::JoinImageFilter<ImageType, ImageType>;
 
-  JoinFilterType::Pointer joinFilter = JoinFilterType::New();
+  auto joinFilter = JoinFilterType::New();
 
   joinFilter->SetInput1(reader1->GetOutput());
   joinFilter->SetInput2(reader2->GetOutput());
@@ -185,7 +185,7 @@ main(int argc, char * argv[])
   using HistogramFilterType =
     itk::Statistics::ImageToHistogramFilter<VectorImageType>;
 
-  HistogramFilterType::Pointer histogramFilter = HistogramFilterType::New();
+  auto histogramFilter = HistogramFilterType::New();
   // Software Guide : EndCodeSnippet
 
 

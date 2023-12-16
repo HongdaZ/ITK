@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@
 namespace itk
 {
 /**
- *\class VariableSizeMatrix
+ * \class VariableSizeMatrix
  * \brief A templated class holding a M x N size Matrix.
  *
  * This class contains a vnl_matrix in order
@@ -56,7 +56,7 @@ public:
   using InternalMatrixType = vnl_matrix<T>;
 
   /** Matrix by Vector multiplication.  */
-  Array<T> operator*(const Array<T> & vector) const;
+  Array<T> operator*(const Array<T> & vect) const;
 
   /** Matrix by Matrix multiplication.  */
   Self operator*(const Self & matrix) const;
@@ -91,7 +91,7 @@ public:
   operator*=(const vnl_matrix<T> & matrix);
 
   /** Matrix by vnl_vector multiplication.  */
-  vnl_vector<T> operator*(const vnl_vector<T> & matrix) const;
+  vnl_vector<T> operator*(const vnl_vector<T> & vc) const;
 
   /** Matrix by scalar multiplication.  */
   void
@@ -175,7 +175,7 @@ public:
   }
 
   /** Assignment operator. */
-  inline const Self &
+  inline Self &
   operator=(const vnl_matrix<T> & matrix)
   {
     m_Matrix = matrix;
@@ -186,14 +186,10 @@ public:
   inline bool
   operator==(const Self & matrix) const;
 
-  inline bool
-  operator!=(const Self & matrix) const
-  {
-    return !this->operator==(matrix);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
 
   /** Assignment operator. */
-  inline const Self &
+  inline Self &
   operator=(const Self & matrix)
   {
     m_Matrix = matrix.m_Matrix;
@@ -272,9 +268,9 @@ VariableSizeMatrix<T>::operator==(const Self & matrix) const
   }
   bool equal = true;
 
-  for (unsigned int r = 0; r < this->Rows(); r++)
+  for (unsigned int r = 0; r < this->Rows(); ++r)
   {
-    for (unsigned int c = 0; c < this->Cols(); c++)
+    for (unsigned int c = 0; c < this->Cols(); ++c)
     {
       if (Math::NotExactlyEquals(m_Matrix(r, c), matrix.m_Matrix(r, c)))
       {

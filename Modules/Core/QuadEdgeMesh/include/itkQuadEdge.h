@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,20 +27,22 @@
 // FIXME: Maybe variations of these macros should be moved into
 // itkMacro.h
 //
-#define itkQEDebugMacro(x)                                                                                             \
-  {                                                                                                                    \
-    std::ostringstream itkmsg;                                                                                         \
-    itkmsg << "Debug: In " __FILE__ ", line " << __LINE__ << "\n"                                                      \
-           << " (" << this << "): " x << "\n\n";                                                                       \
-    OutputWindowDisplayDebugText(itkmsg.str().c_str());                                                                \
-  }
-#define itkQEWarningMacro(x)                                                                                           \
-  {                                                                                                                    \
-    std::ostringstream itkmsg;                                                                                         \
-    itkmsg << "WARNING: In " __FILE__ ", line " << __LINE__ << "\n"                                                    \
-           << " (" << this << "): " x << "\n\n";                                                                       \
-    OutputWindowDisplayWarningText(itkmsg.str().c_str());                                                              \
-  }
+#define itkQEDebugMacro(x)                                        \
+  {                                                               \
+    std::ostringstream itkmsg;                                    \
+    itkmsg << "Debug: In " __FILE__ ", line " << __LINE__ << "\n" \
+           << " (" << this << "): " x << "\n\n";                  \
+    OutputWindowDisplayDebugText(itkmsg.str().c_str());           \
+  }                                                               \
+  ITK_MACROEND_NOOP_STATEMENT
+#define itkQEWarningMacro(x)                                        \
+  {                                                                 \
+    std::ostringstream itkmsg;                                      \
+    itkmsg << "WARNING: In " __FILE__ ", line " << __LINE__ << "\n" \
+           << " (" << this << "): " x << "\n\n";                    \
+    OutputWindowDisplayWarningText(itkmsg.str().c_str());           \
+  }                                                                 \
+  ITK_MACROEND_NOOP_STATEMENT
 
 // -------------------------------------------------------------------------
 /**
@@ -52,77 +54,77 @@
  * @param dt Dual edge type.
  * \todo Should this macro be added to doxygen macros?
  */
-#define itkQEAccessorsMacro(st, pt, dt)                                                                                \
-  pt * GetOnext() { return (dynamic_cast<pt *>(this->st::GetOnext())); }                                               \
-                                                                                                                       \
-  dt * GetRot() { return (dynamic_cast<dt *>(this->st::GetRot())); }                                                   \
-                                                                                                                       \
-  pt * GetSym() { return (dynamic_cast<pt *>(this->st::GetSym())); }                                                   \
-                                                                                                                       \
-  pt * GetLnext() { return (dynamic_cast<pt *>(this->st::GetLnext())); }                                               \
-                                                                                                                       \
-  pt * GetRnext() { return (dynamic_cast<pt *>(this->st::GetRnext())); }                                               \
-                                                                                                                       \
-  pt * GetDnext() { return (dynamic_cast<pt *>(this->st::GetDnext())); }                                               \
-                                                                                                                       \
-  pt * GetOprev() { return (dynamic_cast<pt *>(this->st::GetOprev())); }                                               \
-                                                                                                                       \
-  pt * GetLprev() { return (dynamic_cast<pt *>(this->st::GetLprev())); }                                               \
-                                                                                                                       \
-  pt * GetRprev() { return (dynamic_cast<pt *>(this->st::GetRprev())); }                                               \
-                                                                                                                       \
-  pt * GetDprev() { return (dynamic_cast<pt *>(this->st::GetDprev())); }                                               \
-                                                                                                                       \
-  dt * GetInvRot() { return (dynamic_cast<dt *>(this->st::GetInvRot())); }                                             \
-                                                                                                                       \
-  pt * GetInvOnext() { return (dynamic_cast<pt *>(this->st::GetInvOnext())); }                                         \
-                                                                                                                       \
-  pt * GetInvLnext() { return (dynamic_cast<pt *>(this->st::GetInvLnext())); }                                         \
-                                                                                                                       \
-  pt * GetInvRnext() { return (dynamic_cast<pt *>(this->st::GetInvRnext())); }                                         \
-                                                                                                                       \
-  pt *       GetInvDnext() { return (dynamic_cast<pt *>(this->st::GetInvDnext())); }                                   \
-  const pt * GetOnext() const { return (dynamic_cast<const pt *>(this->st::GetOnext())); }                             \
-                                                                                                                       \
-  const dt * GetRot() const { return (dynamic_cast<const dt *>(this->st::GetRot())); }                                 \
-                                                                                                                       \
-  const pt * GetSym() const { return (dynamic_cast<const pt *>(this->st::GetSym())); }                                 \
-                                                                                                                       \
-  const pt * GetLnext() const { return (dynamic_cast<const pt *>(this->st::GetLnext())); }                             \
-                                                                                                                       \
-  const pt * GetRnext() const { return (dynamic_cast<const pt *>(this->st::GetRnext())); }                             \
-                                                                                                                       \
-  const pt * GetDnext() const { return (dynamic_cast<const pt *>(this->st::GetDnext())); }                             \
-                                                                                                                       \
-  const pt * GetOprev() const { return (dynamic_cast<const pt *>(this->st::GetOprev())); }                             \
-                                                                                                                       \
-  const pt * GetLprev() const { return (dynamic_cast<const pt *>(this->st::GetLprev())); }                             \
-                                                                                                                       \
-  const pt * GetRprev() const { return (dynamic_cast<const pt *>(this->st::GetRprev())); }                             \
-                                                                                                                       \
-  const pt * GetDprev() const { return (dynamic_cast<const pt *>(this->st::GetDprev())); }                             \
-                                                                                                                       \
-  const dt * GetInvRot() const { return (dynamic_cast<const dt *>(this->st::GetInvRot())); }                           \
-                                                                                                                       \
-  const pt * GetInvOnext() const { return (dynamic_cast<const pt *>(this->st::GetInvOnext())); }                       \
-                                                                                                                       \
-  const pt * GetInvLnext() const { return (dynamic_cast<const pt *>(this->st::GetInvLnext())); }                       \
-                                                                                                                       \
-  const pt * GetInvRnext() const { return (dynamic_cast<const pt *>(this->st::GetInvRnext())); }                       \
-                                                                                                                       \
+#define itkQEAccessorsMacro(st, pt, dt)                                                          \
+  pt * GetOnext() { return (dynamic_cast<pt *>(this->st::GetOnext())); }                         \
+                                                                                                 \
+  dt * GetRot() { return (dynamic_cast<dt *>(this->st::GetRot())); }                             \
+                                                                                                 \
+  pt * GetSym() { return (dynamic_cast<pt *>(this->st::GetSym())); }                             \
+                                                                                                 \
+  pt * GetLnext() { return (dynamic_cast<pt *>(this->st::GetLnext())); }                         \
+                                                                                                 \
+  pt * GetRnext() { return (dynamic_cast<pt *>(this->st::GetRnext())); }                         \
+                                                                                                 \
+  pt * GetDnext() { return (dynamic_cast<pt *>(this->st::GetDnext())); }                         \
+                                                                                                 \
+  pt * GetOprev() { return (dynamic_cast<pt *>(this->st::GetOprev())); }                         \
+                                                                                                 \
+  pt * GetLprev() { return (dynamic_cast<pt *>(this->st::GetLprev())); }                         \
+                                                                                                 \
+  pt * GetRprev() { return (dynamic_cast<pt *>(this->st::GetRprev())); }                         \
+                                                                                                 \
+  pt * GetDprev() { return (dynamic_cast<pt *>(this->st::GetDprev())); }                         \
+                                                                                                 \
+  dt * GetInvRot() { return (dynamic_cast<dt *>(this->st::GetInvRot())); }                       \
+                                                                                                 \
+  pt * GetInvOnext() { return (dynamic_cast<pt *>(this->st::GetInvOnext())); }                   \
+                                                                                                 \
+  pt * GetInvLnext() { return (dynamic_cast<pt *>(this->st::GetInvLnext())); }                   \
+                                                                                                 \
+  pt * GetInvRnext() { return (dynamic_cast<pt *>(this->st::GetInvRnext())); }                   \
+                                                                                                 \
+  pt *       GetInvDnext() { return (dynamic_cast<pt *>(this->st::GetInvDnext())); }             \
+  const pt * GetOnext() const { return (dynamic_cast<const pt *>(this->st::GetOnext())); }       \
+                                                                                                 \
+  const dt * GetRot() const { return (dynamic_cast<const dt *>(this->st::GetRot())); }           \
+                                                                                                 \
+  const pt * GetSym() const { return (dynamic_cast<const pt *>(this->st::GetSym())); }           \
+                                                                                                 \
+  const pt * GetLnext() const { return (dynamic_cast<const pt *>(this->st::GetLnext())); }       \
+                                                                                                 \
+  const pt * GetRnext() const { return (dynamic_cast<const pt *>(this->st::GetRnext())); }       \
+                                                                                                 \
+  const pt * GetDnext() const { return (dynamic_cast<const pt *>(this->st::GetDnext())); }       \
+                                                                                                 \
+  const pt * GetOprev() const { return (dynamic_cast<const pt *>(this->st::GetOprev())); }       \
+                                                                                                 \
+  const pt * GetLprev() const { return (dynamic_cast<const pt *>(this->st::GetLprev())); }       \
+                                                                                                 \
+  const pt * GetRprev() const { return (dynamic_cast<const pt *>(this->st::GetRprev())); }       \
+                                                                                                 \
+  const pt * GetDprev() const { return (dynamic_cast<const pt *>(this->st::GetDprev())); }       \
+                                                                                                 \
+  const dt * GetInvRot() const { return (dynamic_cast<const dt *>(this->st::GetInvRot())); }     \
+                                                                                                 \
+  const pt * GetInvOnext() const { return (dynamic_cast<const pt *>(this->st::GetInvOnext())); } \
+                                                                                                 \
+  const pt * GetInvLnext() const { return (dynamic_cast<const pt *>(this->st::GetInvLnext())); } \
+                                                                                                 \
+  const pt * GetInvRnext() const { return (dynamic_cast<const pt *>(this->st::GetInvRnext())); } \
+                                                                                                 \
   const pt * GetInvDnext() const { return (dynamic_cast<const pt *>(this->st::GetInvDnext())); }
 
 namespace itk
 {
 /**
- *\class QuadEdge
+ * \class QuadEdge
  * \brief Base class for the implementation of a quad-edge data structure as
  * proposed in "Guibas and Stolfi 1985"
  *
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
  *
  * This implementation was contributed as a paper to the Insight Journal
- * https://hdl.handle.net/1926/306
+ * https://www.insight-journal.org/browse/publication/122
  *
  * \sa "Accessing adjacent edges."
  *
@@ -214,7 +216,7 @@ public:
    * \warning This class only handles of the connectivity and is not aware
    *    of the geometry that lies at the \ref GeometricalQuadEdge level.
    *    It is strongly discouraged to use this method. Instead you should
-   *    use itk::QuadEdgeMesh::Splice it's geometry aware version.
+   *    use itk::QuadEdgeMesh::Splice its geometry aware version.
    *
    */
   // TODO fix this ref

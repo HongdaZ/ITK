@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkQuadEdgeMeshEulerOperatorFlipEdgeFunction_hxx
 #define itkQuadEdgeMeshEulerOperatorFlipEdgeFunction_hxx
 
-#include "itkQuadEdgeMeshEulerOperatorFlipEdgeFunction.h"
 #include "itkQuadEdgeMeshEulerOperatorJoinFacetFunction.h"
 #include "itkQuadEdgeMeshEulerOperatorSplitFacetFunction.h"
 
@@ -107,8 +106,8 @@ QuadEdgeMeshEulerOperatorFlipEdgeFunction<TMesh, TQEType>::CheckStatus(QEType * 
 }
 
 template <typename TMesh, typename TQEType>
-typename QuadEdgeMeshEulerOperatorFlipEdgeFunction<TMesh, TQEType>::OutputType
-QuadEdgeMeshEulerOperatorFlipEdgeFunction<TMesh, TQEType>::Evaluate(QEType * h)
+auto
+QuadEdgeMeshEulerOperatorFlipEdgeFunction<TMesh, TQEType>::Evaluate(QEType * h) -> OutputType
 {
   //
   //    X ---<-G---- X              X ---<-G---- X
@@ -153,8 +152,8 @@ QuadEdgeMeshEulerOperatorFlipEdgeFunction<TMesh, TQEType>::Evaluate(QEType * h)
 }
 
 template <typename TMesh, typename TQEType>
-typename QuadEdgeMeshEulerOperatorFlipEdgeFunction<TMesh, TQEType>::OutputType
-QuadEdgeMeshEulerOperatorFlipEdgeFunction<TMesh, TQEType>::Process(QEType * h)
+auto
+QuadEdgeMeshEulerOperatorFlipEdgeFunction<TMesh, TQEType>::Process(QEType * h) -> OutputType
 {
   // The following is not optimum, since we create a new face (with JoinFacet)
   // that is immediately deleted (with SplitFacet). Still we chose to write it
@@ -163,12 +162,12 @@ QuadEdgeMeshEulerOperatorFlipEdgeFunction<TMesh, TQEType>::Process(QEType * h)
   using JoinFacet = QuadEdgeMeshEulerOperatorJoinFacetFunction<MeshType, QEType>;
   using SplitFacet = QuadEdgeMeshEulerOperatorSplitFacetFunction<MeshType, QEType>;
 
-  QEType *                    G = h->GetLnext();
-  typename JoinFacet::Pointer joinFacet = JoinFacet::New();
+  QEType * G = h->GetLnext();
+  auto     joinFacet = JoinFacet::New();
   joinFacet->SetInput(this->m_Mesh);
   QEType * H = joinFacet->Evaluate(h)->GetLnext();
 
-  typename SplitFacet::Pointer splitFacet = SplitFacet::New();
+  auto splitFacet = SplitFacet::New();
   splitFacet->SetInput(this->m_Mesh);
 
   return (splitFacet->Evaluate(H, G));

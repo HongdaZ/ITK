@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkConjugateGradientOptimizer_hxx
-#define _itkConjugateGradientOptimizer_hxx
 
 #include "itkConjugateGradientOptimizer.h"
 
@@ -25,7 +23,7 @@ namespace itk
 /**
  * Constructor
  */
-ConjugateGradientOptimizer ::ConjugateGradientOptimizer()
+ConjugateGradientOptimizer::ConjugateGradientOptimizer()
 {
   m_OptimizerInitialized = false;
   m_VnlOptimizer = nullptr;
@@ -34,25 +32,22 @@ ConjugateGradientOptimizer ::ConjugateGradientOptimizer()
 /**
  * Destructor
  */
-ConjugateGradientOptimizer ::~ConjugateGradientOptimizer()
-{
-  delete m_VnlOptimizer;
-}
+ConjugateGradientOptimizer::~ConjugateGradientOptimizer() = default;
 
 /**
  * Get the Optimizer
  */
 vnl_conjugate_gradient *
-ConjugateGradientOptimizer ::GetOptimizer()
+ConjugateGradientOptimizer::GetOptimizer()
 {
-  return m_VnlOptimizer;
+  return m_VnlOptimizer.get();
 }
 
 /**
  * Connect a Cost Function
  */
 void
-ConjugateGradientOptimizer ::SetCostFunction(SingleValuedCostFunction * costFunction)
+ConjugateGradientOptimizer::SetCostFunction(SingleValuedCostFunction * costFunction)
 {
   const unsigned int numberOfParameters = costFunction->GetNumberOfParameters();
 
@@ -60,27 +55,22 @@ ConjugateGradientOptimizer ::SetCostFunction(SingleValuedCostFunction * costFunc
 
   adaptor->SetCostFunction(costFunction);
 
-  if (m_OptimizerInitialized)
-  {
-    delete m_VnlOptimizer;
-  }
-
   this->SetCostFunctionAdaptor(adaptor);
 
-  m_VnlOptimizer = new vnl_conjugate_gradient(*adaptor);
+  m_VnlOptimizer = std::make_unique<vnl_conjugate_gradient>(*adaptor);
   m_OptimizerInitialized = true;
 }
 
 /** Return Current Value */
 ConjugateGradientOptimizer::MeasureType
-ConjugateGradientOptimizer ::GetValue() const
+ConjugateGradientOptimizer::GetValue() const
 {
   ParametersType parameters = this->GetCurrentPosition();
 
   if (m_ScalesInitialized)
   {
     const ScalesType & scales = this->GetScales();
-    for (unsigned int i = 0; i < parameters.size(); i++)
+    for (unsigned int i = 0; i < parameters.size(); ++i)
     {
       parameters[i] *= scales[i];
     }
@@ -92,7 +82,7 @@ ConjugateGradientOptimizer ::GetValue() const
  * Start the optimization
  */
 void
-ConjugateGradientOptimizer ::StartOptimization()
+ConjugateGradientOptimizer::StartOptimization()
 {
   this->InvokeEvent(StartEvent());
 
@@ -114,7 +104,7 @@ ConjugateGradientOptimizer ::StartOptimization()
   {
     const ScalesType & scales = this->GetScales();
     this->GetNonConstCostFunctionAdaptor()->SetScales(scales);
-    for (unsigned int i = 0; i < parameters.size(); i++)
+    for (unsigned int i = 0; i < parameters.size(); ++i)
     {
       parameters[i] *= scales[i];
     }
@@ -145,7 +135,7 @@ ConjugateGradientOptimizer ::StartOptimization()
  * given that an iteration could imply several evaluations.
  */
 SizeValueType
-ConjugateGradientOptimizer ::GetNumberOfIterations() const
+ConjugateGradientOptimizer::GetNumberOfIterations() const
 {
   return m_VnlOptimizer->get_max_function_evals();
 }
@@ -154,10 +144,8 @@ ConjugateGradientOptimizer ::GetNumberOfIterations() const
  * Get the number of iterations in the last optimization.
  */
 SizeValueType
-ConjugateGradientOptimizer ::GetCurrentIteration() const
+ConjugateGradientOptimizer::GetCurrentIteration() const
 {
   return m_VnlOptimizer->get_num_iterations();
 }
 } // end namespace itk
-
-#endif

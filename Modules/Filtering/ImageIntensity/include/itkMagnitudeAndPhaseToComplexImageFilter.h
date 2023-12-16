@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,7 +46,7 @@ namespace itk
  * and do not necessarily represent the official view of NCRR or NIH.
  *
  * This class was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/326
+ * https://insight-journal.org/browse/publication/128
  *
  * \sa ComposeImageFilter
  *
@@ -61,16 +61,12 @@ public:
   MagnitudeAndPhaseToComplex() = default;
   ~MagnitudeAndPhaseToComplex() = default;
   bool
-  operator!=(const MagnitudeAndPhaseToComplex &) const
+  operator==(const MagnitudeAndPhaseToComplex &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const MagnitudeAndPhaseToComplex & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(MagnitudeAndPhaseToComplex);
 
   inline std::complex<TOutput>
   operator()(const TInput1 & A, const TInput2 & B) const
@@ -88,7 +84,7 @@ class MagnitudeAndPhaseToComplexImageFilter
   : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MagnitudeAndPhaseToComplexImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MagnitudeAndPhaseToComplexImageFilter);
 
   /** Standard class type aliases. */
   using Self = MagnitudeAndPhaseToComplexImageFilter;

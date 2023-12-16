@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,7 @@ namespace itk
  * the regions are defined via a label map (a second input).  The
  * label image should be integral type. The filter needs all of its
  * input image.  It behaves as a filter with an input and output. Thus
- * it can be inserted in a pipline with other filters and the
+ * it can be inserted in a pipeline with other filters and the
  * statistics will only be recomputed if a downstream filter changes.
  *
  * Optionally, the filter also computes intensity histograms on each
@@ -62,7 +62,7 @@ template <typename TInputImage, typename TLabelImage>
 class ITK_TEMPLATE_EXPORT LabelStatisticsImageFilter : public ImageSink<TInputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LabelStatisticsImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(LabelStatisticsImageFilter);
 
   /** Standard Self type alias */
   using Self = LabelStatisticsImageFilter;
@@ -74,7 +74,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(LabelStatisticsImageFilter, ImageToImageFilter);
+  itkTypeMacro(LabelStatisticsImageFilter, ImageSink);
 
   /** Image related type alias. */
   using InputImagePointer = typename TInputImage::Pointer;

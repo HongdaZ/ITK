@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,10 +58,11 @@ namespace itk
  * \endsphinx
  */
 template <typename TInputImage, typename TOutputImage>
-class VectorGradientAnisotropicDiffusionImageFilter : public AnisotropicDiffusionImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT VectorGradientAnisotropicDiffusionImageFilter
+  : public AnisotropicDiffusionImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorGradientAnisotropicDiffusionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(VectorGradientAnisotropicDiffusionImageFilter);
 
   /** Standard class type aliases. */
   using Self = VectorGradientAnisotropicDiffusionImageFilter;
@@ -76,7 +77,7 @@ public:
   itkTypeMacro(VectorGradientAnisotropicDiffusionImageFilter, AnisotropicDiffusionImageFilter);
 
   /** Extract information from the superclass. */
-  using UpdateBufferType = typename Superclass::UpdateBufferType;
+  using typename Superclass::UpdateBufferType;
 
   /** Determine the image dimension from the  superclass. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;

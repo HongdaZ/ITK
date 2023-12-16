@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,13 +47,13 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  using MeasurementVectorType = typename Superclass::MeasurementVectorType;
+  using typename Superclass::MeasurementVectorType;
 
-  using TotalAbsoluteFrequencyType = typename Superclass::TotalAbsoluteFrequencyType;
+  using typename Superclass::TotalAbsoluteFrequencyType;
 
-  using AbsoluteFrequencyType = typename Superclass::AbsoluteFrequencyType;
+  using typename Superclass::AbsoluteFrequencyType;
 
-  using InstanceIdentifier = typename Superclass::InstanceIdentifier;
+  using typename Superclass::InstanceIdentifier;
 
   /** Get the size of the sample (number of measurements) */
   InstanceIdentifier
@@ -126,7 +126,7 @@ itkSampleTest(int, char *[])
 
   using SampleType = itk::Statistics::SampleTest::MySample<MeasurementVectorType>;
 
-  SampleType::Pointer sample = SampleType::New();
+  auto sample = SampleType::New();
 
   std::cout << sample->GetNameOfClass() << std::endl;
   std::cout << sample->SampleType::Superclass::GetNameOfClass() << std::endl;
@@ -145,7 +145,7 @@ itkSampleTest(int, char *[])
   std::cout << sample->Size() << std::endl;
 
   MeasurementVectorType measure;
-  for (unsigned int i = 0; i < MeasurementVectorSize; i++)
+  for (unsigned int i = 0; i < MeasurementVectorSize; ++i)
   {
     measure[i] = 29 * i * i;
   }
@@ -165,7 +165,7 @@ itkSampleTest(int, char *[])
     return EXIT_FAILURE;
   }
 
-  for (unsigned int j = 0; j < MeasurementVectorSize; j++)
+  for (unsigned int j = 0; j < MeasurementVectorSize; ++j)
   {
     if (itk::Math::NotExactlyEquals(measureBack[j], measure[j]))
     {
@@ -181,9 +181,9 @@ itkSampleTest(int, char *[])
   try
   {
     sample->SetMeasurementVectorSize(MeasurementVectorSize + 1);
-    std::cerr << "Exception should have been thrown since we are trying to resize\
-                  non-resizeable measurement vector type "
-              << std::endl;
+    std::cerr
+      << "Exception should have been thrown since we are trying to resize non-resizeable measurement vector type "
+      << std::endl;
     return EXIT_FAILURE;
   }
   catch (const itk::ExceptionObject & excp)

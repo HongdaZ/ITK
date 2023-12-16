@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@
 namespace itk
 {
 /**
- *\class BSplineL2ResampleImageFilterBase
+ * \class BSplineL2ResampleImageFilterBase
  * \brief Uses the "Centered l2" B-Spline pyramid implementation of B-Spline Filters
  *        to up/down sample an image by a factor of 2.
  *
@@ -85,7 +85,7 @@ class ITK_TEMPLATE_EXPORT BSplineL2ResampleImageFilterBase
   : public BSplineResampleImageFilterBase<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineL2ResampleImageFilterBase);
+  ITK_DISALLOW_COPY_AND_MOVE(BSplineL2ResampleImageFilterBase);
 
   /** Standard class type aliases. */
   using Self = BSplineL2ResampleImageFilterBase;

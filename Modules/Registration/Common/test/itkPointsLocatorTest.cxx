@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 
 #include "itkPointsLocator.h"
 #include "itkMapContainer.h"
+#include "itkTestingMacros.h"
 
 template <typename TPointsContainer>
 int
@@ -31,11 +32,11 @@ testPointsLocatorTest()
   using PointType = itk::Point<float, PointDimension>;
 
   using PointsContainerType = TPointsContainer;
-  typename PointsContainerType::Pointer points = PointsContainerType::New();
+  auto points = PointsContainerType::New();
   points->Initialize();
 
   using PointsLocatorType = itk::PointsLocator<PointsContainerType>;
-  typename PointsLocatorType::Pointer pointsLocator = PointsLocatorType::New();
+  auto pointsLocator = PointsLocatorType::New();
 
   /**
    * Create a simple point set structure that will create a non-degenerate
@@ -51,6 +52,8 @@ testPointsLocatorTest()
   }
 
   pointsLocator->SetPoints(points);
+  ITK_TEST_SET_GET_VALUE(points, pointsLocator->GetPoints());
+
   pointsLocator->Initialize();
 
   /**
@@ -66,7 +69,7 @@ testPointsLocatorTest()
   typename PointsLocatorType::PointIdentifier pointId = pointsLocator->FindClosestPoint(coords);
   if (pointId != 49)
   {
-    std::cerr << "Error with FindClosestPoint()" << std::endl;
+    std::cerr << "Error with FindClosestPoint(), poindId does not match" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -77,17 +80,41 @@ testPointsLocatorTest()
   pointsLocator->FindClosestNPoints(coords, 10u, neighborhood);
   if (neighborhood.size() != 10)
   {
-    std::cerr << "Error with FindClosestNPoints()" << std::endl;
+    std::cerr << "Error with FindClosestNPoints(), size of returned points does not match" << std::endl;
     return EXIT_FAILURE;
   }
 
-  std::cout << "Test:  Search() 1" << std::endl;
-
-  pointsLocator->Search(coords, 10u, neighborhood);
-  if (neighborhood.size() != 10)
+  std::cout << "Test:  FindClosestNPoints() with distances  (1)" << std::endl;
+  std::vector<double> distances;
+  pointsLocator->FindClosestNPoints(coords, 10u, neighborhood, distances);
+  if (neighborhood.size() != 10 || distances.size() != 10)
   {
-    std::cerr << "Error with Search() 1" << std::endl;
+    std::cerr << "Error with FindClosestNPoints(), size of returned points or distances does not match" << std::endl;
     return EXIT_FAILURE;
+  }
+
+  // Check if returned distances are correct
+  for (unsigned int i = 0; i < neighborhood.size(); ++i)
+  {
+    auto dist = coords.EuclideanDistanceTo(points->GetElement(neighborhood[i]));
+    ITK_TEST_EXPECT_EQUAL(dist, distances[i]);
+    std::cout << dist << " + " << distances[i] << std::endl;
+  }
+
+  std::cout << "Test:  FindClosestNPoints() with distances  (2)" << std::endl;
+  pointsLocator->FindClosestNPoints(coords, 200u, neighborhood, distances);
+  if (neighborhood.size() != 100 || distances.size() != 100)
+  {
+    std::cerr << "Error with FindClosestNPoints(), size of returned points or distances is incorrect" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  // Check if returned distances are correct
+  for (unsigned int i = 0; i < neighborhood.size(); ++i)
+  {
+    auto dist = coords.EuclideanDistanceTo(points->GetElement(neighborhood[i]));
+    ITK_TEST_EXPECT_EQUAL(dist, distances[i]);
+    std::cout << dist << " * " << distances[i] << std::endl;
   }
 
   double radius = std::sqrt(3 * itk::Math::sqr(5.1));
@@ -97,16 +124,8 @@ testPointsLocatorTest()
   pointsLocator->FindPointsWithinRadius(coords, radius, neighborhood);
   if (neighborhood.size() != 11)
   {
-    std::cerr << "Error with FindPointsWithinRadius()" << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  std::cout << "Test:  Search() 2" << std::endl;
-
-  pointsLocator->Search(coords, radius, neighborhood);
-  if (neighborhood.size() != 11)
-  {
-    std::cerr << "Error with Search() 2" << std::endl;
+    std::cerr << "Error with FindPointsWithinRadius(), size of returned points within radius does not match"
+              << std::endl;
     return EXIT_FAILURE;
   }
 

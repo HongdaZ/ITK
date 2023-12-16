@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@
 namespace itk
 {
 /**
- *\class MaskFeaturePointSelectionFilter
+ * \class MaskFeaturePointSelectionFilter
  * \brief Generate a PointSet containing the feature points
  * selected from a masked 3D input image.
  *
@@ -63,7 +63,7 @@ template <typename TImage,
 class ITK_TEMPLATE_EXPORT MaskFeaturePointSelectionFilter : public ImageToMeshFilter<TImage, TFeatures>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MaskFeaturePointSelectionFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MaskFeaturePointSelectionFilter);
 
   /** Standard class type aliases. */
   using Superclass = ImageToMeshFilter<TImage, TFeatures>;
@@ -77,7 +77,7 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(MaskFeaturePointSelectionFilter, ImageToMeshFilter);
 
-  static constexpr unsigned ImageDimension = 3u;
+  static constexpr unsigned int ImageDimension = 3u;
 
   /** Not input specific type alias */
   using RegionType = ImageRegion<ImageDimension>;
@@ -113,8 +113,8 @@ public:
    * 0 <= connect < ImageDimension; 0 is vertex connectivity (e.g., 26 in 3D),
    * 1 is edge connectivity (e.g., 18 in 3D), 2 is face connectivity
    * (e.g., 6 in 3D), etc */
-  itkSetMacro(NonConnectivity, unsigned);
-  itkGetMacro(NonConnectivity, unsigned);
+  itkSetMacro(NonConnectivity, unsigned int);
+  itkGetMacro(NonConnectivity, unsigned int);
 
   /** set/get mask */
   itkSetInputMacro(MaskImage, MaskType);
@@ -158,7 +158,7 @@ protected:
   ComputeConnectivityOffsets();
 
 private:
-  unsigned                m_NonConnectivity;
+  unsigned int            m_NonConnectivity;
   std::vector<OffsetType> m_NonConnectivityOffsets;
   SizeType                m_BlockRadius;
   double                  m_SelectFraction;

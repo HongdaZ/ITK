@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,7 +43,7 @@ class ITK_TEMPLATE_EXPORT BinaryThresholdSpatialFunction
   : public SpatialFunction<bool, TFunction::ImageDimension, typename TFunction::InputType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryThresholdSpatialFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(BinaryThresholdSpatialFunction);
 
   /** Standard class type aliases. */
   using Self = BinaryThresholdSpatialFunction;
@@ -59,7 +59,7 @@ public:
   itkNewMacro(Self);
 
   /** OutputType type alias support. */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** InputType type alias support. */
   using InputType = typename TFunction::InputType;

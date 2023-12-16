@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -78,16 +78,16 @@ public:
    * they need to be redone here for this subclass to compile properly with gcc.
    */
   /** Types inherited from the Superclass */
-  using IndexType = typename Superclass::IndexType;
-  using SizeType = typename Superclass::SizeType;
-  using OffsetType = typename Superclass::OffsetType;
-  using RegionType = typename Superclass::RegionType;
-  using ImageType = typename Superclass::ImageType;
-  using PixelContainer = typename Superclass::PixelContainer;
-  using PixelContainerPointer = typename Superclass::PixelContainerPointer;
-  using InternalPixelType = typename Superclass::InternalPixelType;
-  using PixelType = typename Superclass::PixelType;
-  using AccessorType = typename Superclass::AccessorType;
+  using typename Superclass::IndexType;
+  using typename Superclass::SizeType;
+  using typename Superclass::OffsetType;
+  using typename Superclass::RegionType;
+  using typename Superclass::ImageType;
+  using typename Superclass::PixelContainer;
+  using typename Superclass::PixelContainerPointer;
+  using typename Superclass::InternalPixelType;
+  using typename Superclass::PixelType;
+  using typename Superclass::AccessorType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImageScanlineConstIterator, ImageConstIterator);
@@ -226,11 +226,8 @@ public:
    * \sa operator++
    * \sa IsAtEndOfLine
    */
-  inline void
-  NextLine()
-  {
-    this->Increment();
-  };
+  void
+  NextLine();
 
   /** Increment (prefix) along the scanline the iterator's index.
    *
@@ -262,12 +259,6 @@ public:
 protected:
   OffsetValueType m_SpanBeginOffset; // one pixel the beginning of the scanline
   OffsetValueType m_SpanEndOffset;   // one pixel past the end of the scanline
-
-private:
-  /* Move to the beginning of the next scanline
-   */
-  void
-  Increment();
 };
 } // end namespace itk
 

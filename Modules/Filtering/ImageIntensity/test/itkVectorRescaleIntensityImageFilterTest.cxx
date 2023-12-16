@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ itkVectorRescaleIntensityImageFilterTest(int, char *[])
   using InputImageType = itk::Image<InputPixelType, ImageDimension>;
   using OutputImageType = itk::Image<OutputPixelType, ImageDimension>;
 
-  InputImageType::Pointer    inputImage = InputImageType::New();
+  auto                       inputImage = InputImageType::New();
   InputImageType::RegionType region;
   InputImageType::SizeType   size;
   InputImageType::IndexType  index;
@@ -58,13 +58,18 @@ itkVectorRescaleIntensityImageFilterTest(int, char *[])
 
   using FilterType = itk::VectorRescaleIntensityImageFilter<InputImageType, OutputImageType>;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, VectorRescaleIntensityImageFilter, UnaryFunctorImageFilter);
 
   filter->SetInput(inputImage);
 
-  constexpr double desiredMaximum = 2.0;
+  // Test exceptions
+  double desiredMaximum = -1.0;
+  filter->SetOutputMaximumMagnitude(desiredMaximum);
+  ITK_TRY_EXPECT_EXCEPTION(filter->Update());
+
+  desiredMaximum = 2.0;
   filter->SetOutputMaximumMagnitude(desiredMaximum);
   ITK_TEST_SET_GET_VALUE(desiredMaximum, filter->GetOutputMaximumMagnitude());
 
@@ -100,7 +105,7 @@ itkVectorRescaleIntensityImageFilterTest(int, char *[])
   while (!ot.IsAtEnd())
   {
     const OutputPixelType outputValue = ot.Get();
-    for (unsigned int k = 0; k < VectorDimension; k++)
+    for (unsigned int k = 0; k < VectorDimension; ++k)
     {
       if (itk::Math::NotAlmostEquals(outputValue[k],
                                      itk::NumericTraits<itk::NumericTraits<OutputPixelType>::ValueType>::ZeroValue()))

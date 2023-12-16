@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class ConvolutionImageFilter
+ * \class ConvolutionImageFilter
  * \brief Convolve a given image with an arbitrary image kernel.
  *
  * This filter operates by centering the flipped kernel at each pixel
@@ -51,8 +51,7 @@ namespace itk
  *
  * "Image Kernel Convolution"
  * by Tustison N., Gee J.
- * https://hdl.handle.net/1926/1323
- * http://www.insight-journal.org/browse/publication/208
+ * https://insight-journal.org/browse/publication/208
  *
  * \author Nicholas J. Tustison
  * \author James C. Gee
@@ -67,7 +66,7 @@ class ITK_TEMPLATE_EXPORT ConvolutionImageFilter
   : public ConvolutionImageFilterBase<TInputImage, TKernelImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConvolutionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ConvolutionImageFilter);
 
   using Self = ConvolutionImageFilter;
   using Superclass = ConvolutionImageFilterBase<TInputImage, TOutputImage>;

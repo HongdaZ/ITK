@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,12 +16,9 @@
  *
  *=========================================================================*/
 
-
-// Native ITK stuff
-
-// Spatial function stuff
 #include "itkGaussianSpatialFunction.h"
 #include "itkSpatialFunctionImageEvaluatorFilter.h"
+#include "itkTestingMacros.h"
 
 int
 itkSpatialFunctionImageEvaluatorFilterTest(int, char *[])
@@ -31,14 +28,14 @@ itkSpatialFunctionImageEvaluatorFilterTest(int, char *[])
   // Image typedef
   using ImageType = itk::Image<unsigned char, dim>;
 
-  //-----------------Create a new input image--------------------
+  // Create a new input image
   // Image size and spacing parameters
   ImageType::SizeValueType    sourceImageSize[] = { 20, 20, 20 };
   ImageType::SpacingValueType sourceImageSpacing[] = { 1.0, 1.0, 1.0 };
   ImageType::PointValueType   sourceImageOrigin[] = { 0, 0, 0 };
 
   // Create the sourceImage
-  ImageType::Pointer sourceImage = ImageType::New();
+  auto sourceImage = ImageType::New();
   sourceImage->SetOrigin(sourceImageOrigin);
   sourceImage->SetSpacing(sourceImageSpacing);
 
@@ -50,28 +47,29 @@ itkSpatialFunctionImageEvaluatorFilterTest(int, char *[])
   ImageType::RegionType largestPossibleRegion;
   // Resize the region
   largestPossibleRegion.SetSize(sourceImageSizeObject);
-  // Set the largest legal region size (i.e. the size of the whole sourceImage) to what we just defined
-  sourceImage->SetLargestPossibleRegion(largestPossibleRegion);
-  // Set the buffered region
-  sourceImage->SetBufferedRegion(largestPossibleRegion);
-  // Set the requested region
-  sourceImage->SetRequestedRegion(largestPossibleRegion);
+  // Set the largest legal region size (i.e. the size of the whole sourceImage), the buffered, and
+  // the requested region to what we just defined.
+  sourceImage->SetRegions(largestPossibleRegion);
   // Now allocate memory for the sourceImage
   sourceImage->Allocate();
 
   // Create and initialize a new Gaussian function
   using FunctionType = itk::GaussianSpatialFunction<char, dim>;
-  FunctionType::Pointer pFunc = FunctionType::New();
+  auto func = FunctionType::New();
 
   // Run the image evaluator filter
   using TFilter = itk::SpatialFunctionImageEvaluatorFilter<FunctionType, ImageType, ImageType>;
-  TFilter::Pointer pFilter = TFilter::New();
+  auto filter = TFilter::New();
 
-  pFilter->SetInput(sourceImage);
-  pFilter->SetFunction(pFunc);
-  ImageType::Pointer outputImage = pFilter->GetOutput();
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, SpatialFunctionImageEvaluatorFilter, ImageToImageFilter);
 
-  pFilter->Update();
 
+  filter->SetInput(sourceImage);
+  filter->SetFunction(func);
+  ImageType::Pointer outputImage = filter->GetOutput();
+
+  filter->Update();
+
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

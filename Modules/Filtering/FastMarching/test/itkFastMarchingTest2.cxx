@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,7 +50,7 @@ itkFastMarchingTest2(int, char *[])
   using FloatImage = itk::Image<PixelType, 2>;
   using FloatFMType = itk::FastMarchingImageFilter<FloatImage, FloatImage>;
 
-  FloatFMType::Pointer marcher = FloatFMType::New();
+  auto marcher = FloatFMType::New();
 
   ShowProgressObject                                    progressWatch(marcher);
   itk::SimpleMemberCommand<ShowProgressObject>::Pointer command;
@@ -62,7 +62,7 @@ itkFastMarchingTest2(int, char *[])
   using NodeContainer = FloatFMType::NodeContainer;
 
   // setup alive points
-  NodeContainer::Pointer alivePoints = NodeContainer::New();
+  auto alivePoints = NodeContainer::New();
 
   NodeType node;
 
@@ -84,7 +84,7 @@ itkFastMarchingTest2(int, char *[])
 
 
   // setup trial points
-  NodeContainer::Pointer trialPoints = NodeContainer::New();
+  auto trialPoints = NodeContainer::New();
 
   node.SetValue(1.0);
 
@@ -122,7 +122,7 @@ itkFastMarchingTest2(int, char *[])
   marcher->SetOutputSize(size);
 
   // setup a speed image of ones
-  FloatImage::Pointer    speedImage = FloatImage::New();
+  auto                   speedImage = FloatImage::New();
   FloatImage::RegionType region;
   region.SetSize(size);
   speedImage->SetLargestPossibleRegion(region);
@@ -130,7 +130,7 @@ itkFastMarchingTest2(int, char *[])
   speedImage->Allocate();
 
   // setup a binary mask image in float (to make sure it works with float)
-  FloatImage::Pointer MaskImage = FloatImage::New();
+  auto MaskImage = FloatImage::New();
   MaskImage->SetLargestPossibleRegion(region);
   MaskImage->SetBufferedRegion(region);
   MaskImage->Allocate();
@@ -176,14 +176,14 @@ itkFastMarchingTest2(int, char *[])
   for (; !iterator.IsAtEnd(); ++iterator)
   {
     FloatImage::IndexType tempIndex = iterator.GetIndex();
-    auto                  outputValue = (float)iterator.Get();
+    auto                  outputValue = static_cast<float>(iterator.Get());
 
     if (((tempIndex[0] > 22) && (tempIndex[0] < 42) && (tempIndex[1] > 27) && (tempIndex[1] < 37)) ||
         ((tempIndex[1] > 22) && (tempIndex[1] < 42) && (tempIndex[0] > 27) && (tempIndex[0] < 37)))
     {
       tempIndex -= offset0;
       double distance = 0.0;
-      for (int j = 0; j < 2; j++)
+      for (int j = 0; j < 2; ++j)
       {
         distance += tempIndex[j] * tempIndex[j];
       }
@@ -213,20 +213,6 @@ itkFastMarchingTest2(int, char *[])
       }
     }
   }
-
-  // Exercise other member functions
-  std::cout << "SpeedConstant: " << marcher->GetSpeedConstant() << std::endl;
-  std::cout << "StoppingValue: " << marcher->GetStoppingValue() << std::endl;
-  std::cout << "CollectPoints: " << marcher->GetCollectPoints() << std::endl;
-
-  marcher->SetNormalizationFactor(2.0);
-  std::cout << "NormalizationFactor: " << marcher->GetNormalizationFactor();
-  std::cout << std::endl;
-
-  std::cout << "SpeedImage: " << marcher->GetInput();
-  std::cout << std::endl;
-
-  marcher->Print(std::cout);
 
   if (passed)
   {

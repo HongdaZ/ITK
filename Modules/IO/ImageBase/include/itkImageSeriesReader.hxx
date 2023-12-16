@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageSeriesReader_hxx
 #define itkImageSeriesReader_hxx
 
-#include "itkImageSeriesReader.h"
 
 #include "itkImageAlgorithm.h"
 #include "itkArray.h"
@@ -26,6 +25,7 @@
 #include "itkMath.h"
 #include "itkProgressReporter.h"
 #include "itkMetaDataObject.h"
+#include <cstddef> // For ptrdiff_t.
 #include <iomanip>
 
 namespace itk
@@ -123,8 +123,8 @@ ImageSeriesReader<TOutputImage>::GenerateOutputInformation()
   const int firstFileName = (m_ReverseOrder ? numberOfFiles - 1 : 0);
   const int lastFileName = (m_ReverseOrder ? 0 : numberOfFiles - 1);
 
-  typename ReaderType::Pointer firstReader = ReaderType::New();
-  typename ReaderType::Pointer lastReader = ReaderType::New();
+  auto firstReader = ReaderType::New();
+  auto lastReader = ReaderType::New();
   firstReader->SetFileName(m_FileNames[firstFileName].c_str());
   lastReader->SetFileName(m_FileNames[lastFileName].c_str());
   if (m_ImageIO)
@@ -168,14 +168,12 @@ ImageSeriesReader<TOutputImage>::GenerateOutputInformation()
     // dimensions we are going to use
     this->m_NumberOfDimensionsInImage = ComputeMovingDimensionIndex(firstReader);
     dimSize[this->m_NumberOfDimensionsInImage] = static_cast<typename SizeType::SizeValueType>(numberOfFiles);
-    IndexType start;
-    start.Fill(0);
     largestRegion.SetSize(dimSize);
-    largestRegion.SetIndex(start);
+    largestRegion.SetIndex({ { 0 } });
 
     // Initialize the position to the origin returned by the reader
     unsigned int j;
-    for (j = 0; j < TOutputImage::ImageDimension; j++)
+    for (j = 0; j < TOutputImage::ImageDimension; ++j)
     {
       position1[j] = static_cast<SpacingScalarType>(origin[j]);
     }
@@ -188,7 +186,7 @@ ImageSeriesReader<TOutputImage>::GenerateOutputInformation()
     const TOutputImage * last = lastReader->GetOutput();
 
     // Initialize the position to the origin returned by the reader
-    for (j = 0; j < TOutputImage::ImageDimension; j++)
+    for (j = 0; j < TOutputImage::ImageDimension; ++j)
     {
       positionN[j] = static_cast<SpacingScalarType>(last->GetOrigin()[j]);
     }
@@ -321,7 +319,7 @@ ImageSeriesReader<TOutputImage>::GenerateData()
     }
 
     // configure reader
-    typename ReaderType::Pointer reader = ReaderType::New();
+    auto reader = ReaderType::New();
     reader->SetFileName(m_FileNames[iFileName].c_str());
 
     TOutputImage * readerOutput = reader->GetOutput();
@@ -438,7 +436,7 @@ ImageSeriesReader<TOutputImage>::GenerateData()
               outputSpacing[this->m_NumberOfDimensionsInImage])) // either non-uniform sampling or missing slice
         {
           nonUniformSampling = true;
-          spacingDeviation = Math::abs(outputSpacing[this->m_NumberOfDimensionsInImage] - dirNnorm);
+          spacingDeviation = itk::Math::abs(outputSpacing[this->m_NumberOfDimensionsInImage] - dirNnorm);
           if (spacingDeviation > maxSpacingDeviation)
           {
             maxSpacingDeviation = spacingDeviation;
@@ -495,8 +493,8 @@ ImageSeriesReader<TOutputImage>::GenerateData()
 }
 
 template <typename TOutputImage>
-typename ImageSeriesReader<TOutputImage>::DictionaryArrayRawPointer
-ImageSeriesReader<TOutputImage>::GetMetaDataDictionaryArray() const
+auto
+ImageSeriesReader<TOutputImage>::GetMetaDataDictionaryArray() const -> DictionaryArrayRawPointer
 {
   // this warning has been introduced in 3.17 due to a change in
   // behavior. It may be removed in the future.

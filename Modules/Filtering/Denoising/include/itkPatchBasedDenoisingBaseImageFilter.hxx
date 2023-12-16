@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkPatchBasedDenoisingBaseImageFilter_hxx
 #define itkPatchBasedDenoisingBaseImageFilter_hxx
 
-#include "itkPatchBasedDenoisingBaseImageFilter.h"
 #include "itkEventObject.h"
 
 namespace itk
@@ -163,15 +162,16 @@ PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::SetPatchWeights(c
 }
 
 template <typename TInputImage, typename TOutputImage>
-typename PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::PatchWeightsType
-PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::GetPatchWeights() const
+auto
+PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::GetPatchWeights() const -> PatchWeightsType
 {
   return m_PatchWeights;
 }
 
 template <typename TInputImage, typename TOutputImage>
-typename PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::PatchRadiusType::SizeValueType
-PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::GetPatchLengthInVoxels() const
+auto
+PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::GetPatchLengthInVoxels() const ->
+  typename PatchRadiusType::SizeValueType
 {
   const PatchRadiusType diameter = this->GetPatchDiameterInVoxels();
 
@@ -184,8 +184,8 @@ PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::GetPatchLengthInV
 }
 
 template <typename TInputImage, typename TOutputImage>
-typename PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::PatchRadiusType
-PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::GetPatchDiameterInVoxels() const
+auto
+PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::GetPatchDiameterInVoxels() const -> PatchRadiusType
 {
   PatchRadiusType one;
   PatchRadiusType two;
@@ -198,8 +198,8 @@ PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::GetPatchDiameterI
 }
 
 template <typename TInputImage, typename TOutputImage>
-typename PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::PatchRadiusType
-PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::GetPatchRadiusInVoxels() const
+auto
+PatchBasedDenoisingBaseImageFilter<TInputImage, TOutputImage>::GetPatchRadiusInVoxels() const -> PatchRadiusType
 {
   const typename Self::Pointer thisPtr = const_cast<Self *>(this);
 

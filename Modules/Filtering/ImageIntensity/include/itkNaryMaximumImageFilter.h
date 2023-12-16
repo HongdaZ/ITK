@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,7 +45,7 @@ public:
   {
     OutputValueType A = NumericTraits<TOutput>::NonpositiveMin();
 
-    for (unsigned int i = 0; i < B.size(); i++)
+    for (unsigned int i = 0; i < B.size(); ++i)
     {
       if (A < static_cast<OutputValueType>(B[i]))
       {
@@ -61,11 +61,7 @@ public:
     return true;
   }
 
-  bool
-  operator!=(const Maximum1 &) const
-  {
-    return false;
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Maximum1);
 };
 } // namespace Functor
 
@@ -111,7 +107,7 @@ class NaryMaximumImageFilter
                                   Functor::Maximum1<typename TInputImage::PixelType, typename TInputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NaryMaximumImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(NaryMaximumImageFilter);
 
   /** Standard class type aliases. */
   using Self = NaryMaximumImageFilter;

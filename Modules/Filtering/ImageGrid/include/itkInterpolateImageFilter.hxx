@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkInterpolateImageFilter_hxx
 #define itkInterpolateImageFilter_hxx
 
-#include "itkInterpolateImageFilter.h"
 
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkTotalProgressReporter.h"
@@ -33,7 +32,7 @@ InterpolateImageFilter<TInputImage, TOutputImage>::InterpolateImageFilter()
 
   // Set default interpolator to linear
   using LinearInterpolatorType = LinearInterpolateImageFunction<IntermediateImageType>;
-  typename LinearInterpolatorType::Pointer interpolator = LinearInterpolatorType::New();
+  auto interpolator = LinearInterpolatorType::New();
 
   m_Interpolator = static_cast<InterpolatorType *>(interpolator.GetPointer());
 
@@ -56,8 +55,8 @@ InterpolateImageFilter<TInputImage, TOutputImage>::SetInput2(const InputImageTyp
 
 
 template <typename TInputImage, typename TOutputImage>
-const typename InterpolateImageFilter<TInputImage, TOutputImage>::InputImageType *
-InterpolateImageFilter<TInputImage, TOutputImage>::GetInput2()
+auto
+InterpolateImageFilter<TInputImage, TOutputImage>::GetInput2() -> const InputImageType *
 {
   return static_cast<const TInputImage *>(this->ProcessObject::GetInput(1));
 }
@@ -172,7 +171,7 @@ InterpolateImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
     outputIndex = outIt.GetIndex();
     for (unsigned int j = 0; j < ImageDimension; ++j)
     {
-      intermediateIndex[j] = (double)outputIndex[j];
+      intermediateIndex[j] = static_cast<double>(outputIndex[j]);
     }
     intermediateIndex[ImageDimension] = m_Distance;
 

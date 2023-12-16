@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,11 +29,11 @@
 int
 itkGrayscaleConnectedOpeningImageFilterTest(int argc, char * argv[])
 {
-  if (argc < 5)
+  if (argc < 6)
   {
-    std::cerr << "Usage: " << std::endl;
-    std::cerr << itkNameOfTestExecutableMacro(argv) << "  inputImageFile  ";
-    std::cerr << " outputImageFile seedX seedY " << std::endl;
+    std::cerr << "Missing Parameters " << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv)
+              << " inputImageFile outputImageFile seedX seedY fullyConnected" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -52,39 +52,50 @@ itkGrayscaleConnectedOpeningImageFilterTest(int argc, char * argv[])
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
   using WriteImageType = itk::Image<WritePixelType, Dimension>;
 
-
-  // readers/writers
-  using ReaderType = itk::ImageFileReader<InputImageType>;
-  using WriterType = itk::ImageFileWriter<WriteImageType>;
-
-  // define the fillhole filter
+  // Define the fillhole filter
   using ConnectedOpeningFilterType = itk::GrayscaleConnectedOpeningImageFilter<InputImageType, OutputImageType>;
 
-
-  // Creation of Reader and Writer filters
-  ReaderType::Pointer reader = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
-
   // Create the filter
-  ConnectedOpeningFilterType::Pointer connectedOpening = ConnectedOpeningFilterType::New();
-  itk::SimpleFilterWatcher            watcher(connectedOpening, "Opening");
+  auto connectedOpening = ConnectedOpeningFilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(connectedOpening, GrayscaleConnectedOpeningImageFilter, ImageToImageFilter);
+
+
+  itk::SimpleFilterWatcher watcher(connectedOpening, "Opening");
   watcher.QuietOn();
 
-  // Setup the input and output files
-  reader->SetFileName(argv[1]);
-  writer->SetFileName(argv[2]);
+  using ReaderType = itk::ImageFileReader<InputImageType>;
+  auto reader = ReaderType::New();
 
-  // Setup the connected opening method
+  reader->SetFileName(argv[1]);
+
+  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
+
+
+  // Set up the ConnectedOpening filter
+  auto fullyConnected = static_cast<bool>(std::stoi(argv[5]));
+  ITK_TEST_SET_GET_BOOLEAN(connectedOpening, FullyConnected, fullyConnected);
+
   connectedOpening->SetInput(reader->GetOutput());
 
   InputImageType::IndexType seed;
   seed[0] = std::stoi(argv[3]);
   seed[1] = std::stoi(argv[4]);
   connectedOpening->SetSeed(seed);
+  ITK_TEST_SET_GET_VALUE(seed, connectedOpening->GetSeed());
 
-  // Run the filter
+  ITK_TRY_EXPECT_NO_EXCEPTION(connectedOpening->Update());
+
+
+  using WriterType = itk::ImageFileWriter<WriteImageType>;
+  auto writer = WriterType::New();
+
+  writer->SetFileName(argv[2]);
   writer->SetInput(connectedOpening->GetOutput());
-  writer->Update();
 
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+
+
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

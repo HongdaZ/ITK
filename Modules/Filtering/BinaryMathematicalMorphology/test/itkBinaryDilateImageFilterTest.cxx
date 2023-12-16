@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include "itkBinaryDilateImageFilter.h"
 #include "itkBinaryBallStructuringElement.h"
 #include "itkSimpleFilterWatcher.h"
+#include "itkTestingMacros.h"
 
 int
 itkBinaryDilateImageFilterTest(int, char *[])
@@ -45,7 +46,7 @@ itkBinaryDilateImageFilterTest(int, char *[])
   using myRegionType = itk::ImageRegion<myDimension>;
 
   // Create an image
-  myImageType::Pointer inputImage = myImageType::New();
+  auto inputImage = myImageType::New();
 
   // Define their size, and start index
   mySizeType size;
@@ -118,7 +119,7 @@ itkBinaryDilateImageFilterTest(int, char *[])
   using myFilterType = itk::BinaryDilateImageFilter<myImageType, myImageType, myKernelType>;
 
   // Create the filter
-  myFilterType::Pointer    filter = myFilterType::New();
+  auto                     filter = myFilterType::New();
   itk::SimpleFilterWatcher filterWatcher(filter);
 
   // Create the structuring element
@@ -143,33 +144,26 @@ itkBinaryDilateImageFilterTest(int, char *[])
   std::cout << "filter->GetDilateValue(): " << value << std::endl;
 
   // Execute the filter
-  try
+  ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
+
+
+  // Create an iterator for going through the image output
+  myIteratorType it2(outputImage, outputImage->GetBufferedRegion());
+
+  //  Print the content of the result image
+  std::cout << "Result " << std::endl;
+  i = 0;
+  while (!it2.IsAtEnd())
   {
+    std::cout << it2.Get() << "  ";
+    ++it2;
 
-    filter->Update();
-    // Create an iterator for going through the image output
-    myIteratorType it2(outputImage, outputImage->GetBufferedRegion());
-
-    //  Print the content of the result image
-    std::cout << "Result " << std::endl;
-    i = 0;
-    while (!it2.IsAtEnd())
+    if (++i % 20 == 0)
     {
-      std::cout << it2.Get() << "  ";
-      ++it2;
-
-      if (++i % 20 == 0)
-      {
-        std::cout << std::endl;
-      }
+      std::cout << std::endl;
     }
   }
 
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cerr << "Exception caught during filter Update\n" << e;
-    return -1;
-  }
 
   // All objects should be automatically destroyed at this point
 

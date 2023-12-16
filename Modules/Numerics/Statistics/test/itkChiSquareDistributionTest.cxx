@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include "itkChiSquareDistribution.h"
 #include "itkTestingMacros.h"
 #include "itkStdStreamStateSave.h"
+#include "itkMath.h"
 
 int
 itkChiSquareDistributionTest(int, char *[])
@@ -32,7 +33,7 @@ itkChiSquareDistributionTest(int, char *[])
 
   using DistributionType = itk::Statistics::ChiSquareDistribution;
 
-  DistributionType::Pointer distributionFunction = DistributionType::New();
+  auto distributionFunction = DistributionType::New();
 
   std::cout << "GetNameOfClass() = " << distributionFunction->GetNameOfClass() << std::endl;
   std::cout << "HasMean()        = " << distributionFunction->HasMean() << std::endl;
@@ -76,7 +77,7 @@ itkChiSquareDistributionTest(int, char *[])
 
     value = distributionFunction->EvaluateCDF(x);
 
-    diff = std::fabs(value - expected1[i]);
+    diff = itk::Math::abs(value - expected1[i]);
 
     std::cout << "Chi-Square cdf at ";
     std::cout.width(2);
@@ -112,7 +113,7 @@ itkChiSquareDistributionTest(int, char *[])
 
     value = distributionFunction->EvaluateInverseCDF(expected1[i]);
 
-    diff = std::fabs(value - double(i));
+    diff = itk::Math::abs(value - static_cast<double>(i));
 
     std::cout << "Chi-Square cdf at ";
     std::cout.width(20);
@@ -122,7 +123,7 @@ itkChiSquareDistributionTest(int, char *[])
     std::cout.width(22);
     std::cout << value << ", expected value = ";
     std::cout.width(22);
-    std::cout << double(i) << ", error = ";
+    std::cout << static_cast<double>(i) << ", error = ";
     std::cout.width(22);
     std::cout << diff;
     if (diff < tol)
@@ -168,7 +169,7 @@ itkChiSquareDistributionTest(int, char *[])
 
     value = distributionFunction->EvaluateCDF(x);
 
-    diff = std::fabs(value - expected11[i]);
+    diff = itk::Math::abs(value - expected11[i]);
 
     std::cout << "Chi-Square cdf at ";
     std::cout.width(2);
@@ -204,7 +205,7 @@ itkChiSquareDistributionTest(int, char *[])
 
     value = distributionFunction->EvaluateInverseCDF(expected11[i]);
 
-    diff = std::fabs(value - double(2 * i));
+    diff = itk::Math::abs(value - static_cast<double>(2 * i));
 
     std::cout << "Chi-Square cdf at ";
     std::cout.width(20);
@@ -214,7 +215,7 @@ itkChiSquareDistributionTest(int, char *[])
     std::cout.width(22);
     std::cout << value << ", expected value = ";
     std::cout.width(22);
-    std::cout << double(2 * i) << ", error = ";
+    std::cout << static_cast<double>(2 * i) << ", error = ";
     std::cout.width(22);
     std::cout << diff;
     if (diff < tol)
@@ -250,7 +251,7 @@ itkChiSquareDistributionTest(int, char *[])
 
     value = distributionFunction->EvaluateCDF(x);
 
-    diff = std::fabs(value - expected100[i]);
+    diff = itk::Math::abs(value - expected100[i]);
 
     std::cout << "Chi-Square cdf at ";
     std::cout.width(2);
@@ -286,7 +287,7 @@ itkChiSquareDistributionTest(int, char *[])
 
     value = distributionFunction->EvaluateInverseCDF(expected100[i]);
 
-    diff = std::fabs(value - double(50 + 20 * i));
+    diff = itk::Math::abs(value - static_cast<double>(50 + 20 * i));
 
     std::cout << "Chi-Square cdf at ";
     std::cout.width(20);
@@ -296,7 +297,7 @@ itkChiSquareDistributionTest(int, char *[])
     std::cout.width(22);
     std::cout << value << ", expected value = ";
     std::cout.width(22);
-    std::cout << double(50 + 20 * i) << ", error = ";
+    std::cout << static_cast<double>(50 + 20 * i) << ", error = ";
     std::cout.width(22);
     std::cout << diff;
     if (diff < tol)
@@ -331,7 +332,7 @@ itkChiSquareDistributionTest(int, char *[])
 
     value = distributionFunction->EvaluateCDF(x, params);
 
-    diff = std::fabs(value - expected100[i]);
+    diff = itk::Math::abs(value - expected100[i]);
 
     std::cout << "Chi-Square cdf at ";
     std::cout.width(2);
@@ -368,7 +369,7 @@ itkChiSquareDistributionTest(int, char *[])
 
     value = distributionFunction->EvaluateInverseCDF(expected100[i], params);
 
-    diff = std::fabs(value - double(50 + 20 * i));
+    diff = itk::Math::abs(value - static_cast<double>(50 + 20 * i));
 
     std::cout << "Chi-Square cdf at ";
     std::cout.width(20);
@@ -379,7 +380,7 @@ itkChiSquareDistributionTest(int, char *[])
     std::cout.width(22);
     std::cout << value << ", expected value = ";
     std::cout.width(22);
-    std::cout << double(50 + 20 * i) << ", error = ";
+    std::cout << static_cast<double>(50 + 20 * i) << ", error = ";
     std::cout.width(22);
     std::cout << diff;
     if (diff < tol)
@@ -407,9 +408,9 @@ itkChiSquareDistributionTest(int, char *[])
   {
     x = static_cast<double>(50 + 20 * i);
 
-    value = distributionFunction->EvaluateCDF(x, (long)params[0]);
+    value = distributionFunction->EvaluateCDF(x, static_cast<long>(params[0]));
 
-    diff = std::fabs(value - expected100[i]);
+    diff = itk::Math::abs(value - expected100[i]);
 
     std::cout << "Chi-Square cdf at ";
     std::cout.width(2);
@@ -444,9 +445,9 @@ itkChiSquareDistributionTest(int, char *[])
   for (i = 0; i <= 5; ++i)
   {
 
-    value = distributionFunction->EvaluateInverseCDF(expected100[i], (long)params[0]);
+    value = distributionFunction->EvaluateInverseCDF(expected100[i], static_cast<long>(params[0]));
 
-    diff = std::fabs(value - double(50 + 20 * i));
+    diff = itk::Math::abs(value - static_cast<double>(50 + 20 * i));
 
     std::cout << "Chi-Square cdf at ";
     std::cout.width(20);
@@ -457,7 +458,7 @@ itkChiSquareDistributionTest(int, char *[])
     std::cout.width(22);
     std::cout << value << ", expected value = ";
     std::cout.width(22);
-    std::cout << double(50 + 20 * i) << ", error = ";
+    std::cout << static_cast<double>(50 + 20 * i) << ", error = ";
     std::cout.width(22);
     std::cout << diff;
     if (diff < tol)

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 
 #include "itkQuadEdgeMeshExtendedTraits.h"
 #include "itkNormalQuadEdgeMeshFilter.h"
+#include "itkTestingMacros.h"
 
 int
 itkNormalQuadEdgeMeshFilterTest(int argc, char * argv[])
@@ -78,7 +79,7 @@ itkNormalQuadEdgeMeshFilterTest(int argc, char * argv[])
     }
   }
 
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
   try
@@ -94,9 +95,15 @@ itkNormalQuadEdgeMeshFilterTest(int argc, char * argv[])
 
   InputMeshType::Pointer mesh = reader->GetOutput();
 
-  NormalFilterType::Pointer normals = NormalFilterType::New();
-  normals->SetInput(mesh);
+  auto normals = NormalFilterType::New();
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(normals, NormalQuadEdgeMeshFilter, QuadEdgeMeshToQuadEdgeMeshFilter);
+
+
   normals->SetWeight(weight_type);
+  ITK_TEST_SET_GET_VALUE(weight_type, normals->GetWeight());
+
+  normals->SetInput(mesh);
+
   normals->Update();
 
   OutputMeshType::Pointer output = normals->GetOutput();

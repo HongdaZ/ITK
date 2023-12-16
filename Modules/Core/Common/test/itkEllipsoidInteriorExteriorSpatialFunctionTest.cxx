@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ itkEllipsoidInteriorExteriorSpatialFunctionTest(int, char *[])
   using TEllipsoidFunctionVectorType = TEllipsoidFunctionType::InputType;
 
   // Create an ellipsoid spatial function for the source image
-  TEllipsoidFunctionType::Pointer spatialFunc = TEllipsoidFunctionType::New();
+  auto spatialFunc = TEllipsoidFunctionType::New();
   // Define and set the axes lengths for the ellipsoid
   TEllipsoidFunctionVectorType axes;
   axes[0] = 40;
@@ -72,11 +72,11 @@ itkEllipsoidInteriorExteriorSpatialFunctionTest(int, char *[])
   bool functionValue;            // Value of pixel at a given position
   int  interiorPixelCounter = 0; // Count pixels inside ellipsoid
 
-  for (int x = 0; x < xExtent; x++)
+  for (int x = 0; x < xExtent; ++x)
   {
-    for (int y = 0; y < yExtent; y++)
+    for (int y = 0; y < yExtent; ++y)
     {
-      for (int z = 0; z < zExtent; z++)
+      for (int z = 0; z < zExtent; ++z)
       {
         testPosition[0] = x;
         testPosition[1] = y;
@@ -99,7 +99,7 @@ itkEllipsoidInteriorExteriorSpatialFunctionTest(int, char *[])
   double volume = 4.18879013333 * (axes[0] / 2) * (axes[1] / 2) * (axes[2] / 2);
 
   // Percent difference in volume measurement and calculation
-  double volumeError = (std::fabs(volume - interiorPixelCounter) / volume) * 100;
+  double volumeError = (itk::Math::abs(volume - interiorPixelCounter) / volume) * 100;
 
   std::cout << spatialFunc;
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkFEMElement3DMembrane_hxx
 #define itkFEMElement3DMembrane_hxx
 
-#include "itkFEMElement3DMembrane.h"
 
 namespace itk
 {
@@ -44,7 +43,7 @@ Element3DMembrane<TBaseClass>::GetStrainDisplacementMatrix(MatrixType & B, const
 
   B.set_size(9, 3 * Nn); //  note minor difference from 2D membrane
   // Copy the shape function derivatives to the B matrix.
-  for (unsigned int i = 0; i < Nn; i++)
+  for (unsigned int i = 0; i < Nn; ++i)
   {
     // Compute B index
     p = i * 3;
@@ -116,7 +115,7 @@ Element3DMembrane<TBaseClass>::GetMaterialMatrix(MatrixType & D) const
   // This is the main difference from the linear elasticity problem.
   /* Material properties matrix.  Simpler than linear elasticity. */
   Float disot = m_mat->GetYoungsModulus();
-  for (unsigned int i = 0; i < d; i++)
+  for (unsigned int i = 0; i < d; ++i)
   {
     D[i][i] = disot;
   }

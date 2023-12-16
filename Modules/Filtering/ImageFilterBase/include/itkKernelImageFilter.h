@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ class ITK_TEMPLATE_EXPORT KernelImageFilter:
   public BoxImageFilter< TInputImage, TOutputImage >
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(KernelImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(KernelImageFilter);
 
   /** Standard class type aliases. */
   using Self = KernelImageFilter;
@@ -110,7 +110,7 @@ private:
   MakeKernel(const RadiusType & radius, T & kernel)
   {
     kernel.SetRadius(radius);
-    for (typename T::Iterator kit = kernel.Begin(); kit != kernel.End(); kit++)
+    for (typename T::Iterator kit = kernel.Begin(); kit != kernel.End(); ++kit)
     {
       *kit = 1;
     }

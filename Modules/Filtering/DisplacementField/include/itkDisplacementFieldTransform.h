@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkTransform.h"
 
 #include "itkImage.h"
+#include "itkVectorImage.h"
 #include "itkMatrixOffsetTransformBase.h"
 #include "itkImageVectorOptimizerParametersHelper.h"
 #include "itkVectorInterpolateImageFunction.h"
@@ -33,7 +34,7 @@ namespace itk
  * a displacement field.
  *
  * The displacement field stores vectors of displacements, with
- * dimension \c NDimensions. Transformation is performed at a given
+ * dimension \c VDimension. Transformation is performed at a given
  * point by adding the displacement at that point to the input point.
  *
  * T(x, p), x is the position, p is the local parameter at position x.
@@ -51,8 +52,8 @@ namespace itk
  * The displacement field is defined using an itkImage, and must be set
  * before use by the user, using \c SetDisplacementField. The image has
  * the same dimensionality as the input and output spaces, defined by
- * template parameter \c NDimensions, and is an image of vectors of
- * type \c OutputVectorType, with dimensionality NDimensions as well.
+ * template parameter \c VDimension, and is an image of vectors of
+ * type \c OutputVectorType, with dimensionality VDimension as well.
  *
  * An interpolator of type \c VectorInterpolateImageFunction is used with
  * the displacement field image. By default,
@@ -82,15 +83,15 @@ namespace itk
  *
  * \ingroup ITKDisplacementField
  */
-template <typename TParametersValueType, unsigned int NDimensions>
-class ITK_TEMPLATE_EXPORT DisplacementFieldTransform : public Transform<TParametersValueType, NDimensions, NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
+class ITK_TEMPLATE_EXPORT DisplacementFieldTransform : public Transform<TParametersValueType, VDimension, VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DisplacementFieldTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(DisplacementFieldTransform);
 
   /** Standard class type aliases. */
   using Self = DisplacementFieldTransform;
-  using Superclass = Transform<TParametersValueType, NDimensions, NDimensions>;
+  using Superclass = Transform<TParametersValueType, VDimension, VDimension>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
@@ -101,62 +102,63 @@ public:
   itkNewMacro(Self);
 
   /** InverseTransform type. */
-  using InverseTransformBasePointer = typename Superclass::InverseTransformBasePointer;
+  using typename Superclass::InverseTransformBasePointer;
 
   /** Scalar type. */
-  using ScalarType = typename Superclass::ScalarType;
+  using typename Superclass::ScalarType;
 
   /** Type of the input parameters. */
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename Superclass::FixedParametersValueType;
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
+  using typename Superclass::FixedParametersType;
+  using typename Superclass::FixedParametersValueType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::ParametersValueType;
 
   /** Jacobian types. */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  using typename Superclass::JacobianType;
+  using typename Superclass::JacobianPositionType;
+  using typename Superclass::InverseJacobianPositionType;
 
   /** Transform category type. */
-  using TransformCategoryEnum = typename Superclass::TransformCategoryEnum;
+  using typename Superclass::TransformCategoryEnum;
 
   /** The number of parameters defining this transform. */
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
+  using typename Superclass::NumberOfParametersType;
 
   /** Standard coordinate point type for this class. */
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
+  using typename Superclass::InputPointType;
+  using typename Superclass::OutputPointType;
 
   /** Standard vector type for this class. */
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
+  using typename Superclass::InputVectorType;
+  using typename Superclass::OutputVectorType;
 
-  using InputVectorPixelType = typename Superclass::InputVectorPixelType;
-  using OutputVectorPixelType = typename Superclass::OutputVectorPixelType;
+  using typename Superclass::InputVectorPixelType;
+  using typename Superclass::OutputVectorPixelType;
 
   /** Standard covariant vector type for this class */
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
+  using typename Superclass::InputCovariantVectorType;
+  using typename Superclass::OutputCovariantVectorType;
 
   /** Standard vnl_vector type for this class. */
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
+  using typename Superclass::InputVnlVectorType;
+  using typename Superclass::OutputVnlVectorType;
 
   /** Standard diffusion tensor type for this class */
-  using InputDiffusionTensor3DType = typename Superclass::InputDiffusionTensor3DType;
-  using OutputDiffusionTensor3DType = typename Superclass::OutputDiffusionTensor3DType;
+  using typename Superclass::InputDiffusionTensor3DType;
+  using typename Superclass::OutputDiffusionTensor3DType;
 
   /** Standard tensor type for this class */
   using InputTensorEigenVectorType = CovariantVector<ScalarType, InputDiffusionTensor3DType::Dimension>;
   using OutputTensorEigenVectorType = CovariantVector<ScalarType, OutputDiffusionTensor3DType::Dimension>;
   /** Derivative type */
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeType;
 
   /** Dimension of the domain spaces. */
-  static constexpr unsigned int Dimension = NDimensions;
+  static constexpr unsigned int Dimension = VDimension;
 
   /** Define the displacement field type and corresponding interpolator type. */
   using DisplacementFieldType = Image<OutputVectorType, Dimension>;
+  using VectorImageDisplacementFieldType = VectorImage<TParametersValueType, Dimension>;
   using DisplacementFieldPointer = typename DisplacementFieldType::Pointer;
   using DisplacementFieldConstPointer = typename DisplacementFieldType::ConstPointer;
 
@@ -181,12 +183,15 @@ public:
    * container. */
   virtual void
   SetDisplacementField(DisplacementFieldType * field);
+  virtual void
+       SetDisplacementField(VectorImageDisplacementFieldType * field);
+  void SetDisplacementField(std::nullptr_t) = delete;
   itkGetModifiableObjectMacro(DisplacementField, DisplacementFieldType);
 
   /** Get/Set the inverse displacement field. This must be supplied by the user for
    * GetInverse() to work. */
   virtual void
-  SetInverseDisplacementField(DisplacementFieldType * inverseDisplacementField);
+  SetInverseDisplacementField(DisplacementFieldType * inverseField);
   itkGetModifiableObjectMacro(InverseDisplacementField, DisplacementFieldType);
 
   /** Get/Set the interpolator.
@@ -207,7 +212,7 @@ public:
   /**  Method to transform a point. Out-of-bounds points will
    * be returned with zero displacement. */
   OutputPointType
-  TransformPoint(const InputPointType & thisPoint) const override;
+  TransformPoint(const InputPointType & inputPoint) const override;
 
   /**  Method to transform a vector. */
   using Superclass::TransformVector;
@@ -296,7 +301,7 @@ public:
 
   /**
    * Compute the jacobian with respect to the parameters at a point.
-   * Simply returns identity matrix, sized [NDimensions, NDimensions].
+   * Simply returns identity matrix, sized [VDimension, VDimension].
    *
    * T(x, p), x is the position, p is the local parameter at position x.
    * Take a 2D example, x = (x0, x1), p = (p0, p1) and T(x, p) is defined as:
@@ -323,7 +328,7 @@ public:
 
   /**
    * Compute the jacobian with respect to the parameters at an index.
-   * Simply returns identity matrix, sized [NDimensions, NDimensions].
+   * Simply returns identity matrix, sized [VDimension, VDimension].
    * See \c ComputeJacobianWithRespectToParameters( InputPointType, ... )
    * for rationale.
    */
@@ -338,7 +343,7 @@ public:
    * \c j will be resized as needed.
    */
   void
-  ComputeJacobianWithRespectToPosition(const InputPointType & x, JacobianPositionType & j) const override;
+  ComputeJacobianWithRespectToPosition(const InputPointType & point, JacobianPositionType & jacobian) const override;
   using Superclass::ComputeJacobianWithRespectToPosition;
 
   /**
@@ -346,7 +351,8 @@ public:
    * \c j will be resized as needed.
    */
   void
-  ComputeInverseJacobianWithRespectToPosition(const InputPointType & x, InverseJacobianPositionType & j) const override;
+  ComputeInverseJacobianWithRespectToPosition(const InputPointType &        point,
+                                              InverseJacobianPositionType & jacobian) const override;
   using Superclass::ComputeInverseJacobianWithRespectToPosition;
 
   /**
@@ -354,7 +360,7 @@ public:
    * \c j will be resized as needed.
    */
   virtual void
-  ComputeJacobianWithRespectToPosition(const IndexType & x, JacobianPositionType & j) const;
+  ComputeJacobianWithRespectToPosition(const IndexType & index, JacobianPositionType & jacobian) const;
 
   /**
    * Compute the inverse jacobian of the forward displacement field with
@@ -419,7 +425,7 @@ public:
 
   /** Set/Get the coordinate tolerance.
    *  This tolerance is used when comparing the space defined
-   *  by deformation fields and it's inverse to ensure they occupy the
+   *  by deformation fields and its inverse to ensure they occupy the
    *  same physical space.
    *
    * \sa ImageToImageFilterCommon::SetGlobalDefaultCoordinateTolerance
@@ -429,7 +435,7 @@ public:
 
   /** Set/Get the direction tolerance.
    *  This tolerance is used to when comparing the orientation of the
-   *  deformation fields and it's inverse to ensure they occupy the
+   *  deformation fields and its inverse to ensure they occupy the
    *  same physical space.
    *
    * \sa ImageToImageFilterCommon::SetGlobalDefaultDirectionTolerance

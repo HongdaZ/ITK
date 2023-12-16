@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,7 +70,7 @@ FillWithCircle(TImage *                   image,
     double distance = 0;
     for (unsigned int j = 0; j < TImage::ImageDimension; ++j)
     {
-      distance += itk::Math::sqr((double)index[j] - center[j]);
+      distance += itk::Math::sqr(static_cast<double>(index[j]) - center[j]);
     }
     if (distance <= r2)
     {
@@ -110,10 +110,10 @@ itkFEMRegistrationFilterTest(int argc, char * argv[])
   region.SetSize(size);
   region.SetIndex(index);
 
-  InputImageType::Pointer movingImage = InputImageType::New();
-  InputImageType::Pointer fixedImage = InputImageType::New();
+  auto movingImage = InputImageType::New();
+  auto fixedImage = InputImageType::New();
 
-  DeformationFieldImageType::Pointer initField = DeformationFieldImageType::New();
+  auto initField = DeformationFieldImageType::New();
 
   movingImage->SetLargestPossibleRegion(region);
   movingImage->SetBufferedRegion(region);
@@ -159,7 +159,7 @@ itkFEMRegistrationFilterTest(int argc, char * argv[])
   // Run registration and warp moving
   for (unsigned int met = 0; met < 4; ++met)
   {
-    RegistrationType::Pointer registrator = RegistrationType::New();
+    auto registrator = RegistrationType::New();
 
     ITK_EXERCISE_BASIC_OBJECT_METHODS(registrator, FEMRegistrationFilter, ImageToImageFilter);
 
@@ -282,7 +282,7 @@ itkFEMRegistrationFilterTest(int argc, char * argv[])
     material->SetDensityHeatProduct(1.0);
 
     // Create the element type
-    ElementType::Pointer element1 = ElementType::New();
+    auto element1 = ElementType::New();
     element1->SetMaterial(dynamic_cast<itk::fem::MaterialLinearElasticity *>(&*material));
     registrator->SetElement(&*element1);
     registrator->SetMaterial(material);
@@ -294,7 +294,7 @@ itkFEMRegistrationFilterTest(int argc, char * argv[])
       // Register the images
       registrator->RunRegistration();
     }
-    catch (::itk::ExceptionObject & err)
+    catch (const itk::ExceptionObject & err)
     {
       std::cerr << "ITK exception detected: " << err;
       std::cout << "Test FAILED" << std::endl;
@@ -317,7 +317,7 @@ itkFEMRegistrationFilterTest(int argc, char * argv[])
       outFileName += ss.str();
       outFileName += ".mhd";
       using ImageWriterType = itk::ImageFileWriter<RegistrationType::FieldType>;
-      ImageWriterType::Pointer writer = ImageWriterType::New();
+      auto writer = ImageWriterType::New();
       writer->SetFileName(outFileName);
       writer->SetInput(registrator->GetDisplacementField());
       writer->Update();
@@ -331,7 +331,7 @@ itkFEMRegistrationFilterTest(int argc, char * argv[])
       outFileName += ss.str();
       outFileName += ".mhd";
       using ImageWriterType = itk::ImageFileWriter<InputImageType>;
-      ImageWriterType::Pointer writer = ImageWriterType::New();
+      auto writer = ImageWriterType::New();
       writer->SetFileName(outFileName);
       writer->SetInput(registrator->GetWarpedImage());
       writer->Update();

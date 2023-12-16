@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,13 +28,20 @@
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkDCMTKImageIO.h"
 #include "itkDCMTKSeriesFileNames.h"
+#include "itkTestingMacros.h"
 
 int
 itkDCMTKSeriesReadImageWrite(int argc, char * argv[])
 {
-  if (argc < 3)
+  if (argc != 6)
   {
-    std::cerr << "Usage: " << argv[0] << " DicomDirectory  outputFile" << std::endl;
+    std::cerr << "Missing arguments." << std::endl;
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << itkNameOfTestExecutableMacro(argv) << " DicomDirectory "
+              << " outputFile"
+              << " recursive"
+              << " loadSequences"
+              << " loadPrivateTags" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -43,12 +50,36 @@ itkDCMTKSeriesReadImageWrite(int argc, char * argv[])
   using ImageIOType = itk::DCMTKImageIO;
   using SeriesFileNames = itk::DCMTKSeriesFileNames;
 
-  ImageIOType::Pointer     dcmtkIO = ImageIOType::New();
-  SeriesFileNames::Pointer it = SeriesFileNames::New();
+  auto dcmtkIO = ImageIOType::New();
+  auto it = SeriesFileNames::New();
 
-  it->SetInputDirectory(argv[1]);
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(it, DCMTKSeriesFileNames, ProcessObject);
 
-  ReaderType::Pointer reader = ReaderType::New();
+
+  // Test exceptions
+  const char * pInputDirectory = nullptr;
+  ITK_TRY_EXPECT_EXCEPTION(it->SetInputDirectory(pInputDirectory));
+
+  // Exercise warnings
+  std::string inputDirectory = "";
+  it->SetInputDirectory(inputDirectory);
+
+  inputDirectory = "NotADirectory";
+  it->SetInputDirectory(inputDirectory);
+
+  inputDirectory = argv[1];
+  it->SetInputDirectory(inputDirectory);
+
+  auto recursive = static_cast<bool>(std::stoi(argv[3]));
+  ITK_TEST_SET_GET_BOOLEAN(it, Recursive, recursive);
+
+  auto loadSequences = static_cast<bool>(std::stoi(argv[4]));
+  ITK_TEST_SET_GET_BOOLEAN(it, LoadSequences, loadSequences);
+
+  auto loadPrivateTags = static_cast<bool>(std::stoi(argv[5]));
+  ITK_TEST_SET_GET_BOOLEAN(it, LoadPrivateTags, loadPrivateTags);
+
+  auto reader = ReaderType::New();
 
   const ReaderType::FileNamesContainer & fileNames = it->GetInputFileNames();
   const unsigned int                     numberOfFileNames = fileNames.size();
@@ -62,34 +93,18 @@ itkDCMTKSeriesReadImageWrite(int argc, char * argv[])
   reader->SetFileNames(fileNames);
   reader->SetImageIO(dcmtkIO);
 
-  try
-  {
-    reader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << "Exception thrown while writing the image" << std::endl;
-    std::cerr << excp << std::endl;
+  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
 
-    return EXIT_FAILURE;
-  }
 
   using WriterType = itk::ImageFileWriter<ImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   writer->SetFileName(argv[2]);
   writer->SetInput(reader->GetOutput());
 
-  try
-  {
-    writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << "Exception thrown while writing the image" << std::endl;
-    std::cerr << excp << std::endl;
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
 
-    return EXIT_FAILURE;
-  }
+
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

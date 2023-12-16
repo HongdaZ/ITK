@@ -9,8 +9,11 @@ set(netlib_sources
      triangle.c triangle.h
    )
 
-vxl_add_library(LIBRARY_NAME ${VXL_LIB_PREFIX}netlib
-  LIBRARY_SOURCES ${netlib_sources})
+vxl_add_library(
+    LIBRARY_NAME ${VXL_LIB_PREFIX}netlib
+    LIBRARY_SOURCES ${netlib_sources}
+    DISABLE_MSVC_MP
+)
 
 if(UNIX)
   target_link_libraries( ${VXL_LIB_PREFIX}netlib m )
@@ -376,7 +379,6 @@ set(V3P_NETLIB_datapac_SOURCES
 set(V3P_NETLIB_mathews_SOURCES
      mathews/simpson.c mathews/simpson.h
      mathews/trapezod.c mathews/trapezod.h
-     mathews/adaquad.c mathews/adaquad.h
    )
 set(V3P_NETLIB_sparse_SOURCES
      sparse/spAllocate.c

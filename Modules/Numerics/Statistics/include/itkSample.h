@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class Sample
+ * \class Sample
  *  \brief A collection of measurements for statistical analysis
  *
  * Sample represents a set of measurements for statistical
@@ -62,7 +62,7 @@ template <typename TMeasurementVector>
 class Sample : public DataObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Sample);
+  ITK_DISALLOW_COPY_AND_MOVE(Sample);
 
   /** Standard class type aliases */
   using Self = Sample;
@@ -116,13 +116,11 @@ public:
   SetMeasurementVectorSize(MeasurementVectorSizeType s)
   {
     // Test whether the vector type is resizable or not
-    MeasurementVectorType m;
-
-    if (MeasurementVectorTraits::IsResizable(m))
+    if (MeasurementVectorTraits::IsResizable<MeasurementVectorType>({}))
     {
       // then this is a resizable vector type
       //
-      // if the new size is the same as the previou size, just return
+      // if the new size is the same as the previous size, just return
       if (s == this->m_MeasurementVectorSize)
       {
         return;
@@ -133,8 +131,7 @@ public:
         // only change the measurement vector size if the container is empty.
         if (this->Size())
         {
-          itkExceptionMacro("Attempting to change the measurement \
-          vector size of a non-empty Sample");
+          itkExceptionMacro("Attempting to change the measurement vector size of a non-empty Sample");
         }
         else
         {
@@ -146,14 +143,12 @@ public:
     else
     {
       // If this is a non-resizable vector type
-      MeasurementVectorType     m3;
-      MeasurementVectorSizeType defaultLength = NumericTraits<MeasurementVectorType>::GetLength(m3);
+      MeasurementVectorSizeType defaultLength = NumericTraits<MeasurementVectorType>::GetLength({});
       // and the new length is different from the default one, then throw an
       // exception
       if (defaultLength != s)
       {
-        itkExceptionMacro("Attempting to change the measurement \
-                           vector size of a non-resizable vector type");
+        itkExceptionMacro("Attempting to change the measurement vector size of a non-resizable vector type");
       }
     }
   }

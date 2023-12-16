@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,8 +17,6 @@
  *=========================================================================*/
 #ifndef itkTimeVaryingVelocityFieldIntegrationImageFilter_hxx
 #define itkTimeVaryingVelocityFieldIntegrationImageFilter_hxx
-
-#include "itkTimeVaryingVelocityFieldIntegrationImageFilter.h"
 
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkVectorLinearInterpolateImageFunction.h"
@@ -101,13 +99,13 @@ TimeVaryingVelocityFieldIntegrationImageFilter<TTimeVaryingVelocityField,
   const InputRegionType      requestedRegion = input->GetRequestedRegion();
   const InputSizeType        requestedSize = requestedRegion.GetSize();
 
-  for (unsigned int i = 0; i < OutputImageDimension; i++)
+  for (unsigned int i = 0; i < OutputImageDimension; ++i)
   {
     size[i] = requestedSize[i];
     spacing[i] = inputSpacing[i];
     origin[i] = inputOrigin[i];
 
-    for (unsigned int j = 0; j < OutputImageDimension; j++)
+    for (unsigned int j = 0; j < OutputImageDimension; ++j)
     {
       direction[i][j] = inputDirection[i][j];
     }
@@ -137,13 +135,9 @@ void
 TimeVaryingVelocityFieldIntegrationImageFilter<TTimeVaryingVelocityField, TDisplacementField>::
   DynamicThreadedGenerateData(const OutputRegionType & region)
 {
-  if (Math::ExactlyEquals(this->m_LowerTimeBound, this->m_UpperTimeBound))
+  if (Math::ExactlyEquals(this->m_LowerTimeBound, this->m_UpperTimeBound) || this->m_NumberOfIntegrationSteps == 0)
   {
-    return;
-  }
-
-  if (this->m_NumberOfIntegrationSteps == 0)
-  {
+    this->GetOutput()->FillBuffer(itk::NumericTraits<typename DisplacementFieldType::PixelType>::Zero);
     return;
   }
 
@@ -176,116 +170,75 @@ TimeVaryingVelocityFieldIntegrationImageFilter<TTimeVaryingVelocityField, TDispl
 
   // Initial conditions
 
-  PointType startingSpatialPoint = initialSpatialPoint;
+  VectorType displacement = zeroVector;
   if (!this->m_InitialDiffeomorphism.IsNull())
   {
-    if (this->m_DisplacementFieldInterpolator->IsInsideBuffer(startingSpatialPoint))
+    if (this->m_DisplacementFieldInterpolator->IsInsideBuffer(initialSpatialPoint))
     {
-      startingSpatialPoint += this->m_DisplacementFieldInterpolator->Evaluate(startingSpatialPoint);
+      displacement = this->m_DisplacementFieldInterpolator->Evaluate(initialSpatialPoint);
     }
   }
 
-  // Perform the integration
-  // Need to know how to map the time dimension of the input image to the
-  // assumed domain of [0,1].
+  // Perform the integration.
+  // With TimeBoundsAsRates On, we need to map the time dimension of the input image to the
+  // normalized domain of [0,1].
 
-
-  typename TimeVaryingVelocityFieldType::PointType spaceTimeOrigin = inputField->GetOrigin();
-
-  using RegionType = typename TimeVaryingVelocityFieldType::RegionType;
-
-  RegionType region = inputField->GetLargestPossibleRegion();
-
-  typename RegionType::IndexType lastIndex = region.GetIndex();
-  typename RegionType::SizeType  size = region.GetSize();
-  for (unsigned d = 0; d < InputImageDimension; d++)
+  RealType timeOrigin = 0.;
+  RealType timeScale = 1.;
+  if (m_TimeBoundsAsRates)
   {
-    lastIndex[d] += (size[d] - 1);
+    typename TimeVaryingVelocityFieldType::PointType spaceTimeOrigin = inputField->GetOrigin();
+
+    using RegionType = typename TimeVaryingVelocityFieldType::RegionType;
+    RegionType region = inputField->GetLargestPossibleRegion();
+
+    typename RegionType::IndexType lastIndex = region.GetIndex();
+    typename RegionType::SizeType  size = region.GetSize();
+    for (unsigned int d = 0; d < InputImageDimension; ++d)
+    {
+      lastIndex[d] += (size[d] - 1);
+    }
+
+    typename TimeVaryingVelocityFieldType::PointType spaceTimeEnd;
+    inputField->TransformIndexToPhysicalPoint(lastIndex, spaceTimeEnd);
+
+    timeOrigin = spaceTimeOrigin[InputImageDimension - 1];
+    const RealType timeEnd = spaceTimeEnd[InputImageDimension - 1];
+    timeScale = timeEnd - timeOrigin;
   }
 
-  typename TimeVaryingVelocityFieldType::PointType spaceTimeEnd;
-  typename TimeVaryingVelocityFieldType::PointType pointIn2;
-  typename TimeVaryingVelocityFieldType::PointType pointIn3;
-  inputField->TransformIndexToPhysicalPoint(lastIndex, spaceTimeEnd);
+  RealType timePointInImage = timeOrigin + this->m_LowerTimeBound * timeScale;
 
   // Calculate the delta time used for integration
-  const RealType deltaTime = itk::Math::abs(this->m_UpperTimeBound - this->m_LowerTimeBound) /
-                             static_cast<RealType>(this->m_NumberOfIntegrationSteps);
+  const RealType deltaTime =
+    (this->m_UpperTimeBound - this->m_LowerTimeBound) / static_cast<RealType>(this->m_NumberOfIntegrationSteps);
+  const RealType deltaTimeInImage = timeScale * deltaTime;
 
-  if (deltaTime == 0.0)
-  {
-    return zeroVector;
-  }
-
-  const RealType timeOrigin = spaceTimeOrigin[InputImageDimension - 1];
-  const RealType timeEnd = spaceTimeEnd[InputImageDimension - 1];
-  const RealType timeSpan = timeEnd - timeOrigin;
-  RealType       timeSign = 1.0;
-  if (this->m_UpperTimeBound < this->m_LowerTimeBound)
-  {
-    timeSign = -1.0;
-  }
-
-  VectorType displacement = zeroVector;
-
-  RealType timePoint = timeOrigin + this->m_LowerTimeBound * timeSpan;
-
-  RealType intervalTimePoint = (timePoint + 1.0) / static_cast<RealType>(this->m_NumberOfTimePoints);
-
-  /** Windows not registering + operation so use a loop explicitly */
-  PointType spatialPoint = startingSpatialPoint;
-  for (unsigned int d = 0; d < OutputImageDimension; d++)
-  {
-    spatialPoint[d] += displacement[d];
-  }
-
-  for (unsigned int n = 0; n < this->m_NumberOfIntegrationSteps; n++)
+  for (unsigned int n = 0; n < this->m_NumberOfIntegrationSteps; ++n)
   {
     typename TimeVaryingVelocityFieldType::PointType x1;
     typename TimeVaryingVelocityFieldType::PointType x2;
     typename TimeVaryingVelocityFieldType::PointType x3;
     typename TimeVaryingVelocityFieldType::PointType x4;
 
-    RealType intervalTimePointMinusDeltaTime = intervalTimePoint - timeSign * deltaTime;
-    RealType intervalTimePointMinusHalfDeltaTime = intervalTimePoint - timeSign * deltaTime * 0.5;
-    if (intervalTimePointMinusHalfDeltaTime < 0.0)
+    for (unsigned int d = 0; d < OutputImageDimension; ++d)
     {
-      intervalTimePointMinusHalfDeltaTime = 0.0;
-    }
-    if (intervalTimePointMinusHalfDeltaTime > 1.0)
-    {
-      intervalTimePointMinusHalfDeltaTime = 1.0;
-    }
-    if (intervalTimePointMinusDeltaTime < 0.0)
-    {
-      intervalTimePointMinusDeltaTime = 0.0;
-    }
-    if (intervalTimePointMinusDeltaTime > 1.0)
-    {
-      intervalTimePointMinusDeltaTime = 1.0;
+      x1[d] = initialSpatialPoint[d] + displacement[d];
+      x2[d] = x1[d];
+      x3[d] = x1[d];
+      x4[d] = x1[d];
     }
 
-    for (unsigned int d = 0; d < OutputImageDimension; d++)
-    {
-      x1[d] = spatialPoint[d] + displacement[d];
-      x2[d] = spatialPoint[d] + displacement[d];
-      x3[d] = spatialPoint[d] + displacement[d];
-      x4[d] = spatialPoint[d] + displacement[d];
-      pointIn2[d] = spatialPoint[d] + displacement[d];
-    }
-
-    x1[OutputImageDimension] = intervalTimePointMinusDeltaTime * static_cast<RealType>(this->m_NumberOfTimePoints - 1);
-    x2[OutputImageDimension] =
-      intervalTimePointMinusHalfDeltaTime * static_cast<RealType>(this->m_NumberOfTimePoints - 1);
-    x3[OutputImageDimension] =
-      intervalTimePointMinusHalfDeltaTime * static_cast<RealType>(this->m_NumberOfTimePoints - 1);
-    x4[OutputImageDimension] = intervalTimePoint * static_cast<RealType>(this->m_NumberOfTimePoints - 1);
+    x1[OutputImageDimension] = timePointInImage;
+    x2[OutputImageDimension] = timePointInImage + 0.5 * deltaTimeInImage;
+    x3[OutputImageDimension] = timePointInImage + 0.5 * deltaTimeInImage;
+    x4[OutputImageDimension] = timePointInImage + deltaTimeInImage;
 
     VectorType f1 = zeroVector;
     if (this->m_VelocityFieldInterpolator->IsInsideBuffer(x1))
     {
       f1 = this->m_VelocityFieldInterpolator->Evaluate(x1);
-      for (unsigned int jj = 0; jj < OutputImageDimension; jj++)
+      for (unsigned int jj = 0; jj < OutputImageDimension; ++jj)
       {
         x2[jj] += f1[jj] * deltaTime * 0.5;
       }
@@ -295,7 +248,7 @@ TimeVaryingVelocityFieldIntegrationImageFilter<TTimeVaryingVelocityField, TDispl
     if (this->m_VelocityFieldInterpolator->IsInsideBuffer(x2))
     {
       f2 = this->m_VelocityFieldInterpolator->Evaluate(x2);
-      for (unsigned int jj = 0; jj < OutputImageDimension; jj++)
+      for (unsigned int jj = 0; jj < OutputImageDimension; ++jj)
       {
         x3[jj] += f2[jj] * deltaTime * 0.5;
       }
@@ -305,7 +258,7 @@ TimeVaryingVelocityFieldIntegrationImageFilter<TTimeVaryingVelocityField, TDispl
     if (this->m_VelocityFieldInterpolator->IsInsideBuffer(x3))
     {
       f3 = this->m_VelocityFieldInterpolator->Evaluate(x3);
-      for (unsigned int jj = 0; jj < OutputImageDimension; jj++)
+      for (unsigned int jj = 0; jj < OutputImageDimension; ++jj)
       {
         x4[jj] += f3[jj] * deltaTime;
       }
@@ -317,14 +270,13 @@ TimeVaryingVelocityFieldIntegrationImageFilter<TTimeVaryingVelocityField, TDispl
       f4 = this->m_VelocityFieldInterpolator->Evaluate(x4);
     }
 
-    for (unsigned int jj = 0; jj < OutputImageDimension; jj++)
+    for (unsigned int jj = 0; jj < OutputImageDimension; ++jj)
     {
-      pointIn3[jj] = pointIn2[jj] + timeSign * deltaTime / 6.0 * (f1[jj] + 2.0 * f2[jj] + 2.0 * f3[jj] + f4[jj]);
-      displacement[jj] = pointIn3[jj] - startingSpatialPoint[jj];
+      x1[jj] += deltaTime / 6.0 * (f1[jj] + 2.0 * f2[jj] + 2.0 * f3[jj] + f4[jj]);
+      displacement[jj] = x1[jj] - initialSpatialPoint[jj];
     }
-    pointIn3[OutputImageDimension] = intervalTimePoint * static_cast<RealType>(this->m_NumberOfTimePoints - 1);
 
-    intervalTimePoint += deltaTime * timeSign;
+    timePointInImage += deltaTimeInImage;
   }
   return displacement;
 }
@@ -341,12 +293,8 @@ TimeVaryingVelocityFieldIntegrationImageFilter<TTimeVaryingVelocityField, TDispl
   os << indent << "LowerTimeBound: " << this->m_LowerTimeBound << std::endl;
   os << indent << "UpperTimeBound: " << this->m_UpperTimeBound << std::endl;
   os << indent << "NumberOfIntegrationSteps: " << this->m_NumberOfIntegrationSteps << std::endl;
-
-  if (!this->m_InitialDiffeomorphism.IsNull())
-  {
-    os << indent << "InitialDiffeomorphism: " << this->m_InitialDiffeomorphism << std::endl;
-    os << indent << "DisplacementFieldInterpolator: " << this->m_DisplacementFieldInterpolator << std::endl;
-  }
+  itkPrintSelfObjectMacro(InitialDiffeomorphism);
+  itkPrintSelfObjectMacro(DisplacementFieldInterpolator);
 }
 
 } // end namespace itk

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@
 
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkImageRegionConstIterator.h"
+#include "itkTestingMacros.h"
 
 
 int
@@ -29,7 +30,7 @@ itkFastMarchingImageFilterRealWithNumberOfElementsTest(int, char *[])
 {
   // create a fastmarching object
   using PixelType = float;
-  constexpr unsigned Dimension = 2;
+  constexpr unsigned int Dimension = 2;
 
   using FloatImageType = itk::Image<PixelType, Dimension>;
 
@@ -37,10 +38,10 @@ itkFastMarchingImageFilterRealWithNumberOfElementsTest(int, char *[])
 
   using FastMarchingType = itk::FastMarchingImageFilterBase<FloatImageType, FloatImageType>;
 
-  CriterionType::Pointer criterion = CriterionType::New();
+  auto criterion = CriterionType::New();
   criterion->SetTargetNumberOfElements(100);
 
-  FastMarchingType::Pointer marcher = FastMarchingType::New();
+  auto marcher = FastMarchingType::New();
   marcher->SetStoppingCriterion(criterion);
 
   using NodePairType = FastMarchingType::NodePairType;
@@ -48,7 +49,7 @@ itkFastMarchingImageFilterRealWithNumberOfElementsTest(int, char *[])
   using NodePairContainerType = FastMarchingType::NodePairContainerType;
 
   // setup alive points
-  NodePairContainerType::Pointer alive = NodePairContainerType::New();
+  auto alive = NodePairContainerType::New();
 
   NodePairType node_pair;
 
@@ -70,7 +71,7 @@ itkFastMarchingImageFilterRealWithNumberOfElementsTest(int, char *[])
   marcher->SetAlivePoints(alive);
 
   // setup trial points
-  NodePairContainerType::Pointer trial = NodePairContainerType::New();
+  auto trial = NodePairContainerType::New();
   node_pair.SetValue(1.0);
 
   index.Fill(0);
@@ -107,7 +108,7 @@ itkFastMarchingImageFilterRealWithNumberOfElementsTest(int, char *[])
   marcher->SetOutputSize(size);
 
   // setup a speed image of ones
-  FloatImageType::Pointer    speedImage = FloatImageType::New();
+  auto                       speedImage = FloatImageType::New();
   FloatImageType::RegionType region;
   region.SetSize(size);
   speedImage->SetLargestPossibleRegion(region);
@@ -123,16 +124,8 @@ itkFastMarchingImageFilterRealWithNumberOfElementsTest(int, char *[])
 
   marcher->SetInput(speedImage);
 
-  try
-  {
-    // update the marcher
-    marcher->Update();
-  }
-  catch (const itk::ExceptionObject & excep)
-  {
-    std::cerr << excep << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(marcher->Update());
+
 
   using OutputPixelType = char;
 
@@ -140,7 +133,7 @@ itkFastMarchingImageFilterRealWithNumberOfElementsTest(int, char *[])
 
   using ThresholdingFilterType = itk::BinaryThresholdImageFilter<FloatImageType, OutputImageType>;
 
-  ThresholdingFilterType::Pointer thresholder = ThresholdingFilterType::New();
+  auto thresholder = ThresholdingFilterType::New();
 
   thresholder->SetLowerThreshold(0.0);
   thresholder->SetUpperThreshold(100.0);
@@ -148,16 +141,8 @@ itkFastMarchingImageFilterRealWithNumberOfElementsTest(int, char *[])
   thresholder->SetInsideValue(1);
   thresholder->SetInput(marcher->GetOutput());
 
-  try
-  {
-    thresholder->Update();
-  }
-  catch (const itk::ExceptionObject & excep)
-  {
-    std::cerr << "Exception caught !" << std::endl;
-    std::cerr << excep << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(thresholder->Update());
+
 
   OutputImageType::Pointer output = thresholder->GetOutput();
 

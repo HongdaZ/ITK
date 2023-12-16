@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,16 +48,16 @@ namespace itk
  *
  * \ingroup ITKDisplacementField
  */
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 class ITK_TEMPLATE_EXPORT BSplineSmoothingOnUpdateDisplacementFieldTransform
-  : public DisplacementFieldTransform<TParametersValueType, NDimensions>
+  : public DisplacementFieldTransform<TParametersValueType, VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineSmoothingOnUpdateDisplacementFieldTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(BSplineSmoothingOnUpdateDisplacementFieldTransform);
 
   /** Standard class type aliases. */
   using Self = BSplineSmoothingOnUpdateDisplacementFieldTransform;
-  using Superclass = DisplacementFieldTransform<TParametersValueType, NDimensions>;
+  using Superclass = DisplacementFieldTransform<TParametersValueType, VDimension>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
@@ -68,17 +68,17 @@ public:
   itkNewMacro(Self);
 
   /** Dimension of the domain spaces. */
-  static constexpr unsigned int Dimension = NDimensions;
+  static constexpr unsigned int Dimension = VDimension;
 
   /** Types from superclass */
-  using ScalarType = typename Superclass::ScalarType;
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::ScalarType;
+  using typename Superclass::DerivativeType;
   using DerivativeValueType = typename DerivativeType::ValueType;
-  using DisplacementFieldType = typename Superclass::DisplacementFieldType;
-  using DisplacementFieldPointer = typename Superclass::DisplacementFieldPointer;
-  using DisplacementFieldConstPointer = typename Superclass::DisplacementFieldConstPointer;
+  using typename Superclass::DisplacementFieldType;
+  using typename Superclass::DisplacementFieldPointer;
+  using typename Superclass::DisplacementFieldConstPointer;
 
-  using TransformPointer = typename Transform<TParametersValueType, NDimensions, NDimensions>::Pointer;
+  using TransformPointer = typename Transform<TParametersValueType, VDimension, VDimension>::Pointer;
 
   /**
    * type alias for projecting the input displacement field onto a

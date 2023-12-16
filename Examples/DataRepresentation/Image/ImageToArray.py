@@ -1,4 +1,4 @@
-#==========================================================================
+# ==========================================================================
 #
 #   Copyright NumFOCUS
 #
@@ -6,7 +6,7 @@
 #   you may not use this file except in compliance with the License.
 #   You may obtain a copy of the License at
 #
-#          http://www.apache.org/licenses/LICENSE-2.0.txt
+#          https://www.apache.org/licenses/LICENSE-2.0.txt
 #
 #   Unless required by applicable law or agreed to in writing, software
 #   distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-#==========================================================================*/
+# ==========================================================================*/
 
 from InsightToolkit import *
 from numarray import *
@@ -24,22 +24,20 @@ reader = itkImageFileReaderUC2_New()
 
 connector = itkPyBufferUC2_New()
 
-reader.SetFileName( argv[1] )
+reader.SetFileName(argv[1])
 
 reader.Update()
 
-print "ready to convert image into array"
+print("ready to convert image into array")
 
-buffer = connector.GetArrayFromImage( reader.GetOutput() )
+buffer = connector.GetArrayFromImage(reader.GetOutput())
 
 writer = itkImageFileWriterUC2_New()
 
-writer.SetFileName( argv[2] )
+writer.SetFileName(argv[2])
 
-print "ready to convert array into image"
+print("ready to convert array into image")
 
-writer.SetInput( connector.GetImageFromArray( buffer ) )
+writer.SetInput(connector.GetImageFromArray(buffer))
 
 writer.Update()
-
-

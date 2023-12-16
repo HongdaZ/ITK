@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class MeshSpatialObject
+ * \class MeshSpatialObject
  * \brief Implementation of an Mesh as spatial object.
  *
  * This class combines functionalities from a spatial object,
@@ -49,9 +49,9 @@ public:
 
   using MeshType = TMesh;
   using MeshPointer = typename MeshType::Pointer;
-  using TransformType = typename Superclass::TransformType;
-  using PointType = typename Superclass::PointType;
-  using BoundingBoxType = typename Superclass::BoundingBoxType;
+  using typename Superclass::TransformType;
+  using typename Superclass::PointType;
+  using typename Superclass::BoundingBoxType;
 
   using PointContainerType = VectorContainer<IdentifierType, PointType>;
   using PointContainerPointer = typename PointContainerType::Pointer;
@@ -69,7 +69,7 @@ public:
 
   /** Set the Mesh. */
   void
-  SetMesh(MeshType * Mesh);
+  SetMesh(MeshType * mesh);
 
   /** Get a pointer to the Mesh currently attached to the object. */
   MeshType *
@@ -103,7 +103,7 @@ public:
   itkGetConstMacro(IsInsidePrecisionInObjectSpace, double);
 
 protected:
-  /** Compute the boundaries of the iamge spatial object. */
+  /** Compute the boundaries of the image spatial object. */
   void
   ComputeMyBoundingBox() override;
 
@@ -123,7 +123,8 @@ private:
 #endif
   double m_IsInsidePrecisionInObjectSpace;
 };
-} // end of namespace itk
+
+} // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkMeshSpatialObject.hxx"

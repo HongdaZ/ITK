@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,7 +53,7 @@ template <typename TImage>
 class ITK_TEMPLATE_EXPORT FlipImageFilter : public ImageToImageFilter<TImage, TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FlipImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(FlipImageFilter);
 
   /** Standard class type aliases. */
   using Self = FlipImageFilter;
@@ -71,10 +71,10 @@ public:
   static constexpr unsigned int ImageDimension = TImage::ImageDimension;
 
   /** Inherited types */
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::InputImagePointer;
+  using typename Superclass::InputImageConstPointer;
+  using typename Superclass::OutputImagePointer;
+  using typename Superclass::OutputImageRegionType;
 
   /** Index related types */
   using IndexType = typename TImage::IndexType;

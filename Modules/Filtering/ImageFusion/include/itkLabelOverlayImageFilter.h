@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class LabelOverlayImageFilter
+ * \class LabelOverlayImageFilter
  * \brief Apply a colormap to a label image and put it on top of the
  *  input image
  *
@@ -40,7 +40,7 @@ namespace itk
  * INRA de Jouy-en-Josas, France.
  *
  * This class was contributed to the Insight Journal
- *     https://hdl.handle.net/1926/172
+ * https://www.insight-journal.org/browse/publication/79
  *
  * \sa LabelToRGBImageFilter
  * \sa LabelMapOverlayImageFilter, LabelOverlayFunctor
@@ -57,7 +57,7 @@ class ITK_TEMPLATE_EXPORT LabelOverlayImageFilter
   : public BinaryGeneratorImageFilter<TInputImage, TLabelImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LabelOverlayImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(LabelOverlayImageFilter);
 
   /** Standard class type aliases. */
   using Self = LabelOverlayImageFilter;

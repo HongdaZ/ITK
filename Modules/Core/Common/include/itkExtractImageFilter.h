@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -79,7 +79,7 @@ extern ITKCommon_EXPORT std::ostream &
  * starting index value provided in the ExtractRegion parameter.  If you are
  * looking for a filter that will re-compute the origin of the output image,
  * and provide an output image region whose index is set to zeros, then you may
- * want to use the RegionOfInterestImageFilter.  The output spacing is is
+ * want to use the RegionOfInterestImageFilter.  The output spacing is
  * simply the collapsed version of the input spacing.
  *
  * Determining the direction of the collapsed output image from an larger
@@ -118,7 +118,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT ExtractImageFilter : public InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExtractImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ExtractImageFilter);
 
   /** Standard class type aliases. */
   using Self = ExtractImageFilter;

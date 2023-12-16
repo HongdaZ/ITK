@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkVotingBinaryHoleFillingImageFilter_hxx
 #define itkVotingBinaryHoleFillingImageFilter_hxx
-#include "itkVotingBinaryHoleFillingImageFilter.h"
 
 #include "itkConstNeighborhoodIterator.h"
 #include "itkNeighborhoodInnerProduct.h"
@@ -47,7 +46,7 @@ VotingBinaryHoleFillingImageFilter<TInputImage, TOutputImage>::BeforeThreadedGen
 
   InputSizeType radius = this->GetRadius();
 
-  for (unsigned int i = 0; i < InputImageDimension; i++)
+  for (unsigned int i = 0; i < InputImageDimension; ++i)
   {
     threshold *= (2 * radius[i] + 1);
   }
@@ -63,9 +62,9 @@ VotingBinaryHoleFillingImageFilter<TInputImage, TOutputImage>::BeforeThreadedGen
 
   this->m_NumberOfPixelsChanged = 0;
 
-  unsigned int numberOfThreads = this->GetNumberOfWorkUnits();
-  this->m_Count.SetSize(numberOfThreads);
-  for (unsigned int i = 0; i < numberOfThreads; i++)
+  unsigned int numberOfWorkUnits = this->GetNumberOfWorkUnits();
+  this->m_Count.SetSize(numberOfWorkUnits);
+  for (unsigned int i = 0; i < numberOfWorkUnits; ++i)
   {
     this->m_Count[i] = 0;
   }
@@ -97,7 +96,7 @@ VotingBinaryHoleFillingImageFilter<TInputImage, TOutputImage>::ThreadedGenerateD
 
   const InputPixelType backgroundValue = this->GetBackgroundValue();
   const InputPixelType foregroundValue = this->GetForegroundValue();
-  const auto           birthThreshold = (unsigned int)(this->GetBirthThreshold());
+  const auto           birthThreshold = static_cast<unsigned int>(this->GetBirthThreshold());
 
   unsigned int numberOfPixelsChanged = 0;
 
@@ -125,14 +124,14 @@ VotingBinaryHoleFillingImageFilter<TInputImage, TOutputImage>::ThreadedGenerateD
           InputPixelType value = bit.GetPixel(i);
           if (value == foregroundValue)
           {
-            count++;
+            ++count;
           }
         }
 
         if (count >= birthThreshold)
         {
           it.Set(static_cast<OutputPixelType>(foregroundValue));
-          numberOfPixelsChanged++;
+          ++numberOfPixelsChanged;
         }
         else
         {
@@ -157,9 +156,9 @@ VotingBinaryHoleFillingImageFilter<TInputImage, TOutputImage>::AfterThreadedGene
 {
   this->m_NumberOfPixelsChanged = NumericTraits<SizeValueType>::ZeroValue();
 
-  unsigned int numberOfThreads = this->GetNumberOfWorkUnits();
-  this->m_Count.SetSize(numberOfThreads);
-  for (unsigned int t = 0; t < numberOfThreads; t++)
+  unsigned int numberOfWorkUnits = this->GetNumberOfWorkUnits();
+  this->m_Count.SetSize(numberOfWorkUnits);
+  for (unsigned int t = 0; t < numberOfWorkUnits; ++t)
   {
     this->m_NumberOfPixelsChanged += this->m_Count[t];
   }

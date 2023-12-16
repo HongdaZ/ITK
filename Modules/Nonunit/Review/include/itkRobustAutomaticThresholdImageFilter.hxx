@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkRobustAutomaticThresholdImageFilter_hxx
 #define itkRobustAutomaticThresholdImageFilter_hxx
 
-#include "itkRobustAutomaticThresholdImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkProgressAccumulator.h"
 
@@ -38,11 +37,11 @@ template <typename TInputImage, typename TGradientImage, typename TOutputImage>
 void
 RobustAutomaticThresholdImageFilter<TInputImage, TGradientImage, TOutputImage>::GenerateData()
 {
-  typename ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
 
   // Compute the Threshold for the input image
-  typename CalculatorType::Pointer thresholdCalculator = CalculatorType::New();
+  auto thresholdCalculator = CalculatorType::New();
   thresholdCalculator->SetInput(this->GetInput());
   thresholdCalculator->SetGradient(this->GetGradientImage());
   thresholdCalculator->SetPow(m_Pow);

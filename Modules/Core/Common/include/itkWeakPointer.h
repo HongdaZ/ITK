@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,22 +47,20 @@ public:
   /** Extract information from template parameter. */
   using ObjectType = TObjectType;
 
-  /** Constructor.  */
-  WeakPointer() { m_Pointer = nullptr; }
+  /** Explicitly-defaulted default-constructor.
+   * \note The other five "special member functions" (copy-constructor,
+   * copy-assignment operator, move-constructor, move-assignment operator,
+   * and destructor) are defaulted implicitly, following the C++ "Rule of Zero".
+   */
+  WeakPointer() = default;
 
-  /** Copy constructor.  */
-  WeakPointer(const WeakPointer<ObjectType> & p) = default;
-
-  /** Move constructor */
-  WeakPointer(WeakPointer<ObjectType> && p) = default;
+  /** Constructor, converting from `nullptr`.  */
+  WeakPointer(std::nullptr_t) {}
 
   /** Constructor to pointer p.  */
   WeakPointer(ObjectType * p)
     : m_Pointer(p)
   {}
-
-  /** Destructor.  */
-  ~WeakPointer() = default;
 
   /** Overload operator ->.  */
   ObjectType * operator->() const { return m_Pointer; }
@@ -78,12 +76,14 @@ public:
     return (m_Pointer == (ObjectType *)r);
   }
 
+#ifndef ITK_EXPERIMENTAL_CXX20_REWRITTEN_UNEQUAL_OPERATOR
   template <typename R>
   bool
   operator!=(R r) const
   {
-    return (m_Pointer != (ObjectType *)r);
+    return !(this->operator==(r));
   }
+#endif
 
   /** Access function to pointer. */
   ObjectType *
@@ -134,22 +134,6 @@ public:
     return (void *)m_Pointer >= (void *)r.m_Pointer;
   }
 
-  /** Overload operator assignment.  */
-  // cppcheck-suppress operatorEqVarError
-  WeakPointer &
-  operator=(const WeakPointer & r) = default;
-
-  WeakPointer &
-  operator=(WeakPointer && r) = default;
-
-  /** Overload operator assignment.  */
-  WeakPointer &
-  operator=(ObjectType * r)
-  {
-    m_Pointer = r;
-    return *this;
-  }
-
   /** Function to print object pointed to.  */
   ObjectType *
   Print(std::ostream & os) const
@@ -161,14 +145,14 @@ public:
     else
     {
       // This prints the object pointed to by the pointer
-      (*m_Pointer).Print(os);
+      m_Pointer->Print(os);
     }
     return m_Pointer;
   }
 
 private:
   /** The pointer to the object referred to by this smart pointer. */
-  ObjectType * m_Pointer;
+  ObjectType * m_Pointer{ nullptr };
 };
 
 template <typename T>

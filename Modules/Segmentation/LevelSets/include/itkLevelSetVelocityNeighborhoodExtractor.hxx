@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkLevelSetVelocityNeighborhoodExtractor_hxx
 #define itkLevelSetVelocityNeighborhoodExtractor_hxx
 
-#include "itkLevelSetVelocityNeighborhoodExtractor.h"
 #include "itkMath.h"
 
 namespace itk
@@ -48,7 +47,7 @@ LevelSetVelocityNeighborhoodExtractor<TLevelSet, TAuxValue, VAuxDimension>::Prin
   Superclass::PrintSelf(os, indent);
   os << indent << "Input aux image: [";
   unsigned int j;
-  for (j = 0; j + 1 < VAuxDimension; j++)
+  for (j = 0; j + 1 < VAuxDimension; ++j)
   {
     os << m_AuxImage[j].GetPointer() << ", ";
   }
@@ -89,16 +88,16 @@ LevelSetVelocityNeighborhoodExtractor<TLevelSet, TAuxValue, VAuxDimension>::Calc
   AuxValueType       auxPixel;
   AuxValueVectorType auxVector;
 
-  for (unsigned int k = 0; k < VAuxDimension; k++)
+  for (unsigned int k = 0; k < VAuxDimension; ++k)
   {
     auxPixel = m_AuxImage[k]->GetPixel(index);
-    centerValue[k] = (double)auxPixel;
+    centerValue[k] = static_cast<double>(auxPixel);
   }
 
   // if distance is zero, insert point in inside container
   if (this->GetLastPointIsInside())
   {
-    for (unsigned int k = 0; k < VAuxDimension; k++)
+    for (unsigned int k = 0; k < VAuxDimension; ++k)
     {
       auxVector[k] = centerValue[k];
     }
@@ -112,7 +111,7 @@ LevelSetVelocityNeighborhoodExtractor<TLevelSet, TAuxValue, VAuxDimension>::Calc
   double                        numer[VAuxDimension];
   typename Superclass::NodeType neighNode;
 
-  for (unsigned int k = 0; k < VAuxDimension; k++)
+  for (unsigned int k = 0; k < VAuxDimension; ++k)
   {
     numer[k] = 0.0;
   }
@@ -125,7 +124,7 @@ LevelSetVelocityNeighborhoodExtractor<TLevelSet, TAuxValue, VAuxDimension>::Calc
   // of distance along the grid line to the zero set
   // crossing.
 
-  for (unsigned int j = 0; j < SetDimension; j++)
+  for (unsigned int j = 0; j < SetDimension; ++j)
   {
     neighNode = this->GetNodeUsedInCalculation(j);
     if (neighNode.GetValue() >= this->GetLargeValue())
@@ -133,15 +132,15 @@ LevelSetVelocityNeighborhoodExtractor<TLevelSet, TAuxValue, VAuxDimension>::Calc
       break;
     }
 
-    denom += 1.0 / itk::Math::sqr((double)neighNode.GetValue());
-    for (unsigned int k = 0; k < VAuxDimension; k++)
+    denom += 1.0 / itk::Math::sqr(static_cast<double>(neighNode.GetValue()));
+    for (unsigned int k = 0; k < VAuxDimension; ++k)
     {
       auxPixel = m_AuxImage[k]->GetPixel(neighNode.GetIndex());
-      numer[k] += (double)(auxPixel) / itk::Math::sqr((double)neighNode.GetValue());
+      numer[k] += static_cast<double>(auxPixel) / itk::Math::sqr(static_cast<double>(neighNode.GetValue()));
     }
   }
 
-  for (unsigned int k = 0; k < VAuxDimension; k++)
+  for (unsigned int k = 0; k < VAuxDimension; ++k)
   {
     numer[k] /= denom;
     auxVector[k] = numer[k];

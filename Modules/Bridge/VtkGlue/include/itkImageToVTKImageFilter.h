@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 {
 
 /**
- *\class ImageToVTKImageFilter
+ * \class ImageToVTKImageFilter
  * \brief Converts an ITK image into a VTK image and plugs a
  *  itk data pipeline to a VTK datapipeline.
  *
@@ -47,7 +47,7 @@ template <typename TInputImage>
 class ITK_TEMPLATE_EXPORT ImageToVTKImageFilter : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToVTKImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageToVTKImageFilter);
 
   /** Standard class type aliases. */
   using Self = ImageToVTKImageFilter;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,13 +22,13 @@
 namespace itk
 {
 
-ImageRegionSplitterDirection ::ImageRegionSplitterDirection()
+ImageRegionSplitterDirection::ImageRegionSplitterDirection()
 {
   this->m_Direction = 0;
 }
 
 void
-ImageRegionSplitterDirection ::PrintSelf(std::ostream & os, Indent indent) const
+ImageRegionSplitterDirection::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
@@ -36,14 +36,15 @@ ImageRegionSplitterDirection ::PrintSelf(std::ostream & os, Indent indent) const
 }
 
 unsigned int
-ImageRegionSplitterDirection ::GetNumberOfSplitsInternal(unsigned int         dim,
-                                                         const IndexValueType itkNotUsed(regionIndex)[],
-                                                         const SizeValueType  regionSize[],
-                                                         unsigned int         requestedNumber) const
+ImageRegionSplitterDirection::GetNumberOfSplitsInternal(unsigned int         dim,
+                                                        const IndexValueType itkNotUsed(regionIndex)[],
+                                                        const SizeValueType  regionSize[],
+                                                        unsigned int         requestedNumber) const
 {
+  requestedNumber = std::max(1u, requestedNumber);
   // split on the outermost dimension available
   int splitAxis = dim - 1;
-  while (regionSize[splitAxis] == 1 || splitAxis == (int)m_Direction)
+  while (regionSize[splitAxis] <= 1 || splitAxis == static_cast<int>(m_Direction))
   {
     --splitAxis;
     if (splitAxis < 0)
@@ -55,23 +56,23 @@ ImageRegionSplitterDirection ::GetNumberOfSplitsInternal(unsigned int         di
 
   // determine the actual number of pieces that will be generated
   const SizeValueType range = regionSize[splitAxis];
-  const auto          valuesPerPiece = Math::Ceil<unsigned int>(range / (double)requestedNumber);
-  const unsigned int  maxPieceUsed = Math::Ceil<unsigned int>(range / (double)valuesPerPiece) - 1;
+  const auto          valuesPerPiece = Math::Ceil<unsigned int>(range / static_cast<double>(requestedNumber));
+  const unsigned int  maxPieceUsed = Math::Ceil<unsigned int>(range / static_cast<double>(valuesPerPiece)) - 1;
 
   return maxPieceUsed + 1;
 }
 
 unsigned int
-ImageRegionSplitterDirection ::GetSplitInternal(unsigned int   dim,
-                                                unsigned int   i,
-                                                unsigned int   numberOfPieces,
-                                                IndexValueType regionIndex[],
-                                                SizeValueType  regionSize[]) const
+ImageRegionSplitterDirection::GetSplitInternal(unsigned int   dim,
+                                               unsigned int   i,
+                                               unsigned int   numberOfPieces,
+                                               IndexValueType regionIndex[],
+                                               SizeValueType  regionSize[]) const
 {
   // split on the outermost dimension available
   // and avoid the current dimension
   int splitAxis = dim - 1;
-  while (regionSize[splitAxis] == 1 || splitAxis == (int)m_Direction)
+  while (regionSize[splitAxis] <= 1 || splitAxis == static_cast<int>(m_Direction))
   {
     --splitAxis;
     if (splitAxis < 0)

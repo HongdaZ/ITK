@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class LinearInterpolateImageFunction
+ * \class LinearInterpolateImageFunction
  * \brief Linearly interpolate an image at specified positions.
  *
  * LinearInterpolateImageFunction linearly interpolates image intensity at
@@ -50,7 +50,7 @@ template <typename TInputImage, typename TCoordRep = double>
 class ITK_TEMPLATE_EXPORT LinearInterpolateImageFunction : public InterpolateImageFunction<TInputImage, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LinearInterpolateImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(LinearInterpolateImageFunction);
 
   /** Standard class type aliases. */
   using Self = LinearInterpolateImageFunction;
@@ -65,28 +65,28 @@ public:
   itkNewMacro(Self);
 
   /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
 
   /** InputPixelType type alias support */
-  using InputPixelType = typename Superclass::InputPixelType;
+  using typename Superclass::InputPixelType;
 
   /** RealType type alias support */
-  using RealType = typename Superclass::RealType;
+  using typename Superclass::RealType;
 
   /** Dimension underlying input image. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   /** Size type alias support */
-  using SizeType = typename Superclass::SizeType;
+  using typename Superclass::SizeType;
 
   /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
   using InternalComputationType = typename ContinuousIndexType::ValueType;
 
   /** Evaluate the function at a ContinuousIndex position
@@ -513,10 +513,9 @@ private:
                       VariableLengthVector<RealTypeScalarRealType> & tempZeros) const
   {
     // Variable length vector version to get the size of the pixel correct.
-    typename TInputImage::IndexType idx;
-    idx.Fill(0);
-    const typename TInputImage::PixelType & tempPixel = inputImagePtr->GetPixel(idx);
-    const unsigned int                      sizeOfVarLengthVector = tempPixel.GetSize();
+    constexpr typename TInputImage::IndexType idx = { { 0 } };
+    const typename TInputImage::PixelType &   tempPixel = inputImagePtr->GetPixel(idx);
+    const unsigned int                        sizeOfVarLengthVector = tempPixel.GetSize();
     tempZeros.SetSize(sizeOfVarLengthVector);
     tempZeros.Fill(NumericTraits<RealTypeScalarRealType>::ZeroValue());
   }

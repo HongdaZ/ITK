@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkImageAdaptor_hxx
 #define itkImageAdaptor_hxx
-#include "itkImageAdaptor.h"
 #include "itkProcessObject.h"
 
 namespace itk
@@ -125,16 +124,16 @@ ImageAdaptor<TImage, TAccessor>::PrintSelf(std::ostream & os, Indent indent) con
 
 //----------------------------------------------------------------------------
 template <typename TImage, typename TAccessor>
-const typename ImageAdaptor<TImage, TAccessor>::OffsetValueType *
-ImageAdaptor<TImage, TAccessor>::GetOffsetTable() const
+auto
+ImageAdaptor<TImage, TAccessor>::GetOffsetTable() const -> const OffsetValueType *
 {
   return m_Image->GetOffsetTable();
 }
 
 //----------------------------------------------------------------------------
 template <typename TImage, typename TAccessor>
-typename ImageAdaptor<TImage, TAccessor>::IndexType
-ImageAdaptor<TImage, TAccessor>::ComputeIndex(OffsetValueType offset) const
+auto
+ImageAdaptor<TImage, TAccessor>::ComputeIndex(OffsetValueType offset) const -> IndexType
 {
   return m_Image->ComputeIndex(offset);
 }
@@ -220,8 +219,8 @@ ImageAdaptor<TImage, TAccessor>::CopyInformation(const DataObject * data)
 
 //----------------------------------------------------------------------------
 template <typename TImage, typename TAccessor>
-const typename ImageAdaptor<TImage, TAccessor>::SpacingType &
-ImageAdaptor<TImage, TAccessor>::GetSpacing() const
+auto
+ImageAdaptor<TImage, TAccessor>::GetSpacing() const -> const SpacingType &
 {
   return m_Image->GetSpacing();
 }
@@ -282,8 +281,8 @@ ImageAdaptor<TImage, TAccessor>::SetOrigin(const float * origin /*[Self::ImageDi
 
 //----------------------------------------------------------------------------
 template <typename TImage, typename TAccessor>
-const typename ImageAdaptor<TImage, TAccessor>::PointType &
-ImageAdaptor<TImage, TAccessor>::GetOrigin() const
+auto
+ImageAdaptor<TImage, TAccessor>::GetOrigin() const -> const PointType &
 {
   return m_Image->GetOrigin();
 }
@@ -299,8 +298,8 @@ ImageAdaptor<TImage, TAccessor>::SetDirection(const DirectionType & direction)
 
 //----------------------------------------------------------------------------
 template <typename TImage, typename TAccessor>
-const typename ImageAdaptor<TImage, TAccessor>::DirectionType &
-ImageAdaptor<TImage, TAccessor>::GetDirection() const
+auto
+ImageAdaptor<TImage, TAccessor>::GetDirection() const -> const DirectionType &
 {
   return m_Image->GetDirection();
 }
@@ -320,16 +319,16 @@ ImageAdaptor<TImage, TAccessor>::SetImage(TImage * image)
 
 //----------------------------------------------------------------------------
 template <typename TImage, typename TAccessor>
-const typename ImageAdaptor<TImage, TAccessor>::InternalPixelType *
-ImageAdaptor<TImage, TAccessor>::GetBufferPointer() const
+auto
+ImageAdaptor<TImage, TAccessor>::GetBufferPointer() const -> const InternalPixelType *
 {
   return m_Image->GetBufferPointer();
 }
 
 //----------------------------------------------------------------------------
 template <typename TImage, typename TAccessor>
-typename ImageAdaptor<TImage, TAccessor>::InternalPixelType *
-ImageAdaptor<TImage, TAccessor>::GetBufferPointer()
+auto
+ImageAdaptor<TImage, TAccessor>::GetBufferPointer() -> InternalPixelType *
 {
   return m_Image->GetBufferPointer();
 }
@@ -371,8 +370,8 @@ ImageAdaptor<TImage, TAccessor>::SetBufferedRegion(const RegionType & region)
 
 //----------------------------------------------------------------------------
 template <typename TImage, typename TAccessor>
-const typename ImageAdaptor<TImage, TAccessor>::RegionType &
-ImageAdaptor<TImage, TAccessor>::GetBufferedRegion() const
+auto
+ImageAdaptor<TImage, TAccessor>::GetBufferedRegion() const -> const RegionType &
 {
   // delegation to internal image
   return m_Image->GetBufferedRegion();
@@ -392,8 +391,8 @@ ImageAdaptor<TImage, TAccessor>::SetLargestPossibleRegion(const RegionType & reg
 
 //----------------------------------------------------------------------------
 template <typename TImage, typename TAccessor>
-const typename ImageAdaptor<TImage, TAccessor>::RegionType &
-ImageAdaptor<TImage, TAccessor>::GetLargestPossibleRegion() const
+auto
+ImageAdaptor<TImage, TAccessor>::GetLargestPossibleRegion() const -> const RegionType &
 {
   // delegation to internal image
   return m_Image->GetLargestPossibleRegion();
@@ -437,8 +436,8 @@ ImageAdaptor<TImage, TAccessor>::VerifyRequestedRegion()
 
 //----------------------------------------------------------------------------
 template <typename TImage, typename TAccessor>
-const typename ImageAdaptor<TImage, TAccessor>::RegionType &
-ImageAdaptor<TImage, TAccessor>::GetRequestedRegion() const
+auto
+ImageAdaptor<TImage, TAccessor>::GetRequestedRegion() const -> const RegionType &
 {
   // delegation to internal image
   return m_Image->GetRequestedRegion();

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,10 +32,11 @@ namespace itk
  * \ingroup ITKQuadEdgeMeshFiltering
  */
 template <typename TInputMesh, typename TOutputMesh = TInputMesh>
-class DiscreteCurvatureQuadEdgeMeshFilter : public QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>
+class ITK_TEMPLATE_EXPORT DiscreteCurvatureQuadEdgeMeshFilter
+  : public QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DiscreteCurvatureQuadEdgeMeshFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(DiscreteCurvatureQuadEdgeMeshFilter);
 
   using Self = DiscreteCurvatureQuadEdgeMeshFilter;
   using Pointer = SmartPointer<Self>;
@@ -89,7 +90,7 @@ protected:
 
     OutputPointType p[3];
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; ++i)
     {
       p[i] = this->m_OutputMesh->GetPoint(id[i]);
     }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,29 +19,32 @@
 #include <iostream>
 #include "itkRealTimeStamp.h"
 #include "itkNumericTraits.h"
+#include "itkMath.h"
+#include "itkTestingMacros.h"
 
-#define CHECK_FOR_VALUE(a, b)                                                                                          \
-  {                                                                                                                    \
-    double eps = 4.0 * itk::NumericTraits<double>::epsilon();                                                          \
-    CLANG_PRAGMA_PUSH                                                                                                  \
-    CLANG_SUPPRESS_Wfloat_equal eps = (b == 0.0) ? eps : std::fabs(b * eps);                                           \
-    CLANG_PRAGMA_POP                                                                                                   \
-    if (std::fabs(a - b) > eps)                                                                                        \
-    {                                                                                                                  \
-      std::cerr << "Error in " #a << " expected " << b << " but got " << a << std::endl;                               \
-      return EXIT_FAILURE;                                                                                             \
-    }                                                                                                                  \
-  }
+#define CHECK_FOR_VALUE(a, b)                                                            \
+  {                                                                                      \
+    double eps = 4.0 * itk::NumericTraits<double>::epsilon();                            \
+    CLANG_PRAGMA_PUSH                                                                    \
+    CLANG_SUPPRESS_Wfloat_equal eps = (b == 0.0) ? eps : itk::Math::abs(b * eps);        \
+    CLANG_PRAGMA_POP                                                                     \
+    if (itk::Math::abs(a - b) > eps)                                                     \
+    {                                                                                    \
+      std::cerr << "Error in " #a << " expected " << b << " but got " << a << std::endl; \
+      return EXIT_FAILURE;                                                               \
+    }                                                                                    \
+  }                                                                                      \
+  ITK_MACROEND_NOOP_STATEMENT
 
-#define CHECK_FOR_BOOLEAN(x, expected)                                                                                 \
-  {                                                                                                                    \
-    if ((x) != expected)                                                                                               \
-    {                                                                                                                  \
-      std::cerr << "Error in " #x << std::endl;                                                                        \
-      return EXIT_FAILURE;                                                                                             \
-    }                                                                                                                  \
-  }
-
+#define CHECK_FOR_BOOLEAN(x, expected)          \
+  {                                             \
+    if ((x) != expected)                        \
+    {                                           \
+      std::cerr << "Error in " #x << std::endl; \
+      return EXIT_FAILURE;                      \
+    }                                           \
+  }                                             \
+  ITK_MACROEND_NOOP_STATEMENT
 
 int
 itkRealTimeStampTest(int, char *[])
@@ -60,11 +63,15 @@ itkRealTimeStampTest(int, char *[])
   CHECK_FOR_VALUE(timeInHours, 0.0);
   CHECK_FOR_VALUE(timeInDays, 0.0);
 
-  itk::RealTimeStamp    stamp1;
-  itk::RealTimeStamp    stamp2 = stamp0;
+  itk::RealTimeStamp stamp1;
+  itk::RealTimeStamp stamp2 = stamp0;
+
+  itk::RealTimeInterval minusOneSecond(-1, 0);
+  ITK_TRY_EXPECT_EXCEPTION(stamp2 += minusOneSecond);
+
   itk::RealTimeInterval oneSecond(1, 0);
 
-  for (unsigned int i = 0; i < 1000000L; i++)
+  for (unsigned int i = 0; i < 1000000L; ++i)
   {
     stamp2 += oneSecond;
   }
@@ -82,7 +89,7 @@ itkRealTimeStampTest(int, char *[])
 
   itk::RealTimeStamp stamp3 = stamp0;
 
-  for (unsigned int i = 0; i < 1000000L; i++)
+  for (unsigned int i = 0; i < 1000000L; ++i)
   {
     stamp3 += fiveMicroseconds;
   }
@@ -93,7 +100,7 @@ itkRealTimeStampTest(int, char *[])
 
   CHECK_FOR_VALUE(timeInSeconds, 5.0);
 
-  for (unsigned int i = 0; i < 1000000L; i++)
+  for (unsigned int i = 0; i < 1000000L; ++i)
   {
     stamp3 -= fiveMicroseconds;
   }
@@ -104,6 +111,7 @@ itkRealTimeStampTest(int, char *[])
 
   CHECK_FOR_VALUE(timeInSeconds, 0.0);
 
+  ITK_TRY_EXPECT_EXCEPTION(stamp3 += minusOneSecond);
 
   itk::RealTimeInterval timeSpan;
 

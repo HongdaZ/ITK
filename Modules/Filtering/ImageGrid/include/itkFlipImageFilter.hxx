@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkFlipImageFilter_hxx
 #define itkFlipImageFilter_hxx
 
-#include "itkFlipImageFilter.h"
 #include "itkImageScanlineIterator.h"
 #include "itkTotalProgressReporter.h"
 
@@ -62,7 +61,7 @@ FlipImageFilter<TImage>::GenerateOutputInformation()
 
   // Need the coordinate of the pixel that will become the first pixel
   // and need a matrix to model the flip
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     if (m_FlipAxes[j])
     {
@@ -95,7 +94,7 @@ FlipImageFilter<TImage>::GenerateOutputInformation()
   // Finally, flip about the origin if needed
   if (m_FlipAboutOrigin)
   {
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       if (m_FlipAxes[j])
       {
@@ -132,7 +131,7 @@ FlipImageFilter<TImage>::GenerateInputRequestedRegion()
 
   IndexType inputRequestedIndex(outputRequestedIndex);
 
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     if (m_FlipAxes[j])
     {
@@ -159,7 +158,7 @@ FlipImageFilter<TImage>::DynamicThreadedGenerateData(const OutputImageRegionType
 
   // Compute the input region the output region maps to
   typename TImage::RegionType inputReginForThread(outputRegionForThread);
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     if (m_FlipAxes[j])
     {
@@ -175,7 +174,7 @@ FlipImageFilter<TImage>::DynamicThreadedGenerateData(const OutputImageRegionType
   ImageScanlineConstIterator<TImage> inputIter(inputPtr, inputReginForThread);
 
   IndexValueType offset[ImageDimension];
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     if (m_FlipAxes[j])
     {

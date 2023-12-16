@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,14 +28,13 @@ namespace itk
 {
 
 /**
- *\class LabelMapToRGBImageFilter
+ * \class LabelMapToRGBImageFilter
  * \brief Convert a LabelMap to a colored image
  *
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/584  or
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  * \sa LabelToRGBImageFilter, LabelToRGBFunctor
  * \sa LabelMapOverlayImageFilter, LabelMapToBinaryImageFilter, LabelMapMaskImageFilter
@@ -46,7 +45,7 @@ template <typename TInputImage, typename TOutputImage = Image<RGBPixel<unsigned 
 class ITK_TEMPLATE_EXPORT LabelMapToRGBImageFilter : public LabelMapFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LabelMapToRGBImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(LabelMapToRGBImageFilter);
 
   /** Standard class type aliases. */
   using Self = LabelMapToRGBImageFilter;

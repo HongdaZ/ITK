@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkIterativeDeconvolutionImageFilter_hxx
 
 #include "itkCastImageFilter.h"
-#include "itkIterativeDeconvolutionImageFilter.h"
 
 namespace itk
 {
@@ -110,7 +109,7 @@ void
 IterativeDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>::GenerateData()
 {
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
 
   typename Superclass::InputImageConstPointer inputPtr = this->GetInput();

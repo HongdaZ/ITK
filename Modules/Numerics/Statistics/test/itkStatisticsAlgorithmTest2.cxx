@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ using SubsampleType = itk::Statistics::Subsample<SampleType>;
 
 constexpr unsigned int testDimension = 1;
 
-void resetData(::itk::Image<PixelType, 3>::Pointer image, std::vector<int> & refVector)
+void resetData(itk::Image<PixelType, 3>::Pointer image, std::vector<int> & refVector)
 {
   ImageType::IndexType index;
   ImageType::SizeType  size;
@@ -43,15 +43,15 @@ void resetData(::itk::Image<PixelType, 3>::Pointer image, std::vector<int> & ref
   PixelType     temp;
 
   // fill the image with random values
-  for (z = 0; z < size[2]; z++)
+  for (z = 0; z < size[2]; ++z)
   {
     index[2] = z;
     temp[2] = rand();
-    for (y = 0; y < size[1]; y++)
+    for (y = 0; y < size[1]; ++y)
     {
       index[1] = y;
       temp[1] = rand();
-      for (x = 0; x < size[0]; x++)
+      for (x = 0; x < size[0]; ++x)
       {
         index[0] = x;
         temp[0] = rand();
@@ -79,7 +79,7 @@ void resetData(::itk::Image<PixelType, 3>::Pointer image, std::vector<int> & ref
 }
 
 bool
-isSortedOrderCorrect(std::vector<int> & ref, ::itk::Statistics::Subsample<SampleType>::Pointer subsample)
+isSortedOrderCorrect(std::vector<int> & ref, itk::Statistics::Subsample<SampleType>::Pointer subsample)
 {
   bool                    ret = true;
   auto                    viter = ref.begin();
@@ -105,8 +105,8 @@ itkStatisticsAlgorithmTest2(int, char *[])
   bool        pass = true;
   std::string whereFail = "";
 
-  // creats an image and allocate memory
-  ImageType::Pointer image = ImageType::New();
+  // creates an image and allocate memory
+  auto image = ImageType::New();
 
   ImageType::SizeType size;
   size.Fill(5);
@@ -123,18 +123,18 @@ itkStatisticsAlgorithmTest2(int, char *[])
   image->Allocate();
 
   // creates an ImageToListSampleAdaptor object
-  SampleType::Pointer sample = SampleType::New();
+  auto sample = SampleType::New();
   sample->SetImage(image);
 
-  // creates a Subsample obeject using the ImageToListSampleAdaptor object
-  SubsampleType::Pointer subsample = SubsampleType::New();
+  // creates a Subsample object using the ImageToListSampleAdaptor object
+  auto subsample = SubsampleType::New();
   subsample->SetSample(sample);
 
   // each algorithm test will be compared with the sorted
   // refVector
   std::vector<int> refVector;
 
-  // creats a subsample with all instances in the image
+  // creates a subsample with all instances in the image
   subsample->InitializeWithAllInstances();
 
   // InsertSort algorithm test
@@ -159,7 +159,7 @@ itkStatisticsAlgorithmTest2(int, char *[])
     whereFail = "HeapSort";
   }
 
-  // IntospectiveSort algortihm test
+  // IntospectiveSort algorithm test
   resetData(image, refVector);
   itk::Statistics::Algorithm::IntrospectiveSort<SubsampleType>(subsample, testDimension, 0, subsample->Size(), 16);
   if (!isSortedOrderCorrect(refVector, subsample))

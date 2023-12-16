@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkGradientDescentOptimizerBasev4_hxx
 #define itkGradientDescentOptimizerBasev4_hxx
 
-#include "itkGradientDescentOptimizerBasev4.h"
 #include "itkGradientDescentOptimizerBasev4ModifyGradientByScalesThreader.h"
 #include "itkGradientDescentOptimizerBasev4ModifyGradientByLearningRateThreader.h"
 
@@ -89,8 +88,9 @@ GradientDescentOptimizerBasev4Template<TInternalComputationValueType>::PrintSelf
 
 //-------------------------------------------------------------------
 template <typename TInternalComputationValueType>
-const typename GradientDescentOptimizerBasev4Template<TInternalComputationValueType>::StopConditionReturnStringType
+auto
 GradientDescentOptimizerBasev4Template<TInternalComputationValueType>::GetStopConditionDescription() const
+  -> const StopConditionReturnStringType
 {
   return this->m_StopConditionDescription.str();
 }

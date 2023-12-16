@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 #include "itkObjectToObjectMultiMetricv4.h"
 #include "itkObjectToObjectOptimizerBase.h"
 #include "itkImageToImageMetricv4.h"
-#include "itkPointSetToPointSetMetricv4.h"
+#include "itkPointSetToPointSetMetricWithIndexv4.h"
 #include "itkShrinkImageFilter.h"
 #include "itkIdentityTransform.h"
 #include "itkTransformParametersAdaptorBase.h"
@@ -36,7 +36,7 @@
 
 namespace itk
 {
-/**\class ImageRegistrationMethodv4Enums
+/** \class ImageRegistrationMethodv4Enums
  *\brief Contains all enum classes for ImageRegistrationMethodv4 class.
  * \ingroup ITKRegistrationMethodsv4
  */
@@ -117,7 +117,7 @@ template <typename TFixedImage,
 class ITK_TEMPLATE_EXPORT ImageRegistrationMethodv4 : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageRegistrationMethodv4);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageRegistrationMethodv4);
 
   /** Standard class type aliases. */
   using Self = ImageRegistrationMethodv4;
@@ -173,7 +173,7 @@ public:
 
   using MultiMetricType = ObjectToObjectMultiMetricv4<ImageDimension, ImageDimension, VirtualImageType, RealType>;
   using ImageMetricType = ImageToImageMetricv4<FixedImageType, MovingImageType, VirtualImageType, RealType>;
-  using PointSetMetricType = PointSetToPointSetMetricv4<PointSetType, PointSetType, RealType>;
+  using PointSetMetricType = PointSetToPointSetMetricWithIndexv4<PointSetType, PointSetType, RealType>;
 
   using FixedImageMaskType = typename ImageMetricType::FixedImageMaskType;
   using FixedImageMaskConstPointer = typename FixedImageMaskType::ConstPointer;

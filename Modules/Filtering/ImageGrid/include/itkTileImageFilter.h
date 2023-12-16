@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class TileImageFilter
+ * \class TileImageFilter
  * \brief Tile multiple input images into a single output image.
  *
  * This filter will tile multiple images using a user-specified
@@ -52,7 +52,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT TileImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TileImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(TileImageFilter);
 
   /** Standard Self type alias */
   using Self = TileImageFilter;
@@ -87,7 +87,7 @@ public:
   static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
   static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
   /**
-   *\class TileInfo
+   * \class TileInfo
    * Define a tile structure
    * \ingroup ITKImageGrid
    */

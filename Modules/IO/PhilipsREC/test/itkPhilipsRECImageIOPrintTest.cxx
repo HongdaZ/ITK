@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ itkPhilipsRECImageIOPrintTest(int argc, char * argv[])
 
   using PhilipsRECImageIOType = itk::PhilipsRECImageIO;
 
-  PhilipsRECImageIOType::Pointer imageIO = PhilipsRECImageIOType::New();
+  auto imageIO = PhilipsRECImageIOType::New();
 
   if (!imageIO->CanReadFile(argv[1]))
   {
@@ -123,7 +123,7 @@ itkPhilipsRECImageIOPrintTest(int argc, char * argv[])
   std::cout << "PAR_MaxNumberOfCardiacPhases = " << tempInt << std::endl;
 
   PhilipsRECImageIOType::TriggerTimesContainerType::Pointer ptrToTimePoints = nullptr;
-  if (!itk::ExposeMetaData<PhilipsRECImageIOType::TriggerTimesContainerType ::Pointer>(
+  if (!itk::ExposeMetaData<PhilipsRECImageIOType::TriggerTimesContainerType::Pointer>(
         imageIO->GetMetaDataDictionary(), "PAR_TriggerTimes", ptrToTimePoints))
   {
     std::cerr << "Cannot read PAR_TriggerTimes" << std::endl;
@@ -150,7 +150,7 @@ itkPhilipsRECImageIOPrintTest(int argc, char * argv[])
   std::cout << "PAR_MaxNumberOfEchoes = " << tempInt << std::endl;
 
   PhilipsRECImageIOType::EchoTimesContainerType::Pointer ptrToEchoes = nullptr;
-  if (!itk::ExposeMetaData<PhilipsRECImageIOType::EchoTimesContainerType ::Pointer>(
+  if (!itk::ExposeMetaData<PhilipsRECImageIOType::EchoTimesContainerType::Pointer>(
         imageIO->GetMetaDataDictionary(), "PAR_EchoTimes", ptrToEchoes))
   {
     std::cerr << "Cannot read PAR_EchoTimes" << std::endl;
@@ -162,7 +162,7 @@ itkPhilipsRECImageIOPrintTest(int argc, char * argv[])
     return EXIT_FAILURE;
   }
   std::cout << "EchoTimes =";
-  for (PhilipsRECImageIOType::EchoTimesContainerType::ElementIdentifier iter = 0; iter < ptrToEchoes->Size(); iter++)
+  for (PhilipsRECImageIOType::EchoTimesContainerType::ElementIdentifier iter = 0; iter < ptrToEchoes->Size(); ++iter)
   {
     std::cout << " " << ptrToEchoes->ElementAt(iter);
   }
@@ -227,7 +227,7 @@ itkPhilipsRECImageIOPrintTest(int argc, char * argv[])
   std::cout << "PAR_ScanResolution = " << scanRes << std::endl;
 
   PhilipsRECImageIOType::RepetitionTimesContainerType::Pointer ptrToTR = nullptr;
-  if (!itk::ExposeMetaData<PhilipsRECImageIOType::RepetitionTimesContainerType ::Pointer>(
+  if (!itk::ExposeMetaData<PhilipsRECImageIOType::RepetitionTimesContainerType::Pointer>(
         imageIO->GetMetaDataDictionary(), "PAR_RepetitionTimes", ptrToTR))
   {
     std::cerr << "Cannot read PAR_RepetitionTimes" << std::endl;
@@ -239,7 +239,7 @@ itkPhilipsRECImageIOPrintTest(int argc, char * argv[])
     return EXIT_FAILURE;
   }
   std::cout << "RepetitionTimes =";
-  for (PhilipsRECImageIOType::RepetitionTimesContainerType::ElementIdentifier iter = 0; iter < ptrToTR->Size(); iter++)
+  for (PhilipsRECImageIOType::RepetitionTimesContainerType::ElementIdentifier iter = 0; iter < ptrToTR->Size(); ++iter)
   {
     std::cout << " " << ptrToTR->ElementAt(iter);
   }
@@ -386,7 +386,7 @@ itkPhilipsRECImageIOPrintTest(int argc, char * argv[])
   std::cout << "PAR_MaxNumberOfDiffusionValues = " << tempInt << std::endl;
 
   PhilipsRECImageIOType::GradientBvalueContainerType::Pointer ptrToBValues = nullptr;
-  if (!itk::ExposeMetaData<PhilipsRECImageIOType::GradientBvalueContainerType ::Pointer>(
+  if (!itk::ExposeMetaData<PhilipsRECImageIOType::GradientBvalueContainerType::Pointer>(
         imageIO->GetMetaDataDictionary(), "PAR_GradientBValues", ptrToBValues))
   {
     std::cerr << "Cannot read PAR_GradientBValues" << std::endl;
@@ -413,7 +413,7 @@ itkPhilipsRECImageIOPrintTest(int argc, char * argv[])
   std::cout << "PAR_MaxNumberOfGradientOrients = " << tempInt << std::endl;
 
   PhilipsRECImageIOType::GradientDirectionContainerType::Pointer ptrToGradValues = nullptr;
-  if (!itk::ExposeMetaData<PhilipsRECImageIOType::GradientDirectionContainerType ::Pointer>(
+  if (!itk::ExposeMetaData<PhilipsRECImageIOType::GradientDirectionContainerType::Pointer>(
         imageIO->GetMetaDataDictionary(), "PAR_GradientDirectionValues", ptrToGradValues))
   {
     std::cerr << "Cannot read PAR_GradientDirectionValues" << std::endl;
@@ -514,7 +514,7 @@ itkPhilipsRECImageIOPrintTest(int argc, char * argv[])
   std::cout << "PAR_NumberOfASLLabelTypes = " << tempInt << std::endl;
 
   PhilipsRECImageIOType::LabelTypesASLContainerType::Pointer ptrToASLLabelTypes = nullptr;
-  if (!itk::ExposeMetaData<PhilipsRECImageIOType::LabelTypesASLContainerType ::Pointer>(
+  if (!itk::ExposeMetaData<PhilipsRECImageIOType::LabelTypesASLContainerType::Pointer>(
         imageIO->GetMetaDataDictionary(), "PAR_ASLLabelTypes", ptrToASLLabelTypes))
   {
     std::cerr << "Cannot read PAR_ASLLabelTypes" << std::endl;

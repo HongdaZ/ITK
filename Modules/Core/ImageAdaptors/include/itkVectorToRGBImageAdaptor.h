@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class VectorToRGBImageAdaptor
+ * \class VectorToRGBImageAdaptor
  * \brief Presents an image of pixel type Vector as being and image of
  * RGBPixel type.
  *
@@ -37,7 +37,7 @@ class VectorToRGBImageAdaptor
   : public ImageAdaptor<TImage, Accessor::VectorToRGBPixelAccessor<typename TImage::PixelType::ValueType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorToRGBImageAdaptor);
+  ITK_DISALLOW_COPY_AND_MOVE(VectorToRGBImageAdaptor);
 
   /** Standard class type aliases. */
   using Self = VectorToRGBImageAdaptor;
@@ -54,9 +54,9 @@ public:
 
   /** PixelContainer type alias support Used to construct a container for
    * the pixel data. */
-  using PixelContainer = typename Superclass::PixelContainer;
-  using PixelContainerPointer = typename Superclass::PixelContainerPointer;
-  using PixelContainerConstPointer = typename Superclass::PixelContainerConstPointer;
+  using typename Superclass::PixelContainer;
+  using typename Superclass::PixelContainerPointer;
+  using typename Superclass::PixelContainerConstPointer;
 
 protected:
   VectorToRGBImageAdaptor() = default;

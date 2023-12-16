@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,10 @@
  *=========================================================================*/
 #ifndef itkEnableIf_h
 #define itkEnableIf_h
+
+#include "itkMacro.h"
+
+#if !defined(ITK_LEGACY_REMOVE)
 
 namespace itk
 {
@@ -31,7 +35,7 @@ namespace mpl
  * Enable if is a common C++ meta-programming technique for example
  * there is a boost implementation, for more information on its usage
  * please see:
- * http://www.boost.org/doc/libs/1_49_0/libs/utility/enable_if.html
+ * https://www.boost.org/doc/libs/1_49_0/libs/utility/enable_if.html
  *
  * This template enables specialization of a templated function based
  * on some traits or concepts. It is implemented with SFINAE.
@@ -158,5 +162,9 @@ using mpl::DisableIfC;
 
 /// \endcond
 } // namespace itk
+
+#else // ITK_LEGACY_REMOVE
+#  error Use C++ 11 std::enable_if directly
+#endif
 
 #endif // itkEnableIf_h

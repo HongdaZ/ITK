@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,8 +34,8 @@ namespace itk
  * and the type of the output image.
  *
  * This filter allows per-pixel operations to be specified in several
- * way:
- * - ITK traditional "Functor", with operator()
+ * ways:
+ * - traditional ITK "Functor", with operator()
  * - C++11 lambda functions, with closures
  * - C++ std::function
  * - C-style function pointers
@@ -56,7 +56,7 @@ template <typename TInputImage1, typename TInputImage2, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT BinaryGeneratorImageFilter : public InPlaceImageFilter<TInputImage1, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryGeneratorImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BinaryGeneratorImageFilter);
 
   /** Standard class type aliases. */
   using Self = BinaryGeneratorImageFilter;
@@ -105,7 +105,7 @@ public:
   virtual void
   SetConstant1(const Input1ImagePixelType & input1);
 
-  /** Get the constant value of the first operand. An exception is sent if
+  /** Get the constant value of the first operand. An exception is thrown if
    * the first operand is not a constant. */
   virtual const Input1ImagePixelType &
   GetConstant1() const;
@@ -133,7 +133,7 @@ public:
     return this->GetConstant2();
   }
 
-  /** Get the constant value of the second operand. An exception is sent if
+  /** Get the constant value of the second operand. An exception is thrown if
    * the second operand is not a constant. */
   virtual const Input2ImagePixelType &
   GetConstant2() const;
@@ -146,7 +146,7 @@ public:
   void
   SetFunctor(const std::function<ConstRefFunctionType> & f)
   {
-    // the closure create a copy of f
+    // the closure creates a copy of f
     m_DynamicThreadedGenerateDataFunction = [this, f](const OutputImageRegionType & outputRegionForThread) {
       return this->DynamicThreadedGenerateDataWithFunctor(f, outputRegionForThread);
     };
@@ -156,7 +156,7 @@ public:
   void
   SetFunctor(const std::function<ValueFunctionType> & f)
   {
-    // the capture create a copy of f
+    // the capture creates a copy of f
     m_DynamicThreadedGenerateDataFunction = [this, f](const OutputImageRegionType & outputRegionForThread) {
       return this->DynamicThreadedGenerateDataWithFunctor(f, outputRegionForThread);
     };
@@ -177,8 +177,6 @@ public:
 
     this->Modified();
   }
-
-
   void
   SetFunctor(ValueFunctionType * funcPointer)
   {
@@ -213,18 +211,16 @@ public:
 
 
   /** ImageDimension constants */
-  itkStaticConstMacro(InputImage1Dimension, unsigned int, TInputImage1::ImageDimension);
-  itkStaticConstMacro(InputImage2Dimension, unsigned int, TInputImage2::ImageDimension);
-  itkStaticConstMacro(OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
+  static constexpr unsigned int InputImage1Dimension = TInputImage1::ImageDimension;
+  static constexpr unsigned int InputImage2Dimension = TInputImage2::ImageDimension;
+  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
   itkConceptMacro(SameDimensionCheck1,
-                  (Concept::SameDimension<itkGetStaticConstMacro(InputImage1Dimension),
-                                          itkGetStaticConstMacro(InputImage2Dimension)>));
+                  (Concept::SameDimension<Self::InputImage1Dimension, Self::InputImage2Dimension>));
   itkConceptMacro(SameDimensionCheck2,
-                  (Concept::SameDimension<itkGetStaticConstMacro(InputImage1Dimension),
-                                          itkGetStaticConstMacro(OutputImageDimension)>));
+                  (Concept::SameDimension<Self::InputImage1Dimension, Self::OutputImageDimension>));
   // End concept checking
 #endif
 
@@ -246,6 +242,11 @@ protected:
   DynamicThreadedGenerateDataWithFunctor(const TFunctor &, const OutputImageRegionType & outputRegionForThread);
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  void
+  AfterThreadedGenerateData() override
+  {
+    this->UpdateProgress(1.0);
+  }
 
   // Needed to take the image information from the 2nd input, if the first one is
   // a simple decorated object.

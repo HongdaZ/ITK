@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,19 +72,20 @@ template <typename TPixel, unsigned int TDimension = 2, typename TAllocator = Ne
 class ITK_TEMPLATE_EXPORT AnnulusOperator : public NeighborhoodOperator<TPixel, TDimension, TAllocator>
 {
 public:
-  /** Standard type alias */
+  /** Standard class type aliases. */
   using Self = AnnulusOperator;
   using Superclass = NeighborhoodOperator<TPixel, TDimension, TAllocator>;
 
-  /** Additional type alias */
-  using SizeType = typename Superclass::SizeType;
-  using OffsetType = typename Superclass::OffsetType;
+  /** Additional type aliases. */
+  using PixelType = TPixel;
+  using typename Superclass::SizeType;
+  using typename Superclass::OffsetType;
   using SpacingType = Vector<double, TDimension>;
 
+  /** Run-time type information (and related methods). */
   itkTypeMacro(AnnulusOperator, NeighborhoodOperator);
 
-  /** This function is called to create the operator.  The radius of
-   * the operator is determine automatically.  */
+  /** Create the operator. The radius of the operator is determined automatically. */
   void
   CreateOperator();
 
@@ -176,7 +177,7 @@ public:
 
   /** If Normalize is off, the interior to annulus, the
    * annulus (region between the two circles), and the region exterior to the
-   * annulus to be defined manually.  Defauls are 0, 1, 0
+   * annulus to be defined manually.  Defaults are 0, 1, 0
    * respectively. */
   void
   SetInteriorValue(TPixel v)
@@ -209,22 +210,27 @@ public:
     return m_ExteriorValue;
   }
 
-  /** Prints some debugging information */
   void
-  PrintSelf(std::ostream & os, Indent i) const override
+  PrintSelf(std::ostream & os, Indent indent) const override
   {
-    os << i << "AnnulusOperator { this=" << this << ", m_InnerRadius = " << m_InnerRadius
-       << ", m_Thickness = " << m_Thickness << ", m_Spacing = " << m_Spacing << ", m_Normalize = " << m_Normalize
-       << ", m_BrightCenter = " << m_BrightCenter << ", m_InteriorValue = " << m_InteriorValue
-       << ", m_ExteriorValue = " << m_ExteriorValue << "}" << std::endl;
-    Superclass::PrintSelf(os, i.GetNextIndent());
+    Superclass::PrintSelf(os, indent);
+
+    os << indent << "InnerRadius: " << m_InnerRadius << std::endl;
+    os << indent << "Thickness: " << m_Thickness << std::endl;
+    os << indent << "Normalize: " << m_Normalize << std::endl;
+    os << indent << "BrightCenter: " << m_BrightCenter << std::endl;
+    os << indent << "InteriorValue: " << static_cast<typename NumericTraits<PixelType>::PrintType>(m_InteriorValue)
+       << std::endl;
+    os << indent << "AnnulusValue: " << static_cast<typename NumericTraits<PixelType>::PrintType>(m_AnnulusValue)
+       << std::endl;
+    os << indent << "ExteriorValue: " << static_cast<typename NumericTraits<PixelType>::PrintType>(m_ExteriorValue)
+       << std::endl;
+    os << indent << "Spacing: " << static_cast<typename NumericTraits<SpacingType>::PrintType>(m_Spacing) << std::endl;
   }
 
 protected:
-  /** Typedef support for coefficient vector type.  Necessary to
-   *  work around compiler bug on VC++. */
-  using CoefficientVector = typename Superclass::CoefficientVector;
-  using PixelType = typename Superclass::PixelType;
+  /** Type alias support for coefficient vector type.*/
+  using typename Superclass::CoefficientVector;
 
   /** Calculates operator coefficients. */
   CoefficientVector
@@ -232,7 +238,7 @@ protected:
 
   /** Arranges coefficients spatially in the memory buffer. */
   void
-  Fill(const CoefficientVector & c) override;
+  Fill(const CoefficientVector & coeff) override;
 
 private:
   double      m_InnerRadius{ 1.0 };
@@ -242,7 +248,7 @@ private:
   PixelType   m_InteriorValue{ NumericTraits<PixelType>::ZeroValue() };
   PixelType   m_AnnulusValue{ NumericTraits<PixelType>::OneValue() };
   PixelType   m_ExteriorValue{ NumericTraits<PixelType>::ZeroValue() };
-  SpacingType m_Spacing{ 1.0 };
+  SpacingType m_Spacing{ MakeFilled<SpacingType>(1.0) };
 };
 } // namespace itk
 

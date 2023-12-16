@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,7 +62,7 @@ public:
     using RegionType = itk::ImageRegion<InputImageType::ImageDimension>;
 
     // Create the input image
-    typename InputImageType::Pointer inputImage = InputImageType::New();
+    auto inputImage = InputImageType::New();
 
     // Define its size, and start index
     SizeType size;
@@ -78,9 +78,7 @@ public:
     region.SetSize(size);
 
     // Initialize the input image
-    inputImage->SetLargestPossibleRegion(region);
-    inputImage->SetBufferedRegion(region);
-    inputImage->SetRequestedRegion(region);
+    inputImage->SetRegions(region);
     inputImage->Allocate();
 
     // Declare Iterator type for the input image
@@ -109,9 +107,10 @@ public:
 
 
     // Create the filter
-    typename SymmetricEigenAnalysisImageFilterType::Pointer filter = SymmetricEigenAnalysisImageFilterType::New();
+    auto filter = SymmetricEigenAnalysisImageFilterType::New();
 
-    filter->SetDimension(InputImageType::ImageDimension);
+    // Dimension should be initialized to the input image dimension
+    ITK_TEST_EXPECT_EQUAL(filter->GetDimension(), InputImageType::ImageDimension);
     ITK_TEST_SET_GET_VALUE(InputImageType::ImageDimension, filter->GetDimension());
 
     // Set the input image
@@ -120,6 +119,8 @@ public:
     filter->SetFunctor(filter->GetFunctor());
 
     filter->OrderEigenValuesBy(order);
+    filter->SetOrderEigenValuesBy(order);
+    ITK_TEST_SET_GET_VALUE(order, filter->GetOrderEigenValuesBy());
 
     // Execute the filter
     ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
@@ -133,7 +134,7 @@ public:
     // Get the output image to a writable format
     using CastImageFilterType = itk::CastImageFilter<InternalImageType, OutputImageType>;
 
-    typename CastImageFilterType::Pointer roundImageFilter = CastImageFilterType::New();
+    auto roundImageFilter = CastImageFilterType::New();
 
     roundImageFilter->SetInput(internalImage);
 
@@ -142,7 +143,7 @@ public:
     // Write the result image
     using WriterType = itk::ImageFileWriter<OutputImageType>;
 
-    typename WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
 
     writer->SetFileName(outputFilename);
 
@@ -193,7 +194,7 @@ public:
     using RegionType = itk::ImageRegion<InputImageType::ImageDimension>;
 
     // Create the input image
-    typename InputImageType::Pointer inputImage = InputImageType::New();
+    auto inputImage = InputImageType::New();
 
     // Define its size, and start index
     SizeType size;
@@ -209,9 +210,7 @@ public:
     region.SetSize(size);
 
     // Initialize the input image
-    inputImage->SetLargestPossibleRegion(region);
-    inputImage->SetBufferedRegion(region);
-    inputImage->SetRequestedRegion(region);
+    inputImage->SetRegions(region);
     inputImage->Allocate();
 
     // Declare Iterator type for the input image
@@ -261,7 +260,7 @@ public:
     // Get the output image to a writable format
     using CastImageFilterType = itk::CastImageFilter<InternalImageType, OutputImageType>;
 
-    typename CastImageFilterType::Pointer roundImageFilter = CastImageFilterType::New();
+    auto roundImageFilter = CastImageFilterType::New();
 
     roundImageFilter->SetInput(internalImage);
 
@@ -270,7 +269,7 @@ public:
     // Write the result image
     using WriterType = itk::ImageFileWriter<OutputImageType>;
 
-    typename WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
 
     writer->SetFileName(outputFilename);
 
@@ -323,7 +322,7 @@ itkSymmetricEigenAnalysisImageFilterTest(int argc, char * argv[])
   using FilterType = itk::SymmetricEigenAnalysisImageFilter<InputImageType, InternalImageType>;
 
   // Create an instance to exercise basic object methods
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, SymmetricEigenAnalysisImageFilter, UnaryFunctorImageFilter);
 

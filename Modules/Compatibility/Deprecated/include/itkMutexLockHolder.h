@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@
 namespace itk
 {
 /**
- *\class MutexLockHolder
+ * \class MutexLockHolder
  *  \brief A container to store a Mutex.
  *  This holder class for ensuring that locks are released in
  *  the event of an exception being thrown after the lock was
@@ -45,7 +45,7 @@ template <typename TMutex>
 class MutexLockHolder
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MutexLockHolder);
+  ITK_DISALLOW_COPY_AND_MOVE(MutexLockHolder);
 
   using Self = MutexLockHolder;
   using MutexType = TMutex;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkGPUDemonsRegistrationFunction_hxx
 #define itkGPUDemonsRegistrationFunction_hxx
 
-#include "itkGPUDemonsRegistrationFunction.h"
 #include "itkMacro.h"
 #include "itkMath.h"
 
@@ -33,7 +32,7 @@ GPUDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::GP
   RadiusType   r;
   unsigned int j;
 
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     r[j] = 0;
   }
@@ -49,7 +48,7 @@ GPUDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::GP
   m_Normalizer = 1.0;
   m_FixedImageGradientCalculator = GradientCalculatorType::New();
 
-  typename DefaultInterpolatorType::Pointer interp = DefaultInterpolatorType::New();
+  auto interp = DefaultInterpolatorType::New();
 
   m_MovingImageInterpolator = static_cast<InterpolatorType *>(interp.GetPointer());
 
@@ -167,7 +166,7 @@ GPUDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::In
 
   // compute the normalizer
   m_Normalizer = 0.0;
-  for (unsigned int k = 0; k < ImageDimension; k++)
+  for (unsigned int k = 0; k < ImageDimension; ++k)
   {
     m_Normalizer += fixedImageSpacing[k] * fixedImageSpacing[k];
   }
@@ -237,18 +236,20 @@ GPUDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::GP
   int imgSize[3];
   imgSize[0] = imgSize[1] = imgSize[2] = 1;
 
-  int ImageDim = (int)DisplacementFieldType::ImageDimension;
+  int ImageDim = static_cast<int>(DisplacementFieldType::ImageDimension);
 
-  for (int i = 0; i < ImageDim; i++)
+  for (int i = 0; i < ImageDim; ++i)
   {
     imgSize[i] = outSize[i];
   }
 
   size_t localSize[3], globalSize[3];
   localSize[0] = localSize[1] = localSize[2] = OpenCLGetLocalBlockSize(ImageDim);
-  for (int i = 0; i < ImageDim; i++)
+  for (int i = 0; i < ImageDim; ++i)
   {
-    globalSize[i] = localSize[i] * (unsigned int)ceil((float)outSize[i] / (float)localSize[i]); // total # of threads
+    // total # of threads
+    globalSize[i] =
+      localSize[i] * static_cast<unsigned int>(ceil(static_cast<float>(outSize[i]) / static_cast<float>(localSize[i])));
   }
 
   float normalizer = 1;
@@ -272,14 +273,14 @@ GPUDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::GP
     m_ComputeUpdateGPUKernelHandle, argidx++, m_GPUSquaredDifference->GetGPUDataManager());
 
   this->m_GPUKernelManager->SetKernelArg(m_ComputeUpdateGPUKernelHandle, argidx++, sizeof(float), &(normalizer));
-  for (int i = 0; i < ImageDim; i++)
+  for (int i = 0; i < ImageDim; ++i)
   {
     this->m_GPUKernelManager->SetKernelArg(m_ComputeUpdateGPUKernelHandle, argidx++, sizeof(int), &(imgSize[i]));
   }
 
   // launch kernel
   this->m_GPUKernelManager->LaunchKernel(
-    m_ComputeUpdateGPUKernelHandle, (int)DisplacementFieldType::ImageDimension, globalSize, localSize);
+    m_ComputeUpdateGPUKernelHandle, static_cast<int>(DisplacementFieldType::ImageDimension), globalSize, localSize);
 
   // compute statistics
   m_GPUPixelCounter->GPUGenerateData();
@@ -311,13 +312,13 @@ GPUDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::Co
   // Note: no need to check the index is within
   // fixed image buffer. This is done by the external filter.
   const IndexType index = it.GetIndex();
-  const auto      fixedValue = (double)this->GetFixedImage()->GetPixel(index);
+  const auto      fixedValue = static_cast<double>(this->GetFixedImage()->GetPixel(index));
 
   // Get moving image related information
   PointType mappedPoint;
 
   this->GetFixedImage()->TransformIndexToPhysicalPoint(index, mappedPoint);
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     mappedPoint[j] += it.GetCenterPixel()[j];
   }
@@ -344,7 +345,7 @@ GPUDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::Co
   }
 
   double gradientSquaredMagnitude = 0;
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     gradientSquaredMagnitude += itk::Math::sqr(gradient[j]);
   }
@@ -379,7 +380,7 @@ GPUDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplacementField>::Co
   }
 
   PixelType update;
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     update[j] = speedValue * gradient[j] / denominator;
     if (globalData)

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkEuclideanSquareDistanceMetric_hxx
 #define itkEuclideanSquareDistanceMetric_hxx
 
-#include "itkEuclideanSquareDistanceMetric.h"
 
 namespace itk
 {
@@ -39,9 +38,9 @@ EuclideanSquareDistanceMetric<TVector>::Evaluate(const MeasurementVectorType & x
     measurementVectorSize,
     "EuclideanSquareDistanceMetric::Evaluate Origin and input vector have different lengths");
 
-  double temp, distance = NumericTraits<double>::ZeroValue();
+  double temp, distance = 0.0;
 
-  for (unsigned int i = 0; i < measurementVectorSize; i++)
+  for (unsigned int i = 0; i < measurementVectorSize; ++i)
   {
     temp = this->GetOrigin()[i] - x[i];
     distance += temp * temp;
@@ -62,8 +61,8 @@ EuclideanSquareDistanceMetric<TVector>::Evaluate(const MeasurementVectorType & x
     itkExceptionMacro(<< "EuclideanSquareDistanceMetric:: The two measurement vectors have unequal size");
   }
 
-  double temp, distance = NumericTraits<double>::ZeroValue();
-  for (unsigned int i = 0; i < measurementVectorSize; i++)
+  double temp, distance = 0.0;
+  for (unsigned int i = 0; i < measurementVectorSize; ++i)
   {
     temp = x1[i] - x2[i];
     distance += temp * temp;

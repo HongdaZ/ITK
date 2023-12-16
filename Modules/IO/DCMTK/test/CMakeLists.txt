@@ -45,12 +45,12 @@ itk_add_test(NAME itkDCMTKImageIOTest4 COMMAND ITKIODCMTKTestDriver
 itk_add_test(NAME itkDCMTKSeriesReadImageWrite
   COMMAND ITKIODCMTKTestDriver itkDCMTKSeriesReadImageWrite
   DATA{${ITK_DATA_ROOT}/Input/DicomSeries/,REGEX:Image[0-9]+.dcm}
-  ${ITK_TEST_OUTPUT_DIR}/itkDCMTKSeriesReadImageWrite.vtk)
+  ${ITK_TEST_OUTPUT_DIR}/itkDCMTKSeriesReadImageWrite.vtk 0 0 0)
 
 itk_add_test(NAME itkDCMTKDirCosinesTest
   COMMAND ITKIODCMTKTestDriver itkDCMTKSeriesReadImageWrite
   DATA{${ITK_DATA_ROOT}/Input/DicomDirectionsTest/,REGEX:1020_[0-9]+.dcm}
-  ${ITK_TEST_OUTPUT_DIR}/itkDCMTKSeriesReadImageWrite.vtk)
+  ${ITK_TEST_OUTPUT_DIR}/itkDCMTKSeriesReadImageWrite.vtk 0 0 0)
 
 set_property(TEST itkDCMTKSeriesReadImageWrite APPEND PROPERTY DEPENDS ITKData)
 
@@ -63,11 +63,11 @@ itk_add_test(NAME itkDCMTKSeriesStreamReadImageWrite1
 itk_add_test(NAME itkDCMTKSeriesImageOrientationWrite1
   COMMAND ITKIODCMTKTestDriver
   --compareCoordinateTolerance 1e-3
-  --compare DATA{${ITK_DATA_ROOT}/Baseline/itkDCMTKSeriesImageOrientationWrite1.mha}
+  --compare DATA{Baseline/itkDCMTKSeriesImageOrientationWrite1.mha}
   ${ITK_TEST_OUTPUT_DIR}/itkDCMTKSeriesImageOrientationWrite1.mha
   itkDCMTKSeriesReadImageWrite
   DATA{${ITK_DATA_ROOT}/Input/DicomImageOrientationTest/,REGEX:ImageOrientation.[0-9]+.dcm}
-  ${ITK_TEST_OUTPUT_DIR}/itkDCMTKSeriesImageOrientationWrite1.mha)
+  ${ITK_TEST_OUTPUT_DIR}/itkDCMTKSeriesImageOrientationWrite1.mha 0 0 0)
 
 itk_add_test(NAME itkDCMTKImageIOOrthoDirTest
   COMMAND ITKIODCMTKTestDriver itkDCMTKImageIOOrthoDirTest
@@ -76,11 +76,11 @@ itk_add_test(NAME itkDCMTKImageIOOrthoDirTest
 itk_add_test(NAME itkDCMTKMultiFrame4DTest
   COMMAND ITKIODCMTKTestDriver itkDCMTKMultiFrame4DTest
   DATA{${ITK_DATA_ROOT}/Input/Philips_4D_DICOM.dcm}
-  ${ITK_TEST_OUTPUT_DIR}/Philips_4D_DICOM.nrrd )
+  ${ITK_TEST_OUTPUT_DIR}/Philips_4D_DICOM.nrrd)
 
 itk_add_test(NAME itkDCMTKImageIONonSquareTest
   COMMAND ITKIODCMTKTestDriver
-    --compare DATA{${ITK_DATA_ROOT}/Baseline/itkDCMTKNonSquare.nii.gz}
+    --compare DATA{Baseline/itkDCMTKNonSquare.nii.gz}
   ${ITK_TEST_OUTPUT_DIR}/itkDCMTKNonSquare.nii.gz
   itkDCMTKImageIOTest
   DATA{${ITK_DATA_ROOT}/Input/itkDCMTKNonSquare.dcm}
@@ -90,7 +90,7 @@ itk_add_test(NAME itkDCMTKImageIONonSquareTest
 
 itk_add_test(NAME itkDCMTKRGBImageIOColorImageTest
   COMMAND ITKIODCMTKTestDriver
-    --compare DATA{${ITK_DATA_ROOT}/Baseline/itkDCMTKColorImage.png}
+    --compare DATA{Baseline/itkDCMTKColorImage.png}
   ${ITK_TEST_OUTPUT_DIR}/itkDCMTKColorImage.png
   itkDCMTKRGBImageIOTest
   DATA{${ITK_DATA_ROOT}/Input/RGBDicomTest.dcm}

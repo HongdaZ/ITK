@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkTimeVaryingBSplineVelocityFieldImageRegistrationMethod_hxx
 #define itkTimeVaryingBSplineVelocityFieldImageRegistrationMethod_hxx
 
-#include "itkTimeVaryingBSplineVelocityFieldImageRegistrationMethod.h"
 
 #include "itkConstNeighborhoodIterator.h"
 #include "itkContinuousIndex.h"
@@ -68,7 +67,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<TFixedImage,
 {
   // This transform is used for the fixed image
   using IdentityTransformType = itk::IdentityTransform<RealType, ImageDimension>;
-  typename IdentityTransformType::Pointer identityTransform = IdentityTransformType::New();
+  auto identityTransform = IdentityTransformType::New();
   identityTransform->SetIdentity();
 
   TimeVaryingVelocityFieldControlPointLatticePointer velocityFieldLattice =
@@ -128,9 +127,9 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<TFixedImage,
     }
   }
 
-  const DisplacementVectorType zeroVector(0.0);
+  constexpr DisplacementVectorType zeroVector{};
 
-  typename DisplacementFieldType::Pointer identityField = DisplacementFieldType::New();
+  auto identityField = DisplacementFieldType::New();
   identityField->CopyInformation(virtualDomainImage);
   identityField->SetRegions(virtualDomainImage->GetLargestPossibleRegion());
   identityField->Allocate();
@@ -140,12 +139,12 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<TFixedImage,
   this->m_IdentityDisplacementFieldTransform->SetDisplacementField(identityField);
   this->m_IdentityDisplacementFieldTransform->SetInverseDisplacementField(identityField);
 
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     sampledVelocityFieldOrigin[i] = virtualDomainImage->GetOrigin()[i];
     sampledVelocityFieldSpacing[i] = virtualDomainImage->GetSpacing()[i];
     sampledVelocityFieldSize[i] = virtualDomainImage->GetRequestedRegion().GetSize()[i];
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       sampledVelocityFieldDirection[i][j] = virtualDomainImage->GetDirection()[i][j];
     }
@@ -164,12 +163,12 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<TFixedImage,
   VelocityFieldPointSetPointer velocityFieldPointSet = VelocityFieldPointSetType::New();
   velocityFieldPointSet->Initialize();
 
-  typename WeightsContainerType::Pointer velocityFieldWeights = WeightsContainerType::New();
+  auto velocityFieldWeights = WeightsContainerType::New();
   velocityFieldWeights->Initialize();
 
   // Monitor the convergence
   using ConvergenceMonitoringType = itk::Function::WindowConvergenceMonitoringFunction<RealType>;
-  typename ConvergenceMonitoringType::Pointer convergenceMonitoring = ConvergenceMonitoringType::New();
+  auto convergenceMonitoring = ConvergenceMonitoringType::New();
   convergenceMonitoring->SetWindowSize(this->m_ConvergenceWindowSize);
 
   IterationReporter reporter(this, 0, 1);
@@ -225,7 +224,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<TFixedImage,
     typename TimeVaryingVelocityFieldControlPointLatticeType::SpacingType velocityFieldSpacing;
     typename TimeVaryingVelocityFieldControlPointLatticeType::SizeType    velocityFieldSize;
 
-    for (unsigned int d = 0; d < ImageDimension; d++)
+    for (unsigned int d = 0; d < ImageDimension; ++d)
     {
       velocityFieldOrigin[d] = virtualDomainImage->GetOrigin()[d];
       velocityFieldSpacing[d] = virtualDomainImage->GetSpacing()[d];
@@ -236,10 +235,10 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<TFixedImage,
     velocityFieldSpacing[ImageDimension] = 0.1;
     velocityFieldSize[ImageDimension] = 11;
 
-    typename BSplineFilterType::Pointer bspliner = BSplineFilterType::New();
+    auto bspliner = BSplineFilterType::New();
 
     typename BSplineFilterType::ArrayType numberOfControlPoints;
-    for (unsigned int d = 0; d < ImageDimension + 1; d++)
+    for (unsigned int d = 0; d < ImageDimension + 1; ++d)
     {
       numberOfControlPoints[d] = latticeSize[d];
     }
@@ -324,7 +323,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<TFixedImage,
         {
           RealType localSpatialNorm = NumericTraits<RealType>::ZeroValue();
           RealType localSpatioTemporalNorm = NumericTraits<RealType>::ZeroValue();
-          for (unsigned int d = 0; d < ImageDimension + 1; d++)
+          for (unsigned int d = 0; d < ImageDimension + 1; ++d)
           {
             DisplacementVectorType vector = (ItV.GetNext(d) - ItV.GetPrevious(d)) * 0.5 * velocityFieldSpacing[d];
             RealType               vectorNorm = vector.GetNorm();
@@ -369,7 +368,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
 
   IdentifierType numberOfVelocityFieldPoints = NumericTraits<IdentifierType>::ZeroValue();
 
-  for (SizeValueType timePoint = 0; timePoint < this->m_NumberOfTimePointSamples; timePoint++)
+  for (SizeValueType timePoint = 0; timePoint < this->m_NumberOfTimePointSamples; ++timePoint)
   {
     RealType t = NumericTraits<RealType>::ZeroValue();
     if (this->m_NumberOfTimePointSamples > 1)
@@ -394,11 +393,11 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
 
     // This transform gets used for the moving image
     using DisplacementFieldDuplicatorType = ImageDuplicator<DisplacementFieldType>;
-    typename DisplacementFieldDuplicatorType::Pointer fieldDuplicator = DisplacementFieldDuplicatorType::New();
+    auto fieldDuplicator = DisplacementFieldDuplicatorType::New();
     fieldDuplicator->SetInputImage(this->m_OutputTransform->GetDisplacementField());
     fieldDuplicator->Update();
 
-    typename DisplacementFieldDuplicatorType::Pointer inverseFieldDuplicator = DisplacementFieldDuplicatorType::New();
+    auto inverseFieldDuplicator = DisplacementFieldDuplicatorType::New();
     inverseFieldDuplicator->SetInputImage(this->m_OutputTransform->GetInverseDisplacementField());
     inverseFieldDuplicator->Update();
 
@@ -411,7 +410,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
 
     auto * fixedInitialTransform = const_cast<InitialTransformType *>(this->GetFixedInitialTransform());
 
-    typename CompositeTransformType::Pointer fixedComposite = CompositeTransformType::New();
+    auto fixedComposite = CompositeTransformType::New();
     if (fixedInitialTransform != nullptr)
     {
       fixedComposite->AddTransform(fixedInitialTransform);
@@ -439,22 +438,9 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
     movingDisplacementFieldTransform->SetInverseDisplacementField(
       this->m_OutputTransform->GetModifiableInverseDisplacementField());
 
-    if (timePoint == 0 && this->m_CurrentIteration <= 1)
-    {
-      typename DisplacementFieldDuplicatorType::Pointer fieldDuplicatorIdentity =
-        DisplacementFieldDuplicatorType::New();
-      fieldDuplicatorIdentity->SetInputImage(movingDisplacementFieldTransform->GetDisplacementField());
-      fieldDuplicatorIdentity->Update();
-      fieldDuplicatorIdentity->GetOutput()->FillBuffer(zeroVector);
-
-      typename DisplacementFieldTransformType::Pointer identityDisplacementFieldTransform =
-        DisplacementFieldTransformType::New();
-      identityDisplacementFieldTransform->SetDisplacementField(fieldDuplicatorIdentity->GetOutput());
-    }
-
     // Set up the moving composite transform for the current time point
 
-    typename CompositeTransformType::Pointer movingComposite = CompositeTransformType::New();
+    auto movingComposite = CompositeTransformType::New();
     movingComposite->AddTransform(this->m_CompositeTransform);
     movingComposite->AddTransform(movingDisplacementFieldTransform);
     movingComposite->FlattenTransformQueue();
@@ -494,7 +480,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
         typename MetricDerivativeType::iterator it;
         for (it = metricDerivative.begin(); it != metricDerivative.end(); it += ImageDimension)
         {
-          for (unsigned int d = 0; d < ImageDimension; d++)
+          for (unsigned int d = 0; d < ImageDimension; ++d)
           {
             *(it + d) *= this->m_OptimizerWeights[d];
           }
@@ -513,18 +499,18 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
 
         typename VelocityFieldPointSetType::PixelType displacement;
         typename VelocityFieldPointSetType::PointType spatioTemporalPoint;
-        for (unsigned int d = 0; d < ImageDimension; d++)
+        for (unsigned int d = 0; d < ImageDimension; ++d)
         {
           displacement[d] = metricDerivative[localPointCount * ImageDimension + d];
           spatioTemporalPoint[d] = spatialPoint[d];
         }
-        localPointCount++;
+        ++localPointCount;
 
         spatioTemporalPoint[ImageDimension] = t;
         velocityFieldPointSet->SetPoint(numberOfVelocityFieldPoints, spatioTemporalPoint);
         velocityFieldPointSet->SetPointData(numberOfVelocityFieldPoints, displacement);
         velocityFieldWeights->InsertElement(numberOfVelocityFieldPoints, 1.0);
-        numberOfVelocityFieldPoints++;
+        ++numberOfVelocityFieldPoints;
 
         ++It;
       }
@@ -544,7 +530,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
         typename DisplacementFieldType::IndexType index = ItF.GetIndex();
 
         bool isOnBoundary = false;
-        for (unsigned d = 0; d < ImageDimension; d++)
+        for (unsigned int d = 0; d < ImageDimension; ++d)
         {
           if (index[d] == fixedDomainIndex[d] ||
               index[d] == fixedDomainIndex[d] + static_cast<int>(fixedDomainSize[d]) - 1)
@@ -559,7 +545,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
 
           fixedDisplacementField->TransformIndexToPhysicalPoint(index, imagePoint);
           typename VelocityFieldPointSetType::PointType spatioTemporalPoint;
-          for (unsigned int d = 0; d < ImageDimension; d++)
+          for (unsigned int d = 0; d < ImageDimension; ++d)
           {
             spatioTemporalPoint[d] = imagePoint[d];
           }
@@ -569,7 +555,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
           velocityFieldPointSet->SetPoint(numberOfVelocityFieldPoints, spatioTemporalPoint);
           velocityFieldPointSet->SetPointData(numberOfVelocityFieldPoints, displacement);
           velocityFieldWeights->InsertElement(numberOfVelocityFieldPoints, this->m_BoundaryWeight);
-          numberOfVelocityFieldPoints++;
+          ++numberOfVelocityFieldPoints;
         }
       }
     }
@@ -647,7 +633,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
   typename DisplacementFieldType::DirectionType identity;
   identity.SetIdentity();
 
-  typename DisplacementFieldType::Pointer bsplineParametricDomainField = DisplacementFieldType::New();
+  auto bsplineParametricDomainField = DisplacementFieldType::New();
   bsplineParametricDomainField->CopyInformation(virtualDomainImage);
   bsplineParametricDomainField->SetRegions(virtualDomainImage->GetRequestedRegion());
   bsplineParametricDomainField->SetDirection(identity);
@@ -657,7 +643,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
 
   if (multiMetric)
   {
-    for (SizeValueType n = 0; n < multiMetric->GetNumberOfMetrics(); n++)
+    for (SizeValueType n = 0; n < multiMetric->GetNumberOfMetrics(); ++n)
     {
       if (multiMetric->GetMetricQueue()[n]->GetMetricCategory() ==
           ObjectToObjectMetricBaseTemplateEnums::MetricCategory::POINT_SET_METRIC)
@@ -676,7 +662,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
                ObjectToObjectMetricBaseTemplateEnums::MetricCategory::IMAGE_METRIC)
       {
         using FixedResamplerType = ResampleImageFilter<FixedImageType, FixedImageType, RealType>;
-        typename FixedResamplerType::Pointer fixedResampler = FixedResamplerType::New();
+        auto fixedResampler = FixedResamplerType::New();
         fixedResampler->SetInput(fixedImages[n]);
         fixedResampler->SetTransform(fixedTransform);
         fixedResampler->UseReferenceImageOn();
@@ -685,7 +671,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
         fixedResampler->Update();
 
         using MovingResamplerType = ResampleImageFilter<MovingImageType, MovingImageType, RealType>;
-        typename MovingResamplerType::Pointer movingResampler = MovingResamplerType::New();
+        auto movingResampler = MovingResamplerType::New();
         movingResampler->SetInput(movingImages[n]);
         movingResampler->SetTransform(movingTransform);
         movingResampler->UseReferenceImageOn();
@@ -708,7 +694,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
   else if (this->m_Metric->GetMetricCategory() == ObjectToObjectMetricBaseTemplateEnums::MetricCategory::IMAGE_METRIC)
   {
     using FixedResamplerType = ResampleImageFilter<FixedImageType, FixedImageType, RealType>;
-    typename FixedResamplerType::Pointer fixedResampler = FixedResamplerType::New();
+    auto fixedResampler = FixedResamplerType::New();
     fixedResampler->SetInput(fixedImages[0]);
     fixedResampler->SetTransform(fixedTransform);
     fixedResampler->UseReferenceImageOn();
@@ -717,7 +703,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
     fixedResampler->Update();
 
     using MovingResamplerType = ResampleImageFilter<MovingImageType, MovingImageType, RealType>;
-    typename MovingResamplerType::Pointer movingResampler = MovingResamplerType::New();
+    auto movingResampler = MovingResamplerType::New();
     movingResampler->SetInput(movingImages[0]);
     movingResampler->SetTransform(movingTransform);
     movingResampler->UseReferenceImageOn();
@@ -758,7 +744,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
     typename MetricDerivativeType::iterator it;
     for (it = metricDerivative.begin(); it != metricDerivative.end(); it += ImageDimension)
     {
-      for (unsigned int d = 0; d < ImageDimension; d++)
+      for (unsigned int d = 0; d < ImageDimension; ++d)
       {
         *(it + d) *= this->m_OptimizerWeights[d];
       }
@@ -769,7 +755,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
   if (fixedImageMasks[0])
   {
     using FixedMaskResamplerType = ResampleImageFilter<MaskImageType, WeightedMaskImageType, RealType>;
-    typename FixedMaskResamplerType::Pointer fixedMaskResampler = FixedMaskResamplerType::New();
+    auto fixedMaskResampler = FixedMaskResamplerType::New();
     fixedMaskResampler->SetTransform(fixedTransform);
     fixedMaskResampler->SetInput(
       dynamic_cast<ImageMaskSpatialObjectType *>(const_cast<FixedImageMaskType *>(fixedImageMasks[0].GetPointer()))
@@ -790,7 +776,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
 
   SizeValueType numberOfVelocityFieldPoints = velocityFieldPoints->GetNumberOfPoints();
 
-  typename DisplacementFieldType::Pointer gradientField = DisplacementFieldType::New();
+  auto gradientField = DisplacementFieldType::New();
   gradientField->CopyInformation(virtualDomainImage);
   gradientField->SetRegions(virtualDomainImage->GetRequestedRegion());
   gradientField->Allocate();
@@ -806,7 +792,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
     typename DisplacementFieldType::IndexType index = ItG.GetIndex();
 
     bool isOnBoundary = false;
-    for (SizeValueType d = 0; d < ImageDimension; d++)
+    for (SizeValueType d = 0; d < ImageDimension; ++d)
     {
       if (index[d] == gradientFieldIndex[d] ||
           index[d] == gradientFieldIndex[d] + static_cast<int>(gradientFieldSize[d]) - 1)
@@ -827,7 +813,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
     }
 
     ContinuousIndexType cidx;
-    for (SizeValueType d = 0; d < ImageDimension; d++)
+    for (SizeValueType d = 0; d < ImageDimension; ++d)
     {
       cidx[d] = static_cast<typename ContinuousIndexType::CoordRepType>(index[d]);
     }
@@ -837,7 +823,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
     typename VelocityFieldPointSetType::PointType velocityFieldPoint;
 
     DisplacementVectorType displacement;
-    for (SizeValueType d = 0; d < ImageDimension; d++)
+    for (SizeValueType d = 0; d < ImageDimension; ++d)
     {
       displacement[d] = metricDerivative[localCount++];
       velocityFieldPoint[d] = parametricPoint[d];
@@ -847,7 +833,7 @@ TimeVaryingBSplineVelocityFieldImageRegistrationMethod<
     velocityFieldPoints->SetPoint(numberOfVelocityFieldPoints, velocityFieldPoint);
     velocityFieldPoints->SetPointData(numberOfVelocityFieldPoints, displacement);
     velocityFieldWeights->InsertElement(numberOfVelocityFieldPoints, weight);
-    numberOfVelocityFieldPoints++;
+    ++numberOfVelocityFieldPoints;
   }
 }
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@
 namespace itk
 {
 /**
- *\class BYUMeshIO
+ * \class BYUMeshIO
  * \brief This class defines how to read and write BYU Geometry File Format.
  *
  * \ingroup IOFilters
@@ -38,7 +38,7 @@ namespace itk
 class ITKIOMeshBYU_EXPORT BYUMeshIO : public MeshIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BYUMeshIO);
+  ITK_DISALLOW_COPY_AND_MOVE(BYUMeshIO);
 
   /** Standard class type aliases. */
   using Self = BYUMeshIO;
@@ -58,12 +58,12 @@ public:
   /*-------- This part of the interfaces deals with reading data. ----- */
 
   /** Determine if the file can be read with this MeshIO implementation.
-   * \param FileNameToRead The name of the file to test for reading.
+   * \param fileName The name of the file to test for reading.
    * \post Sets classes MeshIOBase::m_FileName variable to be FileNameToWrite
    * \return Returns true if this MeshIO can read the file specified.
    */
   bool
-  CanReadFile(const char * FileNameToRead) override;
+  CanReadFile(const char * fileName) override;
 
   /** Set the spacing and dimension information for the set filename. */
   void
@@ -85,12 +85,12 @@ public:
   /*-------- This part of the interfaces deals with writing data. ----- */
 
   /** Determine if the file can be written with this MeshIO implementation.
-   * \param FileNameToWrite The name of the file to test for writing.
+   * \param fileName The name of the file to test for writing.
    * \post Sets classes MeshIOBase::m_FileName variable to be FileNameToWrite
    * \return Returns true if this MeshIO can write the file specified.
    */
   bool
-  CanWriteFile(const char * FileNameToWrite) override;
+  CanWriteFile(const char * fileName) override;
 
   /** Set the spacing and dimension information for the set filename. */
   void
@@ -118,16 +118,15 @@ protected:
   void
   WritePoints(T * buffer, std::ofstream & outputFile)
   {
-    NumberToString<T> convert;
-    Indent            indent(1);
-    SizeValueType     index = itk::NumericTraits<SizeValueType>::ZeroValue();
+    Indent        indent(1);
+    SizeValueType index = itk::NumericTraits<SizeValueType>::ZeroValue();
 
-    for (SizeValueType ii = 0; ii < this->m_NumberOfPoints; ii++)
+    for (SizeValueType ii = 0; ii < this->m_NumberOfPoints; ++ii)
     {
       outputFile << indent;
-      for (unsigned int jj = 0; jj < this->m_PointDimension; jj++)
+      for (unsigned int jj = 0; jj < this->m_PointDimension; ++jj)
       {
-        outputFile << convert(buffer[index++]) << " ";
+        outputFile << ConvertNumberToString(buffer[index++]) << " ";
       }
       outputFile << '\n';
     }
@@ -140,11 +139,11 @@ protected:
     Indent        indent(7);
     SizeValueType index = itk::NumericTraits<SizeValueType>::ZeroValue();
 
-    for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ii++)
+    for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ++ii)
     {
       auto numberOfCellPoints = static_cast<unsigned int>(buffer[++index]);
-      index++;
-      for (unsigned int jj = 0; jj < numberOfCellPoints - 1; jj++)
+      ++index;
+      for (unsigned int jj = 0; jj < numberOfCellPoints - 1; ++jj)
       {
         outputFile << indent << buffer[index++] + 1;
       }

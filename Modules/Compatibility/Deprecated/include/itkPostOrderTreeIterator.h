@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 template <typename TTreeType>
-class PostOrderTreeIterator : public TreeIteratorBase<TTreeType>
+class ITK_TEMPLATE_EXPORT PostOrderTreeIterator : public TreeIteratorBase<TTreeType>
 {
 public:
   /** Typedefs */
@@ -31,8 +31,8 @@ public:
   using Superclass = TreeIteratorBase<TTreeType>;
   using TreeType = TTreeType;
   using ValueType = typename TTreeType::ValueType;
-  using TreeNodeType = typename Superclass::TreeNodeType;
-  using NodeType = typename Superclass::NodeType;
+  using typename Superclass::TreeNodeType;
+  using typename Superclass::NodeType;
 
   /** Constructor */
   PostOrderTreeIterator(TreeType * tree);
@@ -166,7 +166,7 @@ PostOrderTreeIterator<TTreeType>::FindSister(TreeNodeType * node) const
   {
     if (parent->GetChild(childPosition + 1) == nullptr)
     {
-      childPosition++;
+      ++childPosition;
     }
     else
     {
@@ -206,7 +206,7 @@ PostOrderTreeIterator<TTreeType>::FindMostRightLeaf(TreeNodeType * node) const
           itkGenericExceptionMacro(<< "Can't downcast to TreeNodeType *");
         }
       }
-      i++;
+      ++i;
     } while (helpNode == nullptr && i < childCount);
 
     if (helpNode == nullptr)

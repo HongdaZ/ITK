@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ namespace itk
  * that describe this version of ITK.
  *
  * Values in in the map provide information about
- * the ITK (i.e. it's version, the build options,
+ * the ITK (i.e. its version, the build options,
  * configuration options, the home URL for the project,
  * and other static information) that can be gathered
  * at configuration time.
@@ -49,7 +49,7 @@ class ITKCommon_EXPORT BuildInformation final : public Object
 public:
   // Using the `rule of zero` to this aggregate type
   // C++20 changes the definition of aggregate such that classes with any user-declared ctors are no longer aggregates.
-  ITK_DISALLOW_COPY_AND_ASSIGN(BuildInformation);
+  ITK_DISALLOW_COPY_AND_MOVE(BuildInformation);
 
   /** Standard class type aliases. */
   using Self = BuildInformation;
@@ -90,9 +90,9 @@ public:
   static const MapType &
   GetMap();
   static const MapValueType
-  GetValue(const MapKeyType &&);
+  GetValue(const MapKeyType &);
   static const MapValueDescriptionType
-  GetDescription(const MapKeyType &&);
+  GetDescription(const MapKeyType &);
   static const std::vector<MapKeyType>
   GetAllKeys();
 

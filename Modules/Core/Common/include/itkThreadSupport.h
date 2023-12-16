@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,54 +44,57 @@ namespace itk
 /** Platform specific type alias for simple types
  */
 #if defined(ITK_USE_PTHREADS)
-constexpr std::size_t ITK_MAX_THREADS = ITK_DEFAULT_MAX_THREADS;
+constexpr size_t ITK_MAX_THREADS = ITK_DEFAULT_MAX_THREADS;
 using MutexType = pthread_mutex_t;
 using FastMutexType = pthread_mutex_t;
 using ThreadFunctionType = void * (*)(void *);
 using ThreadProcessIdType = pthread_t;
+#  if !defined(ITK_FUTURE_LEGACY_REMOVE)
 constexpr ThreadProcessIdType ITK_DEFAULT_THREAD_ID = 0;
+#  endif
 using ITK_THREAD_RETURN_TYPE = void *;
-constexpr ITK_THREAD_RETURN_TYPE ITK_THREAD_RETURN_DEFAULT_VALUE =
-  NULL;                                     /* This is from a c library, and always needs to be NULL, not nullptr */
+
+constexpr ITK_THREAD_RETURN_TYPE ITK_THREAD_RETURN_DEFAULT_VALUE = nullptr;
 using itk::ITK_THREAD_RETURN_DEFAULT_VALUE; // We need this out of the itk namespace for #define to work below
 using ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION = itk::ITK_THREAD_RETURN_TYPE;
 #elif defined(ITK_USE_WIN32_THREADS)
 
-constexpr std::size_t ITK_MAX_THREADS = ITK_DEFAULT_MAX_THREADS;
+constexpr size_t ITK_MAX_THREADS = ITK_DEFAULT_MAX_THREADS;
 using MutexType = HANDLE;
 using FastMutexType = CRITICAL_SECTION;
-using ThreadFunctionType = unsigned(__stdcall *)(void *);
+using ThreadFunctionType = unsigned int(__stdcall *)(void *);
 using ThreadProcessIdType = HANDLE;
+#  if !defined(ITK_FUTURE_LEGACY_REMOVE)
 static const ThreadProcessIdType ITK_DEFAULT_THREAD_ID = INVALID_HANDLE_VALUE;
-using ITK_THREAD_RETURN_TYPE = unsigned;
+#  endif
+using ITK_THREAD_RETURN_TYPE = unsigned int;
 constexpr ITK_THREAD_RETURN_TYPE ITK_THREAD_RETURN_DEFAULT_VALUE = 0;
 // WINAPI expands to __stdcall which specifies a function call convention and has little no meaning on variable
 // declarations
 #  define ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION itk::ITK_THREAD_RETURN_TYPE __stdcall
 #else
 
-constexpr std::size_t ITK_MAX_THREADS = 1;
+constexpr size_t ITK_MAX_THREADS = 1;
 using MutexType = int;
 using FastMutexType = int;
 using ThreadFunctionType = void (*)(void *);
 using ThreadProcessIdType = int;
+#  if !defined(ITK_FUTURE_LEGACY_REMOVE)
 constexpr ThreadProcessIdType ITK_DEFAULT_THREAD_ID = 0;
+#  endif
 using ITK_THREAD_RETURN_TYPE = void;
 #  define ITK_THREAD_RETURN_DEFAULT_VALUE
 using ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION = itk::ITK_THREAD_RETURN_TYPE;
 #endif
 
 
-/** Platform specific Conditional Variable type alias
+/** Platform specific Conditional Variable type
  */
+struct ConditionVariableType
+{
 #if defined(ITK_USE_PTHREADS)
-using ConditionVariableType = struct
-{
   pthread_cond_t m_ConditionVariable;
-};
 #elif defined(ITK_USE_WIN32_THREADS)
-using ConditionVariableType = struct
-{
   int              m_NumberOfWaiters;     // number of waiting threads
   CRITICAL_SECTION m_NumberOfWaitersLock; // Serialize access to
                                           // m_NumberOfWaiters
@@ -103,13 +106,10 @@ using ConditionVariableType = struct
                            // threads to wake up and
                            // release the semaphore
 
-  int m_WasBroadcast; // Used as boolean. Keeps track of whether
-                      // we were broadcasting or signaling
-};
-#else
-using ConditionVariableType = struct
-{};
+  int m_WasBroadcast;                       // Used as boolean. Keeps track of whether
+                                            // we were broadcasting or signaling
 #endif
+};
 
 } // namespace itk
 

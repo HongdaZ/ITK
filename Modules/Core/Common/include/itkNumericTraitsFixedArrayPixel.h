@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -86,43 +86,43 @@ public:
   static const Self
   max(const Self &)
   {
-    return Self(NumericTraits<T>::max());
+    return MakeFilled<Self>(NumericTraits<T>::max());
   }
 
   static const Self
   min(const Self &)
   {
-    return Self(NumericTraits<T>::min());
+    return MakeFilled<Self>(NumericTraits<T>::min());
   }
 
   static const Self
   max()
   {
-    return Self(NumericTraits<T>::max());
+    return MakeFilled<Self>(NumericTraits<T>::max());
   }
 
   static const Self
   min()
   {
-    return Self(NumericTraits<T>::min());
+    return MakeFilled<Self>(NumericTraits<T>::min());
   }
 
   static const Self
   NonpositiveMin()
   {
-    return Self(NumericTraits<T>::NonpositiveMin());
+    return MakeFilled<Self>(NumericTraits<T>::NonpositiveMin());
   }
 
   static const Self
   ZeroValue()
   {
-    return Self(NumericTraits<T>::ZeroValue());
+    return MakeFilled<Self>(NumericTraits<T>::ZeroValue());
   }
 
   static const Self
   OneValue()
   {
-    return Self(NumericTraits<T>::OneValue());
+    return MakeFilled<Self>(NumericTraits<T>::OneValue());
   }
 
   static const Self
@@ -180,7 +180,7 @@ public:
   static void
   AssignToArray(const Self & v, TArray & mv)
   {
-    for (unsigned int i = 0; i < D; i++)
+    for (unsigned int i = 0; i < D; ++i)
     {
       mv[i] = v[i];
     }
@@ -198,28 +198,28 @@ public:
 //       a temporary variable that is initialized from the
 //       constexpr [Zero|One] to be passed by const reference
 //       to the GENERIC_ARRAY<T,D> constructor.
-#define itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, D)                                                   \
-  template <>                                                                                                          \
-  ITKCommon_EXPORT const GENERIC_ARRAY<T, D> NumericTraits<GENERIC_ARRAY<T, D>>::Zero =                                \
-    GENERIC_ARRAY<T, D>((T)(NumericTraits<T>::Zero));                                                                  \
-  template <>                                                                                                          \
-  ITKCommon_EXPORT const GENERIC_ARRAY<T, D> NumericTraits<GENERIC_ARRAY<T, D>>::One =                                 \
-    GENERIC_ARRAY<T, D>((T)(NumericTraits<T>::One));
+#define itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, D)                    \
+  template <>                                                                           \
+  ITKCommon_EXPORT const GENERIC_ARRAY<T, D> NumericTraits<GENERIC_ARRAY<T, D>>::Zero = \
+    MakeFilled<GENERIC_ARRAY<T, D>>(NumericTraits<T>::Zero);                            \
+  template <>                                                                           \
+  ITKCommon_EXPORT const GENERIC_ARRAY<T, D> NumericTraits<GENERIC_ARRAY<T, D>>::One =  \
+    MakeFilled<GENERIC_ARRAY<T, D>>(NumericTraits<T>::One);
 
 //
 // List here the array dimension specializations of these static
 // Traits:
 //
-#define itkStaticNumericTraitsGenericArrayDimensionsMacro(GENERIC_ARRAY, T)                                            \
-  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 1);                                                        \
-  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 2);                                                        \
-  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 3);                                                        \
-  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 4);                                                        \
-  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 5);                                                        \
-  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 6);                                                        \
-  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 7);                                                        \
-  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 8);                                                        \
-  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 9);                                                        \
+#define itkStaticNumericTraitsGenericArrayDimensionsMacro(GENERIC_ARRAY, T) \
+  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 1);             \
+  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 2);             \
+  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 3);             \
+  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 4);             \
+  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 5);             \
+  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 6);             \
+  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 7);             \
+  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 8);             \
+  itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 9);             \
   itkStaticNumericTraitsGenericArrayMacro(GENERIC_ARRAY, T, 10);
 } // end namespace itk
 

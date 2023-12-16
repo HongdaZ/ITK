@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,8 @@
 
 #include "itkSize.h"
 #include "itkMath.h"
+
+#include <cstddef> // For ptrdiff_t.
 
 namespace itk
 {
@@ -74,7 +76,7 @@ public:
 
   /** Compatible Offset and value type alias. */
   using OffsetType = Offset<VDimension>;
-  using OffsetValueType = ::itk::OffsetValueType;
+  using OffsetValueType = itk::OffsetValueType;
 
   /** Dimension constant */
   static constexpr unsigned int Dimension = VDimension;
@@ -93,7 +95,7 @@ public:
   {
     Self result;
 
-    for (unsigned int i = 0; i < VDimension; i++)
+    for (unsigned int i = 0; i < VDimension; ++i)
     {
       result[i] = m_InternalArray[i] + vec.m_InternalArray[i];
     }
@@ -106,7 +108,7 @@ public:
   {
     Self result;
 
-    for (unsigned int i = 0; i < VDimension; i++)
+    for (unsigned int i = 0; i < VDimension; ++i)
     {
       result[i] = m_InternalArray[i] + sz[i];
     }
@@ -117,7 +119,7 @@ public:
   const Self &
   operator+=(const Size<VDimension> & sz)
   {
-    for (unsigned int i = 0; i < VDimension; i++)
+    for (unsigned int i = 0; i < VDimension; ++i)
     {
       m_InternalArray[i] += sz[i];
     }
@@ -128,7 +130,7 @@ public:
   const Self &
   operator-=(const Size<VDimension> & sz)
   {
-    for (unsigned int i = 0; i < VDimension; i++)
+    for (unsigned int i = 0; i < VDimension; ++i)
     {
       m_InternalArray[i] -= sz[i];
     }
@@ -141,7 +143,7 @@ public:
   {
     Self result;
 
-    for (unsigned int i = 0; i < VDimension; i++)
+    for (unsigned int i = 0; i < VDimension; ++i)
     {
       result[i] = m_InternalArray[i] - vec.m_InternalArray[i];
     }
@@ -152,7 +154,7 @@ public:
   const Self &
   operator+=(const Self & vec)
   {
-    for (unsigned int i = 0; i < VDimension; i++)
+    for (unsigned int i = 0; i < VDimension; ++i)
     {
       m_InternalArray[i] += vec.m_InternalArray[i];
     }
@@ -163,7 +165,7 @@ public:
   const Self &
   operator-=(const Self & vec)
   {
-    for (unsigned int i = 0; i < VDimension; i++)
+    for (unsigned int i = 0; i < VDimension; ++i)
     {
       m_InternalArray[i] -= vec.m_InternalArray[i];
     }
@@ -273,13 +275,13 @@ public:
    * so that the Offset class can be treated as a container
    * class in a way that is similar to the std::array.
    */
-  using value_type = ::itk::OffsetValueType;
+  using value_type = itk::OffsetValueType;
   using reference = value_type &;
   using const_reference = const value_type &;
   using iterator = value_type *;
   using const_iterator = const value_type *;
   using size_type = unsigned int;
-  using difference_type = std::ptrdiff_t;
+  using difference_type = ptrdiff_t;
   using reverse_iterator = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -299,28 +301,40 @@ public:
     std::swap(m_InternalArray, other.m_InternalArray);
   }
 
-  iterator
+  constexpr const_iterator
+  cbegin() const
+  {
+    return &m_InternalArray[0];
+  }
+
+  constexpr iterator
   begin()
   {
-    return iterator(&m_InternalArray[0]);
+    return &m_InternalArray[0];
   }
 
-  const_iterator
+  constexpr const_iterator
   begin() const
   {
-    return const_iterator(&m_InternalArray[0]);
+    return &m_InternalArray[0];
   }
 
-  iterator
+  constexpr const_iterator
+  cend() const
+  {
+    return &m_InternalArray[VDimension];
+  }
+
+  constexpr iterator
   end()
   {
-    return iterator(&m_InternalArray[VDimension]);
+    return &m_InternalArray[VDimension];
   }
 
-  const_iterator
+  constexpr const_iterator
   end() const
   {
-    return const_iterator(&m_InternalArray[VDimension]);
+    return &m_InternalArray[VDimension];
   }
 
   reverse_iterator

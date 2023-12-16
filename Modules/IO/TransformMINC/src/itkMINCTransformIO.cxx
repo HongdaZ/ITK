@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -104,7 +104,7 @@ MINCTransformIOTemplate<TParametersValueType>::ReadOneTransform(VIO_General_tran
       if (xfm->inverse_flag)
       {
         using AffineTransformType = AffineTransform<TParametersValueType, 3>;
-        typename AffineTransformType::Pointer tmp = AffineTransformType::New();
+        auto tmp = AffineTransformType::New();
         tmp->SetParametersByValue(parameterArray);
         tmp->GetInverse(static_cast<AffineTransformType *>(transform.GetPointer()));
       }
@@ -138,8 +138,8 @@ MINCTransformIOTemplate<TParametersValueType>::ReadOneTransform(VIO_General_tran
         using GridImageType = typename DisplacementFieldTransformType::DisplacementFieldType;
         using MincReaderType = ImageFileReader<GridImageType>;
 
-        MINCImageIO::Pointer             mincIO = MINCImageIO::New();
-        typename MincReaderType::Pointer reader = MincReaderType::New();
+        auto mincIO = MINCImageIO::New();
+        auto reader = MincReaderType::New();
         reader->SetImageIO(mincIO);
         reader->SetFileName(xfm->displacement_volume_file);
         reader->Update();
@@ -236,8 +236,8 @@ MINCTransformIOTemplate<TParametersValueType>::WriteOneTransform(const int      
       Transform_elem(lin, 3, 3) = 1.0;
 
       xfm.emplace_back();
-      memset(&xfm[xfm.size() - 1], 0, sizeof(VIO_General_transform));
-      create_linear_transform(&xfm[xfm.size() - 1], &lin);
+      memset(&xfm.back(), 0, sizeof(VIO_General_transform));
+      create_linear_transform(&xfm.back(), &lin);
     }
     else if (transformType.find("DisplacementFieldTransform_") != std::string::npos &&
              transformType.find("_3_3") != std::string::npos && curTransform->GetFixedParameters().Size() == 18)
@@ -248,11 +248,11 @@ MINCTransformIOTemplate<TParametersValueType>::WriteOneTransform(const int      
       using MincWriterType = ImageFileWriter<GridImageType>;
       auto * _grid_transform = static_cast<DisplacementFieldTransformType *>(const_cast<TransformType *>(curTransform));
       char   tmp[1024];
-      sprintf(tmp, "%s_grid_%d.mnc", xfm_file_base, serial);
+      snprintf(tmp, sizeof(tmp), "%s_grid_%d.mnc", xfm_file_base, serial);
       ++serial;
 
-      MINCImageIO::Pointer             mincIO = MINCImageIO::New();
-      typename MincWriterType::Pointer writer = MincWriterType::New();
+      auto mincIO = MINCImageIO::New();
+      auto writer = MincWriterType::New();
       writer->SetImageIO(mincIO);
       writer->SetFileName(tmp);
 
@@ -272,10 +272,10 @@ MINCTransformIOTemplate<TParametersValueType>::WriteOneTransform(const int      
       writer->Update();
 
       xfm.emplace_back();
-      create_grid_transform_no_copy(&xfm[xfm.size() - 1], nullptr, nullptr); // relying on volume_io using the same name
+      create_grid_transform_no_copy(&xfm.back(), nullptr, nullptr); // relying on volume_io using the same name
       if (_inverse_grid)
       {
-        xfm[xfm.size() - 1].inverse_flag = TRUE;
+        xfm.back().inverse_flag = TRUE;
       }
     }
     else
@@ -321,10 +321,10 @@ MINCTransformIOTemplate<TParametersValueType>::Write()
   int serial = 0;
   for (typename ConstTransformListType::const_iterator it = transformList.begin(); it != end; ++it, ++count)
   {
-    this->WriteOneTransform(count, (*it).GetPointer(), xfm, xfm_file_base.c_str(), serial);
+    this->WriteOneTransform(count, it->GetPointer(), xfm, xfm_file_base.c_str(), serial);
   }
 
-  VIO_General_transform transform = xfm[xfm.size() - 1];
+  VIO_General_transform transform = xfm.back();
 
   for (int i = xfm.size() - 2; i >= 0; --i)
   {

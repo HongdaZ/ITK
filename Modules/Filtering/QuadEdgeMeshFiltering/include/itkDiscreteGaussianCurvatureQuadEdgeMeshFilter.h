@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,32 +35,33 @@ namespace itk
  * \ingroup ITKQuadEdgeMeshFiltering
  */
 template <typename TInputMesh, typename TOutputMesh = TInputMesh>
-class DiscreteGaussianCurvatureQuadEdgeMeshFilter : public DiscreteCurvatureQuadEdgeMeshFilter<TInputMesh, TOutputMesh>
+class ITK_TEMPLATE_EXPORT DiscreteGaussianCurvatureQuadEdgeMeshFilter
+  : public DiscreteCurvatureQuadEdgeMeshFilter<TInputMesh, TOutputMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DiscreteGaussianCurvatureQuadEdgeMeshFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(DiscreteGaussianCurvatureQuadEdgeMeshFilter);
 
   using Self = DiscreteGaussianCurvatureQuadEdgeMeshFilter;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
   using Superclass = DiscreteCurvatureQuadEdgeMeshFilter<TInputMesh, TOutputMesh>;
 
-  using InputMeshType = typename Superclass::InputMeshType;
-  using InputMeshPointer = typename Superclass::InputMeshPointer;
+  using typename Superclass::InputMeshType;
+  using typename Superclass::InputMeshPointer;
 
-  using OutputMeshType = typename Superclass::OutputMeshType;
-  using OutputMeshPointer = typename Superclass::OutputMeshPointer;
-  using OutputPointsContainerPointer = typename Superclass::OutputPointsContainerPointer;
-  using OutputPointsContainerIterator = typename Superclass::OutputPointsContainerIterator;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using OutputCoordType = typename Superclass::OutputCoordType;
-  using OutputPointIdentifier = typename Superclass::OutputPointIdentifier;
-  using OutputCellIdentifier = typename Superclass::OutputCellIdentifier;
-  using OutputQEType = typename Superclass::OutputQEType;
-  using OutputMeshTraits = typename Superclass::OutputMeshTraits;
-  using OutputCurvatureType = typename Superclass::OutputCurvatureType;
-  using TriangleType = typename Superclass::TriangleType;
+  using typename Superclass::OutputMeshType;
+  using typename Superclass::OutputMeshPointer;
+  using typename Superclass::OutputPointsContainerPointer;
+  using typename Superclass::OutputPointsContainerIterator;
+  using typename Superclass::OutputPointType;
+  using typename Superclass::OutputVectorType;
+  using typename Superclass::OutputCoordType;
+  using typename Superclass::OutputPointIdentifier;
+  using typename Superclass::OutputCellIdentifier;
+  using typename Superclass::OutputQEType;
+  using typename Superclass::OutputMeshTraits;
+  using typename Superclass::OutputCurvatureType;
+  using typename Superclass::TriangleType;
 
   /** Run-time type information (and related methods).   */
   itkTypeMacro(DiscreteGaussianCurvatureQuadEdgeMeshFilter, DiscreteCurvatureQuadEdgeMeshFilter);

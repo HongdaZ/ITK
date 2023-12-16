@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
  *
  *=========================================================================*/
 #include "itkMultiGradientOptimizerv4.h"
+#include "itkTestingMacros.h"
 
 /**
  *  \class MultiGradientOptimizerv4TestMetric
@@ -65,7 +66,7 @@ public:
   MultiGradientOptimizerv4TestMetric() = default;
 
   void
-  Initialize() throw(itk::ExceptionObject) override
+  Initialize() override
   {}
 
   void
@@ -178,7 +179,7 @@ public:
   MultiGradientOptimizerv4TestMetric2() = default;
 
   void
-  Initialize() throw(itk::ExceptionObject) override
+  Initialize() override
   {}
 
   void
@@ -290,6 +291,8 @@ MultiGradientOptimizerv4RunTest(itk::MultiGradientOptimizerv4::Pointer & itkOpti
     return EXIT_FAILURE;
   }
 
+  std::cout << "StopCondition: " << itkOptimizer->GetStopCondition() << std::endl;
+
   using ParametersType = MultiGradientOptimizerv4TestMetric::ParametersType;
   ParametersType finalPosition = itkOptimizer->GetMetric()->GetParameters();
 
@@ -303,9 +306,9 @@ MultiGradientOptimizerv4RunTest(itk::MultiGradientOptimizerv4::Pointer & itkOpti
   ParametersType trueParameters(2);
   trueParameters[0] = 1.5;
   trueParameters[1] = -1.5;
-  for (itk::SizeValueType j = 0; j < 2; j++)
+  for (itk::SizeValueType j = 0; j < 2; ++j)
   {
-    if (fabs(finalPosition[j] - trueParameters[j]) > 0.01)
+    if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > 0.01)
     {
       std::cerr << "Results do not match: " << std::endl
                 << "expected: " << trueParameters << std::endl
@@ -326,13 +329,16 @@ itkMultiGradientOptimizerv4Test(int, char *[])
   using OptimizerType = itk::MultiGradientOptimizerv4;
   using ParametersType = MultiGradientOptimizerv4TestMetric::ParametersType;
 
-  // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  // Declaration of an itkOptimizer
+  auto itkOptimizer = OptimizerType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(itkOptimizer, MultiGradientOptimizerv4Template, GradientDescentOptimizerv4Template);
+
 
   // Declaration of the Metric
-  MultiGradientOptimizerv4TestMetric::Pointer  metric = MultiGradientOptimizerv4TestMetric::New();
-  MultiGradientOptimizerv4TestMetric2::Pointer metric2 = MultiGradientOptimizerv4TestMetric2::New();
-  constexpr unsigned int                       spaceDimension = 2;
+  auto                   metric = MultiGradientOptimizerv4TestMetric::New();
+  auto                   metric2 = MultiGradientOptimizerv4TestMetric2::New();
+  constexpr unsigned int spaceDimension = 2;
   itkOptimizer->SetMetric(metric);
   itkOptimizer->SetNumberOfIterations(50);
 
@@ -362,8 +368,8 @@ itkMultiGradientOptimizerv4Test(int, char *[])
    */
   // We start not so far from  | 1.5 -1.5 |
   ParametersType testPosition(spaceDimension);
-  testPosition[0] = (double)7.5;
-  testPosition[1] = (double)9.5;
+  testPosition[0] = 7.5;
+  testPosition[1] = 9.5;
   /** Note: both metrics have the same transforms and parameters */
   /** We need the parameters to be the same object across all metric instances*/
   metric->SetParameters(testPosition);

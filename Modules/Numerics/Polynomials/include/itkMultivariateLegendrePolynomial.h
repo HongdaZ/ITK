@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class MultivariateLegendrePolynomial
+ * \class MultivariateLegendrePolynomial
  * \brief 2D and 3D multivariate Legendre Polynomial
  *
  * In 2D,
@@ -65,11 +65,11 @@ namespace itk
  * "Parametric estimate of intensity inhomogeneities applied to MRI"
  * Martin Styner, G. Gerig, Christian Brechbuehler, Gabor Szekely,
  * IEEE TRANSACTIONS ON MEDICAL IMAGING; 19(3), pp. 153-165, 2000,
- * (http://www.cs.unc.edu/~styner/docs/tmi99.pdf)
+ * (https://www.cs.unc.edu/~styner/docs/tmi99.pdf)
  *
  * "Evaluation of 2D/3D bias correction with 1+1ES-optimization"
  * Martin Styner, Prof. Dr. G. Gerig (IKT, BIWI, ETH Zuerich), TR-197
- * (http://www.cs.unc.edu/~styner/docs/StynerTR97.pdf)
+ * (https://www.cs.unc.edu/~styner/docs/StynerTR97.pdf)
  * \ingroup ITKPolynomials
  */
 
@@ -132,20 +132,20 @@ public:
   }
 
   /**
-   *\class CoefficientVectorSizeMismatch
+   * \class CoefficientVectorSizeMismatch
    * \brief Exception object.
    * \ingroup ITKPolynomials
    */
   class CoefficientVectorSizeMismatch
   {
   public:
-    CoefficientVectorSizeMismatch(const std::size_t given, const std::size_t required)
+    CoefficientVectorSizeMismatch(const size_t given, const size_t required)
       : m_Required{ required }
       , m_Given{ given }
     {}
 
-    std::size_t m_Required;
-    std::size_t m_Given;
+    size_t m_Required;
+    size_t m_Given;
   };
 
   /** \brief Sets the Legendre polynomials' parameters.
@@ -153,10 +153,10 @@ public:
    * match the number returned by GetNumberOfCoefficients()
    * otherwise an exception is thrown.  */
   void
-  SetCoefficients(const CoefficientArrayType & coef);
+  SetCoefficients(const CoefficientArrayType & coefficients);
 
   void
-  SetCoefficients(const ParametersType & coef);
+  SetCoefficients(const ParametersType & coefficients);
 
   /** \brief Gets Legendre polynomials' coefficients. */
   const CoefficientArrayType &
@@ -212,7 +212,7 @@ public:
   GetNumberOfCoefficients(unsigned int dimension, unsigned int degree);
 
   /**
-   *\class SimpleForwardIterator
+   * \class SimpleForwardIterator
    * \brief Iterator which only supports forward iteration and
    * Begin(), IsAtEnd(), and Get() method which work just like as
    * SimpleImageRegionIterator.
@@ -235,7 +235,7 @@ public:
     Begin()
     {
       m_IsAtEnd = false;
-      for (unsigned int dim = 0; dim < m_Dimension; dim++)
+      for (unsigned int dim = 0; dim < m_Dimension; ++dim)
       {
         m_Index[dim] = 0;
       }
@@ -250,7 +250,7 @@ public:
     SimpleForwardIterator &
     operator++()
     {
-      for (unsigned int dim = 0; dim < m_Dimension; dim++)
+      for (unsigned int dim = 0; dim < m_Dimension; ++dim)
       {
         if (m_Index[dim] < static_cast<int>(m_DomainSize[dim] - 1))
         {

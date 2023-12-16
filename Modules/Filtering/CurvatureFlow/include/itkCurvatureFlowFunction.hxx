@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkCurvatureFlowFunction_hxx
 #define itkCurvatureFlowFunction_hxx
-#include "itkCurvatureFlowFunction.h"
 
 #include "itkMath.h"
 
@@ -32,7 +31,7 @@ CurvatureFlowFunction<TImage>::CurvatureFlowFunction()
   RadiusType   r;
   unsigned int j;
 
-  for (j = 0; j < ImageDimension; j++)
+  for (j = 0; j < ImageDimension; ++j)
   {
     r[j] = 1;
   }
@@ -46,8 +45,8 @@ CurvatureFlowFunction<TImage>::CurvatureFlowFunction()
  * Compute the global time step
  */
 template <typename TImage>
-typename CurvatureFlowFunction<TImage>::TimeStepType
-CurvatureFlowFunction<TImage>::ComputeGlobalTimeStep(void * itkNotUsed(gd)) const
+auto
+CurvatureFlowFunction<TImage>::ComputeGlobalTimeStep(void * itkNotUsed(gd)) const -> TimeStepType
 {
   return this->GetTimeStep();
 }
@@ -74,13 +73,13 @@ CurvatureFlowFunction<TImage>::ComputeUpdate(const NeighborhoodType & it,
   center = it.Size() / 2;
 
   // cache the stride for each dimension
-  for (i = 0; i < ImageDimension; i++)
+  for (i = 0; i < ImageDimension; ++i)
   {
     stride[i] = it.GetStride((IdentifierType)i);
   }
 
   PixelRealType magnitudeSqr = 0.0;
-  for (i = 0; i < ImageDimension; i++)
+  for (i = 0; i < ImageDimension; ++i)
   {
     // compute first order derivatives
     firstderiv[i] = 0.5 * (it.GetPixel(center + stride[i]) - it.GetPixel(center - stride[i])) * neighborhoodScales[i];
@@ -90,7 +89,7 @@ CurvatureFlowFunction<TImage>::ComputeUpdate(const NeighborhoodType & it,
                   itk::Math::sqr(neighborhoodScales[i]);
 
     // compute cross derivatives
-    for (j = i + 1; j < ImageDimension; j++)
+    for (j = i + 1; j < ImageDimension; ++j)
     {
       crossderiv[i][j] = 0.25 *
                          (it.GetPixel(center - stride[i] - stride[j]) - it.GetPixel(center - stride[i] + stride[j]) -
@@ -98,8 +97,8 @@ CurvatureFlowFunction<TImage>::ComputeUpdate(const NeighborhoodType & it,
                          neighborhoodScales[i] * neighborhoodScales[j];
     }
 
-    // accumlate the gradient magnitude squared
-    magnitudeSqr += itk::Math::sqr((double)firstderiv[i]);
+    // accumulate the gradient magnitude squared
+    magnitudeSqr += itk::Math::sqr(static_cast<double>(firstderiv[i]));
   }
 
   if (magnitudeSqr < 1e-9)
@@ -112,10 +111,10 @@ CurvatureFlowFunction<TImage>::ComputeUpdate(const NeighborhoodType & it,
   PixelRealType temp;
 
   // accumulate dx^2 * (dyy + dzz) terms
-  for (i = 0; i < ImageDimension; i++)
+  for (i = 0; i < ImageDimension; ++i)
   {
     temp = 0.0;
-    for (j = 0; j < ImageDimension; j++)
+    for (j = 0; j < ImageDimension; ++j)
     {
       if (j == i)
       {
@@ -124,13 +123,13 @@ CurvatureFlowFunction<TImage>::ComputeUpdate(const NeighborhoodType & it,
       temp += secderiv[j];
     }
 
-    update += temp * itk::Math::sqr((double)firstderiv[i]);
+    update += temp * itk::Math::sqr(static_cast<double>(firstderiv[i]));
   }
 
-  // accumlate -2 * dx * dy * dxy terms
-  for (i = 0; i < ImageDimension; i++)
+  // accumulate -2 * dx * dy * dxy terms
+  for (i = 0; i < ImageDimension; ++i)
   {
-    for (j = i + 1; j < ImageDimension; j++)
+    for (j = i + 1; j < ImageDimension; ++j)
     {
       update -= 2 * firstderiv[i] * firstderiv[j] * crossderiv[i][j];
     }

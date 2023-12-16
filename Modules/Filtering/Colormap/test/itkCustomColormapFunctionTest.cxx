@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,7 +60,7 @@ public:
 
     using ColormapType = itk::Function::CustomColormapFunction<ScalarType, RGBPixelType>;
 
-    typename ColormapType::Pointer colormap = ColormapType::New();
+    auto colormap = ColormapType::New();
 
     // Set the RGB channels
     colormap->SetRedChannel(redChannel);
@@ -88,8 +88,9 @@ public:
     // Map the scalar value into an RGB colormap value
     RGBPixelType pixel = colormap->operator()(val);
 
-    std::cout << "RGB colormap for value " << (int)val << std::endl;
-    std::cout << "R: " << (int)pixel[0] << "; G: " << (int)pixel[1] << "; B: " << (int)pixel[2] << std::endl;
+    std::cout << "RGB colormap for value " << static_cast<int>(val) << std::endl;
+    std::cout << "R: " << static_cast<int>(pixel[0]) << "; G: " << static_cast<int>(pixel[1])
+              << "; B: " << static_cast<int>(pixel[2]) << std::endl;
 
     std::cout << "Test succeeded." << std::endl;
     return EXIT_SUCCESS;

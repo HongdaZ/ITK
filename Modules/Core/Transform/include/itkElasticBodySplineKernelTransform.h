@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,15 +36,15 @@ namespace itk
  *
  * \ingroup ITKTransform
  */
-template <typename TParametersValueType = double, unsigned int NDimensions = 3>
-class ITK_TEMPLATE_EXPORT ElasticBodySplineKernelTransform : public KernelTransform<TParametersValueType, NDimensions>
+template <typename TParametersValueType = double, unsigned int VDimension = 3>
+class ITK_TEMPLATE_EXPORT ElasticBodySplineKernelTransform : public KernelTransform<TParametersValueType, VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ElasticBodySplineKernelTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(ElasticBodySplineKernelTransform);
 
   /** Standard class type aliases. */
   using Self = ElasticBodySplineKernelTransform;
-  using Superclass = KernelTransform<TParametersValueType, NDimensions>;
+  using Superclass = KernelTransform<TParametersValueType, VDimension>;
 
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
@@ -56,16 +56,16 @@ public:
   itkNewMacro(Self);
 
   /** Scalar type. */
-  using ScalarType = typename Superclass::ScalarType;
+  using typename Superclass::ScalarType;
 
   /** Parameters type. */
-  using ParametersType = typename Superclass::ParametersType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::FixedParametersType;
 
   /** Jacobian type. */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  using typename Superclass::JacobianType;
+  using typename Superclass::JacobianPositionType;
+  using typename Superclass::InverseJacobianPositionType;
 
   /** Dimension of the domain space. */
   static constexpr unsigned int SpaceDimension = Superclass::SpaceDimension;
@@ -78,12 +78,12 @@ public:
   /** Get alpha */
   itkGetConstMacro(Alpha, TParametersValueType);
 
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
+  using typename Superclass::InputPointType;
+  using typename Superclass::OutputPointType;
+  using typename Superclass::InputVectorType;
+  using typename Superclass::OutputVectorType;
+  using typename Superclass::InputCovariantVectorType;
+  using typename Superclass::OutputCovariantVectorType;
 
 protected:
   ElasticBodySplineKernelTransform();
@@ -91,7 +91,7 @@ protected:
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 
-  using GMatrixType = typename Superclass::GMatrixType;
+  using typename Superclass::GMatrixType;
   /** Compute G(x)
    * For the elastic body spline, this is:
    * \f$ G(x) = [alpha*r(x)^2*I - 3*x*x']*r(x) \f$
@@ -104,7 +104,7 @@ protected:
    * I = identity matrix
    */
   void
-  ComputeG(const InputVectorType & landmarkVector, GMatrixType & gmatrix) const override;
+  ComputeG(const InputVectorType & x, GMatrixType & gmatrix) const override;
 
   /** alpha,  Alpha is related to Poisson's Ratio (\f$\nu\f$) as
    * \f$ \alpha = 12 ( 1 - \nu ) - 1\f$

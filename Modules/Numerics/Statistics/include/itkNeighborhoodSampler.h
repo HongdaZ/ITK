@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@ template <typename TSample>
 class ITK_TEMPLATE_EXPORT NeighborhoodSampler : public SampleToSubsampleFilter<TSample>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NeighborhoodSampler);
+  ITK_DISALLOW_COPY_AND_MOVE(NeighborhoodSampler);
 
   /** Standard class type aliases. */
   using Self = NeighborhoodSampler;
@@ -58,12 +58,12 @@ public:
 
   /** Typedefs for Measurement vector, measurement, Instance Identifier,
    * frequency, size, size element value from the template argument TSample */
-  using SampleType = typename Superclass::SampleType;
-  using MeasurementVectorType = typename Superclass::MeasurementVectorType;
-  using MeasurementType = typename Superclass::MeasurementType;
-  using InstanceIdentifier = typename Superclass::InstanceIdentifier;
-  using SubsampleType = typename Superclass::SubsampleType;
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::SampleType;
+  using typename Superclass::MeasurementVectorType;
+  using typename Superclass::MeasurementType;
+  using typename Superclass::InstanceIdentifier;
+  using typename Superclass::SubsampleType;
+  using typename Superclass::OutputType;
 
   /** Type of the distance radius. */
   using RadiusType = double;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ namespace itk
  *
  * This class was contributed to the Insight Journal by Gaetan Lehmann.
  * The original paper can be found at
- *      https://hdl.handle.net/1926/164
+ * https://www.insight-journal.org/browse/publication/71
  *
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction,
  * INRA de Jouy-en-Josas, France.
@@ -46,7 +46,7 @@ namespace itk
 
 namespace Functor
 {
-template <typename TInputPixel, typename TOuputPixel>
+template <typename TInputPixel, typename TOutputPixel>
 class SumAccumulator
 {
 public:
@@ -56,7 +56,7 @@ public:
   inline void
   Initialize()
   {
-    m_Sum = NumericTraits<TOuputPixel>::ZeroValue();
+    m_Sum = NumericTraits<TOutputPixel>::ZeroValue();
   }
 
   inline void
@@ -65,13 +65,13 @@ public:
     m_Sum = m_Sum + input;
   }
 
-  inline TOuputPixel
+  inline TOutputPixel
   GetValue()
   {
     return m_Sum;
   }
 
-  TOuputPixel m_Sum;
+  TOutputPixel m_Sum;
 };
 } // namespace Functor
 
@@ -83,7 +83,7 @@ class SumProjectionImageFilter
       Functor::SumAccumulator<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SumProjectionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SumProjectionImageFilter);
 
   using Self = SumProjectionImageFilter;
   using Superclass =

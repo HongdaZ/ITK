@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -131,7 +131,7 @@ public:
     IndexType index;
     it.GoToBegin();
     index = it.GetIndex();
-    for (unsigned int i = 0; i < region.GetSize()[0]; i++)
+    for (unsigned int i = 0; i < region.GetSize()[0]; ++i)
     {
       ++it;
     }
@@ -141,7 +141,7 @@ public:
     }
 
     // iterate back
-    for (unsigned int i = 0; i < region.GetSize()[0]; i++)
+    for (unsigned int i = 0; i < region.GetSize()[0]; ++i)
     {
       --it;
     }
@@ -155,7 +155,7 @@ public:
     {
       it.GoToBegin();
       index = it.GetIndex();
-      for (unsigned int i = 0; i < region.GetSize()[0] * region.GetSize()[1]; i++)
+      for (unsigned int i = 0; i < region.GetSize()[0] * region.GetSize()[1]; ++i)
       {
         ++it;
       }
@@ -166,7 +166,7 @@ public:
       }
 
       // iterate back
-      for (unsigned int i = 0; i < region.GetSize()[0] * region.GetSize()[1]; i++)
+      for (unsigned int i = 0; i < region.GetSize()[0] * region.GetSize()[1]; ++i)
       {
         --it;
       }

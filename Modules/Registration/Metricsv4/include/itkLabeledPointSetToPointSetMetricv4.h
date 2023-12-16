@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,7 +56,7 @@ class ITK_TEMPLATE_EXPORT LabeledPointSetToPointSetMetricv4
   : public PointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LabeledPointSetToPointSetMetricv4);
+  ITK_DISALLOW_COPY_AND_MOVE(LabeledPointSetToPointSetMetricv4);
 
   /** Standard class type aliases. */
   using Self = LabeledPointSetToPointSetMetricv4;
@@ -76,11 +76,11 @@ public:
   using MovingPointSetPointer = typename MovingPointSetType::Pointer;
 
   /** Types transferred from the base class */
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using LocalDerivativeType = typename Superclass::LocalDerivativeType;
-  using PointType = typename Superclass::PointType;
-  using PointIdentifier = typename Superclass::PointIdentifier;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::LocalDerivativeType;
+  using typename Superclass::PointType;
+  using typename Superclass::PointIdentifier;
 
   using LabelType = typename Superclass::PixelType;
   using LabelSetType = std::vector<LabelType>;

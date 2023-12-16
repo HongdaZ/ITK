@@ -148,6 +148,17 @@ WRAP_TYPE("itk::FixedArray" "FA" "itkFixedArray.h")
     ADD_TEMPLATE("${ITKM_SC}${d}" "${ITKT_SC},${d}")
     ADD_TEMPLATE("${ITKM_B}${d}"  "${ITKT_B},${d}")
   endforeach()
+
+  # Wrap FixedArray for BSplineInterpolationWeightFunction:
+  foreach(d ${ITK_WRAP_IMAGE_DIMS})
+    # Wrapping for spline order 3, components = (SplineOrder + 1)^SpaceDimension
+    set(comp 1)
+    foreach(i RANGE 1 ${d})
+      math(EXPR comp "${comp}*4")
+    endforeach()
+    ADD_TEMPLATE("${ITKM_D}${comp}" "${ITKT_D},${comp}")
+    ADD_TEMPLATE("${ITKM_UL}${comp}" "${ITKT_UL},${comp}")
+  endforeach()
 END_WRAP_TYPE()
 set(itk_Wrap_FixedArray ${WRAPPER_TEMPLATES})
 
@@ -203,13 +214,14 @@ WRAP_TYPE("itk::Image" "I" "itkImage.h")
   # Make a list of all of the selected image pixel types and also double (for
   # BSplineDeformableTransform), uchar (for 8-bit image output), ulong
   # (for the watershed and relabel filters), bool for (FlatStructuringElement)
+  # unsigned int and signed int for IO.
 
   # Wrap from ulong to other integral types, even if ulong isn't wrapped. This
   # is needed for the relabel components image filter.
-  UNIQUE(WRAP_ITK_SCALAR_IMAGE_PIXEL_TYPES "${WRAP_ITK_SCALAR};D;UC;UL;ULL;B;${ITKM_IT}")
+  UNIQUE(WRAP_ITK_SCALAR_IMAGE_PIXEL_TYPES "${WRAP_ITK_SCALAR};D;UC;SI;UI;UL;ULL;B;${ITKM_IT}")
   UNIQUE(wrap_image_types "${WRAP_ITK_ALL_TYPES};RGBUC;RGBAUC;VD;${WRAP_ITK_SCALAR_IMAGE_PIXEL_TYPES}")
 
-  set(defined_vector_list )
+  set(defined_vector_list)
   foreach(d ${ITK_WRAP_IMAGE_DIMS})
 
     foreach(type ${wrap_image_types})
@@ -244,6 +256,9 @@ WRAP_TYPE("itk::Image" "I" "itkImage.h")
 
     # SymmetricSecondRankTensor types required by level set filters
     ADD_TEMPLATE("${ITKM_SSRT${ITKM_D}${d}}${d}"  "${ITKT_SSRT${ITKM_D}${d}}, ${d}")
+    if(ITK_WRAP_float)
+      ADD_TEMPLATE("${ITKM_SSRT${ITKM_F}${d}}${d}"  "${ITKT_SSRT${ITKM_F}${d}}, ${d}")
+    endif()
 
   endforeach()
 
@@ -281,7 +296,7 @@ set(itk_Wrap_Image ${WRAPPER_TEMPLATES})
 WRAP_TYPE("itk::VectorImage" "VI" "itkVectorImage.h")
   # Make a list of all of the selected image pixel types and also uchar
   # (for 8-bit image output)
-  UNIQUE(wrap_image_types "${WRAP_ITK_COMPLEX_REAL};${WRAP_ITK_SCALAR};UC")
+  UNIQUE(wrap_image_types "${WRAP_ITK_COMPLEX_REAL};${WRAP_ITK_SCALAR};UC;D")
 
   foreach(d ${ITK_WRAP_IMAGE_DIMS})
     foreach(type ${wrap_image_types})
@@ -303,7 +318,8 @@ END_WRAP_TYPE()
 set(itk_Wrap_VariableLengthVector ${WRAPPER_TEMPLATES})
 
 WRAP_TYPE("itk::Point" "P" "itkPoint.h")
-  foreach(d ${ITK_WRAP_IMAGE_DIMS_INCREMENTED})
+  UNIQUE(dims "${ITK_WRAP_IMAGE_DIMS_INCREMENTED};6")
+  foreach(d ${dims})
     ADD_TEMPLATE("${ITKM_F}${d}"  "${ITKT_F},${d}")
     ADD_TEMPLATE("${ITKM_D}${d}"  "${ITKT_D},${d}")
   endforeach()

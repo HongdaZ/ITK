@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ namespace itk
 namespace Functor
 {
 /**
- *\class AccessorFunctor
+ * \class AccessorFunctor
  * \brief Convert an accessor to a functor so that it can be used in a
  * UnaryFunctorImageFilter.
  *
@@ -83,18 +83,14 @@ public:
     m_Accessor = accessor;
   }
 
-  /** operator!=.  Needed to determine if two accessors are the same. */
-  bool
-  operator!=(const Self & functor) const
-  {
-    return (m_Accessor != functor.m_Accessor);
-  }
-
+  /** Needed to determine if two accessors are the same. */
   bool
   operator==(const Self & other) const
   {
-    return !(*this != other);
+    return m_Accessor == other.m_Accessor;
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
 
 private:
   AccessorType m_Accessor;
@@ -102,7 +98,7 @@ private:
 } // namespace Functor
 
 /**
- *\class AdaptImageFilter
+ * \class AdaptImageFilter
  * \brief Convert an image to another pixel type using the specified data accessor.
  *
  * AdaptImageFilter converts an image to another pixel type using a
@@ -136,7 +132,7 @@ class AdaptImageFilter
                                    Functor::AccessorFunctor<typename TInputImage::PixelType, TAccessor>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AdaptImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(AdaptImageFilter);
 
   /** Standard class type aliases. */
   using Self = AdaptImageFilter;
@@ -147,7 +143,7 @@ public:
 
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
-  using FunctorType = typename Superclass::FunctorType;
+  using typename Superclass::FunctorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

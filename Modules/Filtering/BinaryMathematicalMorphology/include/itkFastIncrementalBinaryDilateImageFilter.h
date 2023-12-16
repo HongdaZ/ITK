@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,10 +49,11 @@ namespace itk
  * \ingroup ITKBinaryMathematicalMorphology
  */
 template <typename TInputImage, typename TOutputImage, typename TKernel>
-class FastIncrementalBinaryDilateImageFilter : public BinaryDilateImageFilter<TInputImage, TOutputImage, TKernel>
+class ITK_TEMPLATE_EXPORT FastIncrementalBinaryDilateImageFilter
+  : public BinaryDilateImageFilter<TInputImage, TOutputImage, TKernel>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastIncrementalBinaryDilateImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(FastIncrementalBinaryDilateImageFilter);
 
   /** Extract dimension from input and output image. */
   static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
@@ -76,7 +77,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(FastIncrementalBinaryDilateImageFilter, ImageToImageFilter);
+  itkTypeMacro(FastIncrementalBinaryDilateImageFilter, BinaryDilateImageFilter);
 
 protected:
   FastIncrementalBinaryDilateImageFilter() = default;

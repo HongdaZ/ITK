@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class LevelSetDomainPartitionImageWithKdTree
+ * \class LevelSetDomainPartitionImageWithKdTree
  *
  * \brief Helper class used to share data in the ScalarChanAndVeseLevelSetFunction.
  * \ingroup ITKLevelSetsv4
@@ -35,7 +35,7 @@ template <typename TImage>
 class ITK_TEMPLATE_EXPORT LevelSetDomainPartitionImageWithKdTree : public LevelSetDomainPartitionImage<TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetDomainPartitionImageWithKdTree);
+  ITK_DISALLOW_COPY_AND_MOVE(LevelSetDomainPartitionImageWithKdTree);
 
   using Self = LevelSetDomainPartitionImageWithKdTree;
   using Superclass = LevelSetDomainPartitionImage<TImage>;
@@ -50,11 +50,11 @@ public:
   itkTypeMacro(LevelSetDomainPartitionImageWithKdTree, LevelSetDomainPartitionImage);
 
   using ImageType = TImage;
-  using ListIndexType = typename Superclass::ListIndexType;
-  using ListRegionType = typename Superclass::ListRegionType;
-  using ListPointType = typename Superclass::ListPointType;
-  using ListIteratorType = typename Superclass::ListIteratorType;
-  using IdentifierListType = typename Superclass::IdentifierListType;
+  using typename Superclass::ListIndexType;
+  using typename Superclass::ListRegionType;
+  using typename Superclass::ListPointType;
+  using typename Superclass::ListIteratorType;
+  using typename Superclass::IdentifierListType;
 
   using CentroidVectorType = typename ListPointType::VectorType;
   using SampleType = typename Statistics::ListSample<CentroidVectorType>;

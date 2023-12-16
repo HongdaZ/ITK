@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,6 @@
 #include "itkConstantBoundaryCondition.h"
 #include "itkOffset.h"
 #include "itkProgressReporter.h"
-#include "itkBinaryErodeImageFilter.h"
 #include "itkMath.h"
 
 namespace itk
@@ -101,7 +100,7 @@ BinaryErodeImageFilter<TInputImage, TOutputImage, TKernel>::GenerateData()
   // The temp image size is equal to the output requested region for thread
   // padded by max( connectivity neighborhood radius, SE kernel radius ).
   using TempImageType = itk::Image<unsigned char, TInputImage::ImageDimension>;
-  typename TempImageType::Pointer tmpImage = TempImageType::New();
+  auto tmpImage = TempImageType::New();
 
   // Define regions of temp image
   tmpImage->SetRegions(tmpRequestedRegion);

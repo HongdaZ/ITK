@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ StreamingProcessObject::GenerateData()
   // Loop over the number of pieces, execute the upstream pipeline on each
   // piece, and execute StreamedGenerateData on each region
   //
-  for (unsigned int piece = 0; piece < numberOfInputRequestRegion && !this->GetAbortGenerateData(); piece++)
+  for (unsigned int piece = 0; piece < numberOfInputRequestRegion && !this->GetAbortGenerateData(); ++piece)
   {
     this->m_CurrentRequestNumber = piece;
 
@@ -82,9 +82,9 @@ StreamingProcessObject::GenerateData()
     try
     {
       this->StreamedGenerateData(piece);
-      this->UpdateProgress(float(piece + 1) / numberOfInputRequestRegion);
+      this->UpdateProgress(static_cast<float>(piece + 1) / numberOfInputRequestRegion);
     }
-    catch (ProcessAborted &)
+    catch (const ProcessAborted &)
     {
       this->InvokeEvent(AbortEvent());
       this->ResetPipeline();
@@ -206,7 +206,7 @@ StreamingProcessObject::ResetPipeline()
 }
 
 
-StreamingProcessObject::StreamingProcessObject(void) = default;
+StreamingProcessObject::StreamingProcessObject() = default;
 
 
 StreamingProcessObject::~StreamingProcessObject() = default;

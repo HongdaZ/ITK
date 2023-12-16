@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,7 +58,7 @@ class ITK_TEMPLATE_EXPORT QuadEdgeMeshEulerOperatorJoinVertexFunction
   : public QuadEdgeMeshFunctionBase<TMesh, TQEType *>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshEulerOperatorJoinVertexFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(QuadEdgeMeshEulerOperatorJoinVertexFunction);
 
   /** Standard class type aliases. */
   using Self = QuadEdgeMeshEulerOperatorJoinVertexFunction;
@@ -73,8 +73,8 @@ public:
   /** Type of QuadEdge with which to apply slicing. */
   using QEType = TQEType;
 
-  using MeshType = typename Superclass::MeshType;
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::MeshType;
+  using typename Superclass::OutputType;
 
   using PointIdentifier = typename MeshType::PointIdentifier;
   using CellIdentifier = typename MeshType::CellIdentifier;
@@ -82,7 +82,7 @@ public:
 
   /** Evaluate at the specified input position */
   virtual OutputType
-  Evaluate(QEType * h);
+  Evaluate(QEType * e);
 
   enum EdgeStatusType
   {
@@ -140,7 +140,7 @@ protected:
    * \return false else
    */
   bool
-  IsFaceIsolated(QEType * e, const bool & iWasLeftFace, std::stack<TQEType *> & oToBeDeleted);
+  IsFaceIsolated(QEType * e, const bool iWasLeftFace, std::stack<TQEType *> & oToBeDeleted);
 
   bool
   IsSamosa(QEType * e);

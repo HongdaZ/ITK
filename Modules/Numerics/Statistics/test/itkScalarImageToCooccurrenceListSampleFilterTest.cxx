@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ itkScalarImageToCooccurrenceListSampleFilterTest(int, char *[])
   using InputImageIterator = itk::ImageRegionIterator<InputImageType>;
 
 
-  InputImageType::Pointer image = InputImageType::New();
+  auto image = InputImageType::New();
 
   InputImageType::SizeType inputImageSize = { { IMGWIDTH, IMGHEIGHT } };
 
@@ -62,14 +62,14 @@ itkScalarImageToCooccurrenceListSampleFilterTest(int, char *[])
   // setup the iterator
   InputImageIterator imageIt(image, image->GetBufferedRegion());
 
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 5; ++i)
     for (int j = 0; j < 5; j++, ++imageIt)
     {
       imageIt.Set(i % 5 + j);
     }
 
   imageIt.GoToBegin();
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 5; ++i)
   {
     for (int j = 0; j < 5; j++, ++imageIt)
     {
@@ -81,7 +81,7 @@ itkScalarImageToCooccurrenceListSampleFilterTest(int, char *[])
 
   using CooccurrenceListType = itk::Statistics::ScalarImageToCooccurrenceListSampleFilter<InputImageType>;
 
-  CooccurrenceListType::Pointer filter = CooccurrenceListType::New();
+  auto filter = CooccurrenceListType::New();
 
   filter->Print(std::cout);
 
@@ -102,9 +102,7 @@ itkScalarImageToCooccurrenceListSampleFilterTest(int, char *[])
 
   if (filter->GetInput() != nullptr)
   {
-    std::cerr << "GetInput() should return nullptr since the input is\
-                  not set yet "
-              << std::endl;
+    std::cerr << "GetInput() should return nullptr since the input is not set yet " << std::endl;
     return EXIT_FAILURE;
   }
 

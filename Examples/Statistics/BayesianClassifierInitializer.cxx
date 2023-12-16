@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@
 // Datatype[z][y][x][c])
 //
 // The example also optionally takes in two more arguments, as a convenience
-// to the user. These arguements extract the specified component 'c' from the
+// to the user. These arguments extract the specified component 'c' from the
 // membership image and rescale, so the user can fire up a typical image
 // viewer and see the relative pixel memberships to class 'c'.
 //
@@ -83,11 +83,10 @@ main(int argc, char * argv[])
   using ImageType = itk::Image<unsigned char, Dimension>;
   using BayesianInitializerType =
     itk::BayesianClassifierInitializationImageFilter<ImageType>;
-  BayesianInitializerType::Pointer bayesianInitializer =
-    BayesianInitializerType::New();
+  auto bayesianInitializer = BayesianInitializerType::New();
 
   using ReaderType = itk::ImageFileReader<ImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
   try
@@ -108,7 +107,7 @@ main(int argc, char * argv[])
 
   using WriterType =
     itk::ImageFileWriter<BayesianInitializerType::OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(bayesianInitializer->GetOutput());
   writer->SetFileName(argv[2]);
 
@@ -139,8 +138,7 @@ main(int argc, char * argv[])
     using MembershipImageType = BayesianInitializerType::OutputImageType;
     using ExtractedComponentImageType =
       itk::Image<MembershipImageType::InternalPixelType, Dimension>;
-    ExtractedComponentImageType::Pointer extractedComponentImage =
-      ExtractedComponentImageType::New();
+    auto extractedComponentImage = ExtractedComponentImageType::New();
     extractedComponentImage->CopyInformation(
       bayesianInitializer->GetOutput());
     extractedComponentImage->SetBufferedRegion(
@@ -173,14 +171,13 @@ main(int argc, char * argv[])
     using RescalerType =
       itk::RescaleIntensityImageFilter<ExtractedComponentImageType,
                                        OutputImageType>;
-    RescalerType::Pointer rescaler = RescalerType::New();
+    auto rescaler = RescalerType::New();
     rescaler->SetInput(extractedComponentImage);
     rescaler->SetOutputMinimum(0);
     rescaler->SetOutputMaximum(255);
     using ExtractedComponentWriterType =
       itk::ImageFileWriter<OutputImageType>;
-    ExtractedComponentWriterType::Pointer rescaledImageWriter =
-      ExtractedComponentWriterType::New();
+    auto rescaledImageWriter = ExtractedComponentWriterType::New();
     rescaledImageWriter->SetInput(rescaler->GetOutput());
     rescaledImageWriter->SetFileName(argv[5]);
     rescaledImageWriter->Update();

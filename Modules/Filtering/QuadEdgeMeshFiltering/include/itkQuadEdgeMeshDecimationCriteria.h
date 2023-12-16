@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ template <typename TMesh,
 class QuadEdgeMeshDecimationCriterion : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshDecimationCriterion);
+  ITK_DISALLOW_COPY_AND_MOVE(QuadEdgeMeshDecimationCriterion);
 
   using Self = QuadEdgeMeshDecimationCriterion;
   using Pointer = SmartPointer<Self>;
@@ -66,6 +66,7 @@ public:
     this->m_MeasureBound = bound;
   }
 
+  itkBooleanMacro(TopologicalChange);
   itkGetConstMacro(TopologicalChange, bool);
   itkSetMacro(TopologicalChange, bool);
 
@@ -110,10 +111,11 @@ template <typename TMesh,
           typename TMeasure = double,
           typename TPriorityQueueWrapper =
             MinPriorityQueueElementWrapper<typename TMesh::QEType *, std::pair<bool, TMeasure>>>
-class NumberOfPointsCriterion : public QuadEdgeMeshDecimationCriterion<TMesh, TElement, TMeasure, TPriorityQueueWrapper>
+class ITK_TEMPLATE_EXPORT NumberOfPointsCriterion
+  : public QuadEdgeMeshDecimationCriterion<TMesh, TElement, TMeasure, TPriorityQueueWrapper>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NumberOfPointsCriterion);
+  ITK_DISALLOW_COPY_AND_MOVE(NumberOfPointsCriterion);
 
   using Self = NumberOfPointsCriterion;
   using Pointer = SmartPointer<Self>;
@@ -126,11 +128,11 @@ public:
   /** New macro for creation of through a Smart Pointer   */
   itkNewMacro(Self);
 
-  using MeshType = typename Superclass::MeshType;
-  using ElementType = typename Superclass::ElementType;
-  using MeasureType = typename Superclass::MeasureType;
-  using PriorityQueueWrapperType = typename Superclass::PriorityQueueWrapperType;
-  using PriorityType = typename Superclass::PriorityType;
+  using typename Superclass::MeshType;
+  using typename Superclass::ElementType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::PriorityQueueWrapperType;
+  using typename Superclass::PriorityType;
 
   inline bool
   is_satisfied(MeshType * iMesh, const ElementType & itkNotUsed(iElement), const MeasureType & itkNotUsed(iValue)) const
@@ -153,10 +155,11 @@ template <typename TMesh,
           typename TMeasure = double,
           typename TPriorityQueueWrapper =
             MinPriorityQueueElementWrapper<typename TMesh::QEType *, std::pair<bool, TMeasure>>>
-class NumberOfFacesCriterion : public QuadEdgeMeshDecimationCriterion<TMesh, TElement, TMeasure, TPriorityQueueWrapper>
+class ITK_TEMPLATE_EXPORT NumberOfFacesCriterion
+  : public QuadEdgeMeshDecimationCriterion<TMesh, TElement, TMeasure, TPriorityQueueWrapper>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NumberOfFacesCriterion);
+  ITK_DISALLOW_COPY_AND_MOVE(NumberOfFacesCriterion);
 
   using Self = NumberOfFacesCriterion;
   using Pointer = SmartPointer<Self>;
@@ -169,12 +172,12 @@ public:
   /** New macro for creation of through a Smart Pointer   */
   itkNewMacro(Self);
 
-  using MeshType = typename Superclass::MeshType;
+  using typename Superclass::MeshType;
   using CellsContainerConstIterator = typename MeshType::CellsContainerConstIterator;
-  using ElementType = typename Superclass::ElementType;
-  using MeasureType = typename Superclass::MeasureType;
-  using PriorityQueueWrapperType = typename Superclass::PriorityQueueWrapperType;
-  using PriorityType = typename Superclass::PriorityType;
+  using typename Superclass::ElementType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::PriorityQueueWrapperType;
+  using typename Superclass::PriorityType;
 
   bool
   is_satisfied(MeshType *          iMesh,
@@ -203,7 +206,7 @@ class MaxMeasureBoundCriterion
   : public QuadEdgeMeshDecimationCriterion<TMesh, TElement, TMeasure, TPriorityQueueWrapper>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MaxMeasureBoundCriterion);
+  ITK_DISALLOW_COPY_AND_MOVE(MaxMeasureBoundCriterion);
 
   using Self = MaxMeasureBoundCriterion;
   using Pointer = SmartPointer<Self>;
@@ -216,12 +219,12 @@ public:
   /** New macro for creation of through a Smart Pointer   */
   itkNewMacro(Self);
 
-  using MeshType = typename Superclass::MeshType;
+  using typename Superclass::MeshType;
   using CellsContainerConstIterator = typename MeshType::CellsContainerConstIterator;
-  using ElementType = typename Superclass::ElementType;
-  using MeasureType = typename Superclass::MeasureType;
-  using PriorityQueueWrapperType = typename Superclass::PriorityQueueWrapperType;
-  using PriorityType = typename Superclass::PriorityType;
+  using typename Superclass::ElementType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::PriorityQueueWrapperType;
+  using typename Superclass::PriorityType;
 
   bool
   is_satisfied(MeshType *          itkNotUsed(iMesh),
@@ -252,7 +255,7 @@ class MinMeasureBoundCriterion
   : public QuadEdgeMeshDecimationCriterion<TMesh, TElement, TMeasure, TPriorityQueueWrapper>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MinMeasureBoundCriterion);
+  ITK_DISALLOW_COPY_AND_MOVE(MinMeasureBoundCriterion);
 
   using Self = MinMeasureBoundCriterion;
   using Pointer = SmartPointer<Self>;
@@ -265,12 +268,12 @@ public:
   /** New macro for creation of through a Smart Pointer   */
   itkNewMacro(Self);
 
-  using MeshType = typename Superclass::MeshType;
+  using typename Superclass::MeshType;
   using CellsContainerConstIterator = typename MeshType::CellsContainerConstIterator;
-  using ElementType = typename Superclass::ElementType;
-  using MeasureType = typename Superclass::MeasureType;
-  using PriorityQueueWrapperType = typename Superclass::PriorityQueueWrapperType;
-  using PriorityType = typename Superclass::PriorityType;
+  using typename Superclass::ElementType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::PriorityQueueWrapperType;
+  using typename Superclass::PriorityType;
 
   inline bool
   is_satisfied(MeshType *, const ElementType &, const MeasureType & iValue) const

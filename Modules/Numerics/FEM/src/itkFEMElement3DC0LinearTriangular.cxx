@@ -6,7 +6,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0.txt
+ * https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 {
 namespace fem
 {
-const Element3DC0LinearTriangular::Float Element3DC0LinearTriangular ::trigGaussRuleInfo[6][7][4] = {
+const Element3DC0LinearTriangular::Float Element3DC0LinearTriangular::trigGaussRuleInfo[6][7][4] = {
   { // order=0, never used
     { 0.0 } },
   { // order=1
@@ -62,13 +62,13 @@ const Element3DC0LinearTriangular::Float Element3DC0LinearTriangular ::trigGauss
     { 0.47014206410511509, 0.47014206410511509, 0.05971587178976982, 0.13239415278850618 } }
 };
 
-const unsigned int Element3DC0LinearTriangular ::Nip[6] = { 0, 1, 3, 3, 6, 7 };
+const unsigned int Element3DC0LinearTriangular::Nip[6] = { 0, 1, 3, 3, 6, 7 };
 
 void
-Element3DC0LinearTriangular ::GetIntegrationPointAndWeight(unsigned int i,
-                                                           VectorType & pt,
-                                                           Float &      w,
-                                                           unsigned int order) const
+Element3DC0LinearTriangular::GetIntegrationPointAndWeight(unsigned int i,
+                                                          VectorType & pt,
+                                                          Float &      w,
+                                                          unsigned int order) const
 {
   // default integration order
   if (order == 0 || order > 5)
@@ -101,7 +101,7 @@ Element3DC0LinearTriangular ::GetIntegrationPointAndWeight(unsigned int i,
 }
 
 unsigned int
-Element3DC0LinearTriangular ::GetNumberOfIntegrationPoints(unsigned int order) const
+Element3DC0LinearTriangular::GetNumberOfIntegrationPoints(unsigned int order) const
 {
   // default integration order
   if (order == 0 || order > 5)
@@ -113,7 +113,7 @@ Element3DC0LinearTriangular ::GetNumberOfIntegrationPoints(unsigned int order) c
 }
 
 Element3DC0LinearTriangular::VectorType
-Element3DC0LinearTriangular ::ShapeFunctions(const VectorType & pt) const
+Element3DC0LinearTriangular::ShapeFunctions(const VectorType & pt) const
 {
   // Linear triangular element has 3 shape functions
   VectorType shapeF(3);
@@ -125,7 +125,7 @@ Element3DC0LinearTriangular ::ShapeFunctions(const VectorType & pt) const
 }
 
 void
-Element3DC0LinearTriangular ::ShapeFunctionDerivatives(const VectorType &, MatrixType & shapeD) const
+Element3DC0LinearTriangular::ShapeFunctionDerivatives(const VectorType &, MatrixType & shapeD) const
 {
   // Matrix of shape functions derivatives is an
   // identity matrix for linear triangular element.
@@ -137,7 +137,7 @@ Element3DC0LinearTriangular ::ShapeFunctionDerivatives(const VectorType &, Matri
 }
 
 bool
-Element3DC0LinearTriangular ::GetLocalFromGlobalCoordinates(const VectorType & globalPt, VectorType & localPt) const
+Element3DC0LinearTriangular::GetLocalFromGlobalCoordinates(const VectorType & globalPt, VectorType & localPt) const
 {
   int        i, j;
   VectorType pt1, pt2, pt3, n(3);
@@ -164,9 +164,9 @@ Element3DC0LinearTriangular ::GetLocalFromGlobalCoordinates(const VectorType & g
   // which 2 out of 3 equations to use to develop equations. (Any 2 should
   // work since we've projected point to plane.)
   //
-  for (maxComponent = 0.0, i = 0; i < 3; i++)
+  for (maxComponent = 0.0, i = 0; i < 3; ++i)
   {
-    // trying to avoid an expensive call to fabs()
+    // trying to avoid an expensive call to itk::Math::abs()
     if (n[i] < 0)
     {
       fabsn = -n[i];
@@ -181,14 +181,14 @@ Element3DC0LinearTriangular ::GetLocalFromGlobalCoordinates(const VectorType & g
       idx = i;
     }
   }
-  for (j = 0, i = 0; i < 3; i++)
+  for (j = 0, i = 0; i < 3; ++i)
   {
     if (i != idx)
     {
       indices[j++] = i;
     }
   }
-  for (i = 0; i < 2; i++)
+  for (i = 0; i < 2; ++i)
   {
     rhs[i] = cp[indices[i]] - pt3[indices[i]];
     c1[i] = pt1[indices[i]] - pt3[indices[i]];
@@ -217,7 +217,7 @@ Element3DC0LinearTriangular ::GetLocalFromGlobalCoordinates(const VectorType & g
 }
 
 Element3DC0LinearTriangular::Float
-Element3DC0LinearTriangular ::JacobianDeterminant(const VectorType & /*HACK pt*/, const MatrixType * /*HACK pJ*/) const
+Element3DC0LinearTriangular::JacobianDeterminant(const VectorType & /*HACK pt*/, const MatrixType * /*HACK pJ*/) const
 {
   // use heron's formula
   constexpr int na = 0;
@@ -256,7 +256,7 @@ Element3DC0LinearTriangular ::JacobianDeterminant(const VectorType & /*HACK pt*/
 }
 
 void
-Element3DC0LinearTriangular ::JacobianInverse(const VectorType & pt, MatrixType & invJ, const MatrixType * pJ) const
+Element3DC0LinearTriangular::JacobianInverse(const VectorType & pt, MatrixType & invJ, const MatrixType * pJ) const
 {
   MatrixType * pJlocal = nullptr;
 

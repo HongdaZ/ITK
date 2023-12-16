@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,8 +40,8 @@ OneWayEquivalencyTable::Add(unsigned long a, unsigned long b)
 //  ConstIterator it = this->Begin();
 //  while (it != this->End() )
 //    {
-//      std::cout << (*it).first << " = " << (*it).second << std::endl;
-//      it++;
+//      std::cout << it->first << " = " << it->second << std::endl;
+//      ++it;
 //    }
 //}
 
@@ -52,8 +52,8 @@ OneWayEquivalencyTable::Flatten()
 
   while (it != this->End())
   {
-    (*it).second = this->RecursiveLookup((*it).first);
-    it++;
+    it->second = this->RecursiveLookup(it->first);
+    ++it;
   }
 }
 
@@ -68,7 +68,7 @@ OneWayEquivalencyTable::RecursiveLookup(const unsigned long a) const
 
   while ((it = m_HashMap.find(ans)) != hashEnd)
   {
-    ans = (*it).second;
+    ans = it->second;
     if (ans == a)
     {
       return last_ans; // about to cycle again.
@@ -80,7 +80,7 @@ OneWayEquivalencyTable::RecursiveLookup(const unsigned long a) const
 }
 
 void
-OneWayEquivalencyTable ::PrintSelf(std::ostream & os, Indent indent) const
+OneWayEquivalencyTable::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }

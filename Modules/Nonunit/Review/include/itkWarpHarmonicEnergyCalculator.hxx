@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkWarpHarmonicEnergyCalculator_hxx
 #define itkWarpHarmonicEnergyCalculator_hxx
 
-#include "itkWarpHarmonicEnergyCalculator.h"
 #include "itkNeighborhoodAlgorithm.h"
 #include "itkImageRegionIterator.h"
 #include "itkZeroFluxNeumannBoundaryCondition.h"
@@ -33,7 +32,7 @@ template <typename TInputImage>
 WarpHarmonicEnergyCalculator<TInputImage>::WarpHarmonicEnergyCalculator()
 {
   m_Image = TInputImage::New();
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     m_NeighborhoodRadius[i] = 1; // radius of neighborhood we will use
     m_DerivativeWeights[i] = 1.0;
@@ -76,7 +75,7 @@ WarpHarmonicEnergyCalculator<TInputImage>::Compute()
   // in case our input image has changed.
   if (m_UseImageSpacing == true)
   {
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       if (m_Image->GetSpacing()[i] <= 0.0)
       {

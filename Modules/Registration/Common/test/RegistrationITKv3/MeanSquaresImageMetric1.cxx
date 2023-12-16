@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@
 #include "itkNearestNeighborInterpolateImageFunction.h"
 
 
-#include "itkTestDriverIncludeRequiredIOFactories.h"
+#include "itkTestDriverIncludeRequiredFactories.h"
 int
 main(int argc, char * argv[])
 {
@@ -155,9 +155,9 @@ main(int argc, char * argv[])
   constexpr int rangex = 50;
   constexpr int rangey = 50;
 
-  for (int dx = -rangex; dx <= rangex; dx++)
+  for (int dx = -rangex; dx <= rangex; ++dx)
   {
-    for (int dy = -rangey; dy <= rangey; dy++)
+    for (int dy = -rangey; dy <= rangey; ++dy)
     {
       displacement[0] = dx;
       displacement[1] = dy;

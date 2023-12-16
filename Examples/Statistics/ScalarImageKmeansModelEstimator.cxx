@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,7 +65,7 @@ main(int argc, char * argv[])
 
   using ReaderType = itk::ImageFileReader<ImageType>;
 
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
 
   reader->SetFileName(argv[1]);
 
@@ -75,7 +75,7 @@ main(int argc, char * argv[])
   }
   catch (const itk::ExceptionObject & excp)
   {
-    std::cerr << "Problem encoutered while reading image file : " << argv[1]
+    std::cerr << "Problem encountered while reading image file : " << argv[1]
               << std::endl;
     std::cerr << excp << std::endl;
     return -1;
@@ -87,14 +87,14 @@ main(int argc, char * argv[])
   // Create a List from the scalar image
   using AdaptorType = itk::Statistics::ImageToListSampleAdaptor<ImageType>;
 
-  AdaptorType::Pointer adaptor = AdaptorType::New();
+  auto adaptor = AdaptorType::New();
 
   adaptor->SetImage(reader->GetOutput());
 
   // Create the K-d tree structure
   using TreeGeneratorType =
     itk::Statistics::WeightedCentroidKdTreeGenerator<AdaptorType>;
-  TreeGeneratorType::Pointer treeGenerator = TreeGeneratorType::New();
+  auto treeGenerator = TreeGeneratorType::New();
 
   treeGenerator->SetSample(adaptor);
   treeGenerator->SetBucketSize(16);
@@ -104,7 +104,7 @@ main(int argc, char * argv[])
   using TreeType = TreeGeneratorType::KdTreeType;
   using EstimatorType = itk::Statistics::KdTreeBasedKmeansEstimator<TreeType>;
 
-  EstimatorType::Pointer estimator = EstimatorType::New();
+  auto estimator = EstimatorType::New();
 
   constexpr unsigned int numberOfClasses = 3;
 

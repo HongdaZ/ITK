@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 class ProjectTransform : public itk::Transform<double, 3, 2>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(ProjectTransform);
 
   using Self = ProjectTransform;
   using Superclass = itk::Transform<double, 3, 2>;
@@ -37,26 +37,26 @@ public:
   itkNewMacro(Self);
 
   /** Standard parameters container. */
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
 
   /** Fixed Parameter type */
-  using FixedParametersType = typename Superclass::FixedParametersType;
+  using typename Superclass::FixedParametersType;
 
   /** Standard vector type for this class. */
-  using InputVectorType = itk::Vector<double, itkGetStaticConstMacro(InputSpaceDimension)>;
-  using OutputVectorType = itk::Vector<double, itkGetStaticConstMacro(OutputSpaceDimension)>;
+  using InputVectorType = itk::Vector<double, Self::InputSpaceDimension>;
+  using OutputVectorType = itk::Vector<double, Self::OutputSpaceDimension>;
 
   /** Standard covariant vector type for this class. */
-  using InputCovariantVectorType = itk::CovariantVector<double, itkGetStaticConstMacro(InputSpaceDimension)>;
-  using OutputCovariantVectorType = itk::CovariantVector<double, itkGetStaticConstMacro(OutputSpaceDimension)>;
+  using InputCovariantVectorType = itk::CovariantVector<double, Self::InputSpaceDimension>;
+  using OutputCovariantVectorType = itk::CovariantVector<double, Self::OutputSpaceDimension>;
 
   /** Standard vnl_vector type for this class. */
-  using InputVnlVectorType = vnl_vector_fixed<double, itkGetStaticConstMacro(InputSpaceDimension)>;
-  using OutputVnlVectorType = vnl_vector_fixed<double, itkGetStaticConstMacro(OutputSpaceDimension)>;
+  using InputVnlVectorType = vnl_vector_fixed<double, Self::InputSpaceDimension>;
+  using OutputVnlVectorType = vnl_vector_fixed<double, Self::OutputSpaceDimension>;
 
   /** Standard coordinate point type for this class. */
-  using InputPointType = itk::Point<double, itkGetStaticConstMacro(InputSpaceDimension)>;
-  using OutputPointType = itk::Point<double, itkGetStaticConstMacro(OutputSpaceDimension)>;
+  using InputPointType = itk::Point<double, Self::InputSpaceDimension>;
+  using OutputPointType = itk::Point<double, Self::OutputSpaceDimension>;
 
   using Superclass::TransformCovariantVector;
   using Superclass::TransformVector;
@@ -100,7 +100,7 @@ public:
   {
     OutputPointType outputPoint;
     outputPoint.Fill(std::numeric_limits<typename OutputPointType::ValueType>::max());
-    for (unsigned d = 0; d < 2; ++d)
+    for (unsigned int d = 0; d < 2; ++d)
     {
       outputPoint[d] = inputPoint[d] * 0.5;
     }
@@ -108,10 +108,8 @@ public:
   }
 
 protected:
-  ProjectTransform()
-    : Transform<double, 3, 2>(0)
-  {}
-  ~ProjectTransform() = default;
+  ProjectTransform() = default;
+  ~ProjectTransform() override = default;
 
 }; // class ProjectTransform
 
@@ -165,7 +163,7 @@ itkResampleImageTest8(int, char *[])
   }
 
   // Create an Project transformation
-  TransformType::Pointer tform = TransformType::New();
+  auto tform = TransformType::New();
 
   // OutputImagePointerType outputImage = OutputImageType::New();
   OutputImageIndexType  outputIndex = { { 0, 0, 0 } };
@@ -173,7 +171,7 @@ itkResampleImageTest8(int, char *[])
   OutputImageRegionType outputRegion;
 
   // Create a linear interpolation image function
-  InterpolatorType::Pointer interp = InterpolatorType::New();
+  auto interp = InterpolatorType::New();
   interp->SetInputImage(inputImage);
 
   // Create and configure a resampling filter

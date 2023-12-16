@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,15 +15,13 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkSingleValuedNonLinearVnlOptimizer_hxx
-#define _itkSingleValuedNonLinearVnlOptimizer_hxx
 
 #include "itkSingleValuedNonLinearVnlOptimizer.h"
 
 namespace itk
 {
 /** Constructor */
-SingleValuedNonLinearVnlOptimizer ::SingleValuedNonLinearVnlOptimizer()
+SingleValuedNonLinearVnlOptimizer::SingleValuedNonLinearVnlOptimizer()
 {
   m_CostFunctionAdaptor = nullptr;
   m_Maximize = false;
@@ -35,14 +33,14 @@ SingleValuedNonLinearVnlOptimizer ::SingleValuedNonLinearVnlOptimizer()
 }
 
 /** Destructor */
-SingleValuedNonLinearVnlOptimizer ::~SingleValuedNonLinearVnlOptimizer()
+SingleValuedNonLinearVnlOptimizer::~SingleValuedNonLinearVnlOptimizer()
 {
   delete m_CostFunctionAdaptor;
   m_CostFunctionAdaptor = nullptr;
 }
 
 void
-SingleValuedNonLinearVnlOptimizer ::SetCostFunctionAdaptor(CostFunctionAdaptorType * adaptor)
+SingleValuedNonLinearVnlOptimizer::SetCostFunctionAdaptor(CostFunctionAdaptorType * adaptor)
 {
   if (m_CostFunctionAdaptor == adaptor)
   {
@@ -57,13 +55,13 @@ SingleValuedNonLinearVnlOptimizer ::SetCostFunctionAdaptor(CostFunctionAdaptorTy
 }
 
 const SingleValuedNonLinearVnlOptimizer::CostFunctionAdaptorType *
-SingleValuedNonLinearVnlOptimizer ::GetCostFunctionAdaptor() const
+SingleValuedNonLinearVnlOptimizer::GetCostFunctionAdaptor() const
 {
   return m_CostFunctionAdaptor;
 }
 
 SingleValuedNonLinearVnlOptimizer::CostFunctionAdaptorType *
-SingleValuedNonLinearVnlOptimizer ::GetCostFunctionAdaptor()
+SingleValuedNonLinearVnlOptimizer::GetCostFunctionAdaptor()
 {
   return m_CostFunctionAdaptor;
 }
@@ -71,7 +69,7 @@ SingleValuedNonLinearVnlOptimizer ::GetCostFunctionAdaptor()
 /** The purpose of this method is to get around the lack of
  *  const-correctness in VNL cost-functions and optimizers */
 SingleValuedNonLinearVnlOptimizer::CostFunctionAdaptorType *
-SingleValuedNonLinearVnlOptimizer ::GetNonConstCostFunctionAdaptor() const
+SingleValuedNonLinearVnlOptimizer::GetNonConstCostFunctionAdaptor() const
 {
   return m_CostFunctionAdaptor;
 }
@@ -83,7 +81,7 @@ SingleValuedNonLinearVnlOptimizer ::GetNonConstCostFunctionAdaptor() const
  * vnl optimizer. Optimizers that evaluate the metric multiple times at each
  * iteration will generate a lot more of Iteration events here. */
 void
-SingleValuedNonLinearVnlOptimizer ::IterationReport(const EventObject & event)
+SingleValuedNonLinearVnlOptimizer::IterationReport(const EventObject & event)
 {
   const CostFunctionAdaptorType * adaptor = this->GetCostFunctionAdaptor();
 
@@ -97,7 +95,7 @@ SingleValuedNonLinearVnlOptimizer ::IterationReport(const EventObject & event)
  * PrintSelf
  */
 void
-SingleValuedNonLinearVnlOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
+SingleValuedNonLinearVnlOptimizer::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Maximize flag: " << (m_Maximize ? "On" : "Off") << std::endl;
@@ -108,5 +106,3 @@ SingleValuedNonLinearVnlOptimizer ::PrintSelf(std::ostream & os, Indent indent) 
   os << "Cost Function adaptor" << m_CostFunctionAdaptor << std::endl;
 }
 } // end namespace itk
-
-#endif

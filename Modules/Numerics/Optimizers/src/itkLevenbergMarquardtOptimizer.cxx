@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkLevenbergMarquardtOptimizer_hxx
-#define _itkLevenbergMarquardtOptimizer_hxx
 
 #include "itkLevenbergMarquardtOptimizer.h"
 
@@ -25,7 +23,7 @@ namespace itk
 /**
  * Constructor
  */
-LevenbergMarquardtOptimizer ::LevenbergMarquardtOptimizer()
+LevenbergMarquardtOptimizer::LevenbergMarquardtOptimizer()
 {
   m_OptimizerInitialized = false;
   m_VnlOptimizer = nullptr;
@@ -38,16 +36,13 @@ LevenbergMarquardtOptimizer ::LevenbergMarquardtOptimizer()
 /**
  * Destructor
  */
-LevenbergMarquardtOptimizer ::~LevenbergMarquardtOptimizer()
-{
-  delete m_VnlOptimizer;
-}
+LevenbergMarquardtOptimizer::~LevenbergMarquardtOptimizer() = default;
 
 /**
  * Connect a Cost Function
  */
 void
-LevenbergMarquardtOptimizer ::SetCostFunction(MultipleValuedCostFunction * costFunction)
+LevenbergMarquardtOptimizer::SetCostFunction(MultipleValuedCostFunction * costFunction)
 {
   const unsigned int numberOfParameters = costFunction->GetNumberOfParameters();
   const unsigned int numberOfValues = costFunction->GetNumberOfValues();
@@ -56,14 +51,9 @@ LevenbergMarquardtOptimizer ::SetCostFunction(MultipleValuedCostFunction * costF
 
   adaptor->SetCostFunction(costFunction);
 
-  if (m_OptimizerInitialized)
-  {
-    delete m_VnlOptimizer;
-  }
-
   this->SetCostFunctionAdaptor(adaptor);
 
-  m_VnlOptimizer = new vnl_levenberg_marquardt(*adaptor);
+  m_VnlOptimizer = std::make_unique<vnl_levenberg_marquardt>(*adaptor);
 
   this->SetNumberOfIterations(m_NumberOfIterations);
   this->SetValueTolerance(m_ValueTolerance);
@@ -75,7 +65,7 @@ LevenbergMarquardtOptimizer ::SetCostFunction(MultipleValuedCostFunction * costF
 
 /** Return Current Value */
 LevenbergMarquardtOptimizer::MeasureType
-LevenbergMarquardtOptimizer ::GetValue() const
+LevenbergMarquardtOptimizer::GetValue() const
 {
   MeasureType measures;
 
@@ -92,7 +82,7 @@ LevenbergMarquardtOptimizer ::GetValue() const
       if (m_ScalesInitialized)
       {
         const ScalesType & scales = this->GetScales();
-        for (unsigned int i = 0; i < parameters.size(); i++)
+        for (unsigned int i = 0; i < parameters.size(); ++i)
         {
           parameters[i] *= scales[i];
         }
@@ -107,7 +97,7 @@ LevenbergMarquardtOptimizer ::GetValue() const
  * Start the optimization
  */
 void
-LevenbergMarquardtOptimizer ::StartOptimization()
+LevenbergMarquardtOptimizer::StartOptimization()
 {
   this->InvokeEvent(StartEvent());
 
@@ -123,7 +113,7 @@ LevenbergMarquardtOptimizer ::StartOptimization()
   {
     const ScalesType & scales = this->GetScales();
     this->GetNonConstCostFunctionAdaptor()->SetScales(scales);
-    for (unsigned int i = 0; i < parameters.size(); i++)
+    for (unsigned int i = 0; i < parameters.size(); ++i)
     {
       parameters[i] *= scales[i];
     }
@@ -155,7 +145,7 @@ LevenbergMarquardtOptimizer ::StartOptimization()
 
 /** Set the maximum number of iterations */
 void
-LevenbergMarquardtOptimizer ::SetNumberOfIterations(unsigned int iterations)
+LevenbergMarquardtOptimizer::SetNumberOfIterations(unsigned int iterations)
 {
   if (m_VnlOptimizer)
   {
@@ -167,7 +157,7 @@ LevenbergMarquardtOptimizer ::SetNumberOfIterations(unsigned int iterations)
 
 /** Set the maximum number of iterations */
 void
-LevenbergMarquardtOptimizer ::SetValueTolerance(double tol)
+LevenbergMarquardtOptimizer::SetValueTolerance(double tol)
 {
   if (m_VnlOptimizer)
   {
@@ -179,7 +169,7 @@ LevenbergMarquardtOptimizer ::SetValueTolerance(double tol)
 
 /** Set Gradient Tolerance */
 void
-LevenbergMarquardtOptimizer ::SetGradientTolerance(double tol)
+LevenbergMarquardtOptimizer::SetGradientTolerance(double tol)
 {
   if (m_VnlOptimizer)
   {
@@ -191,7 +181,7 @@ LevenbergMarquardtOptimizer ::SetGradientTolerance(double tol)
 
 /** Set Epsilon function */
 void
-LevenbergMarquardtOptimizer ::SetEpsilonFunction(double epsilon)
+LevenbergMarquardtOptimizer::SetEpsilonFunction(double epsilon)
 {
   if (m_VnlOptimizer)
   {
@@ -203,13 +193,13 @@ LevenbergMarquardtOptimizer ::SetEpsilonFunction(double epsilon)
 
 /** Get the Optimizer */
 vnl_levenberg_marquardt *
-LevenbergMarquardtOptimizer ::GetOptimizer() const
+LevenbergMarquardtOptimizer::GetOptimizer() const
 {
-  return m_VnlOptimizer;
+  return m_VnlOptimizer.get();
 }
 
 const std::string
-LevenbergMarquardtOptimizer ::GetStopConditionDescription() const
+LevenbergMarquardtOptimizer::GetStopConditionDescription() const
 {
   std::ostringstream reason, outcome;
 
@@ -222,5 +212,3 @@ LevenbergMarquardtOptimizer ::GetStopConditionDescription() const
   return reason.str();
 }
 } // end namespace itk
-
-#endif

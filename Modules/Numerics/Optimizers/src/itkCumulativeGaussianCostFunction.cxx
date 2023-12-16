@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,15 +15,13 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkCumulativeGaussianCostFunction_cxx
-#define _itkCumulativeGaussianCostFunction_cxx
 
 #include "itkCumulativeGaussianCostFunction.h"
 #include "itkMath.h"
 
 namespace itk
 {
-CumulativeGaussianCostFunction ::CumulativeGaussianCostFunction()
+CumulativeGaussianCostFunction::CumulativeGaussianCostFunction()
 {
   // Initial values for fit error and range dimension.
   m_RangeDimension = 0;
@@ -31,26 +29,26 @@ CumulativeGaussianCostFunction ::CumulativeGaussianCostFunction()
   m_MeasurePointer = new MeasureType();
 }
 
-CumulativeGaussianCostFunction ::~CumulativeGaussianCostFunction()
+CumulativeGaussianCostFunction::~CumulativeGaussianCostFunction()
 {
   delete m_OriginalDataArray;
   delete m_MeasurePointer;
 }
 
 void
-CumulativeGaussianCostFunction ::SetOriginalDataArray(MeasureType * setOriginalDataArray)
+CumulativeGaussianCostFunction::SetOriginalDataArray(MeasureType * setOriginalDataArray)
 {
   // Set the original data array.
   m_OriginalDataArray->SetSize(m_RangeDimension);
 
-  for (int i = 0; i < (int)(setOriginalDataArray->GetNumberOfElements()); i++)
+  for (int i = 0; i < static_cast<int>(setOriginalDataArray->GetNumberOfElements()); ++i)
   {
     m_OriginalDataArray->put(i, setOriginalDataArray->get(i));
   }
 }
 
 double
-CumulativeGaussianCostFunction ::CalculateFitError(MeasureType * setTestArray)
+CumulativeGaussianCostFunction::CalculateFitError(MeasureType * setTestArray)
 {
   // Use root mean square error as a measure of fit quality.
   unsigned int numberOfElements = m_OriginalDataArray->GetNumberOfElements();
@@ -60,7 +58,7 @@ CumulativeGaussianCostFunction ::CalculateFitError(MeasureType * setTestArray)
     return 1;
   }
   double fitError = 0.0;
-  for (int i = 0; i < (int)(numberOfElements); i++)
+  for (int i = 0; i < static_cast<int>(numberOfElements); ++i)
   {
     fitError += std::pow((setTestArray->get(i) - m_OriginalDataArray->get(i)), 2);
   }
@@ -68,7 +66,7 @@ CumulativeGaussianCostFunction ::CalculateFitError(MeasureType * setTestArray)
 }
 
 double
-CumulativeGaussianCostFunction ::EvaluateCumulativeGaussian(double argument) const
+CumulativeGaussianCostFunction::EvaluateCumulativeGaussian(double argument) const
 {
   // Evaluate the Cumulative Gaussian for a given argument.
   double erfValue;
@@ -129,31 +127,33 @@ CumulativeGaussianCostFunction ::EvaluateCumulativeGaussian(double argument) con
 
     if (argument > 0)
     {
-      auto temp = (int)(argument * 100);
+      auto temp = static_cast<int>(argument * 100);
       if (Math::AlmostEquals(argument, temp))
       {
         erfValue = .999976474;
       }
       else
       {
-        double slope = (y[temp + 1] - y[temp]) / (((float)temp + 1) / 100 - ((float)temp / 100));
-        erfValue = slope * (argument - ((float)temp + 1) / 100) + y[temp + 1];
+        double slope =
+          (y[temp + 1] - y[temp]) / ((static_cast<float>(temp) + 1) / 100 - (static_cast<float>(temp) / 100));
+        erfValue = slope * (argument - (static_cast<float>(temp) + 1) / 100) + y[temp + 1];
       }
     }
     else
     {
-      int    temp = -(int)(argument * 100);
-      double slope = (-y[temp + 1] + y[temp]) / (-((float)temp + 1) / 100 + ((float)temp / 100));
-      erfValue = (slope * (argument + ((float)temp + 1) / 100) - y[temp + 1]);
+      int    temp = -static_cast<int>(argument * 100);
+      double slope =
+        (-y[temp + 1] + y[temp]) / (-(static_cast<float>(temp) + 1) / 100 + (static_cast<float>(temp) / 100));
+      erfValue = (slope * (argument + (static_cast<float>(temp) + 1) / 100) - y[temp + 1]);
     }
   }
   return erfValue;
 }
 
 CumulativeGaussianCostFunction::MeasureType
-CumulativeGaussianCostFunction ::GetValue(const ParametersType & parameters) const
+CumulativeGaussianCostFunction::GetValue(const ParametersType & parameters) const
 {
-  for (unsigned int i = 0; i < m_RangeDimension; i++)
+  for (unsigned int i = 0; i < m_RangeDimension; ++i)
   {
     m_Measure[i] =
       parameters.get(2) +
@@ -165,11 +165,11 @@ CumulativeGaussianCostFunction ::GetValue(const ParametersType & parameters) con
 }
 
 CumulativeGaussianCostFunction::MeasureType *
-CumulativeGaussianCostFunction ::GetValuePointer(ParametersType & parameters)
+CumulativeGaussianCostFunction::GetValuePointer(ParametersType & parameters)
 {
   m_MeasurePointer->SetSize(m_RangeDimension);
 
-  for (unsigned int i = 0; i < m_RangeDimension; i++)
+  for (unsigned int i = 0; i < m_RangeDimension; ++i)
   {
     m_MeasurePointer->put(
       i,
@@ -182,21 +182,21 @@ CumulativeGaussianCostFunction ::GetValuePointer(ParametersType & parameters)
 }
 
 unsigned int
-CumulativeGaussianCostFunction ::GetNumberOfParameters() const
+CumulativeGaussianCostFunction::GetNumberOfParameters() const
 {
   // Return the number of parameters.
   return SpaceDimension;
 }
 
 unsigned int
-CumulativeGaussianCostFunction ::GetNumberOfValues() const
+CumulativeGaussianCostFunction::GetNumberOfValues() const
 {
   // Return the number of data samples.
   return m_RangeDimension;
 }
 
 void
-CumulativeGaussianCostFunction ::Initialize(unsigned int rangeDimension)
+CumulativeGaussianCostFunction::Initialize(unsigned int rangeDimension)
 {
   // Initialize the arrays.
   m_RangeDimension = rangeDimension;
@@ -204,10 +204,9 @@ CumulativeGaussianCostFunction ::Initialize(unsigned int rangeDimension)
 }
 
 void
-CumulativeGaussianCostFunction ::PrintSelf(std::ostream & os, Indent indent) const
+CumulativeGaussianCostFunction::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Range Dimension = " << m_RangeDimension << std::endl;
 }
 } // end namespace itk
-#endif

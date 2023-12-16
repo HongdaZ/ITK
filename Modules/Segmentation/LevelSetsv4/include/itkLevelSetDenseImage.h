@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ class ITK_TEMPLATE_EXPORT LevelSetDenseImage
   : public DiscreteLevelSetImage<typename TImage::PixelType, TImage::ImageDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetDenseImage);
+  ITK_DISALLOW_COPY_AND_MOVE(LevelSetDenseImage);
 
   using ImageType = TImage;
   using ImagePointer = typename ImageType::Pointer;
@@ -63,15 +63,15 @@ public:
 
   static constexpr unsigned int Dimension = Superclass::Dimension;
 
-  using InputType = typename Superclass::InputType;
-  using OutputType = typename Superclass::OutputType;
-  using OutputRealType = typename Superclass::OutputRealType;
-  using GradientType = typename Superclass::GradientType;
-  using HessianType = typename Superclass::HessianType;
-  using LevelSetDataType = typename Superclass::LevelSetDataType;
+  using typename Superclass::InputType;
+  using typename Superclass::OutputType;
+  using typename Superclass::OutputRealType;
+  using typename Superclass::GradientType;
+  using typename Superclass::HessianType;
+  using typename Superclass::LevelSetDataType;
 
   virtual void
-  SetImage(ImageType * iImage);
+  SetImage(ImageType * inputImage);
   itkGetModifiableObjectMacro(Image, ImageType);
 
   /** Returns the value of the level set function at a given location inputIndex */

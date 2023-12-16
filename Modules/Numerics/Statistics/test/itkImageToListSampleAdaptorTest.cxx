@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ itkImageToListSampleAdaptorTestTemplate()
 
   // Now generate a random image
   using SourceType = itk::RandomImageSource<FloatImageType>;
-  typename SourceType::Pointer source = SourceType::New();
+  auto source = SourceType::New();
 
   itk::SizeValueType size[Dimension] = { 17, 8, 20 };
   itk::SizeValueType totalSize = size[0] * size[1] * size[2];
@@ -45,23 +45,21 @@ itkImageToListSampleAdaptorTestTemplate()
   source->SetMax(static_cast<typename FloatImageType::PixelType>(maxValue));
 
   using ComposeFilterType = itk::ComposeImageFilter<FloatImageType, ImageType>;
-  typename ComposeFilterType::Pointer composeFilter = ComposeFilterType::New();
+  auto composeFilter = ComposeFilterType::New();
   composeFilter->SetInput(source->GetOutput());
   composeFilter->Update();
 
   // creates a sample
   using ImageToListSampleAdaptorType = itk::Statistics::ImageToListSampleAdaptor<ImageType>;
 
-  typename ImageToListSampleAdaptorType::Pointer sample = ImageToListSampleAdaptorType::New();
+  auto sample = ImageToListSampleAdaptorType::New();
 
   // Test if the methods throw exceptions if invoked before setting the image
   try
   {
     // purposely call Size() method prematurely in order to trigger an exception.
     sample->Size();
-    std::cerr << "Exception should have been thrown since the input image \
-                  is not set yet"
-              << std::endl;
+    std::cerr << "Exception should have been thrown since the input image is not set yet" << std::endl;
   }
   catch (const itk::ExceptionObject & excp)
   {
@@ -71,9 +69,7 @@ itkImageToListSampleAdaptorTestTemplate()
   {
     // purposely call GetTotalFrequency() method prematurely in order to trigger an exception.
     sample->GetTotalFrequency();
-    std::cerr << "Exception should have been thrown since the input image \
-                  is not set yet"
-              << std::endl;
+    std::cerr << "Exception should have been thrown since the input image is not set yet" << std::endl;
   }
   catch (const itk::ExceptionObject & excp)
   {
@@ -83,9 +79,7 @@ itkImageToListSampleAdaptorTestTemplate()
   try
   {
     typename ImageToListSampleAdaptorType::MeasurementVectorType m = sample->GetMeasurementVector(0);
-    std::cerr << "Exception should have been thrown since the input image \
-                  is not set yet "
-              << m << std::endl;
+    std::cerr << "Exception should have been thrown since the input image is not set yet " << m << std::endl;
   }
   catch (const itk::ExceptionObject & excp)
   {
@@ -95,9 +89,7 @@ itkImageToListSampleAdaptorTestTemplate()
   try
   {
     typename ImageToListSampleAdaptorType::ImageConstPointer image = sample->GetImage();
-    std::cerr << "Exception should have been thrown since the input image \
-                  is not set yet"
-              << std::endl;
+    std::cerr << "Exception should have been thrown since the input image is not set yet" << std::endl;
   }
   catch (const itk::ExceptionObject & excp)
   {
@@ -108,9 +100,7 @@ itkImageToListSampleAdaptorTestTemplate()
   {
     // purposely call GetFrequency() method prematurely in order to trigger an exception.
     sample->GetFrequency(0);
-    std::cerr << "Exception should have been thrown since the input image \
-                  is not set yet"
-              << std::endl;
+    std::cerr << "Exception should have been thrown since the input image is not set yet" << std::endl;
   }
   catch (const itk::ExceptionObject & excp)
   {
@@ -144,11 +134,11 @@ itkImageToListSampleAdaptorTestTemplate()
 
   typename ImageToListSampleAdaptorType::InstanceIdentifier iid;
 
-  for (unsigned int i = 0; i < size[2]; i++)
+  for (unsigned int i = 0; i < size[2]; ++i)
   {
-    for (unsigned int j = 0; j < size[1]; j++)
+    for (unsigned int j = 0; j < size[1]; ++j)
     {
-      for (unsigned int k = 0; k < size[0]; k++)
+      for (unsigned int k = 0; k < size[0]; ++k)
       {
         index[0] = k;
         index[1] = j;

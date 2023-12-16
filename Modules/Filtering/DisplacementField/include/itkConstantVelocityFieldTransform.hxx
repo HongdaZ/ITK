@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkConstantVelocityFieldTransform_hxx
 #define itkConstantVelocityFieldTransform_hxx
 
-#include "itkConstantVelocityFieldTransform.h"
 
 #include "itkExponentialDisplacementFieldImageFilter.h"
 #include "itkImageRegionConstIterator.h"
@@ -31,8 +30,8 @@ namespace itk
 /**
  * Constructor
  */
-template <typename TParametersValueType, unsigned int NDimensions>
-ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::ConstantVelocityFieldTransform()
+template <typename TParametersValueType, unsigned int VDimension>
+ConstantVelocityFieldTransform<TParametersValueType, VDimension>::ConstantVelocityFieldTransform()
   : m_ConstantVelocityField(nullptr)
 
 {
@@ -46,7 +45,7 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::ConstantVeloc
 
   // Setup and assign default interpolator
   using DefaultInterpolatorType = VectorLinearInterpolateImageFunction<ConstantVelocityFieldType, ScalarType>;
-  typename DefaultInterpolatorType::Pointer interpolator = DefaultInterpolatorType::New();
+  auto interpolator = DefaultInterpolatorType::New();
   this->m_ConstantVelocityFieldInterpolator = interpolator;
 
   // Setup and assign parameter helper. This will hold the displacement field
@@ -57,9 +56,9 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::ConstantVeloc
   this->m_Parameters.SetHelper(helper);
 }
 
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 void
-ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::UpdateTransformParameters(
+ConstantVelocityFieldTransform<TParametersValueType, VDimension>::UpdateTransformParameters(
   const DerivativeType & update,
   ScalarType             factor)
 {
@@ -73,9 +72,9 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::UpdateTransfo
 /**
  * return an inverse transformation
  */
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 bool
-ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::GetInverse(Self * inverse) const
+ConstantVelocityFieldTransform<TParametersValueType, VDimension>::GetInverse(Self * inverse) const
 {
   if (!inverse || !this->m_ConstantVelocityField)
   {
@@ -96,9 +95,10 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::GetInverse(Se
 }
 
 // Return an inverse of this transform
-template <typename TParametersValueType, unsigned int NDimensions>
-typename ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::InverseTransformBasePointer
-ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::GetInverseTransform() const
+template <typename TParametersValueType, unsigned int VDimension>
+auto
+ConstantVelocityFieldTransform<TParametersValueType, VDimension>::GetInverseTransform() const
+  -> InverseTransformBasePointer
 {
   Pointer inverseTransform = New();
   if (this->GetInverse(inverseTransform))
@@ -111,9 +111,9 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::GetInverseTra
   }
 }
 
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 void
-ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::SetConstantVelocityField(
+ConstantVelocityFieldTransform<TParametersValueType, VDimension>::SetConstantVelocityField(
   ConstantVelocityFieldType * field)
 {
   itkDebugMacro("setting VelocityField to " << field);
@@ -136,9 +136,9 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::SetConstantVe
   this->SetFixedParametersFromConstantVelocityField();
 }
 
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 void
-ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::SetConstantVelocityFieldInterpolator(
+ConstantVelocityFieldTransform<TParametersValueType, VDimension>::SetConstantVelocityFieldInterpolator(
   ConstantVelocityFieldInterpolatorType * interpolator)
 {
   itkDebugMacro("setting ConstantVelocityFieldInterpolator to " << interpolator);
@@ -153,9 +153,9 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::SetConstantVe
   }
 }
 
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 void
-ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::SetFixedParameters(
+ConstantVelocityFieldTransform<TParametersValueType, VDimension>::SetFixedParameters(
   const FixedParametersType & fixedParameters)
 {
   if (fixedParameters.Size() != ConstantVelocityFieldDimension * (ConstantVelocityFieldDimension + 3))
@@ -164,27 +164,27 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::SetFixedParam
   }
 
   SizeType size;
-  for (unsigned int d = 0; d < ConstantVelocityFieldDimension; d++)
+  for (unsigned int d = 0; d < ConstantVelocityFieldDimension; ++d)
   {
     size[d] = static_cast<SizeValueType>(fixedParameters[d]);
   }
 
   PointType origin;
-  for (unsigned int d = 0; d < ConstantVelocityFieldDimension; d++)
+  for (unsigned int d = 0; d < ConstantVelocityFieldDimension; ++d)
   {
     origin[d] = fixedParameters[d + ConstantVelocityFieldDimension];
   }
 
   SpacingType spacing;
-  for (unsigned int d = 0; d < ConstantVelocityFieldDimension; d++)
+  for (unsigned int d = 0; d < ConstantVelocityFieldDimension; ++d)
   {
     spacing[d] = fixedParameters[d + 2 * ConstantVelocityFieldDimension];
   }
 
   DirectionType direction;
-  for (unsigned int di = 0; di < ConstantVelocityFieldDimension; di++)
+  for (unsigned int di = 0; di < ConstantVelocityFieldDimension; ++di)
   {
-    for (unsigned int dj = 0; dj < ConstantVelocityFieldDimension; dj++)
+    for (unsigned int dj = 0; dj < ConstantVelocityFieldDimension; ++dj)
     {
       direction[di][dj] =
         fixedParameters[3 * ConstantVelocityFieldDimension + (di * ConstantVelocityFieldDimension + dj)];
@@ -194,7 +194,7 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::SetFixedParam
   PixelType zeroDisplacement;
   zeroDisplacement.Fill(0.0);
 
-  typename ConstantVelocityFieldType::Pointer velocityField = ConstantVelocityFieldType::New();
+  auto velocityField = ConstantVelocityFieldType::New();
   velocityField->SetSpacing(spacing);
   velocityField->SetOrigin(origin);
   velocityField->SetDirection(direction);
@@ -205,9 +205,9 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::SetFixedParam
   this->SetConstantVelocityField(velocityField);
 }
 
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 void
-ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::SetFixedParametersFromConstantVelocityField() const
+ConstantVelocityFieldTransform<TParametersValueType, VDimension>::SetFixedParametersFromConstantVelocityField() const
 {
   this->m_FixedParameters.SetSize(ConstantVelocityFieldDimension * (ConstantVelocityFieldDimension + 3));
 
@@ -216,21 +216,21 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::SetFixedParam
 
   // Set the field size parameters
   SizeType fieldSize = fieldRegion.GetSize();
-  for (unsigned int i = 0; i < ConstantVelocityFieldDimension; i++)
+  for (unsigned int i = 0; i < ConstantVelocityFieldDimension; ++i)
   {
     this->m_FixedParameters[i] = static_cast<FixedParametersValueType>(fieldSize[i]);
   }
 
   // Set the origin parameters
   PointType fieldOrigin = this->m_ConstantVelocityField->GetOrigin();
-  for (unsigned int i = 0; i < ConstantVelocityFieldDimension; i++)
+  for (unsigned int i = 0; i < ConstantVelocityFieldDimension; ++i)
   {
     this->m_FixedParameters[ConstantVelocityFieldDimension + i] = fieldOrigin[i];
   }
 
   // Set the spacing parameters
   SpacingType fieldSpacing = this->m_ConstantVelocityField->GetSpacing();
-  for (unsigned int i = 0; i < ConstantVelocityFieldDimension; i++)
+  for (unsigned int i = 0; i < ConstantVelocityFieldDimension; ++i)
   {
     this->m_FixedParameters[2 * ConstantVelocityFieldDimension + i] =
       static_cast<FixedParametersValueType>(fieldSpacing[i]);
@@ -238,9 +238,9 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::SetFixedParam
 
   // Set the direction parameters
   DirectionType fieldDirection = this->m_ConstantVelocityField->GetDirection();
-  for (unsigned int di = 0; di < ConstantVelocityFieldDimension; di++)
+  for (unsigned int di = 0; di < ConstantVelocityFieldDimension; ++di)
   {
-    for (unsigned int dj = 0; dj < ConstantVelocityFieldDimension; dj++)
+    for (unsigned int dj = 0; dj < ConstantVelocityFieldDimension; ++dj)
     {
       this->m_FixedParameters[3 * ConstantVelocityFieldDimension + (di * ConstantVelocityFieldDimension + dj)] =
         static_cast<FixedParametersValueType>(fieldDirection[di][dj]);
@@ -248,16 +248,16 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::SetFixedParam
   }
 }
 
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 void
-ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::IntegrateVelocityField()
+ConstantVelocityFieldTransform<TParametersValueType, VDimension>::IntegrateVelocityField()
 {
   using ExponentiatorType =
     ExponentialDisplacementFieldImageFilter<ConstantVelocityFieldType, ConstantVelocityFieldType>;
 
   ConstantVelocityFieldPointer constantVelocityField = this->GetModifiableConstantVelocityField();
 
-  typename ExponentiatorType::Pointer exponentiator = ExponentiatorType::New();
+  auto exponentiator = ExponentiatorType::New();
   exponentiator->SetInput(constantVelocityField);
   if (this->m_CalculateNumberOfIntegrationStepsAutomatically || this->GetNumberOfIntegrationSteps() == 0)
   {
@@ -277,7 +277,7 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::IntegrateVelo
 
   // Calculate inverse displacement field
 
-  typename ExponentiatorType::Pointer exponentiatorInv = ExponentiatorType::New();
+  auto exponentiatorInv = ExponentiatorType::New();
   exponentiatorInv->SetInput(constantVelocityField);
   if (this->m_CalculateNumberOfIntegrationStepsAutomatically || this->m_NumberOfIntegrationSteps == 0)
   {
@@ -313,12 +313,12 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::IntegrateVelo
   }
 }
 
-template <typename TParametersValueType, unsigned int NDimensions>
-typename ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::DisplacementFieldType::Pointer
-ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::CopyDisplacementField(
+template <typename TParametersValueType, unsigned int VDimension>
+typename ConstantVelocityFieldTransform<TParametersValueType, VDimension>::DisplacementFieldType::Pointer
+ConstantVelocityFieldTransform<TParametersValueType, VDimension>::CopyDisplacementField(
   const DisplacementFieldType * toCopy) const
 {
-  typename DisplacementFieldType::Pointer rval = DisplacementFieldType::New();
+  auto rval = DisplacementFieldType::New();
   rval->SetOrigin(toCopy->GetOrigin());
   rval->SetSpacing(toCopy->GetSpacing());
   rval->SetDirection(toCopy->GetDirection());
@@ -335,9 +335,9 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::CopyDisplacem
   return rval;
 }
 
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 typename LightObject::Pointer
-ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::InternalClone() const
+ConstantVelocityFieldTransform<TParametersValueType, VDimension>::InternalClone() const
 {
   // create a new instance
   LightObject::Pointer   loPtr = Superclass::InternalClone();
@@ -389,9 +389,9 @@ ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::InternalClone
   return loPtr;
 }
 
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 void
-ConstantVelocityFieldTransform<TParametersValueType, NDimensions>::PrintSelf(std::ostream & os, Indent indent) const
+ConstantVelocityFieldTransform<TParametersValueType, VDimension>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

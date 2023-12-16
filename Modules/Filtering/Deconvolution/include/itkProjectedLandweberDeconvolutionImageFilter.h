@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class ProjectedLandweberDeconvolutionImageFilter
+ * \class ProjectedLandweberDeconvolutionImageFilter
  * \brief Deconvolve an image using the projected Landweber
  * deconvolution algorithm.
  *
@@ -39,7 +39,7 @@ namespace itk
  *
  * "Deconvolution: infrastructure and reference algorithms"
  * by Gaetan Lehmann
- * https://hdl.handle.net/10380/3207
+ * https://www.insight-journal.org/browse/publication/753
  *
  * \author Gaetan Lehmann, Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France
  * \author Cory Quammen, The University of North Carolina at Chapel Hill
@@ -58,7 +58,7 @@ class ITK_TEMPLATE_EXPORT ProjectedLandweberDeconvolutionImageFilter
       LandweberDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectedLandweberDeconvolutionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ProjectedLandweberDeconvolutionImageFilter);
 
   /** Standard type alias. */
   using Self = ProjectedLandweberDeconvolutionImageFilter;

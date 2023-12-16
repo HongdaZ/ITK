@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  *=========================================================================*/
 
 #include "itkSparseFieldFourthOrderLevelSetImageFilter.h"
+#include "itkTestingMacros.h"
 #include <iostream>
 
 /*
@@ -47,11 +48,11 @@ const unsigned int WIDTH = (128);
 
 // Distance transform function for square
 float
-square(unsigned x, unsigned y)
+square(unsigned int x, unsigned int y)
 {
   float X, Y;
-  X = std::fabs(x - (float)WIDTH / 2.0);
-  Y = std::fabs(y - (float)HEIGHT / 2.0);
+  X = itk::Math::abs(x - static_cast<float>(WIDTH) / 2.0);
+  Y = itk::Math::abs(y - static_cast<float>(HEIGHT) / 2.0);
   float dis;
   if (!((X > RADIUS) && (Y > RADIUS)))
     dis = RADIUS - std::max(X, Y);
@@ -93,7 +94,7 @@ public:
   itkTypeMacro(IsotropicDiffusionLevelSetFilter, SparseFieldFourthOrderLevelSetImageFilter);
   itkNewMacro(Self);
 
-  using SparseImageType = typename Superclass::SparseImageType;
+  using typename Superclass::SparseImageType;
   using FunctionType = LevelSetFunctionWithRefitTerm<TOutputImage, SparseImageType>;
   using RadiusType = typename FunctionType::RadiusType;
 
@@ -102,7 +103,7 @@ protected:
   IsotropicDiffusionLevelSetFilter()
   {
     RadiusType radius;
-    for (unsigned int j = 0; j < TInputImage::ImageDimension; j++)
+    for (unsigned int j = 0; j < TInputImage::ImageDimension; ++j)
     {
       radius[j] = 1;
     }
@@ -140,7 +141,7 @@ itkSparseFieldFourthOrderLevelSetImageFilterTest(int, char *[])
 {
   using ImageType = itk::Image<float, 2>;
 
-  ImageType::Pointer im_init = ImageType::New();
+  auto image = ImageType::New();
 
   ImageType::RegionType r;
   ImageType::SizeType   sz = { { SFFOLSIFT::HEIGHT, SFFOLSIFT::WIDTH } };
@@ -148,29 +149,56 @@ itkSparseFieldFourthOrderLevelSetImageFilterTest(int, char *[])
   r.SetSize(sz);
   r.SetIndex(idx);
 
-  im_init->SetLargestPossibleRegion(r);
-  im_init->SetBufferedRegion(r);
-  im_init->SetRequestedRegion(r);
-  im_init->Allocate();
+  image->SetRegions(r);
+  image->Allocate();
 
-  SFFOLSIFT::evaluate_function(im_init, SFFOLSIFT::square);
+  SFFOLSIFT::evaluate_function(image, SFFOLSIFT::square);
   using FilterType = itk::IsotropicDiffusionLevelSetFilter<ImageType, ImageType>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
-  filter->SetInput(im_init);
-  std::cout << "MaxRefitIteration = " << (filter->GetMaxRefitIteration()) << "\n";
-  std::cout << "MaxNormalIteration = " << (filter->GetMaxNormalIteration()) << "\n";
-  filter->SetCurvatureBandWidth(4);
-  std::cout << "CurvatureBandWidth= " << (filter->GetCurvatureBandWidth()) << "\n";
-  filter->SetRMSChangeNormalProcessTrigger(0.001);
-  std::cout << "RMS change trigger = " << (filter->GetRMSChangeNormalProcessTrigger()) << "\n";
-  std::cout << "Normal process type = " << (filter->GetNormalProcessType()) << "\n";
-  std::cout << "Conductance = " << (filter->GetNormalProcessConductance()) << "\n";
-  std::cout << "Unsharp flag = " << (filter->GetNormalProcessUnsharpFlag()) << "\n";
-  std::cout << "Unsharp weight = " << (filter->GetNormalProcessUnsharpWeight()) << "\n";
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    filter, IsotropicDiffusionLevelSetFilter, SparseFieldFourthOrderLevelSetImageFilter);
 
-  filter->Update();
-  filter->Print(std::cout);
-  std::cout << "Passed.\n";
+
+  unsigned int maxRefitIteration = 0;
+  filter->SetMaxRefitIteration(maxRefitIteration);
+  ITK_TEST_SET_GET_VALUE(maxRefitIteration, filter->GetMaxRefitIteration());
+
+  unsigned int maxNormalIteration = 100;
+  filter->SetMaxNormalIteration(maxNormalIteration);
+  ITK_TEST_SET_GET_VALUE(maxNormalIteration, filter->GetMaxNormalIteration());
+
+  typename FilterType::ValueType curvatureBandWidth = 4;
+  filter->SetCurvatureBandWidth(curvatureBandWidth);
+  ITK_TEST_SET_GET_VALUE(curvatureBandWidth, filter->GetCurvatureBandWidth());
+
+  typename FilterType::ValueType rmsChangeNormalProcessTrigger = 0.001;
+  filter->SetRMSChangeNormalProcessTrigger(rmsChangeNormalProcessTrigger);
+  ITK_TEST_SET_GET_VALUE(rmsChangeNormalProcessTrigger, filter->GetRMSChangeNormalProcessTrigger());
+
+  int normalProcessType = 0;
+  filter->SetNormalProcessType(normalProcessType);
+  ITK_TEST_SET_GET_VALUE(normalProcessType, filter->GetNormalProcessType());
+
+  typename FilterType::ValueType normalProcessConductance =
+    itk::NumericTraits<typename FilterType::ValueType>::ZeroValue();
+  filter->SetNormalProcessConductance(normalProcessConductance);
+  ITK_TEST_SET_GET_VALUE(normalProcessConductance, filter->GetNormalProcessConductance());
+
+  bool normalProcessUnsharpFlag = false;
+  filter->SetNormalProcessUnsharpFlag(normalProcessUnsharpFlag);
+  ITK_TEST_SET_GET_BOOLEAN(filter, NormalProcessUnsharpFlag, normalProcessUnsharpFlag);
+
+  typename FilterType::ValueType normalProcessUnsharpWeight =
+    itk::NumericTraits<typename FilterType::ValueType>::ZeroValue();
+  filter->SetNormalProcessUnsharpWeight(normalProcessUnsharpWeight);
+  ITK_TEST_SET_GET_VALUE(normalProcessUnsharpWeight, filter->GetNormalProcessUnsharpWeight());
+
+  filter->SetInput(image);
+
+  ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
+
+
+  std::cout << "Test finished." << std::endl;
   return EXIT_SUCCESS;
 }

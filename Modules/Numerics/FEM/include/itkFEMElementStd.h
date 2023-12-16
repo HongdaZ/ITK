@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,18 +65,18 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ElementStd, TBaseClass);
 
-  // FIXME: Add concept cheking for TBaseClass, and TPointClass
+  // FIXME: Add concept checking for TBaseClass, and TPointClass
 
   // Repeat type alias and enums from parent class
 
-  using Float = typename Superclass::Float;
-  using MatrixType = typename Superclass::MatrixType;
-  using VectorType = typename Superclass::VectorType;
+  using typename Superclass::Float;
+  using typename Superclass::MatrixType;
+  using typename Superclass::VectorType;
   using LoadType = typename Superclass::LoadType;
-  using LoadPointer = typename Superclass::LoadPointer;
-  using NodeIDType = typename Superclass::NodeIDType;
-  using DegreeOfFreedomIDType = typename Superclass::DegreeOfFreedomIDType;
-  using Node = typename Superclass::Node;
+  using typename Superclass::LoadPointer;
+  using typename Superclass::NodeIDType;
+  using typename Superclass::DegreeOfFreedomIDType;
+  using typename Superclass::Node;
   enum
   {
     InvalidDegreeOfFreedomID = Superclass::InvalidDegreeOfFreedomID

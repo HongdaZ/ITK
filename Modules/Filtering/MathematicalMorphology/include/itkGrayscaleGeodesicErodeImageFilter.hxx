@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,6 @@
 
 #include "itkZeroFluxNeumannBoundaryCondition.h"
 #include "itkNumericTraits.h"
-#include "itkGrayscaleGeodesicErodeImageFilter.h"
 #include "itkNeighborhoodAlgorithm.h"
 #include "itkTotalProgressReporter.h"
 #include "itkProgressAccumulator.h"
@@ -52,8 +51,8 @@ GrayscaleGeodesicErodeImageFilter<TInputImage, TOutputImage>::SetMarkerImage(con
 }
 
 template <typename TInputImage, typename TOutputImage>
-const typename GrayscaleGeodesicErodeImageFilter<TInputImage, TOutputImage>::MarkerImageType *
-GrayscaleGeodesicErodeImageFilter<TInputImage, TOutputImage>::GetMarkerImage()
+auto
+GrayscaleGeodesicErodeImageFilter<TInputImage, TOutputImage>::GetMarkerImage() -> const MarkerImageType *
 {
   return this->GetInput(0);
 }
@@ -67,8 +66,8 @@ GrayscaleGeodesicErodeImageFilter<TInputImage, TOutputImage>::SetMaskImage(const
 }
 
 template <typename TInputImage, typename TOutputImage>
-const typename GrayscaleGeodesicErodeImageFilter<TInputImage, TOutputImage>::MaskImageType *
-GrayscaleGeodesicErodeImageFilter<TInputImage, TOutputImage>::GetMaskImage()
+auto
+GrayscaleGeodesicErodeImageFilter<TInputImage, TOutputImage>::GetMaskImage() -> const MaskImageType *
 {
   return this->GetInput(1);
 }
@@ -193,7 +192,7 @@ GrayscaleGeodesicErodeImageFilter<TInputImage, TOutputImage>::GenerateData()
   singleIteration->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
 
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
   progress->RegisterInternalFilter(singleIteration, 1.0f);
 
@@ -239,7 +238,7 @@ GrayscaleGeodesicErodeImageFilter<TInputImage, TOutputImage>::GenerateData()
       singleIteration->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
 
       // Keep track of how many iterations have be done
-      m_NumberOfIterationsUsed++;
+      ++m_NumberOfIterationsUsed;
     }
   }
 
@@ -342,7 +341,7 @@ GrayscaleGeodesicErodeImageFilter<TInputImage, TOutputImage>::DynamicThreadedGen
 
       // Erode by checking the face connected neighbors (and center pixel)
       typename NeighborhoodIteratorType::ConstIterator sIt;
-      for (sIt = markerIt.Begin(); !sIt.IsAtEnd(); sIt++)
+      for (sIt = markerIt.Begin(); !sIt.IsAtEnd(); ++sIt)
       {
         // a pixel in the neighborhood
         value = sIt.Get();

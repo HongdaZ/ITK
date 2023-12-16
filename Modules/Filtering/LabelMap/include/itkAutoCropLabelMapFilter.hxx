@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,6 @@
  *=========================================================================*/
 #ifndef itkAutoCropLabelMapFilter_hxx
 #define itkAutoCropLabelMapFilter_hxx
-#include "itkAutoCropLabelMapFilter.h"
 
 namespace itk
 {
@@ -74,7 +73,7 @@ AutoCropLabelMapFilter<TInputImage>::GenerateOutputInformation()
       const typename TInputImage::IndexValueType length = lit.GetLine().GetLength();
 
       // update the mins and maxs
-      for (unsigned int i = 0; i < ImageDimension; i++)
+      for (unsigned int i = 0; i < ImageDimension; ++i)
       {
         if (idx[i] < minIdx[i])
         {
@@ -100,7 +99,7 @@ AutoCropLabelMapFilter<TInputImage>::GenerateOutputInformation()
   SizeType             regionSize;
   InputImageRegionType cropRegion;
 
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     regionSize[i] = maxIdx[i] - minIdx[i] + 1;
   }

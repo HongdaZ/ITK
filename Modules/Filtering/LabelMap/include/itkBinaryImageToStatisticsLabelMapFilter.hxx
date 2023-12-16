@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkBinaryImageToStatisticsLabelMapFilter_hxx
 #define itkBinaryImageToStatisticsLabelMapFilter_hxx
 
-#include "itkBinaryImageToStatisticsLabelMapFilter.h"
 #include "itkProgressAccumulator.h"
 
 namespace itk
@@ -31,7 +30,7 @@ BinaryImageToStatisticsLabelMapFilter<TInputImage, TFeatureImage, TOutputImage>:
   m_FullyConnected = false;
   m_ComputeFeretDiameter = false;
   m_ComputePerimeter = true;
-  m_NumberOfBins = 128;
+  m_NumberOfBins = LabelObjectValuatorType::GetDefaultNumberOfBins();
   m_ComputeHistogram = true;
   this->SetNumberOfRequiredInputs(2);
 }
@@ -64,14 +63,14 @@ void
 BinaryImageToStatisticsLabelMapFilter<TInputImage, TFeatureImage, TOutputImage>::GenerateData()
 {
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
 
   progress->SetMiniPipelineFilter(this);
 
   // Allocate the output
   this->AllocateOutputs();
 
-  typename LabelizerType::Pointer labelizer = LabelizerType::New();
+  auto labelizer = LabelizerType::New();
   labelizer->SetInput(this->GetInput());
   labelizer->SetInputForegroundValue(m_InputForegroundValue);
   labelizer->SetOutputBackgroundValue(m_OutputBackgroundValue);
@@ -79,7 +78,7 @@ BinaryImageToStatisticsLabelMapFilter<TInputImage, TFeatureImage, TOutputImage>:
   labelizer->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   progress->RegisterInternalFilter(labelizer, .5f);
 
-  typename LabelObjectValuatorType::Pointer valuator = LabelObjectValuatorType::New();
+  auto valuator = LabelObjectValuatorType::New();
   valuator->SetInput(labelizer->GetOutput());
   valuator->SetFeatureImage(this->GetFeatureImage());
   valuator->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());

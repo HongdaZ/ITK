@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkWindowConvergenceMonitoringFunction_hxx
 #define itkWindowConvergenceMonitoringFunction_hxx
 
-#include "itkWindowConvergenceMonitoringFunction.h"
 
 #include "itkBSplineControlPointImageFunction.h"
 #include "itkBSplineScatteredDataPointSetToImageFilter.h"
@@ -62,8 +61,8 @@ WindowConvergenceMonitoringFunction<TScalar>::ClearEnergyValues()
 }
 
 template <typename TScalar>
-typename WindowConvergenceMonitoringFunction<TScalar>::RealType
-WindowConvergenceMonitoringFunction<TScalar>::GetConvergenceValue() const
+auto
+WindowConvergenceMonitoringFunction<TScalar>::GetConvergenceValue() const -> RealType
 {
   if (this->GetNumberOfEnergyValues() < this->m_WindowSize)
   {
@@ -84,7 +83,7 @@ WindowConvergenceMonitoringFunction<TScalar>::GetConvergenceValue() const
   spacing[0] = 0.1;
 
   using BSplinerType = BSplineScatteredDataPointSetToImageFilter<EnergyProfileType, CurveType>;
-  typename BSplinerType::Pointer bspliner = BSplinerType::New();
+  auto bspliner = BSplinerType::New();
   bspliner->SetOrigin(origin);
   bspliner->SetSpacing(spacing);
   bspliner->SetSize(size);
@@ -95,10 +94,10 @@ WindowConvergenceMonitoringFunction<TScalar>::GetConvergenceValue() const
   bspliner->SetNumberOfControlPoints(ncps);
   bspliner->SetNumberOfWorkUnits(1);
 
-  typename EnergyProfileType::Pointer energyProfileWindow = EnergyProfileType::New();
+  auto energyProfileWindow = EnergyProfileType::New();
   energyProfileWindow->Initialize();
 
-  for (unsigned int n = 0; n < this->m_WindowSize; n++)
+  for (unsigned int n = 0; n < this->m_WindowSize; ++n)
   {
     ProfilePointType windowPoint;
     windowPoint[0] = static_cast<typename ProfilePointType::CoordRepType>(n) /
@@ -111,7 +110,7 @@ WindowConvergenceMonitoringFunction<TScalar>::GetConvergenceValue() const
   bspliner->Update();
 
   using BSplinerFunctionType = BSplineControlPointImageFunction<CurveType>;
-  typename BSplinerFunctionType::Pointer bsplinerFunction = BSplinerFunctionType::New();
+  auto bsplinerFunction = BSplinerFunctionType::New();
   bsplinerFunction->SetOrigin(origin);
   bsplinerFunction->SetSpacing(spacing);
   bsplinerFunction->SetSize(size);

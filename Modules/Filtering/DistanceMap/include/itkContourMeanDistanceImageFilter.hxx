@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkContourMeanDistanceImageFilter_hxx
 #define itkContourMeanDistanceImageFilter_hxx
 
-#include "itkContourMeanDistanceImageFilter.h"
 
 #include "itkImageRegionIterator.h"
 #include "itkProgressAccumulator.h"
@@ -51,16 +50,16 @@ ContourMeanDistanceImageFilter<TInputImage1, TInputImage2>::SetInput2(const TInp
 }
 
 template <typename TInputImage1, typename TInputImage2>
-const typename ContourMeanDistanceImageFilter<TInputImage1, TInputImage2>::InputImage1Type *
-ContourMeanDistanceImageFilter<TInputImage1, TInputImage2>::GetInput1()
+auto
+ContourMeanDistanceImageFilter<TInputImage1, TInputImage2>::GetInput1() -> const InputImage1Type *
 {
   return this->GetInput();
 }
 
 
 template <typename TInputImage1, typename TInputImage2>
-const typename ContourMeanDistanceImageFilter<TInputImage1, TInputImage2>::InputImage2Type *
-ContourMeanDistanceImageFilter<TInputImage1, TInputImage2>::GetInput2()
+auto
+ContourMeanDistanceImageFilter<TInputImage1, TInputImage2>::GetInput2() -> const InputImage2Type *
 {
   return itkDynamicCastInDebugMode<const TInputImage2 *>(this->ProcessObject::GetInput(1));
 }
@@ -105,12 +104,12 @@ ContourMeanDistanceImageFilter<TInputImage1, TInputImage2>::GenerateData()
   this->GraftOutput(image);
 
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
 
   using Filter12Type = ContourDirectedMeanDistanceImageFilter<InputImage1Type, InputImage2Type>;
 
-  typename Filter12Type::Pointer filter12 = Filter12Type::New();
+  auto filter12 = Filter12Type::New();
 
   filter12->SetInput1(this->GetInput1());
   filter12->SetInput2(this->GetInput2());
@@ -119,7 +118,7 @@ ContourMeanDistanceImageFilter<TInputImage1, TInputImage2>::GenerateData()
 
   using Filter21Type = ContourDirectedMeanDistanceImageFilter<InputImage2Type, InputImage1Type>;
 
-  typename Filter21Type::Pointer filter21 = Filter21Type::New();
+  auto filter21 = Filter21Type::New();
 
   filter21->SetInput1(this->GetInput2());
   filter21->SetInput2(this->GetInput1());

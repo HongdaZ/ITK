@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkConicShellInteriorExteriorSpatialFunction_hxx
 #define itkConicShellInteriorExteriorSpatialFunction_hxx
 
-#include "itkConicShellInteriorExteriorSpatialFunction.h"
 
 namespace itk
 {
@@ -41,8 +40,8 @@ ConicShellInteriorExteriorSpatialFunction<VDimension, TInput>::SetOriginGradient
 }
 
 template <unsigned int VDimension, typename TInput>
-typename ConicShellInteriorExteriorSpatialFunction<VDimension, TInput>::OutputType
-ConicShellInteriorExteriorSpatialFunction<VDimension, TInput>::Evaluate(const InputType & position) const
+auto
+ConicShellInteriorExteriorSpatialFunction<VDimension, TInput>::Evaluate(const InputType & position) const -> OutputType
 {
   using VectorType = Vector<double, VDimension>;
 
@@ -95,14 +94,14 @@ ConicShellInteriorExteriorSpatialFunction<VDimension, TInput>::PrintSelf(std::os
 
   unsigned int i;
   os << indent << "Origin: [";
-  for (i = 0; i < VDimension - 1; i++)
+  for (i = 0; i < VDimension - 1; ++i)
   {
     os << m_Origin[i] << ", ";
   }
   os << "]" << std::endl;
 
   os << indent << "Gradient at origin: [";
-  for (i = 0; i < VDimension - 1; i++)
+  for (i = 0; i < VDimension - 1; ++i)
   {
     os << m_OriginGradient[i] << ", ";
   }

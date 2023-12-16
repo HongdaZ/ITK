@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,10 +22,11 @@
 #include "itkDataObject.h"
 #include "itkMeshConvertPixelTraits.h"
 #include "itkMeshIOFactory.h"
-#include "itkMeshFileWriter.h"
 #include "itkObjectFactoryBase.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 #include "vnl/vnl_vector.h"
+
 
 namespace itk
 {
@@ -47,8 +48,8 @@ MeshFileWriter<TInputMesh>::SetInput(const InputMeshType * input)
 }
 
 template <typename TInputMesh>
-const typename MeshFileWriter<TInputMesh>::InputMeshType *
-MeshFileWriter<TInputMesh>::GetInput()
+auto
+MeshFileWriter<TInputMesh>::GetInput() -> const InputMeshType *
 {
   if (this->GetNumberOfInputs() < 1)
   {
@@ -59,8 +60,8 @@ MeshFileWriter<TInputMesh>::GetInput()
 }
 
 template <typename TInputMesh>
-const typename MeshFileWriter<TInputMesh>::InputMeshType *
-MeshFileWriter<TInputMesh>::GetInput(unsigned int idx)
+auto
+MeshFileWriter<TInputMesh>::GetInput(unsigned int idx) -> const InputMeshType *
 {
   return static_cast<TInputMesh *>(this->ProcessObject::GetInput(idx));
 }
@@ -189,7 +190,7 @@ MeshFileWriter<TInputMesh>::Write()
     m_MeshIO->SetNumberOfPointPixels(input->GetPointData()->Size());
     // m_MeshIO->SetNumberOfPointPixelComponents(MeshConvertPixelTraits<typename
     // TInputMesh::PixelType>::GetNumberOfComponents());
-    m_MeshIO->SetPixelType(input->GetPointData()->ElementAt(0), true);
+    m_MeshIO->SetPixelType(input->GetPointData()->Begin().Value(), true);
   }
 
   // Whether write cell data
@@ -199,7 +200,7 @@ MeshFileWriter<TInputMesh>::Write()
     m_MeshIO->SetNumberOfCellPixels(input->GetCellData()->Size());
     // m_MeshIO->SetNumberOfCellPixelComponents(MeshConvertPixelTraits<typename
     // TInputMesh::CellPixelType>::GetNumberOfComponents());
-    m_MeshIO->SetPixelType(input->GetCellData()->ElementAt(0), false);
+    m_MeshIO->SetPixelType(input->GetCellData()->Begin().Value(), false);
   }
 
   this->InvokeEvent(StartEvent());
@@ -249,10 +250,10 @@ MeshFileWriter<TInputMesh>::WritePoints()
 
   itkDebugMacro(<< "Writing points: " << m_FileName);
   SizeValueType pointsBufferSize = input->GetNumberOfPoints() * TInputMesh::PointDimension;
-  auto *        buffer = new typename TInputMesh::PointType::ValueType[pointsBufferSize];
-  CopyPointsToBuffer(buffer);
-  m_MeshIO->WritePoints(buffer);
-  delete[] buffer;
+  using ValueType = typename TInputMesh::PointType::ValueType;
+  const auto buffer = make_unique_for_overwrite<ValueType[]>(pointsBufferSize);
+  CopyPointsToBuffer(buffer.get());
+  m_MeshIO->WritePoints(buffer.get());
 }
 
 template <typename TInputMesh>
@@ -262,10 +263,10 @@ MeshFileWriter<TInputMesh>::WriteCells()
   itkDebugMacro(<< "Writing cells: " << m_FileName);
 
   SizeValueType cellsBufferSize = m_MeshIO->GetCellBufferSize();
-  auto *        buffer = new typename TInputMesh::PointIdentifier[cellsBufferSize];
-  CopyCellsToBuffer(buffer);
-  m_MeshIO->WriteCells(buffer);
-  delete[] buffer;
+  using PointIdentifierType = typename TInputMesh::PointIdentifier;
+  const auto buffer = make_unique_for_overwrite<PointIdentifierType[]>(cellsBufferSize);
+  CopyCellsToBuffer(buffer.get());
+  m_MeshIO->WriteCells(buffer.get());
 }
 
 template <typename TInputMesh>
@@ -280,13 +281,12 @@ MeshFileWriter<TInputMesh>::WritePointData()
   {
     const SizeValueType numberOfComponents =
       input->GetPointData()->Size() * MeshConvertPixelTraits<typename TInputMesh::PixelType>::GetNumberOfComponents(
-                                        input->GetPointData()->ElementAt(0));
+                                        input->GetPointData()->Begin().Value());
 
     using ValueType = typename itk::NumericTraits<typename TInputMesh::PixelType>::ValueType;
-    auto * buffer = new ValueType[numberOfComponents];
-    CopyPointDataToBuffer(buffer);
-    m_MeshIO->WritePointData(buffer);
-    delete[] buffer;
+    const auto buffer = make_unique_for_overwrite<ValueType[]>(numberOfComponents);
+    CopyPointDataToBuffer(buffer.get());
+    m_MeshIO->WritePointData(buffer.get());
   }
 }
 
@@ -302,13 +302,12 @@ MeshFileWriter<TInputMesh>::WriteCellData()
   {
     const SizeValueType numberOfComponents =
       input->GetCellData()->Size() * MeshConvertPixelTraits<typename TInputMesh::CellPixelType>::GetNumberOfComponents(
-                                       input->GetCellData()->ElementAt(0));
+                                       input->GetCellData()->Begin().Value());
 
     using ValueType = typename itk::NumericTraits<typename TInputMesh::CellPixelType>::ValueType;
-    auto * buffer = new ValueType[numberOfComponents];
-    CopyCellDataToBuffer(buffer);
-    m_MeshIO->WriteCellData(buffer);
-    delete[] buffer;
+    const auto buffer = make_unique_for_overwrite<ValueType[]>(numberOfComponents);
+    CopyCellDataToBuffer(buffer.get());
+    m_MeshIO->WriteCellData(buffer.get());
   }
 }
 
@@ -324,7 +323,7 @@ MeshFileWriter<TInputMesh>::CopyPointsToBuffer(Output * data)
 
   while (pter != points->End())
   {
-    for (unsigned int jj = 0; jj < TInputMesh::PointDimension; jj++)
+    for (unsigned int jj = 0; jj < TInputMesh::PointDimension; ++jj)
     {
       data[index++] = static_cast<Output>(pter.Value()[jj]);
     }
@@ -361,6 +360,9 @@ MeshFileWriter<TInputMesh>::CopyCellsToBuffer(Output * data)
       case CellGeometryEnum::LINE_CELL:
         data[index++] = static_cast<Output>(CellGeometryEnum::LINE_CELL);
         break;
+      case CellGeometryEnum::POLYLINE_CELL:
+        data[index++] = static_cast<Output>(CellGeometryEnum::POLYLINE_CELL);
+        break;
       case CellGeometryEnum::TRIANGLE_CELL:
         data[index++] = static_cast<Output>(CellGeometryEnum::TRIANGLE_CELL);
         break;
@@ -388,11 +390,10 @@ MeshFileWriter<TInputMesh>::CopyCellsToBuffer(Output * data)
 
     // The second element is number of points for each cell
     data[index++] = cellPtr->GetNumberOfPoints();
-
     // Others are point identifiers in the cell
     ptIds = cellPtr->GetPointIds();
     unsigned int numberOfPoints = cellPtr->GetNumberOfPoints();
-    for (unsigned int ii = 0; ii < numberOfPoints; ii++)
+    for (unsigned int ii = 0; ii < numberOfPoints; ++ii)
     {
       data[index++] = static_cast<Output>(ptIds[ii]);
     }
@@ -414,13 +415,13 @@ MeshFileWriter<TInputMesh>::CopyPointDataToBuffer(Output * data)
   // Should define NumericTraitsArrayPixel
 
   unsigned int numberOfComponents =
-    MeshConvertPixelTraits<typename TInputMesh::PixelType>::GetNumberOfComponents(pointData->ElementAt(0));
+    MeshConvertPixelTraits<typename TInputMesh::PixelType>::GetNumberOfComponents(pointData->Begin().Value());
 
   SizeValueType                                          index = 0;
   typename TInputMesh::PointDataContainer::ConstIterator pter = pointData->Begin();
   while (pter != pointData->End())
   {
-    for (unsigned int jj = 0; jj < numberOfComponents; jj++)
+    for (unsigned int jj = 0; jj < numberOfComponents; ++jj)
     {
       data[index++] =
         static_cast<Output>(MeshConvertPixelTraits<typename TInputMesh::PixelType>::GetNthComponent(jj, pter.Value()));
@@ -443,12 +444,12 @@ MeshFileWriter<TInputMesh>::CopyCellDataToBuffer(Output * data)
   // Should define NumericTraitsArrayPixel
 
   unsigned int numberOfComponents =
-    MeshConvertPixelTraits<typename TInputMesh::CellPixelType>::GetNumberOfComponents(cellData->ElementAt(0));
+    MeshConvertPixelTraits<typename TInputMesh::CellPixelType>::GetNumberOfComponents(cellData->Begin().Value());
   SizeValueType                                         index = 0;
   typename TInputMesh::CellDataContainer::ConstIterator cter = cellData->Begin();
   while (cter != cellData->End())
   {
-    for (unsigned int jj = 0; jj < numberOfComponents; jj++)
+    for (unsigned int jj = 0; jj < numberOfComponents; ++jj)
     {
       data[index++] = static_cast<Output>(
         MeshConvertPixelTraits<typename TInputMesh::CellPixelType>::GetNthComponent(jj, cter.Value()));

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class JoinSeriesImageFilter
+ * \class JoinSeriesImageFilter
  * \brief Join N-D images into an (N+1)-D image
  *
  * This filter is templated over the input image type and the output image
@@ -33,7 +33,7 @@ namespace itk
  * the size of the N+1'th dimension of the output is same as the number of
  * the inputs. The spacing and the origin (where the first input is placed)
  * for the N+1'th dimension is specified in this filter. The output image
- * informations for the first N dimensions are taken from the first input.
+ * information for the first N dimensions are taken from the first input.
  * Note that all the inputs should have the same information.
  *
  * \ingroup GeometricTransform
@@ -43,7 +43,7 @@ namespace itk
  * \author Hideaki Hiraki
  *
  * Contributed in the users list
- * http://public.kitware.com/pipermail/insight-users/2004-February/006542.html
+ * https://public.kitware.com/pipermail/insight-users/2004-February/006542.html
  *
  * \ingroup ITKImageCompose
  */
@@ -51,7 +51,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT JoinSeriesImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(JoinSeriesImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(JoinSeriesImageFilter);
 
   /** Standard class type aliases. */
   using Self = JoinSeriesImageFilter;
@@ -66,8 +66,8 @@ public:
   itkTypeMacro(JoinSeriesImageFilter, ImageToImageFilter);
 
   /** Compiler can't inherit type alias? */
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::OutputImageType;
   using InputImagePointer = typename InputImageType::Pointer;
   using OutputImagePointer = typename OutputImageType::Pointer;
   using InputImageRegionType = typename InputImageType::RegionType;

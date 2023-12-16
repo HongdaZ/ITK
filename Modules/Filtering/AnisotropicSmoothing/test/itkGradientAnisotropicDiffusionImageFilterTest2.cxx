@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@
 #include "itkImageFileWriter.h"
 #include "itkChangeInformationImageFilter.h"
 #include "itkTestingComparisonImageFilter.h"
+#include "itkTestingMacros.h"
 #include <fstream>
 
 using PixelType = float;
@@ -42,7 +43,7 @@ SameImage(ImagePointer testImage, ImagePointer baselineImage)
   unsigned long numberOfPixelTolerance = 0;
 
   using DiffType = itk::Testing::ComparisonImageFilter<ImageType, ImageType>;
-  DiffType::Pointer diff = DiffType::New();
+  auto diff = DiffType::New();
   diff->SetValidInput(baselineImage);
   diff->SetTestInput(testImage);
   diff->SetDifferenceThreshold(intensityTolerance);
@@ -64,17 +65,17 @@ SameImage(ImagePointer testImage, ImagePointer baselineImage)
 
 
 int
-itkGradientAnisotropicDiffusionImageFilterTest2(int ac, char * av[])
+itkGradientAnisotropicDiffusionImageFilterTest2(int argc, char * argv[])
 {
-  if (ac < 3)
+  if (argc < 3)
   {
-    std::cerr << "Usage: " << av[0] << " InputImage OutputImage\n";
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " InputImage OutputImage\n";
     return -1;
   }
 
 
   itk::ImageFileReader<myFloatImage>::Pointer input = itk::ImageFileReader<myFloatImage>::New();
-  input->SetFileName(av[1]);
+  input->SetFileName(argv[1]);
 
   // Create a filter
   itk::GradientAnisotropicDiffusionImageFilter<myFloatImage, myFloatImage>::Pointer filter =
@@ -104,8 +105,8 @@ itkGradientAnisotropicDiffusionImageFilterTest2(int ac, char * av[])
   itk::ImageFileWriter<myUCharImage>::Pointer writer;
   writer = itk::ImageFileWriter<myUCharImage>::New();
   writer->SetInput(caster->GetOutput());
-  std::cout << "Writing " << av[2] << std::endl;
-  writer->SetFileName(av[2]);
+  std::cout << "Writing " << argv[2] << std::endl;
+  writer->SetFileName(argv[2]);
   writer->Update();
 
   myFloatImage::Pointer normalImage = filter->GetOutput();
@@ -114,7 +115,7 @@ itkGradientAnisotropicDiffusionImageFilterTest2(int ac, char * av[])
   // We now set up testing when the image spacing is not trivial 1 and
   // perform diffusion with spacing on
   using ChangeInformationType = itk::ChangeInformationImageFilter<myFloatImage>;
-  ChangeInformationType::Pointer changeInfo = ChangeInformationType::New();
+  auto changeInfo = ChangeInformationType::New();
   changeInfo->SetInput(input->GetOutput());
   myFloatImage::SpacingType spacing;
   spacing[0] = input->GetOutput()->GetSpacing()[0] * 100.0;

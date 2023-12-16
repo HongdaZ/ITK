@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkFiniteCylinderSpatialFunction_hxx
 #define itkFiniteCylinderSpatialFunction_hxx
 
-#include "itkFiniteCylinderSpatialFunction.h"
 #include "itkFloatingPointExceptions.h"
 #include <cmath>
 
@@ -67,8 +66,8 @@ FiniteCylinderSpatialFunction<VDimension, TInput>::SetOrientation(const InputTyp
 }
 
 template <unsigned int VDimension, typename TInput>
-typename FiniteCylinderSpatialFunction<VDimension, TInput>::OutputType
-FiniteCylinderSpatialFunction<VDimension, TInput>::Evaluate(const InputType & position) const
+auto
+FiniteCylinderSpatialFunction<VDimension, TInput>::Evaluate(const InputType & position) const -> OutputType
 {
   const double halfAxisLength = 0.5 * m_AxisLength;
 
@@ -102,7 +101,7 @@ FiniteCylinderSpatialFunction<VDimension, TInput>::Evaluate(const InputType & po
     FloatingPointExceptions::SetEnabled(saveFPEState);
   }
 
-  if (std::fabs(distanceFromCenter) <= (halfAxisLength) &&
+  if (itk::Math::abs(distanceFromCenter) <= (halfAxisLength) &&
       m_Radius >= std::sqrt(std::pow(pointVector.GetVnlVector().magnitude(), 2.0) - std::pow(distanceFromCenter, 2.0)))
   {
     return 1;
@@ -125,13 +124,13 @@ FiniteCylinderSpatialFunction<VDimension, TInput>::PrintSelf(std::ostream & os, 
   os << indent << "Radius: " << m_Radius << std::endl;
   os << indent << "Origin of Cylinder: " << m_Center << std::endl;
   os << indent << "Orientation: " << std::endl;
-  for (i = 0; i < VDimension; i++)
+  for (i = 0; i < VDimension; ++i)
   {
     os << indent << indent << m_Orientation[i] << " ";
   }
   os << std::endl;
   os << indent << "Normalized Orientation: " << std::endl;
-  for (i = 0; i < VDimension; i++)
+  for (i = 0; i < VDimension; ++i)
   {
     os << indent << indent << m_NormalizedOrientation[i] << " ";
   }

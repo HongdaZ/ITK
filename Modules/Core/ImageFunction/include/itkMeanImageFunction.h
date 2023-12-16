@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,7 +50,7 @@ class ITK_TEMPLATE_EXPORT MeanImageFunction
   : public ImageFunction<TInputImage, typename NumericTraits<typename TInputImage::PixelType>::RealType, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MeanImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(MeanImageFunction);
 
   /** Standard class type aliases. */
   using Self = MeanImageFunction;
@@ -73,16 +73,16 @@ public:
   using typename Superclass::InputPixelType;
 
   /** OutputType typdef support. */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
 
   /** Point type alias support */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** Size type of the underlying image. */
   using ImageSizeType = typename InputImageType::SizeType;
@@ -131,7 +131,7 @@ protected:
 private:
   unsigned int m_NeighborhoodRadius{ 1 };
 
-  std::vector<Offset<ImageDimension>> m_NeighborhoodOffsets{ Experimental::GenerateRectangularImageNeighborhoodOffsets(
+  std::vector<Offset<ImageDimension>> m_NeighborhoodOffsets{ GenerateRectangularImageNeighborhoodOffsets(
     ImageSizeType::Filled(1)) };
 };
 } // end namespace itk

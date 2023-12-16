@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class SignedMaurerDistanceMapImageFilter
+ * \class SignedMaurerDistanceMapImageFilter
  *
  *  \brief This filter calculates the Euclidean distance transform
  *  of a binary image in linear time for arbitrary dimensions.
@@ -67,7 +67,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT SignedMaurerDistanceMapImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SignedMaurerDistanceMapImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SignedMaurerDistanceMapImageFilter);
 
   /** Extract dimension from input and output image. */
   static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
@@ -152,6 +152,14 @@ public:
    */
   itkSetMacro(BackgroundValue, InputPixelType);
   itkGetConstReferenceMacro(BackgroundValue, InputPixelType);
+
+#ifdef ITK_USE_CONCEPT_CHECKING
+  // Begin concept checking
+  itkConceptMacro(IntConvertibleToInputCheck, (Concept::Convertible<int, InputPixelType>));
+  itkConceptMacro(InputHasNumericTraitsCheck, (Concept::HasNumericTraits<InputPixelType>));
+  itkConceptMacro(OutputImagePixelTypeIsFloatingPointCheck, (Concept::IsFloatingPoint<OutputPixelType>));
+  // End concept checking
+#endif
 
 protected:
   SignedMaurerDistanceMapImageFilter();

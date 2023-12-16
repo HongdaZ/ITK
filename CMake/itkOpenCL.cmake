@@ -1,7 +1,7 @@
 if(ITK_USE_GPU)
-  find_package ( OpenCL REQUIRED )
-  if ( NOT ${OPENCL_FOUND} )
-     message ( FATAL "Could not find OpenCL" )
+  find_package ( OpenCL REQUIRED)
+  if ( NOT ${OPENCL_FOUND})
+     message ( FATAL "Could not find OpenCL")
   endif ()
 
  macro(sourcefile_to_string SOURCE_FILE RESULT_CMAKE_VAR)
@@ -48,7 +48,7 @@ if(ITK_USE_GPU)
                       )
     set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/${OUTPUT_FILE}
                                 PROPERTIES GENERATED ON)
-    set(${SRC_VAR} ${${SRC_VAR}} ${OUTPUT_FILE})
+    set(${SRC_VAR} ${${SRC_VAR}} ${CMAKE_CURRENT_BINARY_DIR}/${OUTPUT_FILE})
   endmacro()
 
   macro(write_gpu_kernels GPUKernels GPU_SRC)

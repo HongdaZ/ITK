@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,14 +19,13 @@
 #ifndef itkLevelSetEquationCurvatureTerm_hxx
 #define itkLevelSetEquationCurvatureTerm_hxx
 
-#include "itkLevelSetEquationCurvatureTerm.h"
 
 namespace itk
 {
 template <typename TInput, typename TLevelSetContainer, typename TCurvatureImage>
 LevelSetEquationCurvatureTerm<TInput, TLevelSetContainer, TCurvatureImage>::LevelSetEquationCurvatureTerm()
 {
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     this->m_NeighborhoodScales[i] = 1.0;
   }
@@ -97,8 +96,9 @@ LevelSetEquationCurvatureTerm<TInput, TLevelSetContainer, TCurvatureImage>::Upda
 {}
 
 template <typename TInput, typename TLevelSetContainer, typename TCurvatureImage>
-typename LevelSetEquationCurvatureTerm<TInput, TLevelSetContainer, TCurvatureImage>::LevelSetOutputRealType
+auto
 LevelSetEquationCurvatureTerm<TInput, TLevelSetContainer, TCurvatureImage>::Value(const LevelSetInputIndexType & iP)
+  -> LevelSetOutputRealType
 {
   if (!m_UseCurvatureImage)
   {

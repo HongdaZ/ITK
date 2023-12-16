@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkPeriodicBoundaryCondition_hxx
 
 #include "itkConstNeighborhoodIterator.h"
-#include "itkPeriodicBoundaryCondition.h"
 
 namespace itk
 {
@@ -180,8 +179,9 @@ PeriodicBoundaryCondition<TInputImage, TOutputImage>::GetInputRequestedRegion(
 
 
 template <typename TInputImage, typename TOutputImage>
-typename PeriodicBoundaryCondition<TInputImage, TOutputImage>::OutputPixelType
+auto
 PeriodicBoundaryCondition<TInputImage, TOutputImage>::GetPixel(const IndexType & index, const TInputImage * image) const
+  -> OutputPixelType
 {
   RegionType imageRegion = image->GetLargestPossibleRegion();
   IndexType  imageIndex = imageRegion.GetIndex();

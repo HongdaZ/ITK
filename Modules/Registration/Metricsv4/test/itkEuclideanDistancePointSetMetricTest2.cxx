@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,10 +36,10 @@ itkEuclideanDistancePointSetMetricTest2Run()
 
   using PointType = typename PointSetType::PointType;
 
-  typename PointSetType::Pointer fixedPoints = PointSetType::New();
+  auto fixedPoints = PointSetType::New();
   fixedPoints->Initialize();
 
-  typename PointSetType::Pointer movingPoints = PointSetType::New();
+  auto movingPoints = PointSetType::New();
   movingPoints->Initialize();
 
   // Create a few points and apply a small offset to make the moving points
@@ -75,7 +75,7 @@ itkEuclideanDistancePointSetMetricTest2Run()
   unsigned int numberOfPoints = fixedPoints->GetNumberOfPoints();
 
   PointType movingPoint;
-  for (unsigned int n = 0; n < numberOfPoints; n++)
+  for (unsigned int n = 0; n < numberOfPoints; ++n)
   {
     fixedPoint = fixedPoints->GetPoint(n);
     movingPoint[0] = fixedPoint[0] + (n + 1) * 0.5;
@@ -92,7 +92,7 @@ itkEuclideanDistancePointSetMetricTest2Run()
   std::cout << "Testing with displacement field transform." << std::endl;
   // using DisplacementFieldTransformType = itk::GaussianSmoothingOnUpdateDisplacementFieldTransform<double, Dimension>;
   using DisplacementFieldTransformType = itk::DisplacementFieldTransform<double, Dimension>;
-  typename DisplacementFieldTransformType::Pointer displacementTransform = DisplacementFieldTransformType::New();
+  auto displacementTransform = DisplacementFieldTransformType::New();
 
   // Setup the physical space to match the point set virtual domain,
   // which is defined by the fixed point set since the fixed transform
@@ -105,7 +105,7 @@ itkEuclideanDistancePointSetMetricTest2Run()
 
   typename FieldType::DirectionType direction;
   direction.Fill(0.0);
-  for (unsigned int d = 0; d < Dimension; d++)
+  for (unsigned int d = 0; d < Dimension; ++d)
   {
     direction[d][d] = 1.0;
   }
@@ -123,7 +123,7 @@ itkEuclideanDistancePointSetMetricTest2Run()
   region.SetSize(regionSize);
   region.SetIndex(regionIndex);
 
-  typename FieldType::Pointer displacementField = FieldType::New();
+  auto displacementField = FieldType::New();
   displacementField->SetOrigin(origin);
   displacementField->SetDirection(direction);
   displacementField->SetSpacing(spacing);
@@ -136,7 +136,7 @@ itkEuclideanDistancePointSetMetricTest2Run()
 
   // Instantiate the metric
   using PointSetMetricType = itk::EuclideanDistancePointSetToPointSetMetricv4<PointSetType>;
-  typename PointSetMetricType::Pointer metric = PointSetMetricType::New();
+  auto metric = PointSetMetricType::New();
   metric->SetFixedPointSet(fixedPoints);
   metric->SetMovingPointSet(movingPoints);
   metric->SetMovingTransform(displacementTransform);
@@ -170,13 +170,13 @@ itkEuclideanDistancePointSetMetricTest2Run()
 
   // check the results
   bool passed = true;
-  for (itk::SizeValueType n = 0; n < fixedPoints->GetNumberOfPoints(); n++)
+  for (itk::SizeValueType n = 0; n < fixedPoints->GetNumberOfPoints(); ++n)
   {
     PointType transformedPoint;
     fixedPoint = fixedPoints->GetPoint(n);
     movingPoint = movingPoints->GetPoint(n);
     transformedPoint = displacementTransform->TransformPoint(fixedPoint);
-    for (unsigned int d = 0; d < Dimension; d++)
+    for (unsigned int d = 0; d < Dimension; ++d)
     {
       if (itk::Math::NotExactlyEquals(transformedPoint[d], movingPoint[d]))
       {
@@ -208,7 +208,7 @@ itkEuclideanDistancePointSetMetricTest2Run()
   }
 
   // Test with no valid points.
-  typename PointSetType::Pointer fixedPoints2 = PointSetType::New();
+  auto fixedPoints2 = PointSetType::New();
   fixedPoints2->Initialize();
   fixedPoint[0] = -pointMax;
   fixedPoint[1] = 0.0;
@@ -217,7 +217,7 @@ itkEuclideanDistancePointSetMetricTest2Run()
   metric->Initialize();
   metric->GetValueAndDerivative(value2, derivative2);
   bool derivative2IsZero = true;
-  for (itk::SizeValueType n = 0; n < metric->GetNumberOfParameters(); n++)
+  for (itk::SizeValueType n = 0; n < metric->GetNumberOfParameters(); ++n)
   {
     if (itk::Math::NotExactlyEquals(derivative2[n],
                                     itk::NumericTraits<typename PointSetMetricType::DerivativeValueType>::ZeroValue()))

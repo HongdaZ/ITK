@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,7 +70,7 @@ template <typename TFixedImage, typename TMovingImage>
 class ITK_TEMPLATE_EXPORT ImageRegistrationMethod : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageRegistrationMethod);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageRegistrationMethod);
 
   /** Standard class type aliases. */
   using Self = ImageRegistrationMethod;
@@ -194,7 +194,7 @@ public:
   using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
   DataObjectPointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  MakeOutput(DataObjectPointerArraySizeType output) override;
 
   /** Method to return the latest modified time of this object or
    * any of its cached ivars */

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -96,8 +96,8 @@ SwapSlicesAndVolumes(T *            buffer,
         for (SizeType p = 0; p < szSlice; ++p)
         {
           *toPixel = *fromPixel;
-          toPixel++;
-          fromPixel++;
+          ++toPixel;
+          ++fromPixel;
         }
         fromSlice += sizeToSwap * szSlice;
       }
@@ -135,8 +135,8 @@ ReverseSliceOrder(T * buffer, const SizeType sizeX, const SizeType sizeY, const 
         temp = *toPixel;
         *toPixel = *fromPixel;
         *fromPixel = temp;
-        toPixel++;
-        fromPixel++;
+        ++toPixel;
+        ++fromPixel;
       }
       fromSlice += ss;
       toSlice -= ss;
@@ -151,7 +151,7 @@ void
 CastCopy(float * to, void * from, size_t pixelCount)
 {
   auto * tempFrom = static_cast<PixelType *>(from);
-  for (unsigned i = 0; i < pixelCount; ++i)
+  for (unsigned int i = 0; i < pixelCount; ++i)
   {
     to[i] = static_cast<float>(tempFrom[i]);
   }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,20 +17,12 @@
  *=========================================================================*/
 
 #include "itkNiftiImageIOTest.h"
-#include "itkEnableIf.h"
+#include <type_traits> // for enable_if
 #include <limits>
-/* VS 2015 has a bug when building release with the heavily nested for
- * loops iterating too many times.  This turns off optimization to
- * allow the tests to pass.
- */
-#if defined(_MSC_VER) && (_MSC_VER == 1900)
-#  pragma optimize("", off)
-#endif
 
 template <typename ScalarType>
 void
-Decrement(ScalarType & value,
-          typename itk::DisableIfC<std::numeric_limits<ScalarType>::is_signed, ScalarType>::Type * = nullptr)
+Decrement(ScalarType & value, std::enable_if_t<!std::numeric_limits<ScalarType>::is_signed, ScalarType> * = nullptr)
 {
   if (value > 1)
   {
@@ -40,8 +32,7 @@ Decrement(ScalarType & value,
 
 template <typename ScalarType>
 void
-Decrement(ScalarType & value,
-          typename itk::EnableIfC<std::numeric_limits<ScalarType>::is_signed, ScalarType>::Type * = nullptr)
+Decrement(ScalarType & value, std::enable_if_t<std::numeric_limits<ScalarType>::is_signed, ScalarType> * = nullptr)
 {
   if (value > -std::numeric_limits<ScalarType>::max() + 1)
   {
@@ -49,7 +40,7 @@ Decrement(ScalarType & value,
   }
 }
 
-template <typename ScalarType, unsigned TVecLength, unsigned TDimension>
+template <typename ScalarType, unsigned int TVecLength, unsigned int TDimension>
 int
 TestImageOfVectors(const std::string & fname)
 {
@@ -84,7 +75,7 @@ TestImageOfVectors(const std::string & fname)
   std::cout << "======================== Initialized Direction" << std::endl;
   std::cout << myDirection << std::endl;
 
-  for (unsigned i = 0; i < TDimension; i++)
+  for (unsigned int i = 0; i < TDimension; ++i)
   {
     size[i] = dimsize;
     index[i] = 0;
@@ -101,46 +92,46 @@ TestImageOfVectors(const std::string & fname)
 
   size_t dims[7];
   size_t _index[7];
-  for (unsigned i = 0; i < TDimension; i++)
+  for (unsigned int i = 0; i < TDimension; ++i)
   {
     dims[i] = size[i];
   }
-  for (unsigned i = TDimension; i < 7; i++)
+  for (unsigned int i = TDimension; i < 7; ++i)
   {
     dims[i] = 1;
   }
 
   ScalarType value = std::numeric_limits<ScalarType>::max();
   //  for(fillIt.GoToBegin(); !fillIt.IsAtEnd(); ++fillIt)
-  for (size_t l = 0; l < dims[6]; l++)
+  for (size_t l = 0; l < dims[6]; ++l)
   {
     _index[6] = l;
-    for (size_t m = 0; m < dims[5]; m++)
+    for (size_t m = 0; m < dims[5]; ++m)
     {
       _index[5] = m;
-      for (size_t n = 0; n < dims[4]; n++)
+      for (size_t n = 0; n < dims[4]; ++n)
       {
         _index[4] = n;
-        for (size_t p = 0; p < dims[3]; p++)
+        for (size_t p = 0; p < dims[3]; ++p)
         {
           _index[3] = p;
-          for (size_t i = 0; i < dims[2]; i++)
+          for (size_t i = 0; i < dims[2]; ++i)
           {
             _index[2] = i;
-            for (size_t j = 0; j < dims[1]; j++)
+            for (size_t j = 0; j < dims[1]; ++j)
             {
               _index[1] = j;
-              for (size_t k = 0; k < dims[0]; k++)
+              for (size_t k = 0; k < dims[0]; ++k)
               {
                 _index[0] = k;
                 FieldPixelType pixel;
-                for (size_t q = 0; q < TVecLength; q++)
+                for (size_t q = 0; q < TVecLength; ++q)
                 {
                   // pixel[q] = randgen.drand32(lowrange,highrange);
                   Decrement(value);
                   pixel[q] = value;
                 }
-                for (size_t q = 0; q < TDimension; q++)
+                for (size_t q = 0; q < TDimension; ++q)
                 {
                   index[q] = _index[q];
                 }
@@ -200,11 +191,11 @@ TestImageOfVectors(const std::string & fname)
     std::cout << "Spacing is different: " << readback->GetSpacing() << " != " << vi->GetSpacing() << std::endl;
     same = false;
   }
-  for (unsigned int r = 0; r < TDimension; r++)
+  for (unsigned int r = 0; r < TDimension; ++r)
   {
-    for (unsigned int c = 0; c < TDimension; c++)
+    for (unsigned int c = 0; c < TDimension; ++c)
     {
-      if (std::abs(readback->GetDirection()[r][c] - vi->GetDirection()[r][c]) > 1e-7)
+      if (itk::Math::abs(readback->GetDirection()[r][c] - vi->GetDirection()[r][c]) > 1e-7)
       {
         std::cout << "Direction is different:\n " << readback->GetDirection() << "\n != \n"
                   << vi->GetDirection() << std::endl;
@@ -214,29 +205,29 @@ TestImageOfVectors(const std::string & fname)
     }
   }
   std::cout << "Original vector Image  ?=   vector Image read from disk " << std::endl;
-  for (size_t l = 0; l < dims[6]; l++)
+  for (size_t l = 0; l < dims[6]; ++l)
   {
     _index[6] = l;
-    for (size_t m = 0; m < dims[5]; m++)
+    for (size_t m = 0; m < dims[5]; ++m)
     {
       _index[5] = m;
-      for (size_t n = 0; n < dims[4]; n++)
+      for (size_t n = 0; n < dims[4]; ++n)
       {
         _index[4] = n;
-        for (size_t p = 0; p < dims[3]; p++)
+        for (size_t p = 0; p < dims[3]; ++p)
         {
           _index[3] = p;
-          for (size_t i = 0; i < dims[2]; i++)
+          for (size_t i = 0; i < dims[2]; ++i)
           {
             _index[2] = i;
-            for (size_t j = 0; j < dims[1]; j++)
+            for (size_t j = 0; j < dims[1]; ++j)
             {
               _index[1] = j;
-              for (size_t k = 0; k < dims[0]; k++)
+              for (size_t k = 0; k < dims[0]; ++k)
               {
                 _index[0] = k;
                 FieldPixelType p1, p2;
-                for (size_t q = 0; q < TDimension; q++)
+                for (size_t q = 0; q < TDimension; ++q)
                 {
                   index[q] = _index[q];
                 }
@@ -272,13 +263,13 @@ TestImageOfVectors(const std::string & fname)
 /** Test writing and reading a Vector Image
  */
 int
-itkNiftiImageIOTest3(int ac, char * av[])
+itkNiftiImageIOTest3(int argc, char * argv[])
 {
   //
   // first argument is passing in the writable directory to do all testing
-  if (ac > 1)
+  if (argc > 1)
   {
-    char * testdir = *++av;
+    char * testdir = *++argv;
     itksys::SystemTools::ChangeDirectory(testdir);
   }
   else

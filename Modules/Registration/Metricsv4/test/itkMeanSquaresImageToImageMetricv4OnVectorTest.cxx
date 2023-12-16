@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,14 +53,14 @@ itkMeanSquaresImageToImageMetricv4OnVectorTest(int, char ** const)
   direction.SetIdentity();
 
   /* Create simple test images. */
-  ImageType::Pointer fixedImage = ImageType::New();
+  auto fixedImage = ImageType::New();
   fixedImage->SetRegions(region);
   fixedImage->SetSpacing(spacing);
   fixedImage->SetOrigin(origin);
   fixedImage->SetDirection(direction);
   fixedImage->Allocate();
 
-  ImageType::Pointer movingImage = ImageType::New();
+  auto movingImage = ImageType::New();
   movingImage->SetRegions(region);
   movingImage->SetSpacing(spacing);
   movingImage->SetOrigin(origin);
@@ -100,8 +100,8 @@ itkMeanSquaresImageToImageMetricv4OnVectorTest(int, char ** const)
   using FixedTransformType = itk::TranslationTransform<double, imageDimensionality>;
   using MovingTransformType = itk::TranslationTransform<double, imageDimensionality>;
 
-  FixedTransformType::Pointer  fixedTransform = FixedTransformType::New();
-  MovingTransformType::Pointer movingTransform = MovingTransformType::New();
+  auto fixedTransform = FixedTransformType::New();
+  auto movingTransform = MovingTransformType::New();
 
   fixedTransform->SetIdentity();
   movingTransform->SetIdentity();
@@ -110,7 +110,7 @@ itkMeanSquaresImageToImageMetricv4OnVectorTest(int, char ** const)
   using MetricTraitsType = itk::VectorImageToImageMetricTraitsv4<ImageType, ImageType, ImageType, vectorLength, double>;
   using MetricType = itk::MeanSquaresImageToImageMetricv4<ImageType, ImageType, ImageType, double, MetricTraitsType>;
 
-  MetricType::Pointer metric = MetricType::New();
+  auto metric = MetricType::New();
 
   /* Assign images and transforms.
    * By not setting a virtual domain image or virtual domain settings,

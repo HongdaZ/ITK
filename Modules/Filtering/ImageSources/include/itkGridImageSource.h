@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@
 namespace itk
 {
 /**
- *\class GridImageSource
+ * \class GridImageSource
  * \brief Generate an n-dimensional image of a grid.
  *
  * GridImageSource generates an image of a grid.
@@ -49,7 +49,7 @@ namespace itk
  * \author Tustison N., Avants B., Gee J. University of Pennsylvania
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/475
+ * https://www.insight-journal.org/browse/publication/140
  *
  * \ingroup DataSources
  * \ingroup ITKImageSources
@@ -58,7 +58,7 @@ template <typename TOutputImage>
 class ITK_TEMPLATE_EXPORT GridImageSource : public GenerateImageSource<TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GridImageSource);
+  ITK_DISALLOW_COPY_AND_MOVE(GridImageSource);
 
   /** Standard class type aliases. */
   using Self = GridImageSource;

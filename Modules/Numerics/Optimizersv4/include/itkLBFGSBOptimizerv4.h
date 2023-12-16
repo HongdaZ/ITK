@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 {
 /* Necessary forward declaration */
 /**
- *\class LBFGSBOptimizerHelperv4
+ * \class LBFGSBOptimizerHelperv4
  * \brief Wrapper helper around vnl_lbfgsb.
  *
  * This class is used to translate iteration events, etc, from
@@ -38,7 +38,7 @@ namespace itk
 class ITK_FORWARD_EXPORT LBFGSBOptimizerHelperv4;
 
 /**
- *\class LBFGSBOptimizerv4
+ * \class LBFGSBOptimizerv4
  * \brief Limited memory Broyden Fletcher Goldfarb Shannon minimization with simple bounds.
  *
  * This class is a wrapper for converted Fortran code for performing limited
@@ -67,7 +67,7 @@ class ITK_FORWARD_EXPORT LBFGSBOptimizerHelperv4;
 class ITKOptimizersv4_EXPORT LBFGSBOptimizerv4 : public LBFGSOptimizerBasev4<vnl_lbfgsb>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LBFGSBOptimizerv4);
+  ITK_DISALLOW_COPY_AND_MOVE(LBFGSBOptimizerv4);
 
   /** Standard "Self" type alias. */
   using Self = LBFGSBOptimizerv4;
@@ -83,7 +83,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(LBFGSBOptimizerv4, Superclass);
+  itkTypeMacro(LBFGSBOptimizerv4, LBFGSOptimizerBasev4);
 
   enum BoundSelectionValues
   {
@@ -141,7 +141,7 @@ public:
    *           = 3 if x[1] has only an upper bound
    */
   void
-  SetBoundSelection(const BoundSelectionType & select);
+  SetBoundSelection(const BoundSelectionType & value);
 
   itkGetConstReferenceMacro(BoundSelection, BoundSelectionType);
 
@@ -169,6 +169,13 @@ public:
   /** Get the current infinity norm of the project gradient of the cost
    * function. */
   itkGetConstReferenceMacro(InfinityNormOfProjectedGradient, double);
+
+  /** Returns false unconditionally because LBFGSBOptimizerv4 does not support using scales. */
+  bool
+  CanUseScales() const override
+  {
+    return false;
+  }
 
 protected:
   LBFGSBOptimizerv4();

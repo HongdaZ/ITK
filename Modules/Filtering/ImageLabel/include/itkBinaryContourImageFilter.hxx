@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkBinaryContourImageFilter_hxx
 #define itkBinaryContourImageFilter_hxx
 
-#include "itkBinaryContourImageFilter.h"
 
 #include "itkImageScanlineIterator.h"
 #include "itkConstShapedNeighborhoodIterator.h"
@@ -106,10 +105,10 @@ BinaryContourImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData(
   OutputImagePointer     output = this->GetOutput();
   InputImageConstPointer input = this->GetInput();
 
-  RegionType    reqRegion = output->GetRequestedRegion();
-  SizeValueType pixelcount = reqRegion.GetNumberOfPixels();
-  SizeValueType xsize = reqRegion.GetSize()[0];
-  SizeValueType linecount = pixelcount / xsize;
+  const RegionType &  reqRegion = output->GetRequestedRegion();
+  const SizeValueType pixelcount = reqRegion.GetNumberOfPixels();
+  const SizeValueType xsize = reqRegion.GetSize()[0];
+  const SizeValueType linecount = (xsize > 0 ? pixelcount / xsize : 0);
 
   m_ForegroundLineMap.clear();
   m_ForegroundLineMap.resize(linecount);
@@ -123,8 +122,8 @@ void
 BinaryContourImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   const RegionType & outputRegionForThread)
 {
-  OutputImagePointer     output = this->GetOutput();
-  InputImageConstPointer input = this->GetInput();
+  OutputImageType *      output = this->GetOutput();
+  const InputImageType * input = this->GetInput();
 
   using InputLineIteratorType = ImageScanlineConstIterator<InputImageType>;
   InputLineIteratorType inLineIt(input, outputRegionForThread);
@@ -189,7 +188,7 @@ BinaryContourImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData
 
     m_ForegroundLineMap[lineId] = fgLine;
     m_BackgroundLineMap[lineId] = bgLine;
-    lineId++;
+    ++lineId;
   }
 }
 

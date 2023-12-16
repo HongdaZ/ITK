@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,7 +49,7 @@ template <typename TOutputMesh>
 class ITK_TEMPLATE_EXPORT MeshSource : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MeshSource);
+  ITK_DISALLOW_COPY_AND_MOVE(MeshSource);
 
   /** Standard class type aliases. */
   using Self = MeshSource;
@@ -119,7 +119,7 @@ public:
    * filter's pipeline mechanism must be consistent with what the
    * mini-pipeline will do). */
   virtual void
-  GraftOutput(DataObject * output);
+  GraftOutput(DataObject * graft);
 
   /** Graft the specified data object onto this ProcessObject's named
    * output. This is similar to the GraftOutput method except it
@@ -127,10 +127,10 @@ public:
    * See the GraftOutput for general usage information.
    */
   virtual void
-  GraftOutput(const DataObjectIdentifierType & key, DataObject * output);
+  GraftOutput(const DataObjectIdentifierType & key, DataObject * graft);
 
   virtual void
-  GraftNthOutput(unsigned int idx, DataObject * output);
+  GraftNthOutput(unsigned int idx, DataObject * graft);
 
   /** Make a DataObject of the correct type to used as the specified
    * output.  Every ProcessObject subclass must be able to create a

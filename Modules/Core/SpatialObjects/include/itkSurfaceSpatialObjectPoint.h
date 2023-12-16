@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class SurfaceSpatialObjectPoint
+ * \class SurfaceSpatialObjectPoint
  * \brief Point used for a Surface definition
  *
  * This class contains all the functions necessary to define a point
@@ -48,6 +48,9 @@ public:
   /** Constructor */
   SurfaceSpatialObjectPoint();
 
+  /** Copy Constructor */
+  SurfaceSpatialObjectPoint(const SurfaceSpatialObjectPoint & other);
+
   /** Destructor */
   ~SurfaceSpatialObjectPoint() override = default;
 
@@ -55,9 +58,17 @@ public:
   const CovariantVectorType &
   GetNormalInObjectSpace() const;
 
+  /** Get Normal */
+  const CovariantVectorType
+  GetNormalInWorldSpace() const;
+
   /** Set Normal */
   void
   SetNormalInObjectSpace(const CovariantVectorType & normal);
+
+  /** Set Normal */
+  void
+  SetNormalInWorldSpace(const CovariantVectorType & normal);
 
   /** Copy one SurfaceSpatialObjectPoint to another */
   Self &

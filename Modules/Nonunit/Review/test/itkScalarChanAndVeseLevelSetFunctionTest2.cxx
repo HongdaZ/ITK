@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ class ScalarChanAndVeseLevelSetFunctionTest2Helper
   : public ScalarChanAndVeseLevelSetFunction<TInput, TFeature, TSharedData>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarChanAndVeseLevelSetFunctionTest2Helper);
+  ITK_DISALLOW_COPY_AND_MOVE(ScalarChanAndVeseLevelSetFunctionTest2Helper);
 
   /** Standard class type aliases. */
   using Self = ScalarChanAndVeseLevelSetFunctionTest2Helper;
@@ -43,9 +43,9 @@ public:
   /** Run-time type information (and related methods) */
   itkTypeMacro(ScalarChanAndVeseLevelSetFunctionTest2Helper, ScalarChanAndVeseLevelSetFunction);
 
-  using ScalarValueType = typename Superclass::ScalarValueType;
-  using FeaturePixelType = typename Superclass::FeaturePixelType;
-  using FeatureIndexType = typename Superclass::FeatureIndexType;
+  using typename Superclass::ScalarValueType;
+  using typename Superclass::FeaturePixelType;
+  using typename Superclass::FeatureIndexType;
 
 
   virtual ScalarValueType
@@ -93,7 +93,7 @@ itkScalarChanAndVeseLevelSetFunctionTest2(int, char *[])
   using ChanAndVeseLevelSetFunctionType =
     itk::ScalarChanAndVeseLevelSetFunctionTest2Helper<ImageType, FeatureImageType, SharedDataHelperType>;
 
-  ChanAndVeseLevelSetFunctionType::Pointer function = ChanAndVeseLevelSetFunctionType::New();
+  auto function = ChanAndVeseLevelSetFunctionType::New();
 
   std::cout << "GetNameOfClass() = " << function->GetNameOfClass() << std::endl;
   function->Print(std::cout);

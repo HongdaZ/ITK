@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,7 +57,7 @@ class ITK_TEMPLATE_EXPORT ImageToImageMetricv4GetValueAndDerivativeThreader<
       TImageToImageMetricv4>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToImageMetricv4GetValueAndDerivativeThreader);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageToImageMetricv4GetValueAndDerivativeThreader);
 
   /** Standard class type aliases. */
   using Self = ImageToImageMetricv4GetValueAndDerivativeThreader;
@@ -71,34 +71,34 @@ public:
                ImageToImageMetricv4GetValueAndDerivativeThreaderBase);
 
   /** Superclass types. */
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  using typename Superclass::DomainType;
+  using typename Superclass::AssociateType;
 
   /** Types of the target class. */
   using ImageToImageMetricv4Type = TImageToImageMetricv4;
   using VirtualImageType = typename Superclass::VirtualImageType;
-  using VirtualIndexType = typename Superclass::VirtualIndexType;
-  using VirtualPointType = typename Superclass::VirtualPointType;
-  using FixedImagePointType = typename Superclass::FixedImagePointType;
-  using FixedImagePixelType = typename Superclass::FixedImagePixelType;
-  using FixedImageGradientType = typename Superclass::FixedImageGradientType;
-  using MovingImagePointType = typename Superclass::MovingImagePointType;
-  using MovingImagePixelType = typename Superclass::MovingImagePixelType;
-  using MovingImageGradientType = typename Superclass::MovingImageGradientType;
+  using typename Superclass::VirtualIndexType;
+  using typename Superclass::VirtualPointType;
+  using typename Superclass::FixedImagePointType;
+  using typename Superclass::FixedImagePixelType;
+  using typename Superclass::FixedImageGradientType;
+  using typename Superclass::MovingImagePointType;
+  using typename Superclass::MovingImagePixelType;
+  using typename Superclass::MovingImageGradientType;
 
-  using FixedTransformType = typename Superclass::FixedTransformType;
-  using FixedOutputPointType = typename Superclass::FixedOutputPointType;
-  using MovingTransformType = typename Superclass::MovingTransformType;
-  using MovingOutputPointType = typename Superclass::MovingOutputPointType;
+  using typename Superclass::FixedTransformType;
+  using typename Superclass::FixedOutputPointType;
+  using typename Superclass::MovingTransformType;
+  using typename Superclass::MovingOutputPointType;
 
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using DerivativeValueType = typename Superclass::DerivativeValueType;
-  using JacobianType = typename Superclass::JacobianType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeValueType;
+  using typename Superclass::JacobianType;
 
-  using InternalComputationValueType = typename Superclass::InternalComputationValueType;
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
-  using ImageDimensionType = typename Superclass::ImageDimensionType;
+  using typename Superclass::InternalComputationValueType;
+  using typename Superclass::NumberOfParametersType;
+  using typename Superclass::ImageDimensionType;
 
 protected:
   /** Constructor. */
@@ -107,7 +107,7 @@ protected:
   /** Walk through the given virtual image domain, and call \c ProcessVirtualPoint on every
    * point. */
   void
-  ThreadedExecution(const DomainType & subdomain, const ThreadIdType threadId) override;
+  ThreadedExecution(const DomainType & imageSubRegion, const ThreadIdType threadId) override;
 
   /** Get cached values for efficiency. Only valid once threading has started.
    *  These methods should be used in tight loops (inlining helps measurably).
@@ -135,7 +135,7 @@ class ITK_TEMPLATE_EXPORT
                                                                  TImageToImageMetricv4>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToImageMetricv4GetValueAndDerivativeThreader);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageToImageMetricv4GetValueAndDerivativeThreader);
 
   /** Standard class type aliases. */
   using Self = ImageToImageMetricv4GetValueAndDerivativeThreader;
@@ -148,33 +148,33 @@ public:
                ImageToImageMetricv4GetValueAndDerivativeThreaderBase);
 
   /** Superclass types. */
-  using DomainType = typename Superclass::DomainType;
-  using AssociateType = typename Superclass::AssociateType;
+  using typename Superclass::DomainType;
+  using typename Superclass::AssociateType;
 
   /** Types of the target class. */
   using ImageToImageMetricv4Type = typename Superclass::ImageToImageMetricv4Type;
   using VirtualImageType = typename Superclass::VirtualImageType;
-  using VirtualIndexType = typename Superclass::VirtualIndexType;
-  using VirtualPointType = typename Superclass::VirtualPointType;
-  using FixedImagePointType = typename Superclass::FixedImagePointType;
-  using FixedImagePixelType = typename Superclass::FixedImagePixelType;
-  using FixedImageGradientType = typename Superclass::FixedImageGradientType;
-  using MovingImagePointType = typename Superclass::MovingImagePointType;
-  using MovingImagePixelType = typename Superclass::MovingImagePixelType;
-  using MovingImageGradientType = typename Superclass::MovingImageGradientType;
+  using typename Superclass::VirtualIndexType;
+  using typename Superclass::VirtualPointType;
+  using typename Superclass::FixedImagePointType;
+  using typename Superclass::FixedImagePixelType;
+  using typename Superclass::FixedImageGradientType;
+  using typename Superclass::MovingImagePointType;
+  using typename Superclass::MovingImagePixelType;
+  using typename Superclass::MovingImageGradientType;
 
-  using FixedTransformType = typename Superclass::FixedTransformType;
-  using FixedOutputPointType = typename Superclass::FixedOutputPointType;
-  using MovingTransformType = typename Superclass::MovingTransformType;
-  using MovingOutputPointType = typename Superclass::MovingOutputPointType;
+  using typename Superclass::FixedTransformType;
+  using typename Superclass::FixedOutputPointType;
+  using typename Superclass::MovingTransformType;
+  using typename Superclass::MovingOutputPointType;
 
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using DerivativeValueType = typename Superclass::DerivativeValueType;
-  using JacobianType = typename Superclass::JacobianType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeValueType;
+  using typename Superclass::JacobianType;
 
-  using InternalComputationValueType = typename Superclass::InternalComputationValueType;
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
+  using typename Superclass::InternalComputationValueType;
+  using typename Superclass::NumberOfParametersType;
 
 protected:
   /** Constructor. */
@@ -183,7 +183,7 @@ protected:
   /** Walk through the given virtual image domain, and call \c ProcessVirtualPoint on every
    * point. */
   void
-  ThreadedExecution(const DomainType & subdomain, const ThreadIdType threadId) override;
+  ThreadedExecution(const DomainType & indexSubRange, const ThreadIdType threadId) override;
 
   /** Get cached values for efficiency. Only valid once threading has started.
    *  These methods should be used in tight loops (inlining helps measurably).

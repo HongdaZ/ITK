@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,8 @@
 #ifndef itkCorrelationImageToImageMetricv4GetValueAndDerivativeThreader_hxx
 #define itkCorrelationImageToImageMetricv4GetValueAndDerivativeThreader_hxx
 
-#include "itkCorrelationImageToImageMetricv4GetValueAndDerivativeThreader.h"
+#include "itkMakeUniqueForOverwrite.h"
+
 
 namespace itk
 {
@@ -31,16 +32,6 @@ CorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
   : m_CorrelationMetricValueDerivativePerThreadVariables(nullptr)
   , m_CorrelationAssociate(nullptr)
 {}
-
-
-template <typename TDomainPartitioner, typename TImageToImageMetric, typename TCorrelationMetric>
-CorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
-  TDomainPartitioner,
-  TImageToImageMetric,
-  TCorrelationMetric>::~CorrelationImageToImageMetricv4GetValueAndDerivativeThreader()
-{
-  delete[] m_CorrelationMetricValueDerivativePerThreadVariables;
-}
 
 
 template <typename TDomainPartitioner, typename TImageToImageMetric, typename TCorrelationMetric>
@@ -61,12 +52,11 @@ CorrelationImageToImageMetricv4GetValueAndDerivativeThreader<TDomainPartitioner,
   /* This size always comes from the moving image */
   const NumberOfParametersType globalDerivativeSize = this->GetCachedNumberOfParameters();
 
-  const ThreadIdType numThreadsUsed = this->GetNumberOfWorkUnitsUsed();
+  const ThreadIdType numWorkUnitsUsed = this->GetNumberOfWorkUnitsUsed();
   // set size
-  delete[] m_CorrelationMetricValueDerivativePerThreadVariables;
   m_CorrelationMetricValueDerivativePerThreadVariables =
-    new AlignedCorrelationMetricValueDerivativePerThreadStruct[numThreadsUsed];
-  for (ThreadIdType i = 0; i < numThreadsUsed; ++i)
+    make_unique_for_overwrite<AlignedCorrelationMetricValueDerivativePerThreadStruct[]>(numWorkUnitsUsed);
+  for (ThreadIdType i = 0; i < numWorkUnitsUsed; ++i)
   {
     this->m_CorrelationMetricValueDerivativePerThreadVariables[i].fdm.SetSize(globalDerivativeSize);
     this->m_CorrelationMetricValueDerivativePerThreadVariables[i].mdm.SetSize(globalDerivativeSize);
@@ -74,7 +64,7 @@ CorrelationImageToImageMetricv4GetValueAndDerivativeThreader<TDomainPartitioner,
 
   //---------------------------------------------------------------
   // Set initial values.
-  for (ThreadIdType i = 0; i < numThreadsUsed; ++i)
+  for (ThreadIdType i = 0; i < numWorkUnitsUsed; ++i)
   {
     m_CorrelationMetricValueDerivativePerThreadVariables[i].fm =
       NumericTraits<InternalComputationValueType>::ZeroValue();
@@ -103,12 +93,12 @@ CorrelationImageToImageMetricv4GetValueAndDerivativeThreader<TDomainPartitioner,
 
   /* This size always comes from the moving image */
   const NumberOfParametersType globalDerivativeSize = this->GetCachedNumberOfParameters();
-  const ThreadIdType           numThreadsUsed = this->GetNumberOfWorkUnitsUsed();
+  const ThreadIdType           numWorkUnitsUsed = this->GetNumberOfWorkUnitsUsed();
 
   /* Store the number of valid points the enclosing class \c
    * m_NumberOfValidPoints by collecting the valid points per thread. */
   this->m_CorrelationAssociate->m_NumberOfValidPoints = NumericTraits<SizeValueType>::ZeroValue();
-  for (ThreadIdType i = 0; i < numThreadsUsed; ++i)
+  for (ThreadIdType i = 0; i < numWorkUnitsUsed; ++i)
   {
     this->m_CorrelationAssociate->m_NumberOfValidPoints +=
       this->m_GetValueAndDerivativePerThreadVariables[i].NumberOfValidPoints;
@@ -130,7 +120,7 @@ CorrelationImageToImageMetricv4GetValueAndDerivativeThreader<TDomainPartitioner,
   InternalComputationValueType fm = NumericTraits<InternalComputationValueType>::ZeroValue();
   InternalComputationValueType f2 = NumericTraits<InternalComputationValueType>::ZeroValue();
   InternalComputationValueType m2 = NumericTraits<InternalComputationValueType>::ZeroValue();
-  for (ThreadIdType threadId = 0; threadId < numThreadsUsed; ++threadId)
+  for (ThreadIdType threadId = 0; threadId < numWorkUnitsUsed; ++threadId)
   {
     fm += this->m_CorrelationMetricValueDerivativePerThreadVariables[threadId].fm;
     m2 += this->m_CorrelationMetricValueDerivativePerThreadVariables[threadId].m2;
@@ -158,7 +148,7 @@ CorrelationImageToImageMetricv4GetValueAndDerivativeThreader<TDomainPartitioner,
 
     const auto fc = static_cast<InternalComputationValueType>(2.0);
 
-    for (ThreadIdType i = 0; i < numThreadsUsed; ++i)
+    for (ThreadIdType i = 0; i < numWorkUnitsUsed; ++i)
     {
       fdm += this->m_CorrelationMetricValueDerivativePerThreadVariables[i].fdm;
       mdm += this->m_CorrelationMetricValueDerivativePerThreadVariables[i].mdm;
@@ -208,7 +198,7 @@ CorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
       this->m_CorrelationAssociate->ComputeFixedImageGradientAtPoint(mappedFixedPoint, mappedFixedImageGradient);
     }
   }
-  catch (ExceptionObject & exc)
+  catch (const ExceptionObject & exc)
   {
     // NOTE: there must be a cleaner way to do this:
     std::string msg("Caught exception: \n");
@@ -231,7 +221,7 @@ CorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
       this->m_CorrelationAssociate->ComputeMovingImageGradientAtPoint(mappedMovingPoint, mappedMovingImageGradient);
     }
   }
-  catch (ExceptionObject & exc)
+  catch (const ExceptionObject & exc)
   {
     std::string msg("Caught exception: \n");
     msg += exc.what();
@@ -259,7 +249,7 @@ CorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
                                       this->m_GetValueAndDerivativePerThreadVariables[threadId].LocalDerivatives,
                                       threadId);
   }
-  catch (ExceptionObject & exc)
+  catch (const ExceptionObject & exc)
   {
     // NOTE: there must be a cleaner way to do this:
     std::string msg("Exception in GetValueAndDerivativeProcessPoint:\n");
@@ -323,10 +313,10 @@ CorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
     this->m_CorrelationAssociate->GetMovingTransform()->ComputeJacobianWithRespectToParametersCachedTemporaries(
       virtualPoint, jacobian, jacobianPositional);
 
-    for (unsigned int par = 0; par < this->m_CorrelationAssociate->GetNumberOfLocalParameters(); par++)
+    for (unsigned int par = 0; par < this->m_CorrelationAssociate->GetNumberOfLocalParameters(); ++par)
     {
       InternalComputationValueType sum = NumericTraits<InternalComputationValueType>::ZeroValue();
-      for (SizeValueType dim = 0; dim < ImageToImageMetricv4Type::MovingImageDimension; dim++)
+      for (SizeValueType dim = 0; dim < ImageToImageMetricv4Type::MovingImageDimension; ++dim)
       {
         sum += movingImageGradient[dim] * jacobian(dim, par);
       }

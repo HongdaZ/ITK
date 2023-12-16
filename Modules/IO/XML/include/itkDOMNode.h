@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,7 +53,7 @@ class DOMTextNode; // forward declaration
 class ITKIOXML_EXPORT DOMNode : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DOMNode);
+  ITK_DISALLOW_COPY_AND_MOVE(DOMNode);
 
   /** Standard class type aliases. */
   using Self = DOMNode;
@@ -80,7 +80,7 @@ public:
   /** Container to return the attributes of a DOM node. */
   using AttributesListType = std::list<AttributeItemType>;
 
-  using SizeType = std::size_t;
+  using SizeType = size_t;
   using IdentifierType = int;
   using OffsetType = int;
 

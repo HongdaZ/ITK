@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class ShapeSignedDistanceFunction
+ * \class ShapeSignedDistanceFunction
  * \brief Base class for functions which evaluates the signed distance
  * from a shape.
  *
@@ -50,10 +50,11 @@ namespace itk
  * \ingroup ITKSignedDistanceFunction
  */
 template <typename TCoordRep, unsigned int VSpaceDimension>
-class ShapeSignedDistanceFunction : public SpatialFunction<double, VSpaceDimension, Point<TCoordRep, VSpaceDimension>>
+class ITK_TEMPLATE_EXPORT ShapeSignedDistanceFunction
+  : public SpatialFunction<double, VSpaceDimension, Point<TCoordRep, VSpaceDimension>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShapeSignedDistanceFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(ShapeSignedDistanceFunction);
 
   /** Standard class type aliases. */
   using Self = ShapeSignedDistanceFunction;
@@ -66,10 +67,10 @@ public:
   itkTypeMacro(ShapeSignedDistanceFunction, SpatialFunction);
 
   /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** InputType type alias support */
-  using InputType = typename Superclass::InputType;
+  using typename Superclass::InputType;
 
   /** Dimension underlying input image. */
   static constexpr unsigned int SpaceDimension = VSpaceDimension;

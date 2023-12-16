@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,19 +26,21 @@
 #include "itkZeroFluxNeumannBoundaryCondition.h"
 
 #include "itkUniformRandomSpatialNeighborSubsampler.h"
+#include "itkTestingMacros.h"
 
 int
 itkUniformRandomSpatialNeighborSubsamplerTest(int argc, char * argv[])
 {
-  std::cout << "UniformRandomSpatialNeighborSubsampler Test \n \n";
-
-  std::string outFile = "";
-  if (argc > 1)
+  if (argc < 2)
   {
-    outFile = argv[1];
+    std::cerr << "Missing Parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " useClockForSeed [outFileName]" << std::endl;
+    return EXIT_FAILURE;
   }
 
-  using FloatImage = itk::Image<float, 2>;
+  constexpr unsigned int Dimension = 2;
+
+  using FloatImage = itk::Image<float, Dimension>;
   using RegionType = FloatImage::RegionType;
   using IndexType = FloatImage::IndexType;
   using SizeType = FloatImage::SizeType;
@@ -47,9 +49,10 @@ itkUniformRandomSpatialNeighborSubsamplerTest(int argc, char * argv[])
   using SamplerType = itk::Statistics::UniformRandomSpatialNeighborSubsampler<AdaptorType, RegionType>;
   using WriterType = itk::ImageFileWriter<FloatImage>;
 
-  FloatImage::Pointer inImage = FloatImage::New();
-  SizeType            sz;
-  sz.Fill(35);
+  auto                          inImage = FloatImage::New();
+  typename SizeType::value_type regionSizeVal = 35;
+  SizeType                      sz;
+  sz.Fill(regionSizeVal);
   IndexType idx;
   idx.Fill(0);
   RegionType region;
@@ -57,55 +60,67 @@ itkUniformRandomSpatialNeighborSubsamplerTest(int argc, char * argv[])
   region.SetIndex(idx);
 
   inImage->SetRegions(region);
-  inImage->Allocate(true); // initialize buffer
-                           // to zero
+  inImage->Allocate(true); // initialize buffer to zero
 
-  AdaptorType::Pointer sample = AdaptorType::New();
+  auto sample = AdaptorType::New();
   sample->SetImage(inImage);
 
-  SamplerType::Pointer sampler_orig = SamplerType::New();
-  sampler_orig->SetSample(sample);
-  sampler_orig->SetSampleRegion(region);
-  sampler_orig->SetRadius(20);
-  sampler_orig->SetNumberOfResultsRequested(50);
-  sampler_orig->SetSeed(100);
-  sampler_orig->CanSelectQueryOff();
+  auto samplerOrig = SamplerType::New();
 
-  // test clone mechanism
-  SamplerType::Pointer sampler = sampler_orig->Clone().GetPointer();
-  if (sampler->GetSample() != sampler_orig->GetSample())
-  {
-    std::cerr << "Clone did not copy the sample correctly!" << std::endl;
-    return EXIT_FAILURE;
-  }
-  if (sampler->GetSampleRegion() != sampler_orig->GetSampleRegion())
-  {
-    std::cerr << "Clone did not copy the region correctly!" << std::endl;
-    return EXIT_FAILURE;
-  }
-  if (sampler->GetRadius() != sampler_orig->GetRadius())
-  {
-    std::cerr << "Clone did not copy the radius correctly!" << std::endl;
-    return EXIT_FAILURE;
-  }
-  if (sampler->GetNumberOfResultsRequested() != sampler_orig->GetNumberOfResultsRequested())
-  {
-    std::cerr << "Clone did not copy the number of results requested correctly!" << std::endl;
-    return EXIT_FAILURE;
-  }
-  if (sampler->GetSeed() != sampler_orig->GetSeed())
-  {
-    std::cerr << "Clone did not copy the seed correctly!" << std::endl;
-    return EXIT_FAILURE;
-  }
-  if (sampler->GetCanSelectQuery() != sampler_orig->GetCanSelectQuery())
-  {
-    std::cerr << "Clone did not copy CanSelectQuery correctly!" << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(samplerOrig, UniformRandomSpatialNeighborSubsampler, SpatialNeighborSubsampler);
 
-  SamplerType::SubsamplePointer subsample = SamplerType::SubsampleType::New();
-  sampler->Search(612, subsample);
+
+  SamplerType::InstanceIdentifier query(612);
+  SamplerType::SubsamplePointer   subsample = SamplerType::SubsampleType::New();
+
+  // Test exceptions
+  ITK_TRY_EXPECT_EXCEPTION(samplerOrig->Search(query, subsample));
+
+  samplerOrig->SetRadius(20);
+
+  ITK_TRY_EXPECT_EXCEPTION(samplerOrig->Search(query, subsample));
+
+  samplerOrig->SetSampleRegion(region);
+
+  samplerOrig->SetSample(sample);
+
+  // Expect a warning about the index being outside the given image region and an empty result
+  query = std::pow(regionSizeVal, Dimension);
+  samplerOrig->Search(query, subsample);
+
+  typename SamplerType::SubsampleType::TotalAbsoluteFrequencyType expectedTotalFrequency = 0;
+  ITK_TEST_EXPECT_EQUAL(expectedTotalFrequency, subsample->GetTotalFrequency());
+  size_t expectedIdHolderSize = 0;
+  ITK_TEST_EXPECT_EQUAL(expectedIdHolderSize, subsample->GetIdHolder().size());
+
+  samplerOrig->CanSelectQueryOn();
+  query = std::pow(regionSizeVal, Dimension) - 1;
+  samplerOrig->Search(query, subsample);
+
+  expectedTotalFrequency = 441;
+  ITK_TEST_EXPECT_EQUAL(expectedTotalFrequency, subsample->GetTotalFrequency());
+  expectedIdHolderSize = 441;
+  ITK_TEST_EXPECT_EQUAL(expectedIdHolderSize, subsample->GetIdHolder().size());
+
+  samplerOrig->SetNumberOfResultsRequested(50);
+  samplerOrig->SetSeed(100);
+  samplerOrig->CanSelectQueryOff();
+
+  auto useClockForSeed = static_cast<bool>(std::stoi(argv[1]));
+  ITK_TEST_SET_GET_BOOLEAN(samplerOrig, UseClockForSeed, useClockForSeed);
+
+  // Test clone mechanism
+  SamplerType::Pointer sampler = samplerOrig->Clone().GetPointer();
+
+  ITK_TEST_SET_GET_VALUE(samplerOrig->GetSample(), sampler->GetSample());
+  ITK_TEST_SET_GET_VALUE(samplerOrig->GetSampleRegion(), sampler->GetSampleRegion());
+  ITK_TEST_SET_GET_VALUE(samplerOrig->GetRadius(), sampler->GetRadius());
+  ITK_TEST_SET_GET_VALUE(samplerOrig->GetNumberOfResultsRequested(), sampler->GetNumberOfResultsRequested());
+  ITK_TEST_SET_GET_VALUE(samplerOrig->GetSeed(), sampler->GetSeed());
+  ITK_TEST_SET_GET_VALUE(samplerOrig->GetCanSelectQuery(), sampler->GetCanSelectQuery());
+
+  query = 612;
+  sampler->Search(query, subsample);
 
   for (SamplerType::SubsampleConstIterator sIt = subsample->Begin(); sIt != subsample->End(); ++sIt)
   {
@@ -114,21 +129,18 @@ itkUniformRandomSpatialNeighborSubsamplerTest(int argc, char * argv[])
     inImage->SetPixel(index, 255);
   }
 
-  if (!outFile.empty())
+
+  if (argc > 2)
   {
-    WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName(outFile);
+    const std::string outFileName(argv[2]);
+
+    auto writer = WriterType::New();
+    writer->SetFileName(outFileName);
     writer->SetInput(inImage);
-    try
-    {
-      writer->Update();
-    }
-    catch (const itk::ExceptionObject & excp)
-    {
-      std::cerr << excp << std::endl;
-    }
+
+    ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
   }
 
-  std::cout << "Test passed." << std::endl;
+  std::cout << "Test finished." << std::endl;
   return EXIT_SUCCESS;
 }

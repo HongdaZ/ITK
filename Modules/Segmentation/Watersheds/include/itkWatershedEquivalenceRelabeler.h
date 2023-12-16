@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ namespace itk
 namespace watershed
 {
 /**
- *\class EquivalenceRelabeler
+ * \class EquivalenceRelabeler
  *
  * This class is part of the set of watershed segmentation component objects.
  * It is an image-to-image filter that relabels its input according to a set of
@@ -54,6 +54,8 @@ template <typename TScalar, unsigned int TImageDimension>
 class ITK_TEMPLATE_EXPORT EquivalenceRelabeler : public ProcessObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_MOVE(EquivalenceRelabeler);
+
   /** Expose templated image dimension parameter at run time */
   static constexpr unsigned int ImageDimension = TImageDimension;
 
@@ -70,7 +72,7 @@ public:
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
   itkNewMacro(Self);
-  itkTypeMacro(WatershedEquivalenceRelabeler, ProcessObject);
+  itkTypeMacro(EquivalenceRelabeler, ProcessObject);
 
   /** Set/Get the image to relabel.   */
   void
@@ -129,10 +131,7 @@ protected:
   }
 
   ~EquivalenceRelabeler() override = default;
-  EquivalenceRelabeler(const Self &) {}
-  void
-  operator=(const Self &)
-  {}
+
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 

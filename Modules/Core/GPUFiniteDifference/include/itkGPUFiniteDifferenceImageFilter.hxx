@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,6 @@
 #include "itkImageRegionIterator.h"
 #include "itkMacro.h"
 #include "itkEventObject.h"
-#include "itkGPUFiniteDifferenceImageFilter.h"
 
 namespace itk
 {
@@ -29,13 +28,8 @@ template <typename TInputImage, typename TOutputImage, typename TParentImageFilt
 GPUFiniteDifferenceImageFilter<TInputImage, TOutputImage, TParentImageFilter>::GPUFiniteDifferenceImageFilter()
 {
   m_UseImageSpacing = false;
-  this->m_ElapsedIterations = 0;
   m_DifferenceFunction = nullptr;
-  this->m_NumberOfIterations = NumericTraits<unsigned int>::max();
-  m_MaximumRMSError = 0.0;
-  m_RMSChange = 0.0;
   m_State = GPUFiniteDifferenceFilterEnum::UNINITIALIZED;
-  m_ManualReinitialization = false;
   this->InPlaceOff();
 }
 
@@ -110,7 +104,7 @@ GPUFiniteDifferenceImageFilter<TInputImage, TOutputImage, TParentImageFilter>::G
     }
   }
 
-  if (m_ManualReinitialization == false)
+  if (this->GetManualReinitialization() == false)
   {
     this->SetStateToUninitialized(); // Reset the state once execution is
                                      // completed
@@ -189,7 +183,7 @@ template <typename TInputImage, typename TOutputImage, typename TParentImageFilt
 typename GPUFiniteDifferenceImageFilter<TInputImage, TOutputImage, TParentImageFilter>::TimeStepType
 GPUFiniteDifferenceImageFilter<TInputImage, TOutputImage, TParentImageFilter>::ResolveTimeStep(
   const std::vector<TimeStepType> & timeStepList,
-  const std::vector<bool> &         valid) const
+  const BooleanStdVectorType &      valid) const
 {
   TimeStepType oMin = NumericTraits<TimeStepType>::ZeroValue();
   bool         flag = false;
@@ -251,7 +245,7 @@ GPUFiniteDifferenceImageFilter<TInputImage, TOutputImage, TParentImageFilter>::H
   {
     return false;
   }
-  else if (this->GetMaximumRMSError() > m_RMSChange)
+  else if (this->GetMaximumRMSError() > this->m_RMSChange)
   {
     return true;
   }
@@ -279,14 +273,14 @@ GPUFiniteDifferenceImageFilter<TInputImage, TOutputImage, TParentImageFilter>::I
     using SpacingType = typename TOutputImage::SpacingType;
     const SpacingType spacing = outputImage->GetSpacing();
 
-    for (unsigned int i = 0; i < TOutputImage::ImageDimension; i++)
+    for (unsigned int i = 0; i < TOutputImage::ImageDimension; ++i)
     {
       coeffs[i] = 1.0 / spacing[i];
     }
   }
   else
   {
-    for (unsigned int i = 0; i < TOutputImage::ImageDimension; i++)
+    for (unsigned int i = 0; i < TOutputImage::ImageDimension; ++i)
     {
       coeffs[i] = 1.0;
     }
@@ -300,14 +294,10 @@ GPUFiniteDifferenceImageFilter<TInputImage, TOutputImage, TParentImageFilter>::P
                                                                                          Indent         indent) const
 {
   GPUSuperclass::PrintSelf(os, indent);
+  CPUSuperclass::PrintSelf(os, indent);
   /*
-    os << indent << "ElapsedIterations: " << this->m_ElapsedIterations << std::endl;
     os << indent << "UseImageSpacing: " << ( m_UseImageSpacing ? "On" : "Off" ) << std::endl;
     os << indent << "State: " << m_State << std::endl;
-    os << indent << "MaximumRMSError: " << m_MaximumRMSError << std::endl;
-    os << indent << "NumberOfIterations: " << m_NumberOfIterations << std::endl;
-    os << indent << "ManualReinitialization: " << m_ManualReinitialization << std::endl;
-    os << indent << "RMSChange: " << m_RMSChange << std::endl;
     os << std::endl;
     if ( m_DifferenceFunction )
       {

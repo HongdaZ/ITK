@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class BinomialBlurImageFilter
+ * \class BinomialBlurImageFilter
  * \brief Performs a separable blur on each dimension of an image.
  *
  * The binomial blur consists of a nearest neighbor average along each
@@ -44,7 +44,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT BinomialBlurImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinomialBlurImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BinomialBlurImageFilter);
 
   /** Standard class type aliases. */
   using Self = BinomialBlurImageFilter;

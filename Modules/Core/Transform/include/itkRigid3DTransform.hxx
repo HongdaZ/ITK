@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkRigid3DTransform_hxx
 #define itkRigid3DTransform_hxx
 
-#include "itkRigid3DTransform.h"
 
 namespace itk
 {
@@ -100,16 +99,16 @@ Rigid3DTransform<TParametersValueType>::SetParameters(const ParametersType & par
   MatrixType       matrix;
   OutputVectorType translation;
 
-  for (unsigned int row = 0; row < 3; row++)
+  for (unsigned int row = 0; row < 3; ++row)
   {
-    for (unsigned int col = 0; col < 3; col++)
+    for (unsigned int col = 0; col < 3; ++col)
     {
       matrix[row][col] = this->m_Parameters[par];
       ++par;
     }
   }
 
-  for (unsigned int dim = 0; dim < 3; dim++)
+  for (unsigned int dim = 0; dim < 3; ++dim)
   {
     translation[dim] = this->m_Parameters[par];
     ++par;

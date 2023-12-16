@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,16 +25,8 @@
 #include "itkTestingMacros.h"
 
 int
-itkLevelSetEquationBinaryMaskTermTest(int argc, char * argv[])
+itkLevelSetEquationBinaryMaskTermTest(int, char *[])
 {
-
-  if (argc < 1)
-  {
-    std::cerr << "Missing Arguments" << std::endl;
-    std::cerr << "Program " << itkNameOfTestExecutableMacro(argv) << std::endl;
-    return EXIT_FAILURE;
-  }
-
   constexpr unsigned int Dimension = 2;
 
   using InputPixelType = unsigned short;
@@ -81,7 +73,7 @@ itkLevelSetEquationBinaryMaskTermTest(int argc, char * argv[])
   region.SetSize(size);
 
   // Binary initialization
-  InputImageType::Pointer binary = InputImageType::New();
+  auto binary = InputImageType::New();
   binary->SetRegions(region);
   binary->SetSpacing(spacing);
   binary->SetOrigin(origin);
@@ -103,7 +95,7 @@ itkLevelSetEquationBinaryMaskTermTest(int argc, char * argv[])
   }
 
   // Convert binary mask to sparse level set
-  BinaryToSparseAdaptorType::Pointer adaptor1 = BinaryToSparseAdaptorType::New();
+  auto adaptor1 = BinaryToSparseAdaptorType::New();
   adaptor1->SetInputImage(binary);
   adaptor1->Initialize();
   std::cout << "Finished converting levelset1 to sparse format" << std::endl;
@@ -113,22 +105,22 @@ itkLevelSetEquationBinaryMaskTermTest(int argc, char * argv[])
   IdListType list_ids;
   list_ids.push_back(1);
 
-  IdListImageType::Pointer id_image = IdListImageType::New();
+  auto id_image = IdListImageType::New();
   id_image->SetRegions(binary->GetLargestPossibleRegion());
   id_image->Allocate();
   id_image->FillBuffer(list_ids);
 
-  DomainMapImageFilterType::Pointer domainMapFilter = DomainMapImageFilterType::New();
+  auto domainMapFilter = DomainMapImageFilterType::New();
   domainMapFilter->SetInput(id_image);
   domainMapFilter->Update();
   std::cout << "Domain map computed" << std::endl;
 
   // Define the Heaviside function
-  HeavisideFunctionBaseType::Pointer heaviside = HeavisideFunctionBaseType::New();
+  auto heaviside = HeavisideFunctionBaseType::New();
   heaviside->SetEpsilon(2.0);
 
   // Insert the levelsets in a levelset container
-  LevelSetContainerType::Pointer lscontainer = LevelSetContainerType::New();
+  auto lscontainer = LevelSetContainerType::New();
   lscontainer->SetHeaviside(heaviside);
   lscontainer->SetDomainMapFilter(domainMapFilter);
 
@@ -139,7 +131,11 @@ itkLevelSetEquationBinaryMaskTermTest(int argc, char * argv[])
   }
 
   // Create overlap penalty term
-  BinaryMaskTermType::Pointer maskTerm0 = BinaryMaskTermType::New();
+  auto maskTerm0 = BinaryMaskTermType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(maskTerm0, LevelSetEquationBinaryMaskTerm, LevelSetEquationTermBase);
+
+
   maskTerm0->SetInput(binary);
   maskTerm0->SetMask(binary);
   maskTerm0->SetCoefficient(1000.0);

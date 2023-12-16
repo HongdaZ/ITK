@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,20 +17,21 @@
  *=========================================================================*/
 
 #include "itkFreeSurferAsciiMeshIO.h"
+#include "itkMakeUniqueForOverwrite.h"
 
-#include <itksys/SystemTools.hxx>
+#include "itksys/SystemTools.hxx"
 
 namespace itk
 {
-FreeSurferAsciiMeshIO ::FreeSurferAsciiMeshIO()
+FreeSurferAsciiMeshIO::FreeSurferAsciiMeshIO()
 {
   this->AddSupportedWriteExtension(".fsa");
 }
 
-FreeSurferAsciiMeshIO ::~FreeSurferAsciiMeshIO() = default;
+FreeSurferAsciiMeshIO::~FreeSurferAsciiMeshIO() = default;
 
 bool
-FreeSurferAsciiMeshIO ::CanReadFile(const char * fileName)
+FreeSurferAsciiMeshIO::CanReadFile(const char * fileName)
 {
   if (!itksys::SystemTools::FileExists(fileName, true))
   {
@@ -46,7 +47,7 @@ FreeSurferAsciiMeshIO ::CanReadFile(const char * fileName)
 }
 
 bool
-FreeSurferAsciiMeshIO ::CanWriteFile(const char * fileName)
+FreeSurferAsciiMeshIO::CanWriteFile(const char * fileName)
 {
   if (itksys::SystemTools::GetFilenameLastExtension(fileName) != ".fsa")
   {
@@ -57,7 +58,7 @@ FreeSurferAsciiMeshIO ::CanWriteFile(const char * fileName)
 }
 
 void
-FreeSurferAsciiMeshIO ::OpenFile()
+FreeSurferAsciiMeshIO::OpenFile()
 {
   if (this->m_FileName.empty())
   {
@@ -78,7 +79,7 @@ FreeSurferAsciiMeshIO ::OpenFile()
 }
 
 void
-FreeSurferAsciiMeshIO ::CloseFile()
+FreeSurferAsciiMeshIO::CloseFile()
 {
   if (m_InputFile.is_open())
   {
@@ -87,7 +88,7 @@ FreeSurferAsciiMeshIO ::CloseFile()
 }
 
 void
-FreeSurferAsciiMeshIO ::ReadMeshInformation()
+FreeSurferAsciiMeshIO::ReadMeshInformation()
 {
   // Define input file stream and attach it to input file
   OpenFile();
@@ -97,7 +98,7 @@ FreeSurferAsciiMeshIO ::ReadMeshInformation()
   constexpr unsigned int numberOfCellPoints = 3;
   std::string            line;
 
-  for (int ii = 0; ii < numberOfInfoLines; ii++)
+  for (int ii = 0; ii < numberOfInfoLines; ++ii)
   {
     std::getline(m_InputFile, line);
   }
@@ -139,7 +140,7 @@ FreeSurferAsciiMeshIO ::ReadMeshInformation()
 }
 
 void
-FreeSurferAsciiMeshIO ::ReadPoints(void * buffer)
+FreeSurferAsciiMeshIO::ReadPoints(void * buffer)
 {
   // Number of data array
   auto * data = static_cast<float *>(buffer);
@@ -149,9 +150,9 @@ FreeSurferAsciiMeshIO ::ReadPoints(void * buffer)
   float value;
 
   SizeValueType index = 0;
-  for (SizeValueType id = 0; id < this->m_NumberOfPoints; id++)
+  for (SizeValueType id = 0; id < this->m_NumberOfPoints; ++id)
   {
-    for (unsigned int ii = 0; ii < this->m_PointDimension; ii++)
+    for (unsigned int ii = 0; ii < this->m_PointDimension; ++ii)
     {
       m_InputFile >> data[index++];
     }
@@ -160,18 +161,18 @@ FreeSurferAsciiMeshIO ::ReadPoints(void * buffer)
 }
 
 void
-FreeSurferAsciiMeshIO ::ReadCells(void * buffer)
+FreeSurferAsciiMeshIO::ReadCells(void * buffer)
 {
   // Get cell buffer
   m_InputFile.precision(12);
   SizeValueType          index = 0;
   constexpr unsigned int numberOfCellPoints = 3;
-  auto *                 data = new unsigned int[this->m_NumberOfCells * numberOfCellPoints];
+  const auto             data = make_unique_for_overwrite<unsigned int[]>(this->m_NumberOfCells * numberOfCellPoints);
   float                  value;
 
-  for (SizeValueType id = 0; id < this->m_NumberOfCells; id++)
+  for (SizeValueType id = 0; id < this->m_NumberOfCells; ++id)
   {
-    for (unsigned int ii = 0; ii < numberOfCellPoints; ii++)
+    for (unsigned int ii = 0; ii < numberOfCellPoints; ++ii)
     {
       m_InputFile >> data[index++];
     }
@@ -179,22 +180,21 @@ FreeSurferAsciiMeshIO ::ReadCells(void * buffer)
   }
 
   this->WriteCellsBuffer(
-    data, static_cast<unsigned int *>(buffer), CellGeometryEnum::TRIANGLE_CELL, 3, this->m_NumberOfCells);
-  delete[] data;
+    data.get(), static_cast<unsigned int *>(buffer), CellGeometryEnum::TRIANGLE_CELL, 3, this->m_NumberOfCells);
 
   CloseFile();
 }
 
 void
-FreeSurferAsciiMeshIO ::ReadPointData(void * itkNotUsed(buffer))
+FreeSurferAsciiMeshIO::ReadPointData(void * itkNotUsed(buffer))
 {}
 
 void
-FreeSurferAsciiMeshIO ::ReadCellData(void * itkNotUsed(buffer))
+FreeSurferAsciiMeshIO::ReadCellData(void * itkNotUsed(buffer))
 {}
 
 void
-FreeSurferAsciiMeshIO ::WriteMeshInformation()
+FreeSurferAsciiMeshIO::WriteMeshInformation()
 {
   // Check file name
   if (this->m_FileName.empty())
@@ -222,7 +222,7 @@ FreeSurferAsciiMeshIO ::WriteMeshInformation()
 }
 
 void
-FreeSurferAsciiMeshIO ::WritePoints(void * buffer)
+FreeSurferAsciiMeshIO::WritePoints(void * buffer)
 {
   // check file name
   if (this->m_FileName.empty())
@@ -307,13 +307,13 @@ FreeSurferAsciiMeshIO ::WritePoints(void * buffer)
     }
     case IOComponentEnum::FLOAT:
     {
-      WritePoints(static_cast<float *>(buffer), outputFile, itk::NumericTraits<float>::ZeroValue());
+      WritePoints(static_cast<float *>(buffer), outputFile, 0.0f);
 
       break;
     }
     case IOComponentEnum::DOUBLE:
     {
-      WritePoints(static_cast<double *>(buffer), outputFile, itk::NumericTraits<double>::ZeroValue());
+      WritePoints(static_cast<double *>(buffer), outputFile, 0.0);
 
       break;
     }
@@ -333,7 +333,7 @@ FreeSurferAsciiMeshIO ::WritePoints(void * buffer)
 }
 
 void
-FreeSurferAsciiMeshIO ::WriteCells(void * buffer)
+FreeSurferAsciiMeshIO::WriteCells(void * buffer)
 {
   // Check file name
   if (this->m_FileName.empty())
@@ -432,19 +432,19 @@ FreeSurferAsciiMeshIO ::WriteCells(void * buffer)
 }
 
 void
-FreeSurferAsciiMeshIO ::WritePointData(void * itkNotUsed(buffer))
+FreeSurferAsciiMeshIO::WritePointData(void * itkNotUsed(buffer))
 {}
 
 void
-FreeSurferAsciiMeshIO ::WriteCellData(void * itkNotUsed(buffer))
+FreeSurferAsciiMeshIO::WriteCellData(void * itkNotUsed(buffer))
 {}
 
 void
-FreeSurferAsciiMeshIO ::Write()
+FreeSurferAsciiMeshIO::Write()
 {}
 
 void
-FreeSurferAsciiMeshIO ::PrintSelf(std::ostream & os, Indent indent) const
+FreeSurferAsciiMeshIO::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }

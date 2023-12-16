@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ template <typename TElementIdentifier, typename TElement>
 class TestImportImageContainer : public itk::ImportImageContainer<TElementIdentifier, TElement>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TestImportImageContainer);
+  ITK_DISALLOW_COPY_AND_MOVE(TestImportImageContainer);
 
   /** Standard class type aliases.   */
   using Self = TestImportImageContainer;
@@ -40,8 +40,8 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(TestImportImageContainer, ImportImageContainer);
 
-  using ElementIdentifier = typename Superclass::ElementIdentifier;
-  using Element = typename Superclass::Element;
+  using typename Superclass::ElementIdentifier;
+  using typename Superclass::Element;
 
   using Allocator = std::allocator<TElement>;
 
@@ -137,7 +137,7 @@ private:
 class ImportImageContainerFactory : public itk::ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImportImageContainerFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(ImportImageContainerFactory);
 
   using Self = ImportImageContainerFactory;
   using Superclass = itk::ObjectFactoryBase;
@@ -166,16 +166,16 @@ public:
   static void
   RegisterOneFactory()
   {
-    ImportImageContainerFactory::Pointer factory = ImportImageContainerFactory::New();
+    auto factory = ImportImageContainerFactory::New();
     itk::ObjectFactoryBase::RegisterFactory(factory);
   }
 
 private:
-#define OverrideTypeMacro(t)                                                                                           \
-  this->RegisterOverride(typeid(itk::ImportImageContainer<unsigned long, t>).name(),                                   \
-                         typeid(TestImportImageContainer<unsigned long, t>).name(),                                    \
-                         "Test ImportImageContainerOverride",                                                          \
-                         true,                                                                                         \
+#define OverrideTypeMacro(t)                                                         \
+  this->RegisterOverride(typeid(itk::ImportImageContainer<unsigned long, t>).name(), \
+                         typeid(TestImportImageContainer<unsigned long, t>).name(),  \
+                         "Test ImportImageContainerOverride",                        \
+                         true,                                                       \
                          itk::CreateObjectFunction<TestImportImageContainer<unsigned long, t>>::New())
 
 

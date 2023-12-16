@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,9 +20,9 @@
 
 namespace itk
 {
-MultivariateLegendrePolynomial ::MultivariateLegendrePolynomial(unsigned int           dimension,
-                                                                unsigned int           degree,
-                                                                const DomainSizeType & domainSize)
+MultivariateLegendrePolynomial::MultivariateLegendrePolynomial(unsigned int           dimension,
+                                                               unsigned int           degree,
+                                                               const DomainSizeType & domainSize)
 {
   if (dimension > 3 || dimension < 2)
   {
@@ -50,16 +50,16 @@ MultivariateLegendrePolynomial ::MultivariateLegendrePolynomial(unsigned int    
   m_PrevZ = -1;
 
   m_NormFactor = DoubleArrayType(m_Dimension);
-  for (unsigned int j = 0; j < m_Dimension; j++)
+  for (unsigned int j = 0; j < m_Dimension; ++j)
   {
     m_NormFactor[j] = 2.0f / (static_cast<double>(m_DomainSize[j]) - 1.0f);
   }
 }
 
-MultivariateLegendrePolynomial ::~MultivariateLegendrePolynomial() = default;
+MultivariateLegendrePolynomial::~MultivariateLegendrePolynomial() = default;
 
 void
-MultivariateLegendrePolynomial ::Print(std::ostream & os) const
+MultivariateLegendrePolynomial::Print(std::ostream & os) const
 {
   itk::Indent indent(4);
 
@@ -67,7 +67,7 @@ MultivariateLegendrePolynomial ::Print(std::ostream & os) const
 }
 
 void
-MultivariateLegendrePolynomial ::PrintSelf(std::ostream & os, Indent indent) const
+MultivariateLegendrePolynomial::PrintSelf(std::ostream & os, Indent indent) const
 {
   os << indent << "Dimension: " << m_Dimension << std::endl;
   os << indent << "Degree: " << m_Degree << std::endl;
@@ -118,7 +118,7 @@ MultivariateLegendrePolynomial ::PrintSelf(std::ostream & os, Indent indent) con
 }
 
 void
-MultivariateLegendrePolynomial ::SetCoefficients(const CoefficientArrayType & coefficients)
+MultivariateLegendrePolynomial::SetCoefficients(const CoefficientArrayType & coefficients)
 {
   if (coefficients.size() != m_NumberOfCoefficients)
   {
@@ -127,7 +127,7 @@ MultivariateLegendrePolynomial ::SetCoefficients(const CoefficientArrayType & co
 
   // copy coefficients to array of double
   m_CoefficientArray.resize(m_NumberOfCoefficients);
-  for (unsigned int i = 0; i < m_NumberOfCoefficients; i++)
+  for (unsigned int i = 0; i < m_NumberOfCoefficients; ++i)
   {
     m_CoefficientArray[i] = coefficients[i];
   }
@@ -139,7 +139,7 @@ MultivariateLegendrePolynomial ::SetCoefficients(const CoefficientArrayType & co
 }
 
 void
-MultivariateLegendrePolynomial ::SetCoefficients(const ParametersType & coefficients)
+MultivariateLegendrePolynomial::SetCoefficients(const ParametersType & coefficients)
 {
   if (coefficients.size() != m_NumberOfCoefficients)
   {
@@ -148,7 +148,7 @@ MultivariateLegendrePolynomial ::SetCoefficients(const ParametersType & coeffici
 
   // copy coefficients to array of double
   m_CoefficientArray.resize(m_NumberOfCoefficients);
-  for (unsigned int i = 0; i < m_NumberOfCoefficients; i++)
+  for (unsigned int i = 0; i < m_NumberOfCoefficients; ++i)
   {
     m_CoefficientArray[i] = coefficients[i];
   }
@@ -160,18 +160,18 @@ MultivariateLegendrePolynomial ::SetCoefficients(const ParametersType & coeffici
 }
 
 const MultivariateLegendrePolynomial::CoefficientArrayType &
-MultivariateLegendrePolynomial ::GetCoefficients() const
+MultivariateLegendrePolynomial::GetCoefficients() const
 {
   return m_CoefficientArray;
 }
 
 void
-MultivariateLegendrePolynomial ::CalculateXCoef(double norm_y, const CoefficientArrayType & coef)
+MultivariateLegendrePolynomial::CalculateXCoef(double norm_y, const CoefficientArrayType & coef)
 {
   // compute x_coef[i] = sum (0 <= j <= m-i) pij * P(y)]
   int offset = 0;
 
-  for (unsigned int lx = 0; lx <= m_Degree; lx++)
+  for (unsigned int lx = 0; lx <= m_Degree; ++lx)
   {
     m_CachedXCoef[lx] = LegendreSum(norm_y, m_Degree - lx, coef, offset);
 
@@ -180,21 +180,21 @@ MultivariateLegendrePolynomial ::CalculateXCoef(double norm_y, const Coefficient
 }
 
 void
-MultivariateLegendrePolynomial ::CalculateYCoef(double norm_z, const CoefficientArrayType & coef)
+MultivariateLegendrePolynomial::CalculateYCoef(double norm_z, const CoefficientArrayType & coef)
 {
   // compute y_coef[i,j] = sum (0 <= k <= m-i-j) pijk * P(z)
   unsigned int       y_index = 0;
   unsigned int       c_index = 0;
   const unsigned int lxmax = m_Degree;
 
-  for (unsigned int lx = 0; lx <= lxmax; lx++)
+  for (unsigned int lx = 0; lx <= lxmax; ++lx)
   {
     const unsigned int lymax = m_Degree - lx;
     for (unsigned int ly = 0; ly <= lymax; ly++, c_index++)
     {
       unsigned int z_index = c_index;
       unsigned int lzmax = m_Degree - lx - ly;
-      for (unsigned int lz = 0; lz <= lzmax; lz++)
+      for (unsigned int lz = 0; lz <= lzmax; ++lz)
       {
         m_CachedZCoef[lz] = coef[z_index];
         z_index += ((m_Degree + 1 - lz) * (m_Degree + 2 - lz) / 2) - lx;
@@ -206,7 +206,7 @@ MultivariateLegendrePolynomial ::CalculateYCoef(double norm_z, const Coefficient
 }
 
 double
-MultivariateLegendrePolynomial ::LegendreSum(const double x, int n, const CoefficientArrayType & coef, int offset)
+MultivariateLegendrePolynomial::LegendreSum(const double x, int n, const CoefficientArrayType & coef, int offset)
 // n+1 elements !
 {
   if (n == 0)
@@ -226,13 +226,13 @@ MultivariateLegendrePolynomial ::LegendreSum(const double x, int n, const Coeffi
 }
 
 unsigned int
-MultivariateLegendrePolynomial ::GetNumberOfCoefficients(unsigned int dimension, unsigned int degree)
+MultivariateLegendrePolynomial::GetNumberOfCoefficients(unsigned int dimension, unsigned int degree)
 {
   // calculate the number of parameters
   unsigned int numerator = 1;
   unsigned int denominator = 1;
 
-  for (unsigned int i = 1; i <= dimension; i++)
+  for (unsigned int i = 1; i <= dimension; ++i)
   {
     numerator *= (degree + i);
     denominator *= i;

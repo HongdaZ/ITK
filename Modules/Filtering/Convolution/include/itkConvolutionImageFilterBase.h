@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 
 namespace itk
 {
-/**\class ConvolutionImageFilterBaseEnums
+/** \class ConvolutionImageFilterBaseEnums
  * \brief Contains all enum classes used by ConvolutionImageFilterBase class.
  * \ingroup ITKConvolution
  */
@@ -32,7 +32,7 @@ class ConvolutionImageFilterBaseEnums
 {
 public:
   /**
-   *\class ConvolutionImageFilterOutputRegion
+   * \class ConvolutionImageFilterOutputRegion
    * \ingroup ITKConvolution
    * Output region mode type enumeration
    */
@@ -47,7 +47,7 @@ extern ITKConvolution_EXPORT std::ostream &
                              operator<<(std::ostream & out, const ConvolutionImageFilterBaseEnums::ConvolutionImageFilterOutputRegion value);
 
 /**
- *\class ConvolutionImageFilterBase
+ * \class ConvolutionImageFilterBase
  * \brief Abstract base class for the convolution image filters.
  *
  * \ingroup ITKConvolution
@@ -57,7 +57,7 @@ template <typename TInputImage, typename TKernelImage = TInputImage, typename TO
 class ITK_TEMPLATE_EXPORT ConvolutionImageFilterBase : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConvolutionImageFilterBase);
+  ITK_DISALLOW_COPY_AND_MOVE(ConvolutionImageFilterBase);
 
   using Self = ConvolutionImageFilterBase;
   using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;

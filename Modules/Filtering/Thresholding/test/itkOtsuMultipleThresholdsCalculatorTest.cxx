@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,18 +23,18 @@
 int
 itkOtsuMultipleThresholdsCalculatorTest(int argc, char * argv[])
 {
-  if (argc != 2)
+  if (argc != 3)
   {
     std::cerr << "Missing parameters." << std::endl;
     std::cerr << "Usage:" << std::endl;
-    std::cerr << itkNameOfTestExecutableMacro(argv) << " valleyEmphasis" << std::endl;
+    std::cerr << itkNameOfTestExecutableMacro(argv) << " valleyEmphasis returnBinMidpoint" << std::endl;
     return EXIT_FAILURE;
   }
 
   using MeasurementType = float;
   using HistogramType = itk::Statistics::Histogram<MeasurementType>;
 
-  HistogramType::Pointer histogram = HistogramType::New();
+  auto histogram = HistogramType::New();
 
   // Initialize histogram
   HistogramType::SizeType              size;
@@ -79,7 +79,7 @@ itkOtsuMultipleThresholdsCalculatorTest(int argc, char * argv[])
 
   using OtsuMultipleThresholdCalculatorType = itk::OtsuMultipleThresholdsCalculator<HistogramType>;
 
-  OtsuMultipleThresholdCalculatorType::Pointer otsuThresholdCalculator = OtsuMultipleThresholdCalculatorType::New();
+  auto otsuThresholdCalculator = OtsuMultipleThresholdCalculatorType::New();
 
 #if defined(ITKV4_COMPATIBILITY)
   ITK_TEST_EXPECT_TRUE(otsuThresholdCalculator->GetReturnBinMidpoint());
@@ -97,6 +97,9 @@ itkOtsuMultipleThresholdsCalculatorTest(int argc, char * argv[])
 
   bool valleyEmphasis = std::stoi(argv[1]);
   ITK_TEST_SET_GET_BOOLEAN(otsuThresholdCalculator, ValleyEmphasis, valleyEmphasis);
+
+  bool returnBinMidpoint = std::stoi(argv[2]);
+  ITK_TEST_SET_GET_BOOLEAN(otsuThresholdCalculator, ReturnBinMidpoint, returnBinMidpoint);
 
   ITK_TRY_EXPECT_NO_EXCEPTION(otsuThresholdCalculator->Compute());
 

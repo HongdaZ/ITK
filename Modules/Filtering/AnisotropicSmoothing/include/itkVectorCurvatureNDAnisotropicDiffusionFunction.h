@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,7 +45,7 @@ class ITK_TEMPLATE_EXPORT VectorCurvatureNDAnisotropicDiffusionFunction
   : public VectorAnisotropicDiffusionFunction<TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorCurvatureNDAnisotropicDiffusionFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(VectorCurvatureNDAnisotropicDiffusionFunction);
 
   /** Standard itk Self & Superclass type alias */
   using Self = VectorCurvatureNDAnisotropicDiffusionFunction;
@@ -60,12 +60,12 @@ public:
   itkTypeMacro(VectorCurvatureNDAnisotropicDiffusionFunction, VectorAnisotropicDiffusionFunction);
 
   /** Inherit some parameters from the superclass type. */
-  using ImageType = typename Superclass::ImageType;
-  using PixelType = typename Superclass::PixelType;
-  using TimeStepType = typename Superclass::TimeStepType;
-  using RadiusType = typename Superclass::RadiusType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
-  using FloatOffsetType = typename Superclass::FloatOffsetType;
+  using typename Superclass::ImageType;
+  using typename Superclass::PixelType;
+  using typename Superclass::TimeStepType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::NeighborhoodType;
+  using typename Superclass::FloatOffsetType;
   using ScalarValueType = typename PixelType::ValueType;
 
   /** Extract the image and vector dimension. */
@@ -74,7 +74,7 @@ public:
 
   /** Compute the equation value. */
   PixelType
-  ComputeUpdate(const NeighborhoodType & neighborhood,
+  ComputeUpdate(const NeighborhoodType & it,
                 void *                   globalData,
                 const FloatOffsetType &  offset = FloatOffsetType(0.0)) override;
 

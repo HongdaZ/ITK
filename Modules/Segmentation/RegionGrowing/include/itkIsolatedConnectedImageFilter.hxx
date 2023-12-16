@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkIsolatedConnectedImageFilter_hxx
 #define itkIsolatedConnectedImageFilter_hxx
 
-#include "itkIsolatedConnectedImageFilter.h"
 #include "itkBinaryThresholdImageFunction.h"
 #include "itkFloodFilledImageFunctionConditionalIterator.h"
 #include "itkProgressReporter.h"
@@ -157,16 +156,16 @@ IsolatedConnectedImageFilter<TInputImage, TOutputImage>::ClearSeeds2()
 }
 
 template <typename TInputImage, typename TOutputImage>
-const typename IsolatedConnectedImageFilter<TInputImage, TOutputImage>::SeedsContainerType &
-IsolatedConnectedImageFilter<TInputImage, TOutputImage>::GetSeeds1() const
+auto
+IsolatedConnectedImageFilter<TInputImage, TOutputImage>::GetSeeds1() const -> const SeedsContainerType &
 {
   itkDebugMacro("returning Seeds1");
   return this->m_Seeds1;
 }
 
 template <typename TInputImage, typename TOutputImage>
-const typename IsolatedConnectedImageFilter<TInputImage, TOutputImage>::SeedsContainerType &
-IsolatedConnectedImageFilter<TInputImage, TOutputImage>::GetSeeds2() const
+auto
+IsolatedConnectedImageFilter<TInputImage, TOutputImage>::GetSeeds2() const -> const SeedsContainerType &
 {
   itkDebugMacro("returning Seeds2");
   return this->m_Seeds2;
@@ -200,7 +199,7 @@ IsolatedConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
   using FunctionType = BinaryThresholdImageFunction<InputImageType>;
   using IteratorType = FloodFilledImageFunctionConditionalIterator<OutputImageType, FunctionType>;
 
-  typename FunctionType::Pointer function = FunctionType::New();
+  auto function = FunctionType::New();
   function->SetInputImage(inputImage);
 
   float             progressWeight = 0.0f;
@@ -252,7 +251,7 @@ IsolatedConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
       {
         const auto value = static_cast<InputRealType>(outputImage->GetPixel(*si));
         seedIntensitySum += value;
-        si++;
+        ++si;
       }
 
       if (Math::NotExactlyEquals(seedIntensitySum, NumericTraits<InputRealType>::ZeroValue()))
@@ -317,7 +316,7 @@ IsolatedConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
       {
         const auto value = static_cast<InputRealType>(outputImage->GetPixel(*si));
         seedIntensitySum += value;
-        si++;
+        ++si;
       }
 
       if (Math::NotExactlyEquals(seedIntensitySum, NumericTraits<InputRealType>::ZeroValue()))
@@ -376,7 +375,7 @@ IsolatedConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
   {
     const auto value = static_cast<InputRealType>(outputImage->GetPixel(*si1));
     seed1IntensitySum += value;
-    si1++;
+    ++si1;
   }
   typename SeedsContainerType::const_iterator si2 = m_Seeds2.begin();
   typename SeedsContainerType::const_iterator li2 = m_Seeds2.end();
@@ -384,7 +383,7 @@ IsolatedConnectedImageFilter<TInputImage, TOutputImage>::GenerateData()
   {
     const auto value = static_cast<InputRealType>(outputImage->GetPixel(*si2));
     seed2IntensitySum += value;
-    si2++;
+    ++si2;
   }
   if (Math::NotAlmostEquals(seed1IntensitySum, m_ReplaceValue * m_Seeds1.size()) ||
       Math::NotExactlyEquals(seed2IntensitySum, NumericTraits<InputRealType>::ZeroValue()))

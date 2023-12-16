@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -85,7 +85,7 @@ public:
    * a list of seed pixels for the flood fill */
   FloodFilledFunctionConditionalConstIterator(const ImageType *        imagePtr,
                                               FunctionType *           fnPtr,
-                                              std::vector<IndexType> & startIndices);
+                                              std::vector<IndexType> & startIndex);
 
   /** Constructor establishes an iterator to walk a particular image and a
    * particular region of that image. This version of the constructor
@@ -204,7 +204,7 @@ public:
     // Initialize the temporary image
     m_TemporaryPointer->FillBuffer(NumericTraits<typename TTempImage::PixelType>::ZeroValue());
 
-    for (unsigned int i = 0; i < m_Seeds.size(); i++)
+    for (unsigned int i = 0; i < m_Seeds.size(); ++i)
     {
       if (this->m_Image->GetBufferedRegion().IsInside(m_Seeds[i]) && this->IsPixelIncluded(m_Seeds[i]))
       {

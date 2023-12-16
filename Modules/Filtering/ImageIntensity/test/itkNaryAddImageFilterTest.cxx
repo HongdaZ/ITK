@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,9 +42,7 @@ InitializeImage(ImageType * image, const typename ImageType::PixelType & value)
   region.SetIndex(start);
   region.SetSize(size);
 
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetRegions(region);
   inputImage->Allocate();
 
   inputImage->FillBuffer(value);
@@ -67,9 +65,9 @@ itkNaryAddImageFilterTest(int, char *[])
   using OutputImageType = itk::Image<PixelType, Dimension3D>;
 
   // Create some images
-  InputImageType::Pointer inputImageA = InputImageType::New();
-  InputImageType::Pointer inputImageB = InputImageType::New();
-  InputImageType::Pointer inputImageC = InputImageType::New();
+  auto inputImageA = InputImageType::New();
+  auto inputImageB = InputImageType::New();
+  auto inputImageC = InputImageType::New();
 
 
   constexpr InputImageType::PixelType valueA = 12;
@@ -84,7 +82,7 @@ itkNaryAddImageFilterTest(int, char *[])
   using FilterType = itk::NaryAddImageFilter<InputImageType, OutputImageType>;
 
   // Create the filter
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, NaryAddImageFilter, NaryFunctorImageFilter);
 
@@ -175,9 +173,9 @@ itkNaryAddImageFilterTest(int, char *[])
   using VectorPixelType = itk::Vector<ElementPixelType, Dimension2D>;
   using VectorImageType = itk::Image<VectorPixelType, Dimension2D>;
 
-  VectorImageType::Pointer vectorImageA = VectorImageType::New();
-  VectorImageType::Pointer vectorImageB = VectorImageType::New();
-  VectorImageType::Pointer vectorImageC = VectorImageType::New();
+  auto vectorImageA = VectorImageType::New();
+  auto vectorImageB = VectorImageType::New();
+  auto vectorImageC = VectorImageType::New();
 
   VectorPixelType vectorImageValueA, vectorImageValueB, vectorImageValueC;
 
@@ -201,7 +199,7 @@ itkNaryAddImageFilterTest(int, char *[])
   // Create an ADD Filter
   using VectorAdderType = itk::NaryAddImageFilter<VectorImageType, VectorImageType>;
 
-  VectorAdderType::Pointer vectorFilter = VectorAdderType::New();
+  auto vectorFilter = VectorAdderType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(vectorFilter, NaryAddImageFilter, NaryFunctorImageFilter);
 

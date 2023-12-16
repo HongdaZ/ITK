@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,16 +35,12 @@ public:
   TensorFractionalAnisotropyFunction() = default;
   ~TensorFractionalAnisotropyFunction() = default;
   bool
-  operator!=(const TensorFractionalAnisotropyFunction &) const
+  operator==(const TensorFractionalAnisotropyFunction &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const TensorFractionalAnisotropyFunction & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(TensorFractionalAnisotropyFunction);
 
   inline RealValueType
   operator()(const TInput & x) const
@@ -57,7 +53,7 @@ public:
 /** \class TensorFractionalAnisotropyImageFilter
  * \brief Computes the Fractional Anisotropy for every pixel of a input tensor image.
  *
- * TensorFractionalAnisotropyImageFilter applies pixel-wise the invokation for
+ * TensorFractionalAnisotropyImageFilter applies pixel-wise the invocation for
  * computing the fractional anisotropy of every pixel. The pixel type of the
  * input image is expected to implement a method GetFractionalAnisotropy(), and
  * to specify its return type as  RealValueType.
@@ -78,7 +74,7 @@ class TensorFractionalAnisotropyImageFilter
                                    Functor::TensorFractionalAnisotropyFunction<typename TInputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TensorFractionalAnisotropyImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(TensorFractionalAnisotropyImageFilter);
 
   /** Standard class type aliases. */
   using Self = TensorFractionalAnisotropyImageFilter;
@@ -90,7 +86,7 @@ public:
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
-  using OutputImageType = typename Superclass::OutputImageType;
+  using typename Superclass::OutputImageType;
   using OutputPixelType = typename TOutputImage::PixelType;
   using InputPixelType = typename TInputImage::PixelType;
   using InputValueType = typename InputPixelType::ValueType;

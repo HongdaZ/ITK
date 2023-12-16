@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkListSample_hxx
 #define itkListSample_hxx
 
-#include "itkListSample.h"
 
 namespace itk
 {
@@ -52,15 +51,15 @@ ListSample<TMeasurementVector>::PushBack(const MeasurementVectorType & mv)
 }
 
 template <typename TMeasurementVector>
-typename ListSample<TMeasurementVector>::InstanceIdentifier
-ListSample<TMeasurementVector>::Size() const
+auto
+ListSample<TMeasurementVector>::Size() const -> InstanceIdentifier
 {
   return static_cast<InstanceIdentifier>(this->m_InternalContainer.size());
 }
 
 template <typename TMeasurementVector>
-typename ListSample<TMeasurementVector>::TotalAbsoluteFrequencyType
-ListSample<TMeasurementVector>::GetTotalFrequency() const
+auto
+ListSample<TMeasurementVector>::GetTotalFrequency() const -> TotalAbsoluteFrequencyType
 {
   // Since the entries are unique, the total
   // frequency is equal to the numbe of entries.
@@ -68,8 +67,9 @@ ListSample<TMeasurementVector>::GetTotalFrequency() const
 }
 
 template <typename TMeasurementVector>
-const typename ListSample<TMeasurementVector>::MeasurementVectorType &
+auto
 ListSample<TMeasurementVector>::GetMeasurementVector(InstanceIdentifier instanceId) const
+  -> const MeasurementVectorType &
 {
   if (instanceId < m_InternalContainer.size())
   {
@@ -101,8 +101,8 @@ ListSample<TMeasurementVector>::SetMeasurementVector(InstanceIdentifier instance
 }
 
 template <typename TMeasurementVector>
-typename ListSample<TMeasurementVector>::AbsoluteFrequencyType
-ListSample<TMeasurementVector>::GetFrequency(InstanceIdentifier instanceId) const
+auto
+ListSample<TMeasurementVector>::GetFrequency(InstanceIdentifier instanceId) const -> AbsoluteFrequencyType
 {
   if (instanceId < m_InternalContainer.size())
   {

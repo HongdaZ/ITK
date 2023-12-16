@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -132,7 +132,7 @@ main(int argc, char * argv[])
   using ThresholdingFilterType =
     itk::BinaryThresholdImageFilter<InternalImageType, OutputImageType>;
 
-  ThresholdingFilterType::Pointer thresholder = ThresholdingFilterType::New();
+  auto thresholder = ThresholdingFilterType::New();
 
   thresholder->SetLowerThreshold(-1000.0);
   thresholder->SetUpperThreshold(0.0);
@@ -146,8 +146,8 @@ main(int argc, char * argv[])
   using ReaderType = itk::ImageFileReader<InternalImageType>;
   using WriterType = itk::ImageFileWriter<OutputImageType>;
 
-  ReaderType::Pointer reader = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
+  auto reader = ReaderType::New();
+  auto writer = WriterType::New();
 
   reader->SetFileName(argv[1]);
   writer->SetFileName(argv[2]);
@@ -167,7 +167,7 @@ main(int argc, char * argv[])
     itk::CurvatureAnisotropicDiffusionImageFilter<InternalImageType,
                                                   InternalImageType>;
 
-  SmoothingFilterType::Pointer smoothing = SmoothingFilterType::New();
+  auto smoothing = SmoothingFilterType::New();
 
 
   //  The types of the
@@ -182,9 +182,9 @@ main(int argc, char * argv[])
   using SigmoidFilterType =
     itk::SigmoidImageFilter<InternalImageType, InternalImageType>;
 
-  GradientFilterType::Pointer gradientMagnitude = GradientFilterType::New();
+  auto gradientMagnitude = GradientFilterType::New();
 
-  SigmoidFilterType::Pointer sigmoid = SigmoidFilterType::New();
+  auto sigmoid = SigmoidFilterType::New();
 
 
   //  The minimum and maximum values of the SigmoidImageFilter output
@@ -210,8 +210,7 @@ main(int argc, char * argv[])
   //  Next we construct one filter of this class using the \code{New()}
   //  method.
   //
-  FastMarchingFilterType::Pointer fastMarching =
-    FastMarchingFilterType::New();
+  auto fastMarching = FastMarchingFilterType::New();
 
   //  Software Guide : BeginLatex
   //
@@ -224,7 +223,7 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   using CurvesFilterType =
     itk::CurvesLevelSetImageFilter<InternalImageType, InternalImageType>;
-  CurvesFilterType::Pointer geodesicActiveContour = CurvesFilterType::New();
+  auto geodesicActiveContour = CurvesFilterType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -339,7 +338,7 @@ main(int argc, char * argv[])
   using NodeContainer = FastMarchingFilterType::NodeContainer;
   using NodeType = FastMarchingFilterType::NodeType;
 
-  NodeContainer::Pointer seeds = NodeContainer::New();
+  auto seeds = NodeContainer::New();
 
   InternalImageType::IndexType seedPosition;
 
@@ -391,20 +390,20 @@ main(int argc, char * argv[])
 
   //  Here we configure all the writers required to see the intermediate
   //  outputs of the pipeline. This is added here only for
-  //  pedagogical/debugging purposes. These intermediate output are normaly
+  //  pedagogical/debugging purposes. These intermediate output are normally
   //  not required. Only the output of the final thresholding filter should be
   //  relevant.  Observing intermediate output is helpful in the process of
   //  fine tuning the parameters of filters in the pipeline.
   //
-  CastFilterType::Pointer caster1 = CastFilterType::New();
-  CastFilterType::Pointer caster2 = CastFilterType::New();
-  CastFilterType::Pointer caster3 = CastFilterType::New();
-  CastFilterType::Pointer caster4 = CastFilterType::New();
+  auto caster1 = CastFilterType::New();
+  auto caster2 = CastFilterType::New();
+  auto caster3 = CastFilterType::New();
+  auto caster4 = CastFilterType::New();
 
-  WriterType::Pointer writer1 = WriterType::New();
-  WriterType::Pointer writer2 = WriterType::New();
-  WriterType::Pointer writer3 = WriterType::New();
-  WriterType::Pointer writer4 = WriterType::New();
+  auto writer1 = WriterType::New();
+  auto writer2 = WriterType::New();
+  auto writer3 = WriterType::New();
+  auto writer4 = WriterType::New();
 
   caster1->SetInput(smoothing->GetOutput());
   writer1->SetInput(caster1->GetOutput());
@@ -482,24 +481,24 @@ main(int argc, char * argv[])
 
 
   // The following writer type is used to save the output of the time-crossing
-  // map in a file with apropiate pixel representation. The advantage of
+  // map in a file with appropriate pixel representation. The advantage of
   // saving this image in native format is that it can be used with a viewer
   // to help determine an appropriate threshold to be used on the output of
   // the fastmarching filter.
   //
   using InternalWriterType = itk::ImageFileWriter<InternalImageType>;
 
-  InternalWriterType::Pointer mapWriter = InternalWriterType::New();
+  auto mapWriter = InternalWriterType::New();
   mapWriter->SetInput(fastMarching->GetOutput());
   mapWriter->SetFileName("CurvesImageFilterOutput4.mha");
   mapWriter->Update();
 
-  InternalWriterType::Pointer speedWriter = InternalWriterType::New();
+  auto speedWriter = InternalWriterType::New();
   speedWriter->SetInput(sigmoid->GetOutput());
   speedWriter->SetFileName("CurvesImageFilterOutput3.mha");
   speedWriter->Update();
 
-  InternalWriterType::Pointer gradientWriter = InternalWriterType::New();
+  auto gradientWriter = InternalWriterType::New();
   gradientWriter->SetInput(gradientMagnitude->GetOutput());
   gradientWriter->SetFileName("CurvesImageFilterOutput2.mha");
   gradientWriter->Update();
@@ -513,25 +512,25 @@ main(int argc, char * argv[])
   //  structures by providing seeds in the appropriate locations.
   //  Table~\ref{tab:CurvesImageFilterOutput2} presents the
   //  parameters used for some structures.
-  //
-  //  \begin{table}
-  //  \begin{center}
-  //  \begin{tabular}{|l|c|c|c|c|c|c|c|c|}
-  //  \hline
-  //  Structure    & Seed Index &  Distance   &   $\sigma$  &
-  //  $\alpha$     &  $\beta$   & Propag. & Output Image \\  \hline
-  //  Left Ventricle  & $(81,114)$ & 5.0 & 1.0 & -0.5 & 3.0  &  2.0 & First \\
-  //  \hline Right Ventricle & $(99,114)$ & 5.0 & 1.0 & -0.5 & 3.0  &  2.0 &
-  //  Second  \\  \hline White matter    & $(56, 92)$ & 5.0 & 1.0 & -0.3 & 2.0
-  //  & 10.0 & Third   \\  \hline Gray matter     & $(40, 90)$ & 5.0 & 0.5 &
-  //  -0.3 & 2.0  & 10.0 & Fourth  \\  \hline \end{tabular} \end{center}
-  //  \itkcaption[Curves segmentation example parameters]{Parameters used
-  //  for segmenting some brain structures shown in
-  //  Figure~\ref{fig:CurvesImageFilterOutput2} using the filter
-  //  CurvesLevelSetImageFilter.
-  //  \label{tab:CurvesImageFilterOutput2}}
-  //  \end{table}
-  //
+  /*
+      \begin{table}
+      \begin{center}
+      \begin{tabular}{|l|c|c|c|c|c|c|c|c|}
+      \hline
+      Structure    & Seed Index &  Distance   &   $\sigma$  &
+      $\alpha$     &  $\beta$   & Propag. & Output Image \\  \hline
+      Left Ventricle  & $(81,114)$ & 5.0 & 1.0 & -0.5 & 3.0  &  2.0 & First \\
+      \hline Right Ventricle & $(99,114)$ & 5.0 & 1.0 & -0.5 & 3.0  &  2.0 &
+      Second  \\  \hline White matter    & $(56, 92)$ & 5.0 & 1.0 & -0.3 & 2.0
+      & 10.0 & Third   \\  \hline Gray matter     & $(40, 90)$ & 5.0 & 0.5 &
+      -0.3 & 2.0  & 10.0 & Fourth  \\  \hline \end{tabular} \end{center}
+      \itkcaption[Curves segmentation example parameters]{Parameters used
+      for segmenting some brain structures shown in
+      Figure~\ref{fig:CurvesImageFilterOutput2} using the filter
+      CurvesLevelSetImageFilter.
+      \label{tab:CurvesImageFilterOutput2}}
+      \end{table}
+  */
   //  Figure~\ref{fig:CurvesImageFilterOutput} presents the
   //  intermediate outputs of the pipeline illustrated in
   //  Figure~\ref{fig:CurvessCollaborationDiagram}. They are

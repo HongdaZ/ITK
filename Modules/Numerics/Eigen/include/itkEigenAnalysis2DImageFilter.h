@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,7 +44,7 @@ template <typename TInputImage, typename TEigenValueImage, typename TEigenVector
 class ITK_TEMPLATE_EXPORT EigenAnalysis2DImageFilter : public ImageToImageFilter<TInputImage, TEigenValueImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(EigenAnalysis2DImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(EigenAnalysis2DImageFilter);
 
   /** Standard class type aliases. */
   using Self = EigenAnalysis2DImageFilter;
@@ -63,7 +63,7 @@ public:
   using VectorComponentType = typename EigenVectorType::ValueType;
 
   /** Superclass type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
 
   /** Some convenient type alias. */
   using EigenValueImageType = TEigenValueImage;
@@ -81,19 +81,19 @@ public:
   /** Connect the image containing the elements [0,0]
    * of the input 2D matrix */
   void
-  SetInput1(TInputImage * image1);
+  SetInput1(TInputImage * image);
 
   /** Connect the image containing the elements [0,1]
    * of the input 2D matrix. This is the same [1,0]
    * element given that the input matrix is expected
    * to be symmetric */
   void
-  SetInput2(TInputImage * image2);
+  SetInput2(TInputImage * image);
 
   /** Connect the image containing the elements [1,1]
    * of the input 2D matrix */
   void
-  SetInput3(TInputImage * image3);
+  SetInput3(TInputImage * image);
 
   /** Get the Output image with the greatest eigenvalue */
   EigenValueImageType *

@@ -27,12 +27,12 @@
 #--   - [ ] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -52,10 +52,9 @@ For more information, see:
   Vimort J., McCormick M., Budin F., Paniagua B.
   Computing Textural Feature Maps for N-Dimensional images
   The Insight Journal. January-December. 2017.
-  http://hdl.handle.net/10380/3574
-  http://insight-journal.org/browse/publication/985
+  https://www.insight-journal.org/browse/publication/985
 "
   MODULE_COMPLIANCE_LEVEL 2
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKTextureFeatures.git
-  GIT_TAG 2b831c41f38b1dea57efed638122c5e74f910450
+  GIT_TAG b75d9daf50b16da0cec92a6f620426122489bd38
   )

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,8 +46,8 @@ itkMinimumImageFilterTest(int, char *[])
   using MinimumFilterType = itk::MinimumImageFilter<ImageType, ImageType, ImageType>;
 
   // Create two images
-  ImageType::Pointer inputImageA = ImageType::New();
-  ImageType::Pointer inputImageB = ImageType::New();
+  auto inputImageA = ImageType::New();
+  auto inputImageB = ImageType::New();
 
   // Define their size, and start index
   SizeType size;
@@ -65,15 +65,11 @@ itkMinimumImageFilterTest(int, char *[])
   region.SetSize(size);
 
   // Initialize Image A
-  inputImageA->SetLargestPossibleRegion(region);
-  inputImageA->SetBufferedRegion(region);
-  inputImageA->SetRequestedRegion(region);
+  inputImageA->SetRegions(region);
   inputImageA->Allocate();
 
   // Initialize Image B
-  inputImageB->SetLargestPossibleRegion(region);
-  inputImageB->SetBufferedRegion(region);
-  inputImageB->SetRequestedRegion(region);
+  inputImageB->SetRegions(region);
   inputImageB->Allocate();
 
   // Define the pixel values for each image
@@ -104,7 +100,7 @@ itkMinimumImageFilterTest(int, char *[])
   }
 
   // Create the filter
-  MinimumFilterType::Pointer minimumImageFilter = MinimumFilterType::New();
+  auto minimumImageFilter = MinimumFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(minimumImageFilter, MinimumImageFilter, BinaryGeneratorImageFilter);
 

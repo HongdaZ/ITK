@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkIntTypes.h"
 #include "itkSingleValuedNonLinearVnlOptimizer.h"
 #include "ITKOptimizersExport.h"
+#include <memory> // For unique_ptr.
 
 namespace itk
 {
@@ -63,7 +64,7 @@ class ITK_FORWARD_EXPORT LBFGSBOptimizerHelper;
 class ITKOptimizers_EXPORT LBFGSBOptimizer : public SingleValuedNonLinearVnlOptimizer
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LBFGSBOptimizer);
+  ITK_DISALLOW_COPY_AND_MOVE(LBFGSBOptimizer);
 
   /** Standard "Self" type alias. */
   using Self = LBFGSBOptimizer;
@@ -130,7 +131,7 @@ public:
    *           = 3 if x[1] has only an upper bound
    */
   virtual void
-  SetBoundSelection(const BoundSelectionType & select);
+  SetBoundSelection(const BoundSelectionType & value);
   itkGetConstReferenceMacro(BoundSelection, BoundSelectionType);
 
   /** Set/Get the CostFunctionConvergenceFactor. Algorithm terminates
@@ -193,6 +194,13 @@ public:
   const std::string
   GetStopConditionDescription() const override;
 
+  /** Returns false unconditionally because LBFGSBOptimizer does not support using scales. */
+  bool
+  CanUseScales() const override
+  {
+    return false;
+  }
+
 protected:
   LBFGSBOptimizer();
   ~LBFGSBOptimizer() override;
@@ -216,10 +224,10 @@ private:
   unsigned int m_CurrentIteration{ 0 };
   double       m_InfinityNormOfProjectedGradient{ 0.0 };
 
-  InternalOptimizerType * m_VnlOptimizer{ nullptr };
-  BoundValueType          m_LowerBound;
-  BoundValueType          m_UpperBound;
-  BoundSelectionType      m_BoundSelection;
+  std::unique_ptr<InternalOptimizerType> m_VnlOptimizer;
+  BoundValueType                         m_LowerBound;
+  BoundValueType                         m_UpperBound;
+  BoundSelectionType                     m_BoundSelection;
 };
 } // end namespace itk
 

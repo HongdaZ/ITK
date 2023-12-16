@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,21 +23,20 @@
 #include "itkImageGaussianModelEstimator.h"
 #include "itkMahalanobisDistanceMembershipFunction.h"
 #include "itkMinimumDecisionRule.h"
+#include "itkTestingMacros.h"
 
 
 int
 itkGibbsTest(int, char *[])
-// int main()
 {
-  std::cout << "Gibbs Prior Test Begins: " << std::endl;
 
-  constexpr unsigned int IMGWIDTH = 20;
-  constexpr unsigned int IMGHEIGHT = 20;
-  constexpr unsigned int NFRAMES = 1;
+  constexpr unsigned int ImageWidth = 20;
+  constexpr unsigned int ImageHeight = 20;
+  constexpr unsigned int NumFrames = 1;
   constexpr unsigned int NumberOfBands = 1;
   constexpr unsigned int ImageDimension = 3;
-  constexpr unsigned int NUM_CLASSES = 3;
-  constexpr unsigned int MAX_NUM_ITER = 1;
+  constexpr unsigned int NumClasses = 3;
+  constexpr unsigned int MaxNumIter = 1;
 
   const unsigned short TestingImage[400] = {
     297, 277, 317, 289, 300, 312, 306, 283, 282, 308, 308, 342, 335, 325, 315, 300, 304, 318, 307, 308,
@@ -84,11 +83,11 @@ itkGibbsTest(int, char *[])
   using PixelType = itk::Vector<unsigned short, NumberOfBands>;
   using VecImageType = itk::Image<PixelType, ImageDimension>;
 
-  VecImageType::Pointer vecImage = VecImageType::New();
+  auto vecImage = VecImageType::New();
 
   using VecImagePixelType = VecImageType::PixelType;
 
-  VecImageType::SizeType vecImgSize = { { IMGWIDTH, IMGHEIGHT, NFRAMES } };
+  VecImageType::SizeType vecImgSize = { { ImageWidth, ImageHeight, NumFrames } };
 
   VecImageType::IndexType index;
   index.Fill(0);
@@ -123,7 +122,7 @@ itkGibbsTest(int, char *[])
   int i = 0;
   while (!outIt.IsAtEnd())
   {
-    dblVec[0] = (unsigned short)TestingImage[i];
+    dblVec[0] = static_cast<unsigned short>(TestingImage[i]);
     //  dblVec[1] = (unsigned short) TestImage[i+65536];
     //  dblVec[2] = (unsigned short) TestImage[i+65536*2];
     outIt.Set(dblVec);
@@ -135,9 +134,9 @@ itkGibbsTest(int, char *[])
   // Generate the training data
   //---------------------------------------------------------------
   using ClassImageType = itk::Image<unsigned short, ImageDimension>;
-  ClassImageType::Pointer classImage = ClassImageType::New();
+  auto classImage = ClassImageType::New();
 
-  ClassImageType::SizeType classImgSize = { { IMGWIDTH, IMGHEIGHT, NFRAMES } };
+  ClassImageType::SizeType classImgSize = { { ImageWidth, ImageHeight, NumFrames } };
 
   ClassImageType::IndexType classindex;
   classindex.Fill(0);
@@ -165,13 +164,13 @@ itkGibbsTest(int, char *[])
   i = 0;
   while (!classoutIt.IsAtEnd())
   {
-    if ((i % IMGWIDTH < 8) && (i % IMGWIDTH > 4) && (i / IMGWIDTH < 8) && (i / IMGWIDTH > 4))
+    if ((i % ImageWidth < 8) && (i % ImageWidth > 4) && (i / ImageWidth < 8) && (i / ImageWidth > 4))
     {
       classoutIt.Set(1);
     }
     else
     {
-      if ((i % IMGWIDTH < 18) && (i % IMGWIDTH > 14) && (i / IMGWIDTH < 18) && (i / IMGWIDTH > 14))
+      if ((i % ImageWidth < 18) && (i % ImageWidth > 14) && (i / ImageWidth < 18) && (i / ImageWidth > 14))
       {
         classoutIt.Set(2);
       }
@@ -210,9 +209,9 @@ itkGibbsTest(int, char *[])
   using ImageGaussianModelEstimatorType =
     itk::ImageGaussianModelEstimator<VecImageType, MembershipFunctionType, ClassImageType>;
 
-  ImageGaussianModelEstimatorType::Pointer applyEstimateModel = ImageGaussianModelEstimatorType::New();
+  auto applyEstimateModel = ImageGaussianModelEstimatorType::New();
 
-  applyEstimateModel->SetNumberOfModels(NUM_CLASSES);
+  applyEstimateModel->SetNumberOfModels(NumClasses);
   applyEstimateModel->SetInputImage(vecImage);
   applyEstimateModel->SetTrainingImage(classImage);
 
@@ -228,7 +227,7 @@ itkGibbsTest(int, char *[])
   using DecisionRuleBasePointer = itk::Statistics::DecisionRule::Pointer;
 
   using DecisionRuleType = itk::Statistics::MinimumDecisionRule;
-  DecisionRuleType::Pointer myDecisionRule = DecisionRuleType::New();
+  auto myDecisionRule = DecisionRuleType::New();
 
   //----------------------------------------------------------------------
   // Set the classifier to be used and assigne the parameters for the
@@ -241,61 +240,74 @@ itkGibbsTest(int, char *[])
   using ClassifierPointer = ClassifierType::Pointer;
   ClassifierPointer myClassifier = ClassifierType::New();
   // Set the Classifier parameters
-  myClassifier->SetNumberOfClasses(NUM_CLASSES);
+  myClassifier->SetNumberOfClasses(NumClasses);
 
   // Set the decision rule
   myClassifier->SetDecisionRule((DecisionRuleBasePointer)myDecisionRule);
 
   // Add the membership functions
-  for (unsigned int ii = 0; ii < NUM_CLASSES; ii++)
+  for (unsigned int ii = 0; ii < NumClasses; ++ii)
   {
     myClassifier->AddMembershipFunction(membershipFunctions[ii]);
   }
 
   // Set the Gibbs Prior labeller
   using GibbsPriorFilterType = itk::RGBGibbsPriorFilter<VecImageType, ClassImageType>;
-  GibbsPriorFilterType::Pointer applyGibbsImageFilter = GibbsPriorFilterType::New();
+  auto applyGibbsImageFilter = GibbsPriorFilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(applyGibbsImageFilter, RGBGibbsPriorFilter, MRFImageFilter);
 
   // Set the MRF labeller parameters
-  applyGibbsImageFilter->SetNumberOfClasses(NUM_CLASSES);
-  applyGibbsImageFilter->SetMaximumNumberOfIterations(MAX_NUM_ITER);
+  applyGibbsImageFilter->SetNumberOfClasses(NumClasses);
+  ITK_TEST_SET_GET_VALUE(NumClasses, applyGibbsImageFilter->GetNumberOfClasses());
+
+  applyGibbsImageFilter->SetMaximumNumberOfIterations(MaxNumIter);
+  ITK_TEST_SET_GET_VALUE(MaxNumIter, applyGibbsImageFilter->GetMaximumNumberOfIterations());
+
+  // Set the MRF labeller parameters
+  applyGibbsImageFilter->SetNumberOfClasses(NumClasses);
+  applyGibbsImageFilter->SetMaximumNumberOfIterations(MaxNumIter);
+
   //  applyGibbsImageFilter->SetErrorTollerance(0.00);
   applyGibbsImageFilter->SetClusterSize(10);
   applyGibbsImageFilter->SetBoundaryGradient(6);
   applyGibbsImageFilter->SetObjectLabel(1);
   //  applyGibbsImageFilter->SetRecursiveNumber(1);
-  applyGibbsImageFilter->SetCliqueWeight_1(5.0);
-  applyGibbsImageFilter->SetCliqueWeight_2(5.0);
-  applyGibbsImageFilter->SetCliqueWeight_3(5.0);
-  applyGibbsImageFilter->SetCliqueWeight_4(5.0);
-  applyGibbsImageFilter->SetCliqueWeight_5(5.0);
-  applyGibbsImageFilter->SetCliqueWeight_6(0.0);
+
+  double cliqueWeight1 = 5.0;
+  applyGibbsImageFilter->SetCliqueWeight_1(cliqueWeight1);
+  ITK_TEST_SET_GET_VALUE(cliqueWeight1, applyGibbsImageFilter->GetCliqueWeight_1());
+
+  double cliqueWeight2 = 5.0;
+  applyGibbsImageFilter->SetCliqueWeight_2(cliqueWeight2);
+  ITK_TEST_SET_GET_VALUE(cliqueWeight2, applyGibbsImageFilter->GetCliqueWeight_2());
+
+  double cliqueWeight3 = 5.0;
+  applyGibbsImageFilter->SetCliqueWeight_3(cliqueWeight3);
+  ITK_TEST_SET_GET_VALUE(cliqueWeight3, applyGibbsImageFilter->GetCliqueWeight_3());
+
+  double cliqueWeight4 = 5.0;
+  applyGibbsImageFilter->SetCliqueWeight_4(cliqueWeight4);
+  ITK_TEST_SET_GET_VALUE(cliqueWeight4, applyGibbsImageFilter->GetCliqueWeight_4());
+
+  double cliqueWeight5 = 5.0;
+  applyGibbsImageFilter->SetCliqueWeight_5(cliqueWeight5);
+  ITK_TEST_SET_GET_VALUE(cliqueWeight5, applyGibbsImageFilter->GetCliqueWeight_5());
+
+  double cliqueWeight6 = 0.0;
+  applyGibbsImageFilter->SetCliqueWeight_6(cliqueWeight6);
+  ITK_TEST_SET_GET_VALUE(cliqueWeight6, applyGibbsImageFilter->GetCliqueWeight_6());
 
   applyGibbsImageFilter->SetInput(vecImage);
   applyGibbsImageFilter->SetClassifier(myClassifier);
 
-
   applyGibbsImageFilter->SetObjectThreshold(5.0);
-
-  /** coverage */
-  std::cout << applyGibbsImageFilter->GetNumberOfClasses() << std::endl;
-  std::cout << applyGibbsImageFilter->GetMaximumNumberOfIterations() << std::endl;
-
-  /** coverage */
-  std::cout << applyGibbsImageFilter->GetCliqueWeight_1() << std::endl;
-  std::cout << applyGibbsImageFilter->GetCliqueWeight_2() << std::endl;
-  std::cout << applyGibbsImageFilter->GetCliqueWeight_3() << std::endl;
-  std::cout << applyGibbsImageFilter->GetCliqueWeight_4() << std::endl;
-  std::cout << applyGibbsImageFilter->GetCliqueWeight_5() << std::endl;
-  std::cout << applyGibbsImageFilter->GetCliqueWeight_6() << std::endl;
 
   // Since a suvervised classifier is used, it requires a training image
   applyGibbsImageFilter->SetTrainingImage(classImage);
 
   // Kick off the Gibbs labeller function
   applyGibbsImageFilter->Update();
-
-  std::cout << "applyGibbsImageFilter: " << applyGibbsImageFilter;
 
   ClassImageType::Pointer outClassImage = applyGibbsImageFilter->GetOutput();
 
@@ -321,7 +333,7 @@ itkGibbsTest(int, char *[])
   std::cout << "j1:" << j1 << std::endl;
 
   //  FILE *output=fopen("new.raw", "wb");
-  //  fwrite(outImage, 2, IMGWIDTH*IMGHEIGHT, output);
+  //  fwrite(outImage, 2, ImageWidth*ImageHeight, output);
   //  fclose(output);
   // Verify if the results were as per expectation
 
@@ -330,7 +342,7 @@ itkGibbsTest(int, char *[])
     i = 0;
     labeloutIt.GoToBegin();
     while ( !labeloutIt.IsAtEnd() ) {
-    if ((i%IMGWIDTH<10) && (i/IMGWIDTH<10) && (labeloutIt.Get()==1))
+    if ((i%ImageWidth<10) && (i/ImageWidth<10) && (labeloutIt.Get()==1))
       j++;
     i++;
     ++labeloutIt;

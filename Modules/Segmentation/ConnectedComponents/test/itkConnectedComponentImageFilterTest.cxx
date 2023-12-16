@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,11 +55,15 @@ itkConnectedComponentImageFilterTest(int argc, char * argv[])
   using RelabelType = itk::RelabelComponentImageFilter<OutputImageType, OutputImageType>;
 
 
-  ReaderType::Pointer          reader = ReaderType::New();
-  WriterType::Pointer          writer = WriterType::New();
-  ThresholdFilterType::Pointer threshold = ThresholdFilterType::New();
-  FilterType::Pointer          filter = FilterType::New();
-  RelabelType::Pointer         relabel = RelabelType::New();
+  auto reader = ReaderType::New();
+  auto writer = WriterType::New();
+  auto threshold = ThresholdFilterType::New();
+  auto filter = FilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, ConnectedComponentImageFilter, ImageToImageFilter);
+
+
+  auto relabel = RelabelType::New();
 
   itk::SimpleFilterWatcher watcher(filter);
   watcher.QuietOn();
@@ -78,11 +82,21 @@ itkConnectedComponentImageFilterTest(int argc, char * argv[])
   threshold->Update();
 
   filter->SetInput(threshold->GetOutput());
+  bool fullyConnected = false;
   if (argc > 5)
   {
-    int fullyConnected = std::stoi(argv[5]);
-    filter->SetFullyConnected(fullyConnected);
+    fullyConnected = static_cast<bool>(std::stoi(argv[5]));
   }
+  ITK_TEST_SET_GET_BOOLEAN(filter, FullyConnected, fullyConnected);
+
+  auto backgroundValue = itk::NumericTraits<typename FilterType::OutputPixelType>::ZeroValue();
+  filter->SetBackgroundValue(backgroundValue);
+  ITK_TEST_SET_GET_VALUE(backgroundValue, filter->GetBackgroundValue());
+
+  ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
+
+  std::cout << "ConnectedComponent filter ObjectCount: " << filter->GetObjectCount() << std::endl;
+
   relabel->SetInput(filter->GetOutput());
   if (argc > 6)
   {
@@ -102,7 +116,7 @@ itkConnectedComponentImageFilterTest(int argc, char * argv[])
   }
 
   // Remap the labels to viewable colors
-  RGBImageType::Pointer colored = RGBImageType::New();
+  auto colored = RGBImageType::New();
   colored->SetRegions(filter->GetOutput()->GetBufferedRegion());
   colored->Allocate();
 
@@ -128,7 +142,7 @@ itkConnectedComponentImageFilterTest(int argc, char * argv[])
   {
     if (it.Get() == 0)
     {
-      cit.Set(RGBPixelType(itk::NumericTraits<unsigned char>::ZeroValue()));
+      cit.Set(RGBPixelType());
     }
     else
     {

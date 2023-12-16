@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkSparseFieldLayer_hxx
 #define itkSparseFieldLayer_hxx
-#include "itkSparseFieldLayer.h"
 #include <cmath>
 
 namespace itk
@@ -55,8 +54,8 @@ SparseFieldLayer<TNodeType>::Size() const
 }
 
 template <typename TNodeType>
-typename SparseFieldLayer<TNodeType>::RegionListType
-SparseFieldLayer<TNodeType>::SplitRegions(int num) const
+auto
+SparseFieldLayer<TNodeType>::SplitRegions(int num) const -> RegionListType
 {
   std::vector<RegionType> regionlist;
   unsigned int            size, regionsize;
@@ -65,14 +64,14 @@ SparseFieldLayer<TNodeType>::SplitRegions(int num) const
   ConstIterator position = Begin();
   ConstIterator last = End();
 
-  for (int i = 0; i < num; i++)
+  for (int i = 0; i < num; ++i)
   {
     unsigned int j = 0;
     RegionType   region;
     region.first = position;
     while ((j < regionsize) && (position != last))
     {
-      j++;
+      ++j;
       ++position;
     }
     region.last = position;

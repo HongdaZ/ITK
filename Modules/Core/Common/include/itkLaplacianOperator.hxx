@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkLaplacianOperator_hxx
 #define itkLaplacianOperator_hxx
-#include "itkLaplacianOperator.h"
 
 namespace itk
 {
@@ -43,18 +42,16 @@ LaplacianOperator<TPixel, VDimension, TAllocator>::CreateOperator()
   this->Fill(coefficients);
 }
 
-// This function fills the coefficients into the corresponding neighborhodd.
+// This function fills the coefficients into the corresponding neighborhood.
 template <typename TPixel, unsigned int VDimension, typename TAllocator>
 void
 LaplacianOperator<TPixel, VDimension, TAllocator>::Fill(const CoefficientVector & coeff)
 {
   typename Superclass::CoefficientVector::const_iterator it;
 
-  std::slice * temp_slice;
-  temp_slice = new std::slice(0, coeff.size(), 1);
+  const std::slice temp_slice(0, coeff.size(), 1);
 
-  typename Self::SliceIteratorType data(this, *temp_slice);
-  delete temp_slice;
+  typename Self::SliceIteratorType data(this, temp_slice);
 
   it = coeff.begin();
 
@@ -66,8 +63,8 @@ LaplacianOperator<TPixel, VDimension, TAllocator>::Fill(const CoefficientVector 
 }
 
 template <typename TPixel, unsigned int VDimension, typename TAllocator>
-typename LaplacianOperator<TPixel, VDimension, TAllocator>::CoefficientVector
-LaplacianOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients()
+auto
+LaplacianOperator<TPixel, VDimension, TAllocator>::GenerateCoefficients() -> CoefficientVector
 {
   unsigned int i, w;
 

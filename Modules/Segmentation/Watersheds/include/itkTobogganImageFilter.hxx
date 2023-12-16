@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkTobogganImageFilter_hxx
 #define itkTobogganImageFilter_hxx
 
-#include "itkTobogganImageFilter.h"
 #include "itkImageRegionConstIterator.h"
 
 namespace itk
@@ -106,7 +105,7 @@ TobogganImageFilter<TInputImage, TOutputImage>::GenerateData()
         MinimumNeighborIndex = CurrentPositionIndex;
         // DirectionImage->PutPixel ( CurrentPositionIndex, 1 );
         // Check the face connected neighbors
-        for (Dimension = 0; Dimension < ImageDimension; Dimension++)
+        for (Dimension = 0; Dimension < ImageDimension; ++Dimension)
         {
           for (t = 1; t >= -1; t = t - 2)
           {
@@ -185,7 +184,7 @@ TobogganImageFilter<TInputImage, TOutputImage>::GenerateData()
           // Look at the neighbors
           InputImagePixelType SeedValue;
           SeedValue = inputImage->GetPixel(SeedIndex);
-          for (Dimension = 0; Dimension < ImageDimension; Dimension++)
+          for (Dimension = 0; Dimension < ImageDimension; ++Dimension)
           {
             for (t = -1; t <= 1; t = t + 2)
             {
@@ -196,7 +195,7 @@ TobogganImageFilter<TInputImage, TOutputImage>::GenerateData()
               {
                 if (inputImage->GetPixel(NeighborIndex) <= SeedValue)
                 {
-                  // Found a match, check it's class
+                  // Found a match, check its class
                   OutputImagePixelType NeighborClass = outputImage->GetPixel(NeighborIndex);
                   // We've never seen this pixel before, so add it to the open
                   // list
@@ -223,7 +222,7 @@ TobogganImageFilter<TInputImage, TOutputImage>::GenerateData()
         // If we found an unlabeled minimum,
         // Set the LabelForRegion, and increment CurrentLabel
         LabelForRegion = CurrentLabel;
-        CurrentLabel++;
+        ++CurrentLabel;
       }
       if (MinimumNeighborClass > 1)
       {
@@ -233,7 +232,7 @@ TobogganImageFilter<TInputImage, TOutputImage>::GenerateData()
       }
       itkDebugMacro(<< "Filling in: " << static_cast<unsigned int>(Visited.size()) << " with: " << LabelForRegion);
       // Loop over all the visited positions, setting their label
-      for (i = 0; i < Visited.size(); i++)
+      for (i = 0; i < Visited.size(); ++i)
       {
         outputImage->SetPixel(Visited[i], LabelForRegion);
       }

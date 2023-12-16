@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,7 @@
  *  limitations under the License.
  *
  *=========================================================================*/
+#include "itkTestingMacros.h"
 #include "itkQuadEdgeMesh.h"
 #include "itkMeshFileReader.h"
 #include "itkMeshFileWriter.h"
@@ -27,12 +28,11 @@ int
 itkSquaredEdgeLengthDecimationQuadEdgeMeshFilterTest(int argc, char * argv[])
 {
   // ** ERROR MESSAGE AND HELP ** //
-  if (argc < 3)
+  if (argc != 4)
   {
-    std::cout << "Requires 3 argument: " << std::endl;
-    std::cout << "1-Input file name " << std::endl;
-    std::cout << "2-Number of Faces " << std::endl;
-    std::cout << "3-Output file name " << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " inputFilename numberOfFaces outputFilename" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -45,53 +45,53 @@ itkSquaredEdgeLengthDecimationQuadEdgeMeshFilterTest(int argc, char * argv[])
   using WriterType = itk::MeshFileWriter<MeshType>;
 
   // ** READ THE FILE IN **
-  ReaderType::Pointer reader = ReaderType::New();
+  const auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
-  try
-  {
-    reader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << "Exception thrown while reading the input file " << std::endl;
-    std::cerr << excp << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
 
-  MeshType::Pointer mesh = reader->GetOutput();
+  const auto mesh = reader->GetOutput();
 
   for (auto it = mesh->GetCells()->Begin(); it != mesh->GetCells()->End(); ++it)
   {
     mesh->SetCellData(it.Index(), 25);
   }
-  itkAssertOrThrowMacro(mesh->GetNumberOfCells() == mesh->GetCellData()->Size(),
-                        "Incorrect number of elements in the cell data array.");
+  ITK_TEST_EXPECT_EQUAL(mesh->GetNumberOfCells(), mesh->GetCellData()->Size());
 
   using CriterionType = itk::NumberOfFacesCriterion<MeshType>;
-
   using DecimationType = itk::SquaredEdgeLengthDecimationQuadEdgeMeshFilter<MeshType, MeshType, CriterionType>;
 
   long              N;
   std::stringstream ssout(argv[2]);
   ssout >> N;
 
-  CriterionType::Pointer criterion = CriterionType::New();
-  criterion->SetTopologicalChange(true);
-  criterion->SetNumberOfElements(N);
+  std::array<bool, 2> topological_change;
+  topological_change[0] = true;
+  topological_change[1] = false;
 
-  DecimationType::Pointer decimate = DecimationType::New();
-  decimate->SetInput(mesh);
-  decimate->SetCriterion(criterion);
-  decimate->Update();
+  for (const auto & tc : topological_change)
+  {
+    const auto criterion = CriterionType::New();
+    ITK_TEST_SET_GET_BOOLEAN(criterion, TopologicalChange, tc);
+    criterion->SetNumberOfElements(N);
 
-  itkAssertOrThrowMacro(decimate->GetOutput()->GetNumberOfCells() == decimate->GetOutput()->GetCellData()->Size(),
-                        "Incorrect number of elements in the cell data array.");
+    ITK_EXERCISE_BASIC_OBJECT_METHODS(criterion, NumberOfFacesCriterion, QuadEdgeMeshDecimationCriterion);
 
-  // ** WRITE OUTPUT **
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(decimate->GetOutput());
-  writer->SetFileName(argv[3]);
-  writer->Update();
+    const auto decimate = DecimationType::New();
+    decimate->SetInput(mesh);
+    decimate->SetCriterion(criterion);
+    ITK_TRY_EXPECT_NO_EXCEPTION(decimate->Update());
+
+    ITK_EXERCISE_BASIC_OBJECT_METHODS(
+      decimate, SquaredEdgeLengthDecimationQuadEdgeMeshFilter, EdgeDecimationQuadEdgeMeshFilter);
+
+    ITK_TEST_EXPECT_EQUAL(decimate->GetOutput()->GetNumberOfCells(), decimate->GetOutput()->GetCellData()->Size());
+
+    // ** WRITE OUTPUT **
+    const auto writer = WriterType::New();
+    writer->SetInput(decimate->GetOutput());
+    writer->SetFileName(argv[3]);
+    ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+  }
 
   return EXIT_SUCCESS;
 }

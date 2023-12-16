@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -125,7 +125,7 @@ public:
     }
     double currentValue = optimizer->GetValue();
     // Only print out when the Metric value changes
-    if (std::fabs(m_LastMetricValue - currentValue) > 1e-7)
+    if (itk::Math::abs(m_LastMetricValue - currentValue) > 1e-7)
     {
       std::cout << optimizer->GetCurrentIteration() << "   ";
       std::cout << currentValue << "   ";
@@ -149,8 +149,8 @@ itkOnePlusOneEvolutionaryOptimizerTest(int, char *[])
 
   using OptimizerType = itk::OnePlusOneEvolutionaryOptimizer;
 
-  // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  // Declaration of an itkOptimizer
+  auto itkOptimizer = OptimizerType::New();
 
   itk::OnePlusOneCommandIterationUpdate::Pointer observer = itk::OnePlusOneCommandIterationUpdate::New();
   itkOptimizer->AddObserver(itk::IterationEvent(), observer);
@@ -179,7 +179,7 @@ itkOnePlusOneEvolutionaryOptimizerTest(int, char *[])
 
 
   using GeneratorType = itk::Statistics::NormalVariateGenerator;
-  GeneratorType::Pointer generator = GeneratorType::New();
+  auto generator = GeneratorType::New();
   itkOptimizer->SetNormalVariateGenerator(generator);
 
   itkOptimizer->SetInitialPosition(initialPosition);
@@ -207,7 +207,7 @@ itkOnePlusOneEvolutionaryOptimizerTest(int, char *[])
   //
   bool   pass = true;
   double trueParameters[2] = { 2, -2 };
-  for (unsigned int j = 0; j < 2; j++)
+  for (unsigned int j = 0; j < 2; ++j)
   {
     if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > 0.01)
     {

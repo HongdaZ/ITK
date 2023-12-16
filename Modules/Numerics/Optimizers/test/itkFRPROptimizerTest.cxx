@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  *=========================================================================*/
 #include <set>
 #include "itkFRPROptimizer.h"
+#include "itkTestingMacros.h"
 
 
 /**
@@ -113,12 +114,13 @@ itkFRPROptimizerTest(int, char *[])
 
   using OptimizerType = itk::FRPROptimizer;
 
-  // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  // Declaration of an itkOptimizer
+  auto itkOptimizer = OptimizerType::New();
 
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(itkOptimizer, FRPROptimizer, PowellOptimizer);
 
   // Declaration of the CostFunction
-  FRPRGradientCostFunction::Pointer costFunction = FRPRGradientCostFunction::New();
+  auto costFunction = FRPRGradientCostFunction::New();
 
 
   itkOptimizer->SetCostFunction(costFunction);
@@ -137,6 +139,9 @@ itkFRPROptimizerTest(int, char *[])
   itkOptimizer->SetStepLength(0.01);
   itkOptimizer->SetMaximize(false);
   itkOptimizer->SetMaximumIteration(50);
+
+  bool useUnitLengthGradient = false;
+  ITK_TEST_SET_GET_BOOLEAN(itkOptimizer, UseUnitLengthGradient, useUnitLengthGradient);
 
   {
     // Exercise the methods that set the optimization mode
@@ -168,7 +173,7 @@ itkFRPROptimizerTest(int, char *[])
     //
     bool   pass = true;
     double trueParameters[2] = { 2, -2 };
-    for (unsigned int j = 0; j < 2; j++)
+    for (unsigned int j = 0; j < 2; ++j)
     {
       if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > 0.01)
         pass = false;
@@ -221,7 +226,7 @@ itkFRPROptimizerTest(int, char *[])
     //
     bool   pass = true;
     double trueParameters[2] = { 2, -2 };
-    for (unsigned int j = 0; j < 2; j++)
+    for (unsigned int j = 0; j < 2; ++j)
     {
       if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > 0.01)
         pass = false;

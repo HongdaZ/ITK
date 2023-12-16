@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,8 +18,6 @@
 #ifndef itkPointBasedSpatialObject_hxx
 #define itkPointBasedSpatialObject_hxx
 
-
-#include "itkPointBasedSpatialObject.h"
 
 namespace itk
 {
@@ -107,14 +105,14 @@ PointBasedSpatialObject<TDimension, TSpatialObjectPointType>::ClosestPointInObje
   double                 closestPointDistance = NumericTraits<double>::max();
   while (it != itend)
   {
-    typename SpatialObjectPoint<TDimension>::PointType curpos = (*it).GetPositionInObjectSpace();
+    typename SpatialObjectPoint<TDimension>::PointType curpos = it->GetPositionInObjectSpace();
     double                                             curdistance = curpos.EuclideanDistanceTo(point);
     if (curdistance < closestPointDistance)
     {
       closestPoint = (*it);
       closestPointDistance = curdistance;
     }
-    it++;
+    ++it;
   }
 
   return closestPoint;
@@ -137,14 +135,14 @@ PointBasedSpatialObject<TDimension, TSpatialObjectPointType>::ClosestPointInWorl
   double                 closestPointDistance = NumericTraits<double>::max();
   while (it != itend)
   {
-    typename SpatialObjectPoint<TDimension>::PointType curpos = (*it).GetPositionInWorldSpace();
+    typename SpatialObjectPoint<TDimension>::PointType curpos = it->GetPositionInWorldSpace();
     double                                             curdistance = curpos.EuclideanDistanceTo(point);
     if (curdistance < closestPointDistance)
     {
       closestPoint = (*it);
       closestPointDistance = curdistance;
     }
-    it++;
+    ++it;
   }
 
   return closestPoint;
@@ -169,15 +167,15 @@ PointBasedSpatialObject<TDimension, TSpatialObjectPointType>::ComputeMyBoundingB
     return;
   }
 
-  PointType pt = (*it).GetPositionInObjectSpace();
+  PointType pt = it->GetPositionInObjectSpace();
 
   this->GetModifiableMyBoundingBoxInObjectSpace()->SetMinimum(pt);
   this->GetModifiableMyBoundingBoxInObjectSpace()->SetMaximum(pt);
-  it++;
+  ++it;
   while (it != end)
   {
-    this->GetModifiableMyBoundingBoxInObjectSpace()->ConsiderPoint((*it).GetPositionInObjectSpace());
-    it++;
+    this->GetModifiableMyBoundingBoxInObjectSpace()->ConsiderPoint(it->GetPositionInObjectSpace());
+    ++it;
   }
   this->GetModifiableMyBoundingBoxInObjectSpace()->ComputeBoundingBox();
 }
@@ -208,7 +206,7 @@ PointBasedSpatialObject<TDimension, TSpatialObjectPointType>::IsInsideInObjectSp
       {
         return true;
       }
-      it++;
+      ++it;
     }
   }
 

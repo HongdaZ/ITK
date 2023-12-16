@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class KdTreeNode
+ * \class KdTreeNode
  *  \brief This class defines the interface of its derived classes.
  *
  * The methods defined in this class are a superset of the methods
@@ -107,7 +107,7 @@ struct ITK_TEMPLATE_EXPORT KdTreeNode
   Right() const = 0;
 
   /**
-   * Returs the number of measurement vectors under this node including
+   * Returns the number of measurement vectors under this node including
    * its children
    */
   virtual unsigned int
@@ -121,7 +121,7 @@ struct ITK_TEMPLATE_EXPORT KdTreeNode
   virtual void
   GetCentroid(CentroidType &) = 0;
 
-  /** Retuns the instance identifier of the index-th measurement vector */
+  /** Returns the instance identifier of the index-th measurement vector */
   virtual InstanceIdentifier GetInstanceIdentifier(InstanceIdentifier) const = 0;
 
   /** Add an instance to this node */
@@ -132,7 +132,7 @@ struct ITK_TEMPLATE_EXPORT KdTreeNode
 };                                 // end of class
 
 /**
- *\class KdTreeNonterminalNode
+ * \class KdTreeNonterminalNode
  *  \brief This is a subclass of the KdTreeNode.
  *
  * KdTreeNonterminalNode doesn't store the information related with the
@@ -149,9 +149,9 @@ template <typename TSample>
 struct ITK_TEMPLATE_EXPORT KdTreeNonterminalNode : public KdTreeNode<TSample>
 {
   using Superclass = KdTreeNode<TSample>;
-  using MeasurementType = typename Superclass::MeasurementType;
-  using CentroidType = typename Superclass::CentroidType;
-  using InstanceIdentifier = typename Superclass::InstanceIdentifier;
+  using typename Superclass::MeasurementType;
+  using typename Superclass::CentroidType;
+  using typename Superclass::InstanceIdentifier;
 
   KdTreeNonterminalNode(unsigned int, MeasurementType, Superclass *, Superclass *);
 
@@ -195,7 +195,7 @@ struct ITK_TEMPLATE_EXPORT KdTreeNonterminalNode : public KdTreeNode<TSample>
   }
 
   /**
-   * Returs the number of measurement vectors under this node including
+   * Returns the number of measurement vectors under this node including
    * its children
    */
   unsigned int
@@ -245,7 +245,7 @@ private:
 }; // end of class
 
 /**
- *\class KdTreeWeightedCentroidNonterminalNode
+ * \class KdTreeWeightedCentroidNonterminalNode
  *  \brief This is a subclass of the KdTreeNode.
  *
  * KdTreeNonterminalNode does have the information related with the
@@ -264,9 +264,9 @@ template <typename TSample>
 struct ITK_TEMPLATE_EXPORT KdTreeWeightedCentroidNonterminalNode : public KdTreeNode<TSample>
 {
   using Superclass = KdTreeNode<TSample>;
-  using MeasurementType = typename Superclass::MeasurementType;
-  using CentroidType = typename Superclass::CentroidType;
-  using InstanceIdentifier = typename Superclass::InstanceIdentifier;
+  using typename Superclass::MeasurementType;
+  using typename Superclass::CentroidType;
+  using typename Superclass::InstanceIdentifier;
   using MeasurementVectorSizeType = typename TSample::MeasurementVectorSizeType;
 
   KdTreeWeightedCentroidNonterminalNode(unsigned int,
@@ -378,7 +378,7 @@ private:
 }; // end of class
 
 /**
- *\class KdTreeTerminalNode
+ * \class KdTreeTerminalNode
  *  \brief This class is the node that doesn't have any child node. The
  *  IsTerminal method returns true for this class. This class stores the
  *  instance identifiers belonging to this node, while the nonterminal
@@ -394,9 +394,9 @@ template <typename TSample>
 struct ITK_TEMPLATE_EXPORT KdTreeTerminalNode : public KdTreeNode<TSample>
 {
   using Superclass = KdTreeNode<TSample>;
-  using MeasurementType = typename Superclass::MeasurementType;
-  using CentroidType = typename Superclass::CentroidType;
-  using InstanceIdentifier = typename Superclass::InstanceIdentifier;
+  using typename Superclass::MeasurementType;
+  using typename Superclass::CentroidType;
+  using typename Superclass::InstanceIdentifier;
 
   KdTreeTerminalNode() = default;
 
@@ -490,7 +490,7 @@ private:
 }; // end of class
 
 /**
- *\class KdTree
+ * \class KdTree
  *  \brief This class provides methods for k-nearest neighbor search and
  *  related data structures for a k-d tree.
  *
@@ -527,7 +527,7 @@ template <typename TSample>
 class ITK_TEMPLATE_EXPORT KdTree : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(KdTree);
+  ITK_DISALLOW_COPY_AND_MOVE(KdTree);
 
   /** Standard class type aliases */
   using Self = KdTree;
@@ -568,7 +568,7 @@ public:
   using InstanceIdentifierVectorType = std::vector<InstanceIdentifier>;
 
   /**
-   *\class NearestNeighbors
+   * \class NearestNeighbors
    * \brief data structure for storing k-nearest neighbor search result
    * (k number of Neighbors)
    *
@@ -619,7 +619,7 @@ public:
       m_Distances[m_FarthestNeighborIndex] = distance;
       double     farthestDistance = NumericTraits<double>::min();
       const auto size = static_cast<unsigned int>(m_Distances.size());
-      for (unsigned int i = 0; i < size; i++)
+      for (unsigned int i = 0; i < size; ++i)
       {
         if (m_Distances[i] > farthestDistance)
         {
@@ -710,7 +710,7 @@ public:
   }
 
   /** Returns the measurement vector identified by the instance
-   * identifier that is an identifier defiend for the input sample */
+   * identifier that is an identifier defined for the input sample */
   const MeasurementVectorType &
   GetMeasurementVector(InstanceIdentifier id) const
   {

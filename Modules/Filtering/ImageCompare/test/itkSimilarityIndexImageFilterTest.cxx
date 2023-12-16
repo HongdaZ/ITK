@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 
 #include "itkSimilarityIndexImageFilter.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 int
 itkSimilarityIndexImageFilterTest(int, char *[])
@@ -33,8 +34,8 @@ itkSimilarityIndexImageFilterTest(int, char *[])
   using Image1Type = itk::Image<Pixel1Type, ImageDimension>;
   using Image2Type = itk::Image<Pixel2Type, ImageDimension>;
 
-  Image1Type::Pointer image1 = Image1Type::New();
-  Image2Type::Pointer image2 = Image2Type::New();
+  auto image1 = Image1Type::New();
+  auto image2 = Image2Type::New();
 
   Image1Type::SizeType size;
   size.Fill(8);
@@ -47,8 +48,8 @@ itkSimilarityIndexImageFilterTest(int, char *[])
 
   unsigned long numOfPixels = image1->GetBufferedRegion().GetNumberOfPixels();
   unsigned long lower1 = 0;
-  unsigned long upper1 = (unsigned long)((double)numOfPixels * 0.75) - 1;
-  auto          lower2 = (unsigned long)((double)numOfPixels * 0.25);
+  unsigned long upper1 = static_cast<unsigned long>(static_cast<double>(numOfPixels) * 0.75) - 1;
+  auto          lower2 = static_cast<unsigned long>(static_cast<double>(numOfPixels) * 0.25);
   unsigned long upper2 = numOfPixels - 1;
 
   itk::ImageRegionIterator<Image1Type> it1(image1, image1->GetBufferedRegion());
@@ -88,24 +89,16 @@ itkSimilarityIndexImageFilterTest(int, char *[])
   }
 
   using FilterType = itk::SimilarityIndexImageFilter<Image1Type, Image2Type>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, SimilarityIndexImageFilter, ImageToImageFilter);
+
 
   filter->SetInput1(image1);
   filter->SetInput2(image2);
 
-  try
-  {
-    filter->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
-    std::cout << "Caught an unexpected exception" << std::endl;
-    std::cout << err;
-    std::cout << "Test failed" << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
 
-  filter->Print(std::cout);
 
   // check results
   FilterType::RealType trueOverlap = 0.5 / 0.75;
@@ -121,8 +114,8 @@ itkSimilarityIndexImageFilterTest(int, char *[])
   }
 
   // test case where both images are zero
-  Image1Type::Pointer image3 = Image1Type::New();
-  Image2Type::Pointer image4 = Image2Type::New();
+  auto image3 = Image1Type::New();
+  auto image4 = Image2Type::New();
 
   image3->SetRegions(image1->GetBufferedRegion());
   image3->Allocate();

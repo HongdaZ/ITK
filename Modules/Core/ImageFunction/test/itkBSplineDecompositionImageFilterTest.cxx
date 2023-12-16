@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,7 +65,7 @@ ParseSplinePoles(char * splinePolesIn)
 
 
 /** Note:  This is the same test used for the itkBSplineResampleImageFunctionTest
- *        It is duplicated here because it excercises the itkBSplineDecompositionFilter
+ *        It is duplicated here because it exercises the itkBSplineDecompositionFilter
  *        and demonstrates its use.
  */
 
@@ -76,11 +76,8 @@ itkBSplineDecompositionImageFilterTest(int argc, char * argv[])
   {
     std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
     std::cerr << " splineOrder";
-    std::cerr << " splinePoles(e.g. 0.12753,-0.48673,0.76439,\
-                 [0.12753,-0.48673,0.76439],\
-                 \"[0.12753 -0.48673 0.76439]\",\
-                 \"(0.12753 -0.48673 0.76439)\", or\
-                 \"0.12753 -0.48673 0.76439\")";
+    std::cerr << " splinePoles(e.g. 0.12753,-0.48673,0.76439, [0.12753,-0.48673,0.76439], \"[0.12753 -0.48673 "
+                 "0.76439]\", \"(0.12753 -0.48673 0.76439)\", or \"0.12753 -0.48673 0.76439\")";
     std::cerr << std::endl;
     return EXIT_FAILURE;
   }
@@ -96,7 +93,7 @@ itkBSplineDecompositionImageFilterTest(int argc, char * argv[])
   ImageType::ConstPointer randImage = interpolator->GetInputImage();
 
   using FilterType = itk::BSplineDecompositionImageFilter<ImageType, ImageType>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, BSplineDecompositionImageFilter, ImageToImageFilter);
 
@@ -109,6 +106,7 @@ itkBSplineDecompositionImageFilterTest(int argc, char * argv[])
   ITK_TRY_EXPECT_EXCEPTION(filter->SetSplineOrder(unsupportedSplineOrder));
 
   filter->SetSplineOrder(interpolator->GetSplineOrder());
+  ITK_TEST_SET_GET_VALUE(interpolator->GetSplineOrder(), filter->GetSplineOrder());
 
   FilterType::SplinePolesVectorType expectedSplinePoles = ParseSplinePoles<FilterType>(argv[2]);
 
@@ -146,7 +144,7 @@ itkBSplineDecompositionImageFilterTest(int argc, char * argv[])
 
   // Set up a BSplineResampleImageFunction.
   using ResampleFunctionType = itk::BSplineResampleImageFunction<ImageType, double>;
-  ResampleFunctionType::Pointer resample = ResampleFunctionType::New();
+  auto resample = ResampleFunctionType::New();
 
   resample->SetSplineOrder(interpolator->GetSplineOrder());
   resample->SetInputImage(filter->GetOutput());
@@ -191,7 +189,7 @@ itkBSplineDecompositionImageFilterTest(int argc, char * argv[])
   using ComplexPixelType = std::complex<PixelType>;
   using ComplexImageType = itk::Image<ComplexPixelType, ImageDimension>;
   using ComplexFilterType = itk::BSplineDecompositionImageFilter<ComplexImageType, ComplexImageType>;
-  ComplexFilterType::Pointer complexFilter = ComplexFilterType::New();
+  auto complexFilter = ComplexFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, BSplineDecompositionImageFilter, ImageToImageFilter);
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class Bruker2dseqImageIO
+ * \class Bruker2dseqImageIO
  * \brief Class that defines how to read Bruker file format.
  *
  * The following is a brief description of the Bruker file format.
@@ -69,7 +69,7 @@ namespace itk
  * and added to the meta-data in case users wish to extract data from them.
  *
  * The original implementation was contributed as a paper to the Insight Journal
- * https://hdl.handle.net/1926/1381
+ * https://www.insight-journal.org/browse/publication/237
  *
  * \ingroup ITKIOBruker
  *
@@ -79,7 +79,7 @@ namespace itk
 class ITKIOBruker_EXPORT Bruker2dseqImageIO : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Bruker2dseqImageIO);
+  ITK_DISALLOW_COPY_AND_MOVE(Bruker2dseqImageIO);
 
   /* Standard class type aliases. */
   using Self = Bruker2dseqImageIO;
@@ -137,7 +137,7 @@ protected:
 
 private:
   void
-  SwapBytesIfNecessary(void * buffer, SizeValueType numberOfPixels);
+  SwapBytesIfNecessary(void * buff, SizeValueType components);
 
   IOComponentEnum m_OnDiskComponentType{ IOComponentEnum::UCHAR };
   IOByteOrderEnum m_MachineByteOrder;

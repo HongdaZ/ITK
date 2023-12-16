@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class ChainCodePath
+ * \class ChainCodePath
  * \brief  Represent a path as a sequence of connected image index offsets
  *
  * This class is intended to represent sequences of connected indices in an
@@ -50,7 +50,7 @@ template <unsigned int VDimension>
 class ITK_TEMPLATE_EXPORT ChainCodePath : public Path<unsigned int, Offset<VDimension>, VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ChainCodePath);
+  ITK_DISALLOW_COPY_AND_MOVE(ChainCodePath);
 
   /** Dimension underlying input image. */
   static constexpr unsigned int Dimension = VDimension;
@@ -66,8 +66,8 @@ public:
   itkTypeMacro(ChainCodePath, Path);
 
   /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
-  using InputType = typename Superclass::InputType;
+  using typename Superclass::OutputType;
+  using typename Superclass::InputType;
 
   /** The output type of this function is an Index */
   using OffsetType = OutputType;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkShanbhagThresholdCalculator_hxx
 #define itkShanbhagThresholdCalculator_hxx
 
-#include "itkShanbhagThresholdCalculator.h"
 #include "itkProgressReporter.h"
 #include "itkMath.h"
 
@@ -60,14 +59,14 @@ ShanbhagThresholdCalculator<THistogram, TOutput>::GenerateData()
 
   int total = histogram->GetTotalFrequency();
 
-  for (ih = 0; (unsigned)ih < size; ih++)
+  for (ih = 0; static_cast<unsigned int>(ih) < size; ++ih)
   {
-    norm_histo[ih] = (double)histogram->GetFrequency(ih, 0) / total;
+    norm_histo[ih] = static_cast<double>(histogram->GetFrequency(ih, 0)) / total;
   }
 
   P1[0] = norm_histo[0];
   P2[0] = 1.0 - P1[0];
-  for (ih = 1; (unsigned)ih < size; ih++)
+  for (ih = 1; static_cast<unsigned int>(ih) < size; ++ih)
   {
     P1[ih] = P1[ih - 1] + norm_histo[ih];
     P2[ih] = 1.0 - P1[ih];
@@ -75,9 +74,9 @@ ShanbhagThresholdCalculator<THistogram, TOutput>::GenerateData()
 
   // Determine the first non-zero bin
   first_bin = 0;
-  for (ih = 0; (unsigned)ih < size; ih++)
+  for (ih = 0; static_cast<unsigned int>(ih) < size; ++ih)
   {
-    if (!(std::abs(P1[ih]) < tolerance))
+    if (!(itk::Math::abs(P1[ih]) < tolerance))
     {
       first_bin = ih;
       break;
@@ -88,7 +87,7 @@ ShanbhagThresholdCalculator<THistogram, TOutput>::GenerateData()
   last_bin = size - 1;
   for (ih = size - 1; ih >= first_bin; ih--)
   {
-    if (!(std::abs(P2[ih]) < tolerance))
+    if (!(itk::Math::abs(P2[ih]) < tolerance))
     {
       last_bin = ih;
       break;
@@ -99,12 +98,12 @@ ShanbhagThresholdCalculator<THistogram, TOutput>::GenerateData()
   // maximizes it
   min_ent = itk::NumericTraits<double>::max();
 
-  for (it = first_bin; it <= last_bin; it++)
+  for (it = first_bin; it <= last_bin; ++it)
   {
     // Entropy of the background pixels
     ent_back = 0.0;
     term = 0.5 / P1[it];
-    for (ih = 1; ih <= it; ih++)
+    for (ih = 1; ih <= it; ++ih)
     { // 0+1?
       ent_back -= norm_histo[ih] * std::log(1.0 - term * P1[ih - 1]);
     }
@@ -113,14 +112,14 @@ ShanbhagThresholdCalculator<THistogram, TOutput>::GenerateData()
     // Entropy of the object pixels
     ent_obj = 0.0;
     term = 0.5 / P2[it];
-    for (ih = it + 1; (unsigned)ih < size; ih++)
+    for (ih = it + 1; static_cast<unsigned int>(ih) < size; ++ih)
     {
       ent_obj -= norm_histo[ih] * std::log(1.0 - term * P2[ih]);
     }
     ent_obj *= term;
 
     // Total entropy
-    tot_ent = std::abs(ent_back - ent_obj);
+    tot_ent = itk::Math::abs(ent_back - ent_obj);
 
     if (tot_ent < min_ent)
     {

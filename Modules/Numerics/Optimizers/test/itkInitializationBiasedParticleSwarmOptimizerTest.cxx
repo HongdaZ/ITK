@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 #include <iostream>
 #include "itkInitializationBiasedParticleSwarmOptimizer.h"
 #include "itkParticleSwarmOptimizerTestFunctions.h"
+#include "itkTestingMacros.h"
 
 using OptimizerType = itk::InitializationBiasedParticleSwarmOptimizer;
 static OptimizerType::RandomVariateGeneratorType::IntegerType seedOffset = 0;
@@ -30,23 +31,29 @@ static OptimizerType::RandomVariateGeneratorType::IntegerType seedOffset = 0;
  * domain of either parabolas (runs the optimizer once with initial guess in
  * each of the domains).
  */
-int
-IBPSOTest1();
+int IBPSOTest1(typename OptimizerType::CoefficientType,
+               typename OptimizerType::CoefficientType,
+               typename OptimizerType::CoefficientType,
+               typename OptimizerType::CoefficientType);
 
 
 /**
  * Test using a 2D quadratic function (single minimum), check that converges
  * correctly.
  */
-int
-IBPSOTest2();
+int IBPSOTest2(typename OptimizerType::CoefficientType,
+               typename OptimizerType::CoefficientType,
+               typename OptimizerType::CoefficientType,
+               typename OptimizerType::CoefficientType);
 
 
 /**
  * Test using the 2D Rosenbrock function.
  */
-int
-IBPSOTest3();
+int IBPSOTest3(typename OptimizerType::CoefficientType,
+               typename OptimizerType::CoefficientType,
+               typename OptimizerType::CoefficientType,
+               typename OptimizerType::CoefficientType);
 
 bool initalizationBasedTestVerboseFlag = false;
 
@@ -58,9 +65,20 @@ bool initalizationBasedTestVerboseFlag = false;
 int
 itkInitializationBiasedParticleSwarmOptimizerTest(int argc, char * argv[])
 {
-  if (argc > 1)
+  if (argc < 5)
   {
-    initalizationBasedTestVerboseFlag = std::stoi(argv[1]) ? true : false;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " inertiaCoefficient"
+              << " personalCoefficient"
+              << " globalCoefficient"
+              << " initializationCoefficient"
+              << " [initalizationBasedTestVerboseFlag]" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  if (argc > 5)
+  {
+    initalizationBasedTestVerboseFlag = std::stoi(argv[5]) ? true : false;
   }
 
   unsigned int i, allIterations = 10;
@@ -69,18 +87,26 @@ itkInitializationBiasedParticleSwarmOptimizerTest(int argc, char * argv[])
 
   std::cout << "Initialization Biased Particle Swarm Optimizer Test \n \n";
 
+  auto inertiaCoefficient = static_cast<typename OptimizerType::CoefficientType>(std::stod(argv[1]));
+  auto personalCoefficient = static_cast<typename OptimizerType::CoefficientType>(std::stod(argv[2]));
+  auto globalCoefficient = static_cast<typename OptimizerType::CoefficientType>(std::stod(argv[3]));
+  auto initializationCoefficient = static_cast<typename OptimizerType::CoefficientType>(std::stod(argv[4]));
+
   success1 = success2 = success3 = 0;
-  for (i = 0; i < allIterations; i++)
+  for (i = 0; i < allIterations; ++i)
   {
-    if (EXIT_SUCCESS == IBPSOTest1())
+    if (EXIT_SUCCESS ==
+        IBPSOTest1(inertiaCoefficient, personalCoefficient, globalCoefficient, initializationCoefficient))
     {
       success1++;
     }
-    if (EXIT_SUCCESS == IBPSOTest2())
+    if (EXIT_SUCCESS ==
+        IBPSOTest2(inertiaCoefficient, personalCoefficient, globalCoefficient, initializationCoefficient))
     {
       success2++;
     }
-    if (EXIT_SUCCESS == IBPSOTest3())
+    if (EXIT_SUCCESS ==
+        IBPSOTest3(inertiaCoefficient, personalCoefficient, globalCoefficient, initializationCoefficient))
     {
       success3++;
     }
@@ -101,7 +127,10 @@ itkInitializationBiasedParticleSwarmOptimizerTest(int argc, char * argv[])
 
 
 int
-IBPSOTest1()
+IBPSOTest1(typename OptimizerType::CoefficientType inertiaCoefficient,
+           typename OptimizerType::CoefficientType personalCoefficient,
+           typename OptimizerType::CoefficientType globalCoefficient,
+           typename OptimizerType::CoefficientType initializationCoefficient)
 {
   std::cout << "Particle Swarm Optimizer Test 1 [f(x) = if(x<0) x^2+4x; else 2x^2-8x]\n";
   std::cout << "-------------------------------\n";
@@ -111,7 +140,24 @@ IBPSOTest1()
   // the function we want to optimize
   itk::ParticleSwarmTestF1::Pointer costFunction = itk::ParticleSwarmTestF1::New();
 
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  auto itkOptimizer = OptimizerType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    itkOptimizer, InitializationBiasedParticleSwarmOptimizer, ParticleSwarmOptimizerBase);
+
+
+  itkOptimizer->SetInertiaCoefficient(inertiaCoefficient);
+  ITK_TEST_SET_GET_VALUE(inertiaCoefficient, itkOptimizer->GetInertiaCoefficient());
+
+  itkOptimizer->SetPersonalCoefficient(personalCoefficient);
+  ITK_TEST_SET_GET_VALUE(personalCoefficient, itkOptimizer->GetPersonalCoefficient());
+
+  itkOptimizer->SetGlobalCoefficient(globalCoefficient);
+  ITK_TEST_SET_GET_VALUE(globalCoefficient, itkOptimizer->GetGlobalCoefficient());
+
+  itkOptimizer->SetInitializationCoefficient(globalCoefficient);
+  ITK_TEST_SET_GET_VALUE(initializationCoefficient, itkOptimizer->GetInitializationCoefficient());
+
   itkOptimizer->UseSeedOn();
   itkOptimizer->SetSeed(8775070 + seedOffset++);
 
@@ -156,7 +202,7 @@ IBPSOTest1()
     std::cout << "Known parameters   = " << knownParameters << "   ";
     std::cout << "Estimated parameters = " << finalParameters << std::endl;
 
-    if (fabs(finalParameters[0] - knownParameters) > xTolerance)
+    if (itk::Math::abs(finalParameters[0] - knownParameters) > xTolerance)
     {
       std::cout << "[Test 1 FAILURE]" << std::endl;
       return EXIT_FAILURE;
@@ -184,7 +230,7 @@ IBPSOTest1()
     std::cout << "Known parameters   = " << knownParameters << "   ";
     std::cout << "Estimated parameters = " << finalParameters << std::endl;
 
-    if (fabs(finalParameters[0] - knownParameters) > xTolerance)
+    if (itk::Math::abs(finalParameters[0] - knownParameters) > xTolerance)
     {
       std::cout << "[Test 1 FAILURE]" << std::endl;
       return EXIT_FAILURE;
@@ -205,7 +251,10 @@ IBPSOTest1()
 
 
 int
-IBPSOTest2()
+IBPSOTest2(typename OptimizerType::CoefficientType inertiaCoefficient,
+           typename OptimizerType::CoefficientType personalCoefficient,
+           typename OptimizerType::CoefficientType globalCoefficient,
+           typename OptimizerType::CoefficientType initializationCoefficient)
 {
   std::cout << "Particle Swarm Optimizer Test 2 [f(x) = 1/2 x^T A x - b^T x]\n";
   std::cout << "----------------------------------\n";
@@ -217,7 +266,24 @@ IBPSOTest2()
   // the function we want to optimize
   itk::ParticleSwarmTestF2::Pointer costFunction = itk::ParticleSwarmTestF2::New();
 
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  auto itkOptimizer = OptimizerType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    itkOptimizer, InitializationBiasedParticleSwarmOptimizer, ParticleSwarmOptimizerBase);
+
+
+  itkOptimizer->SetInertiaCoefficient(inertiaCoefficient);
+  ITK_TEST_SET_GET_VALUE(inertiaCoefficient, itkOptimizer->GetInertiaCoefficient());
+
+  itkOptimizer->SetPersonalCoefficient(personalCoefficient);
+  ITK_TEST_SET_GET_VALUE(personalCoefficient, itkOptimizer->GetPersonalCoefficient());
+
+  itkOptimizer->SetGlobalCoefficient(globalCoefficient);
+  ITK_TEST_SET_GET_VALUE(globalCoefficient, itkOptimizer->GetGlobalCoefficient());
+
+  itkOptimizer->SetInitializationCoefficient(globalCoefficient);
+  ITK_TEST_SET_GET_VALUE(initializationCoefficient, itkOptimizer->GetInitializationCoefficient());
+
   itkOptimizer->UseSeedOn();
   itkOptimizer->SetSeed(8775070 + seedOffset++);
 
@@ -263,8 +329,8 @@ IBPSOTest2()
     std::cout << "Known parameters   = " << knownParameters << "   ";
     std::cout << "Estimated parameters = " << finalParameters << std::endl;
 
-    if (fabs(finalParameters[0] - knownParameters[0]) > xTolerance ||
-        fabs(finalParameters[1] - knownParameters[1]) > xTolerance)
+    if (itk::Math::abs(finalParameters[0] - knownParameters[0]) > xTolerance ||
+        itk::Math::abs(finalParameters[1] - knownParameters[1]) > xTolerance)
     {
       std::cout << "[Test 2 FAILURE]" << std::endl;
       return EXIT_FAILURE;
@@ -284,7 +350,10 @@ IBPSOTest2()
 }
 
 int
-IBPSOTest3()
+IBPSOTest3(typename OptimizerType::CoefficientType inertiaCoefficient,
+           typename OptimizerType::CoefficientType personalCoefficient,
+           typename OptimizerType::CoefficientType globalCoefficient,
+           typename OptimizerType::CoefficientType initializationCoefficient)
 {
   std::cout << "Particle Swarm Optimizer Test 3 [f(x,y) = (1-x)^2 + 100(y-x^2)^2]\n";
   std::cout << "----------------------------------\n";
@@ -296,7 +365,24 @@ IBPSOTest3()
   // the function we want to optimize
   itk::ParticleSwarmTestF3::Pointer costFunction = itk::ParticleSwarmTestF3::New();
 
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  auto itkOptimizer = OptimizerType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    itkOptimizer, InitializationBiasedParticleSwarmOptimizer, ParticleSwarmOptimizerBase);
+
+
+  itkOptimizer->SetInertiaCoefficient(inertiaCoefficient);
+  ITK_TEST_SET_GET_VALUE(inertiaCoefficient, itkOptimizer->GetInertiaCoefficient());
+
+  itkOptimizer->SetPersonalCoefficient(personalCoefficient);
+  ITK_TEST_SET_GET_VALUE(personalCoefficient, itkOptimizer->GetPersonalCoefficient());
+
+  itkOptimizer->SetGlobalCoefficient(globalCoefficient);
+  ITK_TEST_SET_GET_VALUE(globalCoefficient, itkOptimizer->GetGlobalCoefficient());
+
+  itkOptimizer->SetInitializationCoefficient(globalCoefficient);
+  ITK_TEST_SET_GET_VALUE(initializationCoefficient, itkOptimizer->GetInitializationCoefficient());
+
   itkOptimizer->UseSeedOn();
   itkOptimizer->SetSeed(8775070 + seedOffset++);
 
@@ -342,8 +428,8 @@ IBPSOTest3()
     std::cout << "Known parameters   = " << knownParameters << "   ";
     std::cout << "Estimated parameters = " << finalParameters << std::endl;
 
-    if (fabs(finalParameters[0] - knownParameters[0]) > xTolerance ||
-        fabs(finalParameters[1] - knownParameters[1]) > xTolerance)
+    if (itk::Math::abs(finalParameters[0] - knownParameters[0]) > xTolerance ||
+        itk::Math::abs(finalParameters[1] - knownParameters[1]) > xTolerance)
     {
       std::cout << "[Test 3 FAILURE]" << std::endl;
       return EXIT_FAILURE;
@@ -375,8 +461,8 @@ IBPSOTest3()
     std::cout << "Known parameters   = " << knownParameters << "   ";
     std::cout << "Estimated parameters = " << finalParameters << std::endl;
 
-    if (fabs(finalParameters[0] - knownParameters[0]) > xTolerance ||
-        fabs(finalParameters[1] - knownParameters[1]) > xTolerance)
+    if (itk::Math::abs(finalParameters[0] - knownParameters[0]) > xTolerance ||
+        itk::Math::abs(finalParameters[1] - knownParameters[1]) > xTolerance)
     {
       std::cout << "[Test 3 FAILURE]" << std::endl;
       return EXIT_FAILURE;
@@ -409,8 +495,8 @@ IBPSOTest3()
     std::cout << "Known parameters   = " << knownParameters << "   ";
     std::cout << "Estimated parameters = " << finalParameters << std::endl;
 
-    if (fabs(finalParameters[0] - knownParameters[0]) > xTolerance ||
-        fabs(finalParameters[1] - knownParameters[1]) > xTolerance)
+    if (itk::Math::abs(finalParameters[0] - knownParameters[0]) > xTolerance ||
+        itk::Math::abs(finalParameters[1] - knownParameters[1]) > xTolerance)
     {
       std::cout << "[Test 3 FAILURE]" << std::endl;
       return EXIT_FAILURE;

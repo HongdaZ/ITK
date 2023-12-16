@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkLabeledPointSetToPointSetMetricv4_hxx
 #define itkLabeledPointSetToPointSetMetricv4_hxx
 
-#include "itkLabeledPointSetToPointSetMetricv4.h"
 
 #include "itkEuclideanDistancePointSetToPointSetMetricv4.h"
 
@@ -34,7 +33,7 @@ LabeledPointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInternalComp
 {
   using DefaultMetricType =
     EuclideanDistancePointSetToPointSetMetricv4<FixedPointSetType, MovingPointSetType, TInternalComputationValueType>;
-  typename DefaultMetricType::Pointer euclideanMetric = DefaultMetricType::New();
+  auto euclideanMetric = DefaultMetricType::New();
   this->m_PointSetMetric = euclideanMetric;
 
   this->m_UsePointSetData = true;
@@ -130,7 +129,7 @@ typename LabeledPointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInt
   LabeledPointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInternalComputationValueType>::
     GetLabeledFixedPointSet(const LabelType label) const
 {
-  typename FixedPointSetType::Pointer fixedPointSet = FixedPointSetType::New();
+  auto fixedPointSet = FixedPointSetType::New();
   fixedPointSet->Initialize();
 
   typename FixedPointSetType::PointIdentifier count = NumericTraits<PointIdentifier>::ZeroValue();
@@ -156,7 +155,7 @@ typename LabeledPointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInt
   LabeledPointSetToPointSetMetricv4<TFixedPointSet, TMovingPointSet, TInternalComputationValueType>::
     GetLabeledMovingPointSet(const LabelType label) const
 {
-  typename MovingPointSetType::Pointer movingPointSet = MovingPointSetType::New();
+  auto movingPointSet = MovingPointSetType::New();
   movingPointSet->Initialize();
 
   typename MovingPointSetType::PointIdentifier count = NumericTraits<PointIdentifier>::ZeroValue();

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -313,7 +313,8 @@ VXLVideoIO::ReadImageInformation()
       {
         itkExceptionMacro(<< "I-Frame spacing for this video is zeror! Please check input data.");
       }
-      this->m_LastIFrame = static_cast<FrameOffsetType>((float)this->m_FrameTotal / (float)this->m_IFrameInterval) *
+      this->m_LastIFrame = static_cast<FrameOffsetType>(static_cast<float>(this->m_FrameTotal) /
+                                                        static_cast<float>(this->m_IFrameInterval)) *
                              this->m_IFrameInterval -
                            1;
 
@@ -496,14 +497,14 @@ VXLVideoIO::SetWriterParameters(TemporalRatioType                  fps,
                                 const std::vector<SizeValueType> & dim,
                                 const char *                       fourCC,
                                 unsigned int                       nChannels,
-                                IOComponentType                    componentType)
+                                IOComponentEnum                    componentType)
 {
   if (this->m_ReaderOpen || this->m_WriterOpen)
   {
     itkExceptionMacro("Can not set the writer's parameters when either reader or writer is already open");
   }
 
-  if (componentType != UCHAR && componentType != UINT)
+  if (componentType != IOComponentEnum::UCHAR && IOComponentEnum::componentType != UINT)
   {
     itkExceptionMacro("VXL IO only supports writing video with pixels of UCHAR and UINT");
   }
@@ -677,7 +678,7 @@ VXLVideoIO::UpdateReaderProperties()
 {
   this->m_CurrentFrame = this->m_Reader->frame_number();
 
-  this->m_Ratio = (double)this->m_CurrentFrame / (double)this->m_FrameTotal;
+  this->m_Ratio = static_cast<double>(this->m_CurrentFrame) / static_cast<double>(this->m_FrameTotal);
   this->m_PositionInMSec = this->m_Reader->duration() * this->m_Ratio;
 }
 

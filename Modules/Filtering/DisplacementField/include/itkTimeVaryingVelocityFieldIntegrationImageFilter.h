@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,7 +56,7 @@ class ITK_TEMPLATE_EXPORT TimeVaryingVelocityFieldIntegrationImageFilter
   : public ImageToImageFilter<TTimeVaryingVelocityField, TDisplacementField>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TimeVaryingVelocityFieldIntegrationImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(TimeVaryingVelocityFieldIntegrationImageFilter);
 
   using Self = TimeVaryingVelocityFieldIntegrationImageFilter;
   using Superclass = ImageToImageFilter<TTimeVaryingVelocityField, TDisplacementField>;
@@ -144,6 +144,18 @@ public:
    */
   itkGetConstMacro(NumberOfIntegrationSteps, unsigned int);
 
+  /**
+   * Get/Set a flag to interpret LowerTimeBound and UpperTimeBound as rates
+   * in the velocity field time span. This is equivalent to consider that the velocity
+   * field is defined in the normalized time interval [0, 1], ignoring the input origin
+   * and spacing in the temporal dimension.
+   *
+   * The default is true for backwards compatibility.
+   */
+  itkSetMacro(TimeBoundsAsRates, bool);
+  itkGetConstMacro(TimeBoundsAsRates, bool);
+  itkBooleanMacro(TimeBoundsAsRates);
+
 protected:
   TimeVaryingVelocityFieldIntegrationImageFilter();
   ~TimeVaryingVelocityFieldIntegrationImageFilter() override = default;
@@ -174,6 +186,8 @@ protected:
   unsigned int m_NumberOfTimePoints;
 
   DisplacementFieldInterpolatorPointer m_DisplacementFieldInterpolator;
+
+  bool m_TimeBoundsAsRates{ true };
 
 private:
   VelocityFieldInterpolatorPointer m_VelocityFieldInterpolator;

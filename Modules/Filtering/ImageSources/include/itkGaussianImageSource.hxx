@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkGaussianImageSource_hxx
 #define itkGaussianImageSource_hxx
 
-#include "itkGaussianImageSource.h"
 #include "itkGaussianSpatialFunction.h"
 #include "itkImageRegionIterator.h"
 #include "itkProgressReporter.h"
@@ -56,8 +55,8 @@ GaussianImageSource<TOutputImage>::SetParameters(const ParametersType & paramete
 }
 
 template <typename TOutputImage>
-typename GaussianImageSource<TOutputImage>::ParametersType
-GaussianImageSource<TOutputImage>::GetParameters() const
+auto
+GaussianImageSource<TOutputImage>::GetParameters() const -> ParametersType
 {
   ParametersType parameters(2 * ArrayType::Length + 1);
   for (unsigned int i = 0; i < ArrayType::Length; ++i)
@@ -89,7 +88,7 @@ GaussianImageSource<TOutputImage>::GenerateData()
 
   // Create and initialize a new Gaussian function
   using FunctionType = GaussianSpatialFunction<double, NDimensions>;
-  typename FunctionType::Pointer gaussian = FunctionType::New();
+  auto gaussian = FunctionType::New();
 
   gaussian->SetSigma(m_Sigma);
   gaussian->SetMean(m_Mean);

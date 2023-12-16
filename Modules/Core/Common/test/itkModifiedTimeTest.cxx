@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,8 +24,8 @@ itkModifiedTimeTest(int, char *[])
 {
 
   using Point = itk::Point<double, 3>;
-  using PointsContainer = itk::VectorContainer<unsigned long int, Point>;
-  using BoundingBox = itk::BoundingBox<unsigned long int, 3, double, PointsContainer>;
+  using PointsContainer = itk::VectorContainer<unsigned long, Point>;
+  using BoundingBox = itk::BoundingBox<unsigned long, 3, double, PointsContainer>;
 
   Point p, q, r;
 
@@ -33,9 +33,9 @@ itkModifiedTimeTest(int, char *[])
   q.Fill(0);
   r.Fill(0);
 
-  BoundingBox::Pointer bb = BoundingBox::New();
+  auto bb = BoundingBox::New();
 
-  PointsContainer::Pointer pc = PointsContainer::New();
+  auto pc = PointsContainer::New();
 
   pc->InsertElement(0, p);
   pc->InsertElement(1, q);

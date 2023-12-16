@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkShapedFloodFilledFunctionConditionalConstIterator_hxx
 #define itkShapedFloodFilledFunctionConditionalConstIterator_hxx
 
-#include "itkShapedFloodFilledFunctionConditionalConstIterator.h"
 #include "itkImageRegionConstIterator.h"
 
 namespace itk
@@ -49,7 +48,7 @@ ShapedFloodFilledFunctionConditionalConstIterator<TImage, TFunction>::ShapedFloo
   this->m_Image = imagePtr; // can not be done in the initialization list
 
   unsigned int i;
-  for (i = 0; i < startIndex.size(); i++)
+  for (i = 0; i < startIndex.size(); ++i)
   {
     m_Seeds.push_back(startIndex[i]);
   }
@@ -93,9 +92,7 @@ ShapedFloodFilledFunctionConditionalConstIterator<TImage, TFunction>::Initialize
   m_TempPtr = TTempImage::New();
   typename TTempImage::RegionType tempRegion = this->m_Image->GetBufferedRegion();
 
-  m_TempPtr->SetLargestPossibleRegion(tempRegion);
-  m_TempPtr->SetBufferedRegion(tempRegion);
-  m_TempPtr->SetRequestedRegion(tempRegion);
+  m_TempPtr->SetRegions(tempRegion);
   m_TempPtr->Allocate(true); // initialize buffer to zero
 
   // Initialize the queue by adding the start index assuming one of
@@ -104,7 +101,7 @@ ShapedFloodFilledFunctionConditionalConstIterator<TImage, TFunction>::Initialize
   // position later (using FindSeedPixel).  Must make sure that the
   // seed is inside the buffer before touching pixels.
   this->m_IsAtEnd = true;
-  for (unsigned int i = 0; i < m_Seeds.size(); i++)
+  for (unsigned int i = 0; i < m_Seeds.size(); ++i)
   {
     if (m_ImageRegion.IsInside(m_Seeds[i]))
     {

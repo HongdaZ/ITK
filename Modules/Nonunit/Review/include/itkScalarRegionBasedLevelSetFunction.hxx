@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,12 +18,10 @@
 #ifndef itkScalarRegionBasedLevelSetFunction_hxx
 #define itkScalarRegionBasedLevelSetFunction_hxx
 
-#include "itkScalarRegionBasedLevelSetFunction.h"
 
 namespace itk
 {
-// Computes the overlap multiplicative factors for the penalty term (sum) and
-// the background intensity fitting terms in multiphase level-sets
+
 template <typename TInputImage, typename TFeatureImage, typename TSharedData>
 typename ScalarRegionBasedLevelSetFunction<TInputImage, TFeatureImage, TSharedData>::ScalarValueType
 ScalarRegionBasedLevelSetFunction<TInputImage, TFeatureImage, TSharedData>::ComputeOverlapParameters(
@@ -61,15 +59,10 @@ ScalarRegionBasedLevelSetFunction<TInputImage, TFeatureImage, TSharedData>::Comp
   return sum;
 }
 
-/* Performs the narrow-band update of the Heaviside function for each voxel. The
-characteristic function of each region is recomputed (note the shared
-data which contains information from the other level sets). Using the
-new H values, the previous c_i are updated. Used by only the sparse image
-filter */
 template <typename TInputImage, typename TFeatureImage, typename TSharedData>
 void
 ScalarRegionBasedLevelSetFunction<TInputImage, TFeatureImage, TSharedData>::UpdatePixel(
-  const unsigned int &                idx,
+  const unsigned int                  idx,
   NeighborhoodIterator<TInputImage> & iterator,
   InputPixelType &                    newValue,
   bool &                              itkNotUsed(status))

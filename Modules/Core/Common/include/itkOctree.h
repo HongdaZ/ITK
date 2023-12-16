@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -126,7 +126,7 @@ template <typename TPixel, unsigned int ColorTableSize, typename MappingFunction
 class ITK_TEMPLATE_EXPORT Octree : public OctreeBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Octree);
+  ITK_DISALLOW_COPY_AND_MOVE(Octree);
 
   /** Standard class type aliases. */
   using Self = Octree;
@@ -138,13 +138,13 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(Octree, Superclass);
+  itkTypeMacro(Octree, OctreeBase);
 
   ImageTypePointer
   GetImage();
 
   void
-  BuildFromBuffer(const void *       buffer,
+  BuildFromBuffer(const void *       frombuffer,
                   const unsigned int xsize,
                   const unsigned int ysize,
                   const unsigned int zsize) override;
@@ -203,13 +203,13 @@ public:
 private:
   OctreeNodeBranch *
   maskToOctree(const TPixel * Mask,
-               unsigned       width,
-               unsigned       x,
-               unsigned       y,
-               unsigned       z,
-               unsigned       xsize,
-               unsigned       ysize,
-               unsigned       zsize);
+               unsigned int   width,
+               unsigned int   x,
+               unsigned int   y,
+               unsigned int   z,
+               unsigned int   xsize,
+               unsigned int   ysize,
+               unsigned int   zsize);
 
   OctreeEnum m_Plane{ OctreeEnum::UNKNOWN_PLANE }; // The orientation of the plane for this octree
 

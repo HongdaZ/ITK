@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ namespace itk
  *
  * This class was contributed to the insight journal by Gaetan Lehmann.
  * The original paper can be found at
- *    https://hdl.handle.net/1926/164
+ * https://www.insight-journal.org/browse/publication/71
  *
  * \author Gaetan Lehmann. Biologie du Developpement et de la reproduction,
  *  inra de jouy-en-josas, France.
@@ -81,7 +81,7 @@ class MaximumProjectionImageFilter
                                  Functor::MaximumAccumulator<typename TInputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MaximumProjectionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MaximumProjectionImageFilter);
 
   using Self = MaximumProjectionImageFilter;
   using Superclass =

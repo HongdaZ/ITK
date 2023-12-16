@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkJointDomainImageToListSampleAdaptor_hxx
 #define itkJointDomainImageToListSampleAdaptor_hxx
 
-#include "itkJointDomainImageToListSampleAdaptor.h"
 
 namespace itk
 {
@@ -34,8 +33,8 @@ JointDomainImageToListSampleAdaptor<TImage>::JointDomainImageToListSampleAdaptor
 
 /** returns the number of measurement vectors in this container*/
 template <typename TImage>
-typename JointDomainImageToListSampleAdaptor<TImage>::InstanceIdentifier
-JointDomainImageToListSampleAdaptor<TImage>::Size() const
+auto
+JointDomainImageToListSampleAdaptor<TImage>::Size() const -> InstanceIdentifier
 {
   if (m_Image.IsNull())
   {
@@ -97,8 +96,8 @@ JointDomainImageToListSampleAdaptor<TImage>::GetImage() const
 }
 
 template <typename TImage>
-typename JointDomainImageToListSampleAdaptor<TImage>::TotalAbsoluteFrequencyType
-JointDomainImageToListSampleAdaptor<TImage>::GetTotalFrequency() const
+auto
+JointDomainImageToListSampleAdaptor<TImage>::GetTotalFrequency() const -> TotalAbsoluteFrequencyType
 {
   if (m_Image.IsNull())
   {
@@ -120,8 +119,9 @@ JointDomainImageToListSampleAdaptor<TImage>::SetNormalizationFactors(Normalizati
 }
 
 template <typename TImage>
-const typename JointDomainImageToListSampleAdaptor<TImage>::MeasurementVectorType &
+auto
 JointDomainImageToListSampleAdaptor<TImage>::GetMeasurementVector(InstanceIdentifier id) const
+  -> const MeasurementVectorType &
 {
   m_TempIndex = this->GetImage()->ComputeIndex(id);
 

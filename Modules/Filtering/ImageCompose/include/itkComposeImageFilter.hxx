@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkComposeImageFilter_hxx
 #define itkComposeImageFilter_hxx
 
-#include "itkComposeImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkTotalProgressReporter.h"
 
@@ -28,8 +27,7 @@ namespace itk
 template <typename TInputImage, typename TOutputImage>
 ComposeImageFilter<TInputImage, TOutputImage>::ComposeImageFilter()
 {
-  OutputPixelType p;
-  int             nbOfComponents = NumericTraits<OutputPixelType>::GetLength(p);
+  int nbOfComponents = NumericTraits<OutputPixelType>::GetLength({});
   nbOfComponents = std::max(1, nbOfComponents); // require at least one input
   this->SetNumberOfRequiredInputs(nbOfComponents);
   this->DynamicMultiThreadingOn();
@@ -87,7 +85,7 @@ ComposeImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
   const auto numberOfInputs = static_cast<const unsigned int>(this->GetNumberOfIndexedInputs());
   RegionType region;
 
-  for (unsigned int i = 0; i < numberOfInputs; i++)
+  for (unsigned int i = 0; i < numberOfInputs; ++i)
   {
     auto * input = itkDynamicCastInDebugMode<InputImageType *>(this->ProcessObject::GetInput(i));
     if (!input)
@@ -120,7 +118,7 @@ ComposeImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(const
 
   InputIteratorContainerType inputItContainer;
 
-  for (unsigned int i = 0; i < this->GetNumberOfIndexedInputs(); i++)
+  for (unsigned int i = 0; i < this->GetNumberOfIndexedInputs(); ++i)
   {
     const InputImageType * inputImage = this->GetInput(i);
 

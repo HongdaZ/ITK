@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class ConfidenceConnectedImageFilter
+ * \class ConfidenceConnectedImageFilter
  * \brief Segment pixels with similar statistics using connectivity
  *
  * This filter extracts a connected set of pixels whose pixel
@@ -57,14 +57,14 @@ namespace itk
  * \ingroup ITKRegionGrowing
  *
  * \sphinx
- * \sphinxexample{Segmentation/RegionGrowing/SegmentPixelsWithSimilarStats,SegmentPixelsWithSimilarStats}
+ * \sphinxexample{Segmentation/RegionGrowing/SegmentPixelsWithSimilarStats,Segment Pixels With Similar Statistics}
  * \endsphinx
  */
 template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT ConfidenceConnectedImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConfidenceConnectedImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ConfidenceConnectedImageFilter);
 
   /** Standard class type aliases. */
   using Self = ConfidenceConnectedImageFilter;

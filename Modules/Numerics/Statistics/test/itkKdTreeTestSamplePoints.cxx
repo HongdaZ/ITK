@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ itkKdTreeTestSamplePoints(int, char *[])
 
   constexpr SampleType::MeasurementVectorSizeType measurementVectorSize = 2;
 
-  SampleType::Pointer sample = SampleType::New();
+  auto sample = SampleType::New();
   sample->SetMeasurementVectorSize(measurementVectorSize);
 
   constexpr unsigned int numberOfDataPoints = 5;
@@ -58,7 +58,7 @@ itkKdTreeTestSamplePoints(int, char *[])
   sample->PushBack(mv5);
 
   using TreeGeneratorType = itk::Statistics::KdTreeGenerator<SampleType>;
-  TreeGeneratorType::Pointer treeGenerator = TreeGeneratorType::New();
+  auto treeGenerator = TreeGeneratorType::New();
 
   constexpr unsigned int bucketSize = 1;
 
@@ -85,10 +85,10 @@ itkKdTreeTestSamplePoints(int, char *[])
   using DistanceMetricType = itk::Statistics::EuclideanDistanceMetric<MeasurementVectorType>;
   using OriginType = DistanceMetricType::OriginType;
 
-  DistanceMetricType::Pointer distanceMetric = DistanceMetricType::New();
+  auto distanceMetric = DistanceMetricType::New();
 
   OriginType origin(measurementVectorSize);
-  for (unsigned int k = 0; k < sample->Size(); k++)
+  for (unsigned int k = 0; k < sample->Size(); ++k)
   {
 
     queryPoint = sample->GetMeasurementVector(k);

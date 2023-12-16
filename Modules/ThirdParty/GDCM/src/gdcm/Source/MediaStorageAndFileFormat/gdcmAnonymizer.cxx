@@ -225,7 +225,7 @@ bool Anonymizer::Replace( Tag const &t, const char *value, VL const & vl )
       }
     else
       {
-      // vr from dict seems to be ascii, so it seems resonable to write a ByteValue here:
+      // vr from dict seems to be ascii, so it seems reasonable to write a ByteValue here:
       assert( dictentry.GetVR() & VR::VRASCII );
       if( value )
         {
@@ -506,7 +506,7 @@ bool Anonymizer::BasicApplicationLevelConfidentialityProfile1()
     || ds.FindDataElement( Tag(0x0012,0x0062) )
     || ds.FindDataElement( Tag(0x0012,0x0063) ) )
     {
-    gdcmDebugMacro( "EncryptedContentTransferSyntax Attribute is present !" );
+    gdcmErrorMacro( "EncryptedContentTransferSyntax Attribute is present !" );
     return false;
     }
 #if 0

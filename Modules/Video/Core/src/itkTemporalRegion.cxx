@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ namespace itk
 //
 // Constructor
 //
-TemporalRegion ::TemporalRegion()
+TemporalRegion::TemporalRegion()
   : m_RealStart()
   , m_RealDuration(0, 0)
 
@@ -32,101 +32,94 @@ TemporalRegion ::TemporalRegion()
 //
 // Destructor
 //
-TemporalRegion ::~TemporalRegion() = default;
+TemporalRegion::~TemporalRegion() = default;
 
 // ---------------------------------------------------------------------------
 void
-TemporalRegion ::SetRealStart(const RealTimeStamp s)
+TemporalRegion::SetRealStart(const RealTimeStamp s)
 {
   this->m_RealStart = s;
 }
 
 // ---------------------------------------------------------------------------
 RealTimeStamp
-TemporalRegion ::GetRealStart() const
+TemporalRegion::GetRealStart() const
 {
   return this->m_RealStart;
 }
 
 // ---------------------------------------------------------------------------
 void
-TemporalRegion ::SetRealDuration(const RealTimeInterval d)
+TemporalRegion::SetRealDuration(const RealTimeInterval d)
 {
   this->m_RealDuration = d;
 }
 
 RealTimeInterval
-TemporalRegion ::GetRealDuration() const
+TemporalRegion::GetRealDuration() const
 {
   return this->m_RealDuration;
 }
 
 // ---------------------------------------------------------------------------
 void
-TemporalRegion ::SetFrameStart(const FrameOffsetType s)
+TemporalRegion::SetFrameStart(const FrameOffsetType s)
 {
   this->m_FrameStart = s;
 }
 
 // ---------------------------------------------------------------------------
 TemporalRegion::FrameOffsetType
-TemporalRegion ::GetFrameStart() const
+TemporalRegion::GetFrameStart() const
 {
   return this->m_FrameStart;
 }
 
 // ---------------------------------------------------------------------------
 void
-TemporalRegion ::SetFrameDuration(const FrameOffsetType d)
+TemporalRegion::SetFrameDuration(const FrameOffsetType d)
 {
   this->m_FrameDuration = d;
 }
 
 // ---------------------------------------------------------------------------
 TemporalRegion::FrameOffsetType
-TemporalRegion ::GetFrameDuration() const
+TemporalRegion::GetFrameDuration() const
 {
   return this->m_FrameDuration;
 }
 
 // ---------------------------------------------------------------------------
 TemporalRegion::RegionEnum
-TemporalRegion ::GetRegionType() const
+TemporalRegion::GetRegionType() const
 {
   return RegionEnum::ITK_STRUCTURED_REGION;
 }
 
 // ---------------------------------------------------------------------------
 bool
-TemporalRegion ::IsEqualInFrames(const Self & region) const
+TemporalRegion::IsEqualInFrames(const Self & region) const
 {
   return m_FrameStart == region.m_FrameStart && m_FrameDuration == region.m_FrameDuration;
 }
 
 // ---------------------------------------------------------------------------
 bool
-TemporalRegion ::IsEqualInRealTime(const Self & region) const
+TemporalRegion::IsEqualInRealTime(const Self & region) const
 {
   return m_RealStart == region.m_RealStart && m_RealDuration == region.m_RealDuration;
 }
 
 // ---------------------------------------------------------------------------
 bool
-TemporalRegion ::operator==(const Self & region) const
+TemporalRegion::operator==(const Self & region) const
 {
   return IsEqualInFrames(region) && IsEqualInRealTime(region);
 }
 
 // ---------------------------------------------------------------------------
-bool
-TemporalRegion ::operator!=(const Self & region) const
-{
-  return !(operator==(region));
-}
-
-// ---------------------------------------------------------------------------
 void
-TemporalRegion ::PrintSelf(std::ostream & os, Indent indent) const
+TemporalRegion::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "RealTime Start: " << m_RealStart << std::endl;

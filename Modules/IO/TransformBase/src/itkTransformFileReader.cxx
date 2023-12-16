@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -172,7 +172,7 @@ TransformFileReaderTemplate<TParametersValueType>::Update()
   if (firstTransformName.find("CompositeTransform") != std::string::npos)
   {
     typename TransformListType::const_iterator tit = ioTransformList.begin();
-    typename TransformType::Pointer            composite = (*tit).GetPointer();
+    typename TransformType::Pointer            composite = tit->GetPointer();
 
     // CompositeTransformIOHelperTemplate knows how to assign to the composite
     // transform's internal list
@@ -185,7 +185,7 @@ TransformFileReaderTemplate<TParametersValueType>::Update()
   {
     for (auto it = ioTransformList.begin(); it != ioTransformList.end(); ++it)
     {
-      this->m_TransformList.push_back((*it).GetPointer());
+      this->m_TransformList.push_back(it->GetPointer());
     }
   }
 }

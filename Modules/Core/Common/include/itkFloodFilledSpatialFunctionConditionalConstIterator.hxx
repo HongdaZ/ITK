@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkFloodFilledSpatialFunctionConditionalConstIterator_hxx
 #define itkFloodFilledSpatialFunctionConditionalConstIterator_hxx
 
-#include "itkFloodFilledSpatialFunctionConditionalConstIterator.h"
 
 namespace itk
 {
@@ -70,9 +69,9 @@ FloodFilledSpatialFunctionConditionalConstIterator<TImage, TFunction>::IsPixelIn
       // along each dimension
       ContinuousIndex<double, TImage::ImageDimension> contIndex;
 
-      for (unsigned int i = 0; i < TImage::ImageDimension; i++)
+      for (unsigned int i = 0; i < TImage::ImageDimension; ++i)
       {
-        contIndex[i] = (double)index[i] + 0.5;
+        contIndex[i] = static_cast<double>(index[i]) + 0.5;
       }
 
       // Get the physical location of this index
@@ -113,16 +112,16 @@ FloodFilledSpatialFunctionConditionalConstIterator<TImage, TFunction>::IsPixelIn
       unsigned int counter;
       unsigned int counterCopy;
       unsigned int dim = TImage::ImageDimension;
-      auto         numReps = static_cast<unsigned int>(std::pow(static_cast<double>(2.0), static_cast<double>(dim)));
+      auto         numReps = static_cast<unsigned int>(std::pow(2.0, static_cast<double>(dim)));
 
       IndexType tempIndex;
 
       // First we loop over the binary counter
-      for (counter = 0; counter < numReps; counter++)
+      for (counter = 0; counter < numReps; ++counter)
       {
         // Next we use the binary values in the counter to form
         // an index to look at
-        for (unsigned int i = 0; i < dim; i++)
+        for (unsigned int i = 0; i < dim; ++i)
         {
           counterCopy = counter;
           tempIndex[i] = index[i] + static_cast<int>((counterCopy >> i) & 0x0001);
@@ -158,15 +157,15 @@ FloodFilledSpatialFunctionConditionalConstIterator<TImage, TFunction>::IsPixelIn
       unsigned int counter;
       unsigned int counterCopy;
       unsigned int dim = TImage::ImageDimension;
-      auto         numReps = static_cast<unsigned int>(std::pow(static_cast<double>(2.0), static_cast<double>(dim)));
+      auto         numReps = static_cast<unsigned int>(std::pow(2.0, static_cast<double>(dim)));
       IndexType    tempIndex;
 
       // First we loop over the binary counter
-      for (counter = 0; counter < numReps; counter++)
+      for (counter = 0; counter < numReps; ++counter)
       {
         // Next we use the binary values in the counter to form
         // an index to look at
-        for (unsigned int i = 0; i < dim; i++)
+        for (unsigned int i = 0; i < dim; ++i)
         {
           counterCopy = counter;
           tempIndex[i] = index[i] + static_cast<int>((counterCopy >> i) & 0x0001);

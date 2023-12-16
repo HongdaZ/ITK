@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@ namespace itk
 #  include <cfloat>
 
 void
-FloatingPointExceptions ::Enable()
+FloatingPointExceptions::Enable()
 {
   itkInitGlobalsMacro(PimplGlobals);
   // enable floating point exceptions on MSVC
@@ -39,7 +39,7 @@ FloatingPointExceptions ::Enable()
 }
 
 void
-FloatingPointExceptions ::Disable()
+FloatingPointExceptions::Disable()
 {
   itkInitGlobalsMacro(PimplGlobals);
   // disable floating point exceptions on MSVC
@@ -48,7 +48,7 @@ FloatingPointExceptions ::Disable()
 }
 
 bool
-FloatingPointExceptions ::HasFloatingPointExceptionsSupport()
+FloatingPointExceptions::HasFloatingPointExceptionsSupport()
 {
   itkInitGlobalsMacro(PimplGlobals);
   return true;
@@ -59,21 +59,21 @@ FloatingPointExceptions ::HasFloatingPointExceptionsSupport()
 // MinGW has troubles include'ing float.h.
 
 void
-FloatingPointExceptions ::Enable()
+FloatingPointExceptions::Enable()
 {
   itkInitGlobalsMacro(PimplGlobals);
   itkFloatingPointExceptionsNotSupported();
 }
 
 void
-FloatingPointExceptions ::Disable()
+FloatingPointExceptions::Disable()
 {
   itkInitGlobalsMacro(PimplGlobals);
   itkFloatingPointExceptionsNotSupported();
 }
 
 bool
-FloatingPointExceptions ::HasFloatingPointExceptionsSupport()
+FloatingPointExceptions::HasFloatingPointExceptionsSupport()
 {
   itkInitGlobalsMacro(PimplGlobals);
   return false;

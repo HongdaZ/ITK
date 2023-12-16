@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,9 +23,9 @@
 #  else
 #    include <unistd.h>
 inline void
-Sleep(unsigned int milleseconds)
+Sleep(unsigned int milliseconds)
 {
-  sleep(milleseconds / 1000);
+  sleep(milliseconds / 1000);
 }
 #  endif
 #else
@@ -36,7 +36,7 @@ Sleep(unsigned int milleseconds)
 int
 itkMemoryProbesCollecterBaseTest(int, char *[])
 {
-  const size_t mebibyte = 1024L * 1024L;
+  const size_t bufsize = 256L * 1024L * 1024L; // 256 MiB
 
   itk::MemoryProbesCollectorBase mcollecter;
   itk::MemoryProbe               probe;
@@ -47,8 +47,8 @@ itkMemoryProbesCollecterBaseTest(int, char *[])
   mcollecter.Clear();
   mcollecter.Start("Update");
   probe.Start();
-  auto * buf = new char[mebibyte];
-  for (unsigned int i = 0; i < mebibyte; i++)
+  auto * buf = new char[bufsize];
+  for (unsigned int i = 0; i < bufsize; ++i)
   {
     buf[i] = static_cast<char>(i & 0xff);
   }
@@ -59,8 +59,8 @@ itkMemoryProbesCollecterBaseTest(int, char *[])
   std::cout << " Total Value " << probe.GetTotal() << std::endl;
   if (total == 0)
   {
-    std::cout << "WARNING: Total memory usage should be greater than zero"
-              << "Memory Probes do not work on this platform" << std::endl;
+    std::cout << "WARNING: Total memory usage should be greater than zero. Memory Probes do not work on this platform"
+              << std::endl;
     delete[] buf;
     return EXIT_SUCCESS;
   }

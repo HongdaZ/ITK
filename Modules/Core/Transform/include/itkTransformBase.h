@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,14 +32,14 @@
 
 namespace itk
 {
-/**\class TransformBaseTemplateEnums
+/** \class TransformBaseTemplateEnums
  * \brief Contains all enum classes used by TransformBaseTemplate class.
  * \ingroup ITKTransform
  */
 class TransformBaseTemplateEnums
 {
 public:
-  /**\class TransformCategory
+  /** \class TransformCategory
    * \ingroup ITKTransform
    * */
   enum class TransformCategory : uint8_t
@@ -68,7 +68,7 @@ template <typename TParametersValueType>
 class TransformBaseTemplate : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TransformBaseTemplate);
+  ITK_DISALLOW_COPY_AND_MOVE(TransformBaseTemplate);
 
   /** Standard class type aliases. */
   using Self = TransformBaseTemplate;
@@ -90,7 +90,7 @@ public:
    *  therefore we use here a large capacity integer. */
   using NumberOfParametersType = IdentifierType;
 
-  /** Return the number of parameters that completely define the Transfom  */
+  /** Return the number of parameters that completely define the Transform  */
   virtual NumberOfParametersType
   GetNumberOfParameters() const = 0;
 
@@ -166,9 +166,12 @@ public:
   GetTransformCategory() const = 0;
 
 protected:
-#if defined(__GNUC__) && __GNUC__ < 6 && !defined(__clang__)
-  // A bug in some versions of the gcc 5.4.0 compiler
-  // result in a linker error when = default is requested
+#if defined(__GNUC__)
+  // A bug in some versions of the GCC and Clang compilers
+  // result in an ICE or linker error when "= default" is requested.
+  // This was observed in at least gcc 4.8 and 5.4.0, and
+  // AppleClang 7.0.2 and 8.0.0. Probably others too.
+  // "= default" doesn't gain us much, so just don't use it here.
   TransformBaseTemplate(){};
   ~TransformBaseTemplate() override{};
 #else

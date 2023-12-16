@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkLoggerThreadWrapper_hxx
 
 #include <iostream>
-#include "itkLoggerThreadWrapper.h"
 #include "itksys/SystemTools.hxx"
 
 namespace itk
@@ -81,8 +80,8 @@ LoggerThreadWrapper<SimpleLoggerType>::SetDelay(DelayType delay)
 }
 
 template <typename SimpleLoggerType>
-typename LoggerThreadWrapper<SimpleLoggerType>::DelayType
-LoggerThreadWrapper<SimpleLoggerType>::GetDelay() const
+auto
+LoggerThreadWrapper<SimpleLoggerType>::GetDelay() const -> DelayType
 {
   this->m_Mutex.lock();
   DelayType delay = this->m_Delay;
@@ -112,18 +111,18 @@ LoggerThreadWrapper<SimpleLoggerType>::Write(PriorityLevelEnum level, std::strin
     this->m_MessageQ.push(content);
     this->m_LevelQ.push(level);
   }
-  this->m_Mutex.unlock();
   if (this->m_LevelForFlushing >= level)
   {
-    this->Flush();
+    this->PrivateFlush();
   }
+  this->m_Mutex.unlock();
 }
 
 template <typename SimpleLoggerType>
 void
-LoggerThreadWrapper<SimpleLoggerType>::Flush()
+LoggerThreadWrapper<SimpleLoggerType>::PrivateFlush()
 {
-  this->m_Mutex.lock();
+  // m_Mutex must already be held here!
 
   while (!this->m_OperationQ.empty())
   {
@@ -149,8 +148,16 @@ LoggerThreadWrapper<SimpleLoggerType>::Flush()
     }
     this->m_OperationQ.pop();
   }
-  this->SimpleLoggerType::Flush();
+  this->SimpleLoggerType::PrivateFlush();
   this->m_Output->Flush();
+}
+
+template <typename SimpleLoggerType>
+void
+LoggerThreadWrapper<SimpleLoggerType>::Flush()
+{
+  this->m_Mutex.lock();
+  this->PrivateFlush();
   this->m_Mutex.unlock();
 }
 
@@ -209,8 +216,8 @@ LoggerThreadWrapper<SimpleLoggerType>::ThreadFunction()
       }
       m_OperationQ.pop();
     }
+    SimpleLoggerType::PrivateFlush();
     m_Mutex.unlock();
-    SimpleLoggerType::Flush();
     itksys::SystemTools::Delay(this->GetDelay());
   }
 }

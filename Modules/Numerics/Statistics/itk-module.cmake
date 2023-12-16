@@ -1,9 +1,9 @@
 set(DOCUMENTATION "The Statistics module contains basic data structures,
 statistical algorithms, and a classification for general statistical analysis
-and classification problems.  This includes, for examples, classes for
+and classification problems. This includes, for example, classes for
 calculating histograms, calculating sample statistics, creating decision rules,
-or for performing statistical pattern classification.  Statistics are calculated
-on a Sample, which contains MeasurementVector's.")
+or for performing statistical pattern classification. Statistics are calculated
+on an itk::Sample, which contains measurement vectors.")
 
 itk_module(ITKStatistics
   ENABLE_SHARED

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ template <typename TFixedImage, typename TMovingImage>
 class ITK_TEMPLATE_EXPORT HistogramImageToImageMetric : public ImageToImageMetric<TFixedImage, TMovingImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HistogramImageToImageMetric);
+  ITK_DISALLOW_COPY_AND_MOVE(HistogramImageToImageMetric);
 
   /** Standard class type aliases. */
   using Self = HistogramImageToImageMetric;
@@ -51,19 +51,19 @@ public:
   itkTypeMacro(HistogramImageToImageMetric, ImageToImageMetric);
 
   /** Types transferred from the base class */
-  using RealType = typename Superclass::RealType;
-  using TransformType = typename Superclass::TransformType;
-  using TransformPointer = typename Superclass::TransformPointer;
-  using TransformParametersType = typename Superclass::TransformParametersType;
-  using TransformJacobianType = typename Superclass::TransformJacobianType;
-  using GradientPixelType = typename Superclass::GradientPixelType;
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using FixedImageType = typename Superclass::FixedImageType;
+  using typename Superclass::RealType;
+  using typename Superclass::TransformType;
+  using typename Superclass::TransformPointer;
+  using typename Superclass::TransformParametersType;
+  using typename Superclass::TransformJacobianType;
+  using typename Superclass::GradientPixelType;
+  using typename Superclass::InputPointType;
+  using typename Superclass::OutputPointType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::FixedImageType;
   using FixedImagePixelType = typename Superclass::FixedImageType::PixelType;
-  using MovingImageType = typename Superclass::MovingImageType;
+  using typename Superclass::MovingImageType;
   using MovingImagePixelType = typename Superclass::MovingImageType::PixelType;
   using FixedImageConstPointerType = typename Superclass::FixedImageConstPointer;
   using MovingImageConstPointerType = typename Superclass::MovingImageConstPointer;
@@ -141,14 +141,14 @@ public:
   /**  Get value and derivatives for multiple valued optimizers. */
   void
   GetValueAndDerivative(const TransformParametersType & parameters,
-                        MeasureType &                   Value,
-                        DerivativeType &                Derivative) const override;
+                        MeasureType &                   value,
+                        DerivativeType &                derivative) const override;
 
   /** Set the lower bounds of the intensities to be considered for computing
    * the histogram. This option allows to focus the computation of the Metric in
    * a particular range of intensities that correspond to features of interest. */
   void
-  SetLowerBound(const MeasurementVectorType & bound);
+  SetLowerBound(const MeasurementVectorType & bounds);
 
   /** Returns the current state of m_LowerBound. */
   const MeasurementVectorType &
@@ -158,7 +158,7 @@ public:
    * the histogram. This option allows to focus the computation of the Metric in
    * a particular range of intensities that correspond to features of interest.  */
   void
-  SetUpperBound(const MeasurementVectorType & bound);
+  SetUpperBound(const MeasurementVectorType & bounds);
 
   /** Returns the current state of m_UpperBound. */
   const MeasurementVectorType &

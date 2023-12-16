@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,14 +24,11 @@ namespace fem
 {
 
 void
-Element3DC0LinearTetrahedron ::GetIntegrationPointAndWeight(unsigned int,
-                                                            VectorType & pt,
-                                                            Float &      w,
-                                                            unsigned int) const
+Element3DC0LinearTetrahedron::GetIntegrationPointAndWeight(unsigned int, VectorType & pt, Float & w, unsigned int) const
 {
   // FIXME: Write rules for other integration orders
   // for tetrahedral elements a single point should suffice
-  // http://www.cs.rpi.edu/~flaherje/pdf/fea6.pdf
+  // https://www.cs.rpi.edu/~flaherje/pdf/fea6.pdf
   pt.set_size(3);
 
   Float d = 1.0 / std::sqrt(3.0);
@@ -44,13 +41,13 @@ Element3DC0LinearTetrahedron ::GetIntegrationPointAndWeight(unsigned int,
 }
 
 unsigned int
-Element3DC0LinearTetrahedron ::GetNumberOfIntegrationPoints(unsigned int) const
+Element3DC0LinearTetrahedron::GetNumberOfIntegrationPoints(unsigned int) const
 {
   return 1;
 }
 
 Element3DC0LinearTetrahedron::VectorType
-Element3DC0LinearTetrahedron ::ShapeFunctions(const VectorType & pt) const
+Element3DC0LinearTetrahedron::ShapeFunctions(const VectorType & pt) const
 {
   /* Linear tetrahedral element has four shape functions  */
   VectorType shapeF(4);
@@ -78,25 +75,25 @@ Element3DC0LinearTetrahedron ::ShapeFunctions(const VectorType & pt) const
 }
 
 void
-Element3DC0LinearTetrahedron ::ShapeFunctionDerivatives(const VectorType &, MatrixType & shapeD) const
+Element3DC0LinearTetrahedron::ShapeFunctionDerivatives(const VectorType &, MatrixType & shapeD) const
 {
   /** functions at directions r and s.  */
   shapeD.set_size(3, 4);
   shapeD.fill(0.0);
   /** d(N_1) / d(r,s,t) = -1 */
-  for (int j = 0; j < 3; j++)
+  for (int j = 0; j < 3; ++j)
   {
     shapeD[j][0] = -1;
   }
   /** d(N_2) / dr, d(N_3) / ds, d(N_4) / dt = 1 */
-  for (int j = 1; j < 4; j++)
+  for (int j = 1; j < 4; ++j)
   {
     shapeD[j - 1][j] = 1;
   }
 }
 
 bool
-Element3DC0LinearTetrahedron ::GetLocalFromGlobalCoordinates(const VectorType & globalPt, VectorType & localPt) const
+Element3DC0LinearTetrahedron::GetLocalFromGlobalCoordinates(const VectorType & globalPt, VectorType & localPt) const
 {
   Float x = globalPt[0];
   Float y = globalPt[1];

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@ namespace itk
 namespace Statistics
 {
 MaximumDecisionRule::ClassIdentifierType
-MaximumDecisionRule ::Evaluate(const MembershipVectorType & discriminantScores) const
+MaximumDecisionRule::Evaluate(const MembershipVectorType & discriminantScores) const
 {
   ClassIdentifierType maxIndex = 0;
 
@@ -31,7 +31,7 @@ MaximumDecisionRule ::Evaluate(const MembershipVectorType & discriminantScores) 
     MembershipValueType max = discriminantScores[0];
     ClassIdentifierType i;
 
-    for (i = 1; i < discriminantScores.size(); i++)
+    for (i = 1; i < discriminantScores.size(); ++i)
     {
       if (discriminantScores[i] > max)
       {

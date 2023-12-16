@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,16 +42,12 @@ public:
   Cast() = default;
   virtual ~Cast() = default;
   bool
-  operator!=(const Cast &) const
+  operator==(const Cast &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const Cast & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Cast);
 
   inline TOutput
   operator()(const TInput & A) const
@@ -104,7 +100,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT CastImageFilter : public InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CastImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(CastImageFilter);
 
   /** Standard class type aliases. */
   using Self = CastImageFilter;
@@ -115,7 +111,7 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
 
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
 
   using InputPixelType = typename TInputImage::PixelType;
   using OutputPixelType = typename TOutputImage::PixelType;
@@ -141,13 +137,13 @@ protected:
 
   template <typename TInputPixelType,
             typename TOutputPixelType,
-            typename std::enable_if<mpl::is_static_castable<TInputPixelType, TOutputPixelType>::value, int>::type = 0>
+            std::enable_if_t<mpl::is_static_castable<TInputPixelType, TOutputPixelType>::value, int> = 0>
   void
   DynamicThreadedGenerateDataDispatched(const OutputImageRegionType & outputRegionForThread);
 
   template <typename TInputPixelType,
             typename TOutputPixelType,
-            typename std::enable_if<!mpl::is_static_castable<TInputPixelType, TOutputPixelType>::value, int>::type = 0>
+            std::enable_if_t<!mpl::is_static_castable<TInputPixelType, TOutputPixelType>::value, int> = 0>
   void
   DynamicThreadedGenerateDataDispatched(const OutputImageRegionType & outputRegionForThread);
 
@@ -155,9 +151,8 @@ private:
 };
 } // end namespace itk
 
+#ifndef ITK_MANUAL_INSTANTIATION
+#  include "itkCastImageFilter.hxx"
 #endif
 
-
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "itkCastImageFilter.hxx"
 #endif

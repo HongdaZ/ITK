@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkLevelSetEquationContainer_hxx
 #define itkLevelSetEquationContainer_hxx
 
-#include "itkLevelSetEquationContainer.h"
 #include "itkNumericTraits.h"
 
 namespace itk
@@ -56,8 +55,8 @@ LevelSetEquationContainer<TTermContainer>::AddEquation(const LevelSetIdentifierT
 }
 
 template <typename TTermContainer>
-typename LevelSetEquationContainer<TTermContainer>::TermContainerType *
-LevelSetEquationContainer<TTermContainer>::GetEquation(const LevelSetIdentifierType & iId) const
+auto
+LevelSetEquationContainer<TTermContainer>::GetEquation(const LevelSetIdentifierType & iId) const -> TermContainerType *
 {
   if (this->m_Container.empty())
   {
@@ -73,29 +72,29 @@ LevelSetEquationContainer<TTermContainer>::GetEquation(const LevelSetIdentifierT
 }
 
 template <typename TTermContainer>
-typename LevelSetEquationContainer<TTermContainer>::Iterator
-LevelSetEquationContainer<TTermContainer>::Begin()
+auto
+LevelSetEquationContainer<TTermContainer>::Begin() -> Iterator
 {
   return Iterator(m_Container.begin());
 }
 
 template <typename TTermContainer>
-typename LevelSetEquationContainer<TTermContainer>::Iterator
-LevelSetEquationContainer<TTermContainer>::End()
+auto
+LevelSetEquationContainer<TTermContainer>::End() -> Iterator
 {
   return Iterator(m_Container.end());
 }
 
 template <typename TTermContainer>
-typename LevelSetEquationContainer<TTermContainer>::ConstIterator
-LevelSetEquationContainer<TTermContainer>::Begin() const
+auto
+LevelSetEquationContainer<TTermContainer>::Begin() const -> ConstIterator
 {
   return ConstIterator(m_Container.begin());
 }
 
 template <typename TTermContainer>
-typename LevelSetEquationContainer<TTermContainer>::ConstIterator
-LevelSetEquationContainer<TTermContainer>::End() const
+auto
+LevelSetEquationContainer<TTermContainer>::End() const -> ConstIterator
 {
   return ConstIterator(m_Container.end());
 }
@@ -133,8 +132,8 @@ LevelSetEquationContainer<TTermContainer>::InitializeParameters()
 }
 
 template <typename TTermContainer>
-typename LevelSetEquationContainer<TTermContainer>::LevelSetOutputRealType
-LevelSetEquationContainer<TTermContainer>::ComputeCFLContribution() const
+auto
+LevelSetEquationContainer<TTermContainer>::ComputeCFLContribution() const -> LevelSetOutputRealType
 {
   LevelSetOutputRealType oValue = NumericTraits<LevelSetOutputRealType>::max();
 

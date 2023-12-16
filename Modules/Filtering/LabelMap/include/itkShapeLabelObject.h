@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class ShapeLabelObject
+ * \class ShapeLabelObject
  *  \brief A Label object to store the common attributes related to the shape of the object
  *
  * ShapeLabelObject stores  the common attributes related to the shape of the object
@@ -34,17 +34,16 @@ namespace itk
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/584  or
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  * \ingroup DataRepresentation
  * \ingroup ITKLabelMap
  */
 template <typename TLabel, unsigned int VImageDimension>
-class ShapeLabelObject : public LabelObject<TLabel, VImageDimension>
+class ITK_TEMPLATE_EXPORT ShapeLabelObject : public LabelObject<TLabel, VImageDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShapeLabelObject);
+  ITK_DISALLOW_COPY_AND_MOVE(ShapeLabelObject);
 
   /** Standard class type aliases */
   using Self = ShapeLabelObject;
@@ -64,15 +63,15 @@ public:
 
   static constexpr unsigned int ImageDimension = VImageDimension;
 
-  using IndexType = typename Superclass::IndexType;
+  using typename Superclass::IndexType;
 
   using LabelType = TLabel;
 
-  using LineType = typename Superclass::LineType;
+  using typename Superclass::LineType;
 
-  using LengthType = typename Superclass::LengthType;
+  using typename Superclass::LengthType;
 
-  using AttributeType = typename Superclass::AttributeType;
+  using typename Superclass::AttributeType;
 
   /** The number of pixels. */
   static constexpr AttributeType NUMBER_OF_PIXELS = 100;
@@ -157,7 +156,7 @@ public:
    *
    * The combination of the OBB origin, OBB size and OBB direction (
    * principal axes ) defines a coordinate system suitable to use
-   * resample the OBB onto it's own image.
+   * resample the OBB onto its own image.
    */
   static constexpr AttributeType ORIENTED_BOUNDING_BOX_SIZE = 120;
 
@@ -353,7 +352,7 @@ public:
   }
 
   void
-  SetPhysicalSize(const double & v)
+  SetPhysicalSize(const double v)
   {
     m_PhysicalSize = v;
   }
@@ -401,7 +400,7 @@ public:
   }
 
   void
-  SetPerimeterOnBorder(const double & v)
+  SetPerimeterOnBorder(const double v)
   {
     m_PerimeterOnBorder = v;
   }
@@ -413,7 +412,7 @@ public:
   }
 
   void
-  SetFeretDiameter(const double & v)
+  SetFeretDiameter(const double v)
   {
     m_FeretDiameter = v;
   }
@@ -449,7 +448,7 @@ public:
   }
 
   void
-  SetElongation(const double & v)
+  SetElongation(const double v)
   {
     m_Elongation = v;
   }
@@ -461,7 +460,7 @@ public:
   }
 
   void
-  SetPerimeter(const double & v)
+  SetPerimeter(const double v)
   {
     m_Perimeter = v;
   }
@@ -473,7 +472,7 @@ public:
   }
 
   void
-  SetRoundness(const double & v)
+  SetRoundness(const double v)
   {
     m_Roundness = v;
   }
@@ -485,7 +484,7 @@ public:
   }
 
   void
-  SetEquivalentSphericalRadius(const double & v)
+  SetEquivalentSphericalRadius(const double v)
   {
     m_EquivalentSphericalRadius = v;
   }
@@ -497,7 +496,7 @@ public:
   }
 
   void
-  SetEquivalentSphericalPerimeter(const double & v)
+  SetEquivalentSphericalPerimeter(const double v)
   {
     m_EquivalentSphericalPerimeter = v;
   }
@@ -521,7 +520,7 @@ public:
   }
 
   void
-  SetFlatness(const double & v)
+  SetFlatness(const double v)
   {
     m_Flatness = v;
   }
@@ -533,7 +532,7 @@ public:
   }
 
   void
-  SetPerimeterOnBorderRatio(const double & v)
+  SetPerimeterOnBorderRatio(const double v)
   {
     m_PerimeterOnBorderRatio = v;
   }
@@ -635,10 +634,10 @@ public:
   {
     typename AffineTransformType::MatrixType matrix;
     typename AffineTransformType::OffsetType offset;
-    for (unsigned int i = 0; i < VImageDimension; i++)
+    for (unsigned int i = 0; i < VImageDimension; ++i)
     {
       offset[i] = m_Centroid[i];
-      for (unsigned int j = 0; j < VImageDimension; j++)
+      for (unsigned int j = 0; j < VImageDimension; ++j)
       {
         matrix[j][i] = m_PrincipalAxes[i][j]; // Note the transposition
       }
@@ -661,10 +660,10 @@ public:
   {
     typename AffineTransformType::MatrixType matrix;
     typename AffineTransformType::OffsetType offset;
-    for (unsigned int i = 0; i < VImageDimension; i++)
+    for (unsigned int i = 0; i < VImageDimension; ++i)
     {
       offset[i] = m_Centroid[i];
-      for (unsigned int j = 0; j < VImageDimension; j++)
+      for (unsigned int j = 0; j < VImageDimension; ++j)
       {
         matrix[j][i] = m_PrincipalAxes[i][j]; // Note the transposition
       }

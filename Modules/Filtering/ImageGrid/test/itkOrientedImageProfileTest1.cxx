@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,7 +45,7 @@ itkOrientedImageProfileTest1(int, char *[])
   region.SetIndex(start);
   region.SetSize(size);
 
-  ImageType::Pointer image = ImageType::New();
+  auto image = ImageType::New();
 
   image->SetRegions(region);
   image->Allocate();
@@ -78,7 +78,7 @@ itkOrientedImageProfileTest1(int, char *[])
   while (!itr.IsAtEnd())
   {
     image->TransformIndexToPhysicalPoint(itr.GetIndex(), point);
-    image->TransformPhysicalPointToIndex(point, index);
+    index = image->TransformPhysicalPointToIndex(point);
     ++itr;
   }
 

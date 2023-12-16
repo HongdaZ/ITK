@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,13 +66,13 @@ TestGeometricPoint(const InterpolatorType * interp, const PointType & point, boo
     int        k;
     OutputType value = interp->Evaluate(point);
     std::cout << " Value: ";
-    for (k = 0; k < VectorDimension - 1; k++)
+    for (k = 0; k < VectorDimension - 1; ++k)
     {
       std::cout << value[k] << ", ";
     }
     std::cout << value[k] << std::endl;
 
-    for (k = 0; k < VectorDimension; k++)
+    for (k = 0; k < VectorDimension; ++k)
     {
       if (itk::Math::abs(value[k] - trueValue[k]) > 1e-9)
       {
@@ -83,7 +83,7 @@ TestGeometricPoint(const InterpolatorType * interp, const PointType & point, boo
     if (k != VectorDimension)
     {
       std::cout << " *** Error: Value should be: ";
-      for (k = 0; k < VectorDimension - 1; k++)
+      for (k = 0; k < VectorDimension - 1; ++k)
       {
         std::cout << trueValue[k] << ", ";
       }
@@ -123,13 +123,13 @@ TestContinuousIndex(const InterpolatorType *    interp,
     int        k;
     OutputType value = interp->EvaluateAtContinuousIndex(index);
     std::cout << " Value: ";
-    for (k = 0; k < VectorDimension - 1; k++)
+    for (k = 0; k < VectorDimension - 1; ++k)
     {
       std::cout << value[k] << ", ";
     }
     std::cout << value[k] << std::endl;
 
-    for (k = 0; k < VectorDimension; k++)
+    for (k = 0; k < VectorDimension; ++k)
     {
       if (itk::Math::abs(value[k] - trueValue[k]) > 1e-9)
       {
@@ -140,7 +140,7 @@ TestContinuousIndex(const InterpolatorType *    interp,
     if (k != VectorDimension)
     {
       std::cout << " *** Error: Value should be: ";
-      for (k = 0; k < VectorDimension - 1; k++)
+      for (k = 0; k < VectorDimension - 1; ++k)
       {
         std::cout << trueValue[k] << ", ";
       }
@@ -178,7 +178,7 @@ itkRGBInterpolateImageFunctionTest(int, char *[])
 
 
   // Create a test image
-  ImageType::Pointer    image = ImageType::New();
+  auto                  image = ImageType::New();
   ImageType::RegionType region;
   region.SetSize(size);
 
@@ -202,12 +202,12 @@ itkRGBInterpolateImageFunctionTest(int, char *[])
     index = iter.GetIndex();
     value = 0;
 
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       value += index[j];
     }
 
-    for (unsigned int k = 0; k < ImageDimension; k++)
+    for (unsigned int k = 0; k < ImageDimension; ++k)
     {
       pixel[k] = (k + 1) * value;
     }
@@ -216,7 +216,7 @@ itkRGBInterpolateImageFunctionTest(int, char *[])
   }
 
   // Create the interpolator
-  InterpolatorType::Pointer interp = InterpolatorType::New();
+  auto interp = InterpolatorType::New();
   interp->SetInputImage(image);
   interp->Print(std::cout);
 

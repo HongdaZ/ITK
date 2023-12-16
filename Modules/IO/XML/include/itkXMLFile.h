@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class XMLReaderBase
+ * \class XMLReaderBase
  * XMLReaderBase encapsulates the expat library (Insight/Utilities/expat
  * and defines the methods needed in a derived class to receive the
  * contents of an XML file in a structured manner.  It's 'impure virtual'
@@ -35,7 +35,7 @@ namespace itk
 class ITKIOXML_EXPORT XMLReaderBase : public LightProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(XMLReaderBase);
+  ITK_DISALLOW_COPY_AND_MOVE(XMLReaderBase);
 
   using Self = XMLReaderBase;
 
@@ -88,9 +88,9 @@ protected:
 };
 
 /**
- *\class XMLReader
+ * \class XMLReader
  * \brief template base class for an XMLReader
- * It's purpose really is just to define the simple interface for
+ * Its purpose really is just to define the simple interface for
  * extracting the object resulting from reading the XML File.
  * Since it doesn't define any of the pure virtual methods in XMLReaderBase,
  * It can't be instantiated by itself
@@ -100,7 +100,7 @@ template <typename T>
 class ITK_TEMPLATE_EXPORT XMLReader : public XMLReaderBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(XMLReader);
+  ITK_DISALLOW_COPY_AND_MOVE(XMLReader);
 
   using Self = XMLReader;
 
@@ -131,7 +131,7 @@ protected:
 };
 
 /**
- *\class XMLWriterBase
+ * \class XMLWriterBase
  *
  * 'Impure virtual' base class for XML File writing.
  * Defines the interface for an XML file writer and provides
@@ -144,7 +144,7 @@ template <typename T>
 class ITK_TEMPLATE_EXPORT XMLWriterBase : public LightProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(XMLWriterBase);
+  ITK_DISALLOW_COPY_AND_MOVE(XMLWriterBase);
 
   using Self = XMLWriterBase;
 

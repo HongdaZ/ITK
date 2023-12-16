@@ -27,6 +27,7 @@ When releasing a new ITK version, the following steps are be taken:
   * **Before the release**: post a topic on the [ITK discussion] requesting
     additional bug fix patches that should be merged to the `release` branch.
   * **Create the release**.
+    * Update content links
     * Bump ITK's version
     * Tag the ITK repository
     * Bump ITKPythonPackage's version
@@ -289,7 +290,7 @@ maintainers after an ITK Confab.
 
 ### Update the repository
 
-Use the commmand:
+Use the command:
 
 ```sh
    git checkout master
@@ -456,9 +457,13 @@ to the release branch and push to GitHub `upstream`.
 
 Then [build the
 wheels](https://itkpythonpackage.readthedocs.io/en/latest/Build_ITK_Python_packages.html)
-from the `release` branch locally.
+and the build tarballs from the `release` branch locally.
 
-Build the sdist and wheels for Linux:
+  * Wheel archives are named `dist-<platform>.tar.gz` and contain loadable Python packages;
+  * Build tarballs are named `ITKPythonBuilds-<platform>.tar.zst` and contain ITK dependencies,
+      source and build trees, and scripts for building ITK remote module Python wheels.
+
+Build the sdist and wheels for Linux (amd64):
 
 ```sh
 ssh blaster
@@ -467,27 +472,41 @@ git reset --hard HEAD
 git checkout release
 git pull origin release
 git clean -fdx
-/home/kitware/Support/skbuild-venv/bin/python setup.py sdist --formats=gztar,zip
 ./scripts/dockcross-manylinux-build-wheels.sh
+# Create wheel archive
 tar cvzf /tmp/dist-linux.tar.gz ./dist
 rm dist/*
+# Create build tarball
 cd ..
 ./ITKPythonPackage/scripts/dockcross-manylinux-build-tarball.sh
 ```
 
-
-Build the wheels for macOS:
+For Linux ARM builds, the steps are similar, but the wheel build step is:
 
 ```sh
-ssh misty
-cd ~/Dashboards/ITK/ITKPythonPackage
+docker run --privileged --rm tonistiigi/binfmt --install all
+docker run -it -v $(pwd):/work/ quay.io/pypa/manylinux_2_28_aarch64:latest bash
+# In the container
+cd /work
+yum install sudo
+./scripts/internal/manylinux-build-wheels.sh
+```
+
+
+Build the wheels for macOS (both amd64 and ARM):
+
+```sh
+ssh computron
+cd ~/D/P/ITKPythonPackage
 git reset --hard HEAD
 git checkout release
 git pull
 git clean -fdx
 ./scripts/macpython-build-wheels.sh
+# Create wheel archive
 tar cvzf /tmp/dist-macos.tar.gz ./dist
 rm dist/*
+# Create build tarball
 cd ..
 ./ITKPythonPackage/scripts/macpython-build-tarball.sh
 ```
@@ -504,10 +523,12 @@ git clean -fdx
 # Open a x64 Native Tools Command Prompt for VS 2019
 cd C:\P\IPP
 set PATH=C:\P\doxygen;%PATH%
-C:\Python36-x64\python.exe ./scripts/windows_build_wheels.py
+C:\Python39-x64\python.exe ./scripts/windows_build_wheels.py
 # Back in Git Bash...
+# Create wheel archive
 tar cvzf /c/P/dist-windows.tar.gz ./dist
 rm dist/*
+# Create build tarball
 cd ..
 rm -f ./ITKPythonBuilds-windows.zip
 powershell "IPP/scripts/windows-build-tarball.ps1"
@@ -528,16 +549,16 @@ Next, [upload the wheels to the Python Package Index
 ### Verify the binaries
 
 Run `pip install itk` in a fresh virtualenv and run all the
-[ITKExamples](https://github.com/InsightSoftwareConsortium/ITKExamples) Python
+[ITKSphinxExamples](https://github.com/InsightSoftwareConsortium/ITKSphinxExamples) Python
 tests against this Python. For example,
 
 ```sh
 virtualenv itk-venv
 ./itk-venv/bin/python -m pip install itk
-git clone https://github.com/InsightSoftwareConsortium/ITKExamples
-mkdir ITKExamples-build
-cd ITKExamples-build
-cmake -DITK_DIR=/path/to/ITK-build -DPython3_ROOT_DIR=../itk-venv/bin/python -DPython3_FIND_VIRTUALENV=ONLY ../ITKExamples
+git clone https://github.com/InsightSoftwareConsortium/ITKSphinxExamples
+mkdir ITKSphinxExamples-build
+cd ITKSphinxExamples-build
+cmake -DITK_DIR=/path/to/ITK-build -DPython3_ROOT_DIR=../itk-venv -DPython3_FIND_VIRTUALENV=ONLY -DPYTHON_EXECUTABLE=../itk-venv/bin/python3 ../ITKSphinxExamples
 ctest -R Python
 ```
 
@@ -617,7 +638,7 @@ Finally, create symbolic link at `/projects/Insight/WWW/InsightDocuments/Web`.
 Update the ITK Software Guide
 -----------------------------
 
-The [ITK Sofware Guide] is available in both electronic and printed formats.
+The [ITK Software Guide] is available in both electronic and printed formats.
 Every time a new ITK version is released, the following steps must be taken to
 update the guide and make it available:
 
@@ -625,7 +646,7 @@ update the guide and make it available:
   * Update the compiler and necessary tool (e.g. CMake minimum version)
     information if necessary.
   * Bump the ITK version in `Superbuild/External_ITK.cmake`.
-  * Set the `DRAFT_WATERMARK` CMake varable to `OFF` to remove the draft
+  * Set the `DRAFT_WATERMARK` CMake variable to `OFF` to remove the draft
     watermark.
   * Set the `PDF_QUALITY_LEVEL` CMake configuration option to `Screen` for the
     electronic version and `Printer` for the print version.
@@ -635,7 +656,7 @@ update the guide and make it available:
 To create `ItkSoftwareGuide.pdf` to deposit at itk.org/ItkSoftwareGuide.pdf from
 `InsightSoftwareGuide-Book{1,2}-5.X.0.pdf`, use `pdftk`:
 
-```
+```sh
    pdftk ITKSoftwareGuideSinglePDFCoverPage.pdf ITKSoftwareGuide-Book1.pdf ITKSoftwareGuide-Book2.pdf cat output /tmp/ItkSoftwareGuide.pdf
 ```
 
@@ -706,14 +727,17 @@ Then, click the *Edit Tag* link.
 Set the release title to "ITK $version", e.g. *ITK 5.0.0* or *ITK 5.0 Release
 Candidate 1*.
 
-Add the release notes (described below).
+Add the release notes (described below). Note: Do not publish the release
+until the release notes and all artifacts have been added. The Zenodo citation
+is created at the time of the release publication and will not include amended
+information.
 
 Upload the release artifacts. These include:
 
 - InsightToolkit-$version.tar.gz
-- InsightToolkit-$version.tar.zip
+- InsightToolkit-$version.zip
 - InsightData-$version.tar.gz
-- InsightData-$version.tar.zip
+- InsightData-$version.zip
 - MD5SUMS
 - SHA512SUMS
 - InsightDoxygenDocHtml-$version.tar.gz
@@ -721,6 +745,12 @@ Upload the release artifacts. These include:
 - InsightDoxygenDocXml-$version.tar.gz
 - InsightSoftwareGuide-Book1-$version.pdf
 - InsightSoftwareGuide-Book2-$version.pdf
+- InsightSphinxExamples-5.1.0.tar.gz
+- InsightSphinxExamples-5.1.0.zip
+- InsightSphinxExamplesEpub-5.1.0.epub
+- InsightSphinxExamplesHtml-5.1.0.zip
+- InsightSphinxExamplesPdf-5.1.0.pdf
+
 
 If this is an alpha, beta, or release candidate release, check the *This is a
 pre-release* box.
@@ -790,7 +820,7 @@ Release Notes Posts
 To get started with the release notes, first use the download link
 cookiecutter to generate Markdown and webpage Download page HTML:
 
-```
+```sh
 pip install cookiecutter
 cookiecutter ~/src/ITK/Utilities/Maintenance/DownloadLinksCookieCutter/
 ```
@@ -811,8 +841,8 @@ The count of recent authors is found in the script output, and a list of new aut
 are found at */tmp/AuthorsChangesSince/NewAuthors.txt*.
 
 
-Announcing
-----------
+Announcements
+-------------
 
 For the final release, the release notes produced should be used to
 
@@ -841,23 +871,23 @@ excellent packaging.
 [blog post]: https://blog.kitware.com/itk-packages-in-linux-distributions/
 [Dashboard]: https://open.cdash.org/index.php?project=Insight
 [community]: https://discourse.itk.org/
-[documentation page]: http://www.itk.org/ITK/help/documentation.html
+[documentation page]: https://www.itk.org/ITK/help/documentation.html
 [download page]: https://itk.org/ITK/resources/software.html
-[GitHub]: http://github.com/InsightSoftwareConsortium/ITK
+[GitHub]: https://github.com/InsightSoftwareConsortium/ITK
 [ITKPythonPackage]: https://itkpythonpackage.readthedocs.io/en/latest/index.html
 [ITK discussion]: https://discourse.itk.org/
-[ITK issue tracking]: http://issues.itk.org/
-[ITK Sofware Guide]: https://itk.org/ItkSoftwareGuide.pdf
+[ITK issue tracking]: https://issues.itk.org/
+[ITK Software Guide]: https://itk.org/ItkSoftwareGuide.pdf
 [ITK wiki]: https://itk.org/Wiki/ITK
 [ITK Sphinx examples]: https://itk.org/ITKExamples/
 [releases page]: https://itk.org/Wiki/ITK/Releases
 [release schedule]: https://itk.org/Wiki/ITK/Release_Schedule
-[Software Guide]: http://itk.org/ItkSoftwareGuide.pdf
+[Software Guide]: https://itk.org/ItkSoftwareGuide.pdf
 
 [kitware]: https://www.kitware.com/
 [public.kitware.com]: public.kitware.com
 
-[Doxygen]: http://www.stack.nl/~dimitri/doxygen/
+[Doxygen]: https://www.stack.nl/~dimitri/doxygen/
 [PyPi]: https://pypi.python.org/pypi
 [ResearchGate]: https://www.researchgate.net/project/Insight-Toolkit-ITK
 [SourceForge]: https://sourceforge.net/downloads/itk/itk/

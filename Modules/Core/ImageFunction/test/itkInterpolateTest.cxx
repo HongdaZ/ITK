@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -123,7 +123,7 @@ itkInterpolateTest(int, char *[])
   std::cout << "Testing image interpolation methods:\n";
 
   /* Allocate a simple test image */
-  ImageType::Pointer    image = ImageType::New();
+  auto                  image = ImageType::New();
   ImageType::RegionType region;
   region.SetSize(size);
   image->SetLargestPossibleRegion(region);
@@ -136,13 +136,13 @@ itkInterpolateTest(int, char *[])
 
   /* Initialize the image contents */
   IndexType index;
-  for (int slice = 0; slice < 80; slice++)
+  for (int slice = 0; slice < 80; ++slice)
   {
     index[2] = slice;
-    for (int row = 0; row < 40; row++)
+    for (int row = 0; row < 40; ++row)
     {
       index[1] = row;
-      for (int col = 0; col < 20; col++)
+      for (int col = 0; col < 20; ++col)
       {
         index[0] = col;
         image->SetPixel(index, slice + row + col);
@@ -151,7 +151,7 @@ itkInterpolateTest(int, char *[])
   }
 
   /* Create and initialize the interpolator */
-  InterpolatorType::Pointer interp = InterpolatorType::New();
+  auto interp = InterpolatorType::New();
   interp->SetInputImage(image);
   interp->Print(std::cout);
 
@@ -265,7 +265,7 @@ itkInterpolateTest(int, char *[])
   }
 
   /* Create and initialize the nearest neigh. interpolator */
-  NNInterpolatorType::Pointer nninterp = NNInterpolatorType::New();
+  auto nninterp = NNInterpolatorType::New();
   nninterp->SetInputImage(image);
   nninterp->Print(std::cout);
 

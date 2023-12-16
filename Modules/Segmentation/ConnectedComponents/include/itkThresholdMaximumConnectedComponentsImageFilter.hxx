@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkThresholdMaximumConnectedComponentsImageFilter_hxx
 #define itkThresholdMaximumConnectedComponentsImageFilter_hxx
 
-#include "itkThresholdMaximumConnectedComponentsImageFilter.h"
 
 #include "itkImageRegionIterator.h"
 #include "itkNumericTraits.h"
@@ -26,9 +25,7 @@
 
 namespace itk
 {
-/** Constructor
- *
- */
+
 template <typename TInputImage, typename TOutputImage>
 ThresholdMaximumConnectedComponentsImageFilter<TInputImage,
                                                TOutputImage>::ThresholdMaximumConnectedComponentsImageFilter()
@@ -72,9 +69,6 @@ ThresholdMaximumConnectedComponentsImageFilter<TInputImage,
   m_NumberOfObjects = 0;
 } // end of the constructor
 
-/**
- *
- */
 template <typename TInputImage, typename TOutputImage>
 SizeValueType
 ThresholdMaximumConnectedComponentsImageFilter<TInputImage, TOutputImage>::ComputeConnectedComponents()
@@ -87,17 +81,6 @@ ThresholdMaximumConnectedComponentsImageFilter<TInputImage, TOutputImage>::Compu
   return m_LabeledComponent->GetNumberOfObjects();
 } //  end of ComputeConnectedComponents()
 
-/**
- * This is the meat of the filter. It essentially uses a bisection
- * method to search for the threshold setPt that maximizes the number
- * of connected components in the image. The
- * "ComputeConnectedComponents" does the threshold and then a
- * connected components object count. It is removed from "GenerateData"
- * to make this all easier to read.
- *
- * Remove the comments on the output statements to see how the search
- * strategy works.
- */
 template <typename TInputImage, typename TOutputImage>
 void
 ThresholdMaximumConnectedComponentsImageFilter<TInputImage, TOutputImage>::GenerateData()
@@ -175,7 +158,7 @@ ThresholdMaximumConnectedComponentsImageFilter<TInputImage, TOutputImage>::Gener
                                     << std::endl);
     itkDebugMacro("Iteration #:" << iterationCounter);
 
-    iterationCounter++;
+    ++iterationCounter;
 #endif
   } // end of the thresholdloop
 
@@ -193,9 +176,6 @@ ThresholdMaximumConnectedComponentsImageFilter<TInputImage, TOutputImage>::Gener
   this->GraftOutput(m_ThresholdFilter->GetOutput());
 } // end of GenerateData Process
 
-/** Standard Run of the mill PrintSelf
- *
- */
 template <typename TInputImage, typename TOutputImage>
 void
 ThresholdMaximumConnectedComponentsImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os,
@@ -203,16 +183,25 @@ ThresholdMaximumConnectedComponentsImageFilter<TInputImage, TOutputImage>::Print
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "InsideValue: " << static_cast<typename NumericTraits<OutputPixelType>::PrintType>(m_InsideValue)
-     << std::endl;
+  itkPrintSelfObjectMacro(ThresholdFilter);
+  itkPrintSelfObjectMacro(ConnectedComponent);
+  itkPrintSelfObjectMacro(LabeledComponent);
+  itkPrintSelfObjectMacro(MinMaxCalculator);
+
+  os << indent << "MinimumObjectSizeInPixels: " << m_MinimumObjectSizeInPixels << std::endl;
   os << indent << "OutsideValue: " << static_cast<typename NumericTraits<OutputPixelType>::PrintType>(m_OutsideValue)
      << std::endl;
-  os << indent << "Lower: " << static_cast<typename NumericTraits<PixelType>::PrintType>(m_LowerBoundary) << std::endl;
-  os << indent << "Upper: " << static_cast<typename NumericTraits<PixelType>::PrintType>(m_UpperBoundary) << std::endl;
+  os << indent << "InsideValue: " << static_cast<typename NumericTraits<OutputPixelType>::PrintType>(m_InsideValue)
+     << std::endl;
+  os << indent << "LowerBoundary: " << static_cast<typename NumericTraits<PixelType>::PrintType>(m_LowerBoundary)
+     << std::endl;
+  os << indent << "UpperBoundary: " << static_cast<typename NumericTraits<PixelType>::PrintType>(m_UpperBoundary)
+     << std::endl;
   os << indent << "Threshold Value: " << static_cast<typename NumericTraits<PixelType>::PrintType>(m_ThresholdValue)
      << std::endl;
-  os << indent << "Number of Objects: " << m_NumberOfObjects << std::endl;
-  os << indent << "Minimum Object Size in Pixels: " << m_MinimumObjectSizeInPixels << std::endl;
+  os << indent
+     << "NumberOfObjects: " << static_cast<typename NumericTraits<SizeValueType>::PrintType>(m_NumberOfObjects)
+     << std::endl;
 }
 } // end namespace itk
 

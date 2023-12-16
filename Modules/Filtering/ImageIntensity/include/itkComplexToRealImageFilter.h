@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,16 +38,12 @@ public:
   ComplexToReal() = default;
   ~ComplexToReal() = default;
   bool
-  operator!=(const ComplexToReal &) const
+  operator==(const ComplexToReal &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const ComplexToReal & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ComplexToReal);
 
   inline TOutput
   operator()(const TInput & A) const
@@ -58,10 +54,10 @@ public:
 } // namespace Functor
 
 template <typename TInputImage, typename TOutputImage>
-class ComplexToRealImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT ComplexToRealImageFilter : public UnaryGeneratorImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ComplexToRealImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ComplexToRealImageFilter);
 
   /** Standard class type aliases. */
   using Self = ComplexToRealImageFilter;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,10 +23,10 @@
 #undef min
 #undef max
 
-#define itkNUMERIC_TRAITS_MIN_MAX_MACRO()                                                                              \
-  static constexpr ValueType min(ValueType) { return std::numeric_limits<ValueType>::min(); }                          \
-  static constexpr ValueType max(ValueType) { return std::numeric_limits<ValueType>::max(); }                          \
-  static constexpr ValueType min() { return std::numeric_limits<ValueType>::min(); }                                   \
+#define itkNUMERIC_TRAITS_MIN_MAX_MACRO()                                                     \
+  static constexpr ValueType min(ValueType) { return std::numeric_limits<ValueType>::min(); } \
+  static constexpr ValueType max(ValueType) { return std::numeric_limits<ValueType>::max(); } \
+  static constexpr ValueType min() { return std::numeric_limits<ValueType>::min(); }          \
   static constexpr ValueType max() { return std::numeric_limits<ValueType>::max(); }
 
 #include <limits> // for std::numeric_limits
@@ -67,7 +67,7 @@ public:
   /** Return the type that can be printed. */
   using PrintType = T;
 
-  /** Return value of std::abs(). */
+  /** Return value of itk::Math::abs(). */
   using AbsType = T;
 
   /** Accumulation of addition and multiplication. */
@@ -1924,7 +1924,7 @@ public:
     return val.real() >= 0;
   }
 
-  static constexpr bool IsSigned = NumericTraits<ValueType>::IsSigned;
+  static constexpr bool IsSigned = std::is_signed<ValueType>::value;
   static constexpr bool IsInteger = false;
   static constexpr bool IsComplex = true;
   static Self

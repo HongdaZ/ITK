@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkRingBuffer_hxx
 #define itkRingBuffer_hxx
 
-#include "itkRingBuffer.h"
 #include "itkMath.h"
 
 namespace itk
@@ -139,8 +138,8 @@ RingBuffer<TElement>::SetBufferContents(OffsetValueType offset, ElementPointer e
 // GetNumberOfBuffers
 //
 template <typename TElement>
-typename RingBuffer<TElement>::SizeValueType
-RingBuffer<TElement>::GetNumberOfBuffers()
+auto
+RingBuffer<TElement>::GetNumberOfBuffers() -> SizeValueType
 {
   return static_cast<typename RingBuffer<TElement>::SizeValueType>(this->m_PointerVector.size());
 }
@@ -197,8 +196,8 @@ RingBuffer<TElement>::SetNumberOfBuffers(SizeValueType n)
 // GetOffsetBufferIndex
 //
 template <typename TElement>
-typename RingBuffer<TElement>::OffsetValueType
-RingBuffer<TElement>::GetOffsetBufferIndex(OffsetValueType offset)
+auto
+RingBuffer<TElement>::GetOffsetBufferIndex(OffsetValueType offset) -> OffsetValueType
 {
   OffsetValueType moddedOffset = itk::Math::abs(offset) % this->GetNumberOfBuffers();
   auto            signedHeadIndex = static_cast<OffsetValueType>(m_HeadIndex);

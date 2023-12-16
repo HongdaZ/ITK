@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,14 +25,14 @@
 namespace itk
 {
 /**
- *\class VTKPolyDataMeshIOFactory
+ * \class VTKPolyDataMeshIOFactory
  * \brief Create instances of VTKPolyDataMeshIO objects using an object factory.
  * \ingroup ITKIOMeshVTK
  */
 class ITKIOMeshVTK_EXPORT VTKPolyDataMeshIOFactory : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VTKPolyDataMeshIOFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(VTKPolyDataMeshIOFactory);
 
   /** Standard class type aliases. */
   using Self = VTKPolyDataMeshIOFactory;
@@ -57,7 +57,7 @@ public:
   static void
   RegisterOneFactory()
   {
-    VTKPolyDataMeshIOFactory::Pointer vtkFactory = VTKPolyDataMeshIOFactory::New();
+    auto vtkFactory = VTKPolyDataMeshIOFactory::New();
 
     ObjectFactoryBase::RegisterFactoryInternal(vtkFactory);
   }

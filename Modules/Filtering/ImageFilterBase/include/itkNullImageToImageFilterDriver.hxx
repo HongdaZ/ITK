@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -138,19 +138,15 @@ NullImageToImageFilterDriver<TInputImage, TOutputImage>::Execute()
   };
 
   // Set up input images
-  typename TInputImage::Pointer     ip = TInputImage::New();
-  typename TOutputImage::IndexType  index;
-  typename TOutputImage::RegionType region;
+  auto                             ip = TInputImage::New();
+  typename TOutputImage::IndexType index;
 
   for (unsigned int i = 0; i < ImageDimension; ++i)
     index[i] = 0;
-  region.SetSize(m_ImageSize);
-  region.SetIndex(index);
+  const typename TOutputImage::RegionType region(index, m_ImageSize);
 
   // Allocate the input
-  ip->SetLargestPossibleRegion(region);
-  ip->SetBufferedRegion(region);
-  ip->SetRequestedRegion(region);
+  ip->SetRegions(region);
   ip->Allocate();
 
   // Construct a pixel to fill the image

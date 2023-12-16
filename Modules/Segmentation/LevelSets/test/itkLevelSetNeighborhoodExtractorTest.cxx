@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ itkLevelSetNeighborhoodExtractorTest(int, char *[])
 
   // Create an input image using fastmarching
   using SourceType = itk::FastMarchingImageFilter<ImageType>;
-  SourceType::Pointer source = SourceType::New();
+  auto source = SourceType::New();
 
   ImageType::SizeType size;
   size.Fill(17);
@@ -43,7 +43,7 @@ itkLevelSetNeighborhoodExtractorTest(int, char *[])
   node.SetValue(-4.0);
 
   using NodeContainerType = SourceType::NodeContainer;
-  NodeContainerType::Pointer container = NodeContainerType::New();
+  auto container = NodeContainerType::New();
 
   container->InsertElement(0, node);
 
@@ -52,7 +52,7 @@ itkLevelSetNeighborhoodExtractorTest(int, char *[])
   source->Update();
 
   using ExtractorType = itk::LevelSetNeighborhoodExtractor<ImageType>;
-  ExtractorType::Pointer extractor = ExtractorType::New();
+  auto extractor = ExtractorType::New();
 
   extractor->SetInputLevelSet(source->GetOutput());
   extractor->SetLevelSetValue(0.0);
@@ -67,7 +67,7 @@ itkLevelSetNeighborhoodExtractorTest(int, char *[])
   std::cout << "Inside Points" << std::endl;
   iter = extractor->GetInsidePoints()->Begin();
   iterEnd = extractor->GetInsidePoints()->End();
-  for (; iter != iterEnd; iter++)
+  for (; iter != iterEnd; ++iter)
   {
     std::cout << iter.Value().GetIndex() << " ";
     std::cout << iter.Value().GetValue() << std::endl;
@@ -76,7 +76,7 @@ itkLevelSetNeighborhoodExtractorTest(int, char *[])
   std::cout << "Outside Points" << std::endl;
   iter = extractor->GetOutsidePoints()->Begin();
   iterEnd = extractor->GetOutsidePoints()->End();
-  for (; iter != iterEnd; iter++)
+  for (; iter != iterEnd; ++iter)
   {
     std::cout << iter.Value().GetIndex() << " ";
     std::cout << iter.Value().GetValue() << std::endl;

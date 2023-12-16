@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMedianImageFunction_hxx
 #define itkMedianImageFunction_hxx
 
-#include "itkMedianImageFunction.h"
 #include "itkImage.h"
 #include "itkShapedImageNeighborhoodRange.h"
 
@@ -39,7 +38,7 @@ MedianImageFunction<TInputImage, TCoordRep>::SetNeighborhoodRadius(const unsigne
 {
   if (m_NeighborhoodRadius != radius)
   {
-    m_NeighborhoodOffsets = Experimental::GenerateRectangularImageNeighborhoodOffsets(ImageSizeType::Filled(radius));
+    m_NeighborhoodOffsets = GenerateRectangularImageNeighborhoodOffsets(ImageSizeType::Filled(radius));
     m_NeighborhoodRadius = radius;
     this->Modified();
   }
@@ -61,8 +60,8 @@ MedianImageFunction<TInputImage, TCoordRep>::PrintSelf(std::ostream & os, Indent
  *
  */
 template <typename TInputImage, typename TCoordRep>
-typename MedianImageFunction<TInputImage, TCoordRep>::OutputType
-MedianImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType & index) const
+auto
+MedianImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType & index) const -> OutputType
 {
   const InputImageType * const image = this->GetInputImage();
 
@@ -76,8 +75,7 @@ MedianImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType & i
     return (NumericTraits<OutputType>::max());
   }
 
-  const Experimental::ShapedImageNeighborhoodRange<const InputImageType> neighborhoodRange(
-    *image, index, m_NeighborhoodOffsets);
+  const ShapedImageNeighborhoodRange<const InputImageType> neighborhoodRange(*image, index, m_NeighborhoodOffsets);
 
   // We have to copy the pixels so we can run std::nth_element.
   std::vector<InputPixelType> pixels(neighborhoodRange.cbegin(), neighborhoodRange.cend());

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class ContourMeanDistanceImageFilter
+ * \class ContourMeanDistanceImageFilter
  * \brief Computes the Mean distance between the boundaries of
  * non-zero regions of two images.
  *
@@ -71,7 +71,7 @@ template <typename TInputImage1, typename TInputImage2>
 class ITK_TEMPLATE_EXPORT ContourMeanDistanceImageFilter : public ImageToImageFilter<TInputImage1, TInputImage1>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ContourMeanDistanceImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ContourMeanDistanceImageFilter);
 
   /** Standard Self type alias */
   using Self = ContourMeanDistanceImageFilter;
@@ -128,6 +128,7 @@ public:
   /** Set if image spacing should be used in computing distances. */
   itkSetMacro(UseImageSpacing, bool);
   itkGetConstMacro(UseImageSpacing, bool);
+  itkBooleanMacro(UseImageSpacing);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking

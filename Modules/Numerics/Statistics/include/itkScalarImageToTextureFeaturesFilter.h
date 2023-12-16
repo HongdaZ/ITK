@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -87,7 +87,7 @@ namespace Statistics
  * Haralick, R.M. 1979. Statistical and Structural Approaches to Texture.
  * Proceedings of the IEEE, 67:786-804.
  *
- * R.W. Conners and C.A. Harlow. A Theoretical Comaprison of Texture Algorithms.
+ * R.W. Conners and C.A. Harlow. A Theoretical Comparison of Texture Algorithms.
  * IEEE Transactions on Pattern Analysis and Machine Intelligence,  2:204-222, 1980.
  *
  * R.W. Conners, M.M. Trivedi, and C.A. Harlow. Segmentation of a High-Resolution
@@ -105,7 +105,9 @@ namespace Statistics
  * \endsphinx
  */
 
-template <typename TImageType, typename THistogramFrequencyContainer = DenseFrequencyContainer2>
+template <typename TImageType,
+          typename THistogramFrequencyContainer = DenseFrequencyContainer2,
+          typename TMaskImageType = TImageType>
 class ITK_TEMPLATE_EXPORT ScalarImageToTextureFeaturesFilter : public ProcessObject
 {
 public:
@@ -124,6 +126,9 @@ public:
   using FrequencyContainerType = THistogramFrequencyContainer;
   using ImageType = TImageType;
   using ImagePointer = typename ImageType::Pointer;
+  using MaskImageType = TMaskImageType;
+  using MaskPointer = typename MaskImageType::Pointer;
+  using MaskPixelType = typename MaskImageType::PixelType;
 
   using PixelType = typename ImageType::PixelType;
   using OffsetType = typename ImageType::OffsetType;
@@ -131,7 +136,8 @@ public:
   using OffsetVectorPointer = typename OffsetVector::Pointer;
   using OffsetVectorConstPointer = typename OffsetVector::ConstPointer;
 
-  using CooccurrenceMatrixFilterType = ScalarImageToCooccurrenceMatrixFilter<ImageType, FrequencyContainerType>;
+  using CooccurrenceMatrixFilterType =
+    ScalarImageToCooccurrenceMatrixFilter<ImageType, FrequencyContainerType, MaskImageType>;
 
   using HistogramType = typename CooccurrenceMatrixFilterType::HistogramType;
   using TextureFeaturesFilterType = HistogramToTextureFeaturesFilter<HistogramType>;
@@ -193,15 +199,15 @@ public:
   /** Connects the mask image for which the histogram is going to be computed.
       Optional; for default value see above. */
   void
-  SetMaskImage(const ImageType *);
+  SetMaskImage(const MaskImageType *);
 
-  const ImageType *
+  const MaskImageType *
   GetMaskImage() const;
 
   /** Set the pixel value of the mask that should be considered "inside" the
       object. Optional; for default value see above. */
   void
-  SetInsidePixelValue(PixelType InsidePixelValue);
+  SetInsidePixelValue(MaskPixelType insidePixelValue);
 
   itkGetConstMacro(FastCalculations, bool);
   itkSetMacro(FastCalculations, bool);

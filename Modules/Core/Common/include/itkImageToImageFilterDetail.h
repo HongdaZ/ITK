@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -389,7 +389,7 @@ ImageToImageFilterDefaultCopyInformation(const typename BinaryUnsignedIntDispatc
   {
     destSpacing[i] = inputSpacing[i];
     destOrigin[i] = inputOrigin[i];
-    for (unsigned int j = 0; j < DestinationImageType::ImageDimension; j++)
+    for (unsigned int j = 0; j < DestinationImageType::ImageDimension; ++j)
     {
       if (j < SourceImageType::ImageDimension)
       {
@@ -405,7 +405,7 @@ ImageToImageFilterDefaultCopyInformation(const typename BinaryUnsignedIntDispatc
   {
     destSpacing[i] = 1.0;
     destOrigin[i] = 0.0;
-    for (unsigned int j = 0; j < DestinationImageType::ImageDimension; j++)
+    for (unsigned int j = 0; j < DestinationImageType::ImageDimension; ++j)
     {
       if (j == i)
       {

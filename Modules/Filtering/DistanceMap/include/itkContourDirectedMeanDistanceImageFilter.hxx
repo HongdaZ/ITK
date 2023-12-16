@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkContourDirectedMeanDistanceImageFilter_hxx
 #define itkContourDirectedMeanDistanceImageFilter_hxx
 
-#include "itkContourDirectedMeanDistanceImageFilter.h"
 
 #include "itkConstNeighborhoodIterator.h"
 #include "itkNeighborhoodInnerProduct.h"
@@ -61,15 +60,15 @@ ContourDirectedMeanDistanceImageFilter<TInputImage1, TInputImage2>::SetInput2(co
 }
 
 template <typename TInputImage1, typename TInputImage2>
-const typename ContourDirectedMeanDistanceImageFilter<TInputImage1, TInputImage2>::InputImage1Type *
-ContourDirectedMeanDistanceImageFilter<TInputImage1, TInputImage2>::GetInput1()
+auto
+ContourDirectedMeanDistanceImageFilter<TInputImage1, TInputImage2>::GetInput1() -> const InputImage1Type *
 {
   return this->GetInput();
 }
 
 template <typename TInputImage1, typename TInputImage2>
-const typename ContourDirectedMeanDistanceImageFilter<TInputImage1, TInputImage2>::InputImage2Type *
-ContourDirectedMeanDistanceImageFilter<TInputImage1, TInputImage2>::GetInput2()
+auto
+ContourDirectedMeanDistanceImageFilter<TInputImage1, TInputImage2>::GetInput2() -> const InputImage2Type *
 {
   return itkDynamicCastInDebugMode<const TInputImage2 *>(this->ProcessObject::GetInput(1));
 }
@@ -118,11 +117,11 @@ template <typename TInputImage1, typename TInputImage2>
 void
 ContourDirectedMeanDistanceImageFilter<TInputImage1, TInputImage2>::BeforeThreadedGenerateData()
 {
-  ThreadIdType numberOfThreads = this->GetNumberOfWorkUnits();
+  ThreadIdType numberOfWorkUnits = this->GetNumberOfWorkUnits();
 
   // Resize the thread temporaries
-  m_MeanDistance.SetSize(numberOfThreads);
-  m_Count.SetSize(numberOfThreads);
+  m_MeanDistance.SetSize(numberOfWorkUnits);
+  m_Count.SetSize(numberOfWorkUnits);
 
   // Initialize the temporaries
   m_MeanDistance.Fill(NumericTraits<RealType>::ZeroValue());
@@ -131,7 +130,7 @@ ContourDirectedMeanDistanceImageFilter<TInputImage1, TInputImage2>::BeforeThread
   // Compute Signed distance from non-zero pixels in the second image
   using FilterType = SignedMaurerDistanceMapImageFilter<InputImage2Type, DistanceMapType>;
 
-  typename FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   filter->SetInput(this->GetInput2());
   filter->SetSquaredDistance(false);
@@ -145,13 +144,13 @@ template <typename TInputImage1, typename TInputImage2>
 void
 ContourDirectedMeanDistanceImageFilter<TInputImage1, TInputImage2>::AfterThreadedGenerateData()
 {
-  ThreadIdType numberOfThreads = this->GetNumberOfWorkUnits();
+  ThreadIdType numberOfWorkUnits = this->GetNumberOfWorkUnits();
 
-  // find mean over all threads
+  // Find mean over all threads
   IdentifierType count = 0;
   RealType       sum = NumericTraits<RealType>::ZeroValue();
 
-  for (ThreadIdType i = 0; i < numberOfThreads; i++)
+  for (ThreadIdType i = 0; i < numberOfWorkUnits; ++i)
   {
     sum += m_MeanDistance[i];
     count += m_Count[i];
@@ -187,7 +186,7 @@ ContourDirectedMeanDistanceImageFilter<TInputImage1, TInputImage2>::ThreadedGene
   NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<InputImage1Type> bC;
   FaceListType faceList = bC(input, outputRegionForThread, radius);
 
-  // support progress methods/callbacks
+  // Support progress methods/callbacks
   ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
 
   // Process each of the boundary faces.  These are N-d regions which border
@@ -203,15 +202,15 @@ ContourDirectedMeanDistanceImageFilter<TInputImage1, TInputImage2>::ThreadedGene
 
     while (!bit.IsAtEnd())
     {
-      // first test
-      // if current pixel is not on, let's continue
+      // First test
+      // If current pixel is not on, let's continue
       if (Math::NotExactlyEquals(bit.GetCenterPixel(), NumericTraits<InputImage1PixelType>::ZeroValue()))
       {
         bool bIsOnContour = false;
 
         for (unsigned int i = 0; i < neighborhoodSize; ++i)
         {
-          // second test if at least one neighbour pixel is off
+          // Second test if at least one neighbour pixel is off
           // the center pixel belongs to contour
           if (Math::ExactlyEquals(bit.GetPixel(i), NumericTraits<InputImage1PixelType>::ZeroValue()))
           {
@@ -220,7 +219,7 @@ ContourDirectedMeanDistanceImageFilter<TInputImage1, TInputImage2>::ThreadedGene
           }
         }
 
-        // set pixel center pixel value whether it is or not on contour
+        // Set pixel center pixel value whether it is or not on contour
         if (bIsOnContour)
         {
           const RealType value = it2.Get();

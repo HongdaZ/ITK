@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkVectorContainer_hxx
 #define itkVectorContainer_hxx
-#include "itkVectorContainer.h"
 
 #include "itkNumericTraits.h"
 
@@ -77,8 +76,8 @@ VectorContainer<TElementIdentifier, TElement>::CreateElementAt(ElementIdentifier
  * It is assumed that the index exists.
  */
 template <typename TElementIdentifier, typename TElement>
-typename VectorContainer<TElementIdentifier, TElement>::Element
-VectorContainer<TElementIdentifier, TElement>::GetElement(ElementIdentifier id) const
+auto
+VectorContainer<TElementIdentifier, TElement>::GetElement(ElementIdentifier id) const -> Element
 {
   return this->VectorType::operator[](id);
 }
@@ -193,8 +192,8 @@ VectorContainer<TElementIdentifier, TElement>::DeleteIndex(ElementIdentifier id)
  * Get a begin const iterator for the vector.
  */
 template <typename TElementIdentifier, typename TElement>
-typename VectorContainer<TElementIdentifier, TElement>::ConstIterator
-VectorContainer<TElementIdentifier, TElement>::Begin() const
+auto
+VectorContainer<TElementIdentifier, TElement>::Begin() const -> ConstIterator
 {
   return ConstIterator(0, this->VectorType::begin());
 }
@@ -203,8 +202,8 @@ VectorContainer<TElementIdentifier, TElement>::Begin() const
  * Get an end const iterator for the vector.
  */
 template <typename TElementIdentifier, typename TElement>
-typename VectorContainer<TElementIdentifier, TElement>::ConstIterator
-VectorContainer<TElementIdentifier, TElement>::End() const
+auto
+VectorContainer<TElementIdentifier, TElement>::End() const -> ConstIterator
 {
   return ConstIterator(this->VectorType::size() - 1, this->VectorType::end());
 }
@@ -213,8 +212,8 @@ VectorContainer<TElementIdentifier, TElement>::End() const
  * Get a begin iterator for the vector.
  */
 template <typename TElementIdentifier, typename TElement>
-typename VectorContainer<TElementIdentifier, TElement>::Iterator
-VectorContainer<TElementIdentifier, TElement>::Begin()
+auto
+VectorContainer<TElementIdentifier, TElement>::Begin() -> Iterator
 {
   return Iterator(0, this->VectorType::begin());
 }
@@ -223,8 +222,8 @@ VectorContainer<TElementIdentifier, TElement>::Begin()
  * Get an end iterator for the vector.
  */
 template <typename TElementIdentifier, typename TElement>
-typename VectorContainer<TElementIdentifier, TElement>::Iterator
-VectorContainer<TElementIdentifier, TElement>::End()
+auto
+VectorContainer<TElementIdentifier, TElement>::End() -> Iterator
 {
   return Iterator(this->VectorType::size() - 1, this->VectorType::end());
 }
@@ -233,8 +232,8 @@ VectorContainer<TElementIdentifier, TElement>::End()
  * Get the number of elements currently stored in the vector.
  */
 template <typename TElementIdentifier, typename TElement>
-typename VectorContainer<TElementIdentifier, TElement>::ElementIdentifier
-VectorContainer<TElementIdentifier, TElement>::Size() const
+auto
+VectorContainer<TElementIdentifier, TElement>::Size() const -> ElementIdentifier
 {
   return static_cast<ElementIdentifier>(this->VectorType::size());
 }

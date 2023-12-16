@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,11 +17,11 @@
  *=========================================================================*/
 #ifndef itkHardConnectedComponentImageFilter_hxx
 #define itkHardConnectedComponentImageFilter_hxx
-#include "itkHardConnectedComponentImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkNumericTraits.h"
 #include "itkProgressReporter.h"
 #include "itkMath.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 namespace itk
 {
@@ -37,25 +37,19 @@ HardConnectedComponentImageFilter<TInputImage, TOutputImage>::GenerateData()
 
   using LabelType = unsigned short;
 
-  auto *    equivalenceTable = new LabelType[NumericTraits<LabelType>::max()];
-  LabelType label = 0;
-  LabelType maxLabel = 0;
-  IndexType index;
-  SizeType  size;
+  const auto equivalenceTable = make_unique_for_overwrite<LabelType[]>(NumericTraits<LabelType>::max());
+  LabelType  label = 0;
+  LabelType  maxLabel = 0;
+  SizeType   size;
 
   typename ListType::iterator iter;
-  RegionType                  region;
 
   TOutputImage *      output = this->GetOutput();
   const TInputImage * input = this->GetInput();
 
   size = input->GetLargestPossibleRegion().GetSize();
-  index.Fill(0);
-  region.SetSize(size);
-  region.SetIndex(index);
-  output->SetLargestPossibleRegion(region);
-  output->SetBufferedRegion(region);
-  output->SetRequestedRegion(region);
+  const RegionType region(size);
+  output->SetRegions(region);
   output->Allocate();
 
   ImageRegionConstIterator<TInputImage> it(input, input->GetRequestedRegion());
@@ -82,7 +76,7 @@ HardConnectedComponentImageFilter<TInputImage, TOutputImage>::GenerateData()
   {
     if (ot.Get())
     {
-      for (i = 0; i < ImageDimension; i++)
+      for (i = 0; i < ImageDimension; ++i)
       {
         IndexType currentIndex = ot.GetIndex();
         currentIndex[i] = currentIndex[i] - 1;
@@ -106,7 +100,7 @@ HardConnectedComponentImageFilter<TInputImage, TOutputImage>::GenerateData()
             if (equivalenceTable[static_cast<LabelType>(ot.Get())] > equivalenceTable[label])
             {
               q = equivalenceTable[static_cast<LabelType>(ot.Get())];
-              for (p = q; p <= maxLabel; p++)
+              for (p = q; p <= maxLabel; ++p)
               {
                 if (equivalenceTable[p] == q)
                 {
@@ -117,7 +111,7 @@ HardConnectedComponentImageFilter<TInputImage, TOutputImage>::GenerateData()
             else
             {
               q = equivalenceTable[label];
-              for (p = q; p <= maxLabel; p++)
+              for (p = q; p <= maxLabel; ++p)
               {
                 if (equivalenceTable[p] == q)
                 {
@@ -142,19 +136,19 @@ HardConnectedComponentImageFilter<TInputImage, TOutputImage>::GenerateData()
     progress.CompletedPixel();
   }
 
-  for (p = 1; p <= maxLabel; p++)
+  for (p = 1; p <= maxLabel; ++p)
   {
-    for (m = p; (m <= maxLabel) && (equivalenceTable[m] != p); m++)
+    for (m = p; (m <= maxLabel) && (equivalenceTable[m] != p); ++m)
     {
     }
     if (m > maxLabel)
     {
-      for (m = p; (m <= maxLabel) && (equivalenceTable[m] < p); m++)
+      for (m = p; (m <= maxLabel) && (equivalenceTable[m] < p); ++m)
       {
       }
       if (m <= maxLabel)
       {
-        for (i = m; i <= maxLabel; i++)
+        for (i = m; i <= maxLabel; ++i)
         {
           if (equivalenceTable[i] == m)
           {
@@ -165,13 +159,13 @@ HardConnectedComponentImageFilter<TInputImage, TOutputImage>::GenerateData()
     }
   }
 
-  auto * flags = new unsigned char[NumericTraits<LabelType>::max()];
-  memset(flags, 0, maxLabel + 1);
-  for (iter = m_Seeds.begin(); iter != m_Seeds.end(); iter++)
+  const auto flags = make_unique_for_overwrite<unsigned char[]>(NumericTraits<LabelType>::max());
+  memset(flags.get(), 0, maxLabel + 1);
+  for (iter = m_Seeds.begin(); iter != m_Seeds.end(); ++iter)
   {
     const IndexType currentIndex = *iter;
     m = equivalenceTable[static_cast<LabelType>(output->GetPixel(currentIndex))];
-    for (i = m; i <= maxLabel; i++)
+    for (i = m; i <= maxLabel; ++i)
     {
       if (equivalenceTable[i] == m)
       {
@@ -195,8 +189,6 @@ HardConnectedComponentImageFilter<TInputImage, TOutputImage>::GenerateData()
       ot.Set(flags[static_cast<LabelType>(ot.Get())]);
     }
   }
-  delete[] equivalenceTable;
-  delete[] flags;
 }
 
 } // end namespace itk

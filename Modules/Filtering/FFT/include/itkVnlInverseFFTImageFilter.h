@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,18 +15,20 @@
  *  limitations under the License.
  *
  *=========================================================================*/
+#ifndef itkVnlInverseFFTImageFilter_h
+#define itkVnlInverseFFTImageFilter_h
+
 #include "itkInverseFFTImageFilter.h"
 
-#ifndef itkVnlInverseFFTImageFilter_h
-#  define itkVnlInverseFFTImageFilter_h
+#include "itkImage.h"
+#include "vnl/algo/vnl_fft_base.h"
 
-#  include "itkImage.h"
-#  include "vnl/algo/vnl_fft_base.h"
+#include "itkFFTImageFilterFactory.h"
 
 namespace itk
 {
 /**
- *\class VnlInverseFFTImageFilter
+ * \class VnlInverseFFTImageFilter
  *
  * \brief VNL-based reverse Fast Fourier Transform.
  *
@@ -46,7 +48,7 @@ template <typename TInputImage,
 class ITK_TEMPLATE_EXPORT VnlInverseFFTImageFilter : public InverseFFTImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VnlInverseFFTImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(VnlInverseFFTImageFilter);
 
   /** Standard class type aliases. */
   using InputImageType = TInputImage;
@@ -77,12 +79,12 @@ public:
   SizeValueType
   GetSizeGreatestPrimeFactor() const override;
 
-#  ifdef ITK_USE_CONCEPT_CHECKING
+#ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
   itkConceptMacro(PixelUnsignedIntDivisionOperatorsCheck, (Concept::DivisionOperators<OutputPixelType, unsigned int>));
   itkConceptMacro(ImageDimensionsMatchCheck, (Concept::SameDimension<InputImageDimension, OutputImageDimension>));
   // End concept checking
-#  endif
+#endif
 
 protected:
   VnlInverseFFTImageFilter() = default;
@@ -94,10 +96,24 @@ protected:
 private:
   using SignalVectorType = vnl_vector<InputPixelType>;
 };
+
+
+// Describe whether input/output are real- or complex-valued
+// for factory registration
+template <>
+struct FFTImageFilterTraits<VnlInverseFFTImageFilter>
+{
+  template <typename TUnderlying>
+  using InputPixelType = std::complex<TUnderlying>;
+  template <typename TUnderlying>
+  using OutputPixelType = TUnderlying;
+  using FilterDimensions = std::integer_sequence<unsigned int, 4, 3, 2, 1>;
+};
+
 } // namespace itk
 
-#  ifndef ITK_MANUAL_INSTANTIATION
-#    include "itkVnlInverseFFTImageFilter.hxx"
-#  endif
+#ifndef ITK_MANUAL_INSTANTIATION
+#  include "itkVnlInverseFFTImageFilter.hxx"
+#endif
 
 #endif

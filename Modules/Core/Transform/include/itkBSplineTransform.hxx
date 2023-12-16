@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkBSplineTransform_hxx
 #define itkBSplineTransform_hxx
 
-#include "itkBSplineTransform.h"
 
 #include "itkContinuousIndex.h"
 #include "itkImageScanlineConstIterator.h"
@@ -27,8 +26,8 @@
 namespace itk
 {
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::BSplineTransform()
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::BSplineTransform()
   : Superclass()
 {
 
@@ -58,7 +57,7 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::BSplineTransf
   MeshSizeType meshSize;
   meshSize.Fill(1);
 
-  this->m_FixedParameters.SetSize(NDimensions * (NDimensions + 3));
+  this->m_FixedParameters.SetSize(VDimension * (VDimension + 3));
 
   this->SetFixedParametersFromTransformDomainInformation(meshOrigin, meshPhysical, meshDirection, meshSize);
 
@@ -66,9 +65,9 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::BSplineTransf
   this->SetCoefficientImageInformationFromFixedParameters();
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 std::string
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::GetTransformTypeAsString() const
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::GetTransformTypeAsString() const
 {
   if (VSplineOrder != 3)
   {
@@ -80,9 +79,10 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::GetTransformT
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
-typename BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::NumberOfParametersType
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::GetNumberOfParameters() const
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
+auto
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::GetNumberOfParameters() const
+  -> NumberOfParametersType
 {
   // The number of parameters equals SpaceDimension * number of
   // of pixels in the grid region.
@@ -90,15 +90,16 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::GetNumberOfPa
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
-typename BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::NumberOfParametersType
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::GetNumberOfParametersPerDimension() const
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
+auto
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::GetNumberOfParametersPerDimension() const
+  -> NumberOfParametersType
 {
   // The number of parameters per dimension equals the number of
   // of pixels in the grid region.
   NumberOfParametersType numberOfParametersPerDimension = 1;
 
-  for (unsigned int i = 0; i < SpaceDimension; i++)
+  for (unsigned int i = 0; i < SpaceDimension; ++i)
   {
     numberOfParametersPerDimension *= static_cast<NumberOfParametersType>(this->m_FixedParameters[i]);
   }
@@ -106,9 +107,9 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::GetNumberOfPa
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 void
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetTransformDomainOrigin(const OriginType & origin)
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::SetTransformDomainOrigin(const OriginType & origin)
 {
   if (this->GetTransformDomainOrigin() != origin)
   {
@@ -123,30 +124,30 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetTransformD
   }
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 auto
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::GetTransformDomainOrigin() const -> OriginType
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::GetTransformDomainOrigin() const -> OriginType
 {
   OriginType origin;
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
-    const ScalarType spacing = this->m_FixedParameters[2 * NDimensions + i];
+    const ScalarType spacing = this->m_FixedParameters[2 * VDimension + i];
     origin[i] = spacing * 0.5 * (SplineOrder - 1);
   }
 
   origin = this->GetTransformDomainDirection() * origin;
 
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
-    const ScalarType grid_origin = this->m_FixedParameters[NDimensions + i];
+    const ScalarType grid_origin = this->m_FixedParameters[VDimension + i];
     origin[i] += grid_origin;
   }
   return origin;
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 void
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetTransformDomainPhysicalDimensions(
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::SetTransformDomainPhysicalDimensions(
   const PhysicalDimensionsType & dims)
 {
   if (this->GetTransformDomainPhysicalDimensions() != dims)
@@ -160,24 +161,24 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetTransformD
   }
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 auto
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::GetTransformDomainPhysicalDimensions() const
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::GetTransformDomainPhysicalDimensions() const
   -> PhysicalDimensionsType
 {
   const MeshSizeType     size = this->GetTransformDomainMeshSize();
   PhysicalDimensionsType physicalDim;
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
-    ScalarType spacing = this->m_FixedParameters[2 * NDimensions + i];
+    ScalarType spacing = this->m_FixedParameters[2 * VDimension + i];
     physicalDim[i] = size[i] * spacing;
   }
   return physicalDim;
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 void
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetTransformDomainDirection(
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::SetTransformDomainDirection(
   const DirectionType & direction)
 {
   if (this->GetTransformDomainDirection() != direction)
@@ -193,26 +194,26 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetTransformD
   }
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 auto
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::GetTransformDomainDirection() const -> DirectionType
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::GetTransformDomainDirection() const -> DirectionType
 {
   DirectionType direction;
 
-  for (unsigned int di = 0; di < NDimensions; di++)
+  for (unsigned int di = 0; di < VDimension; ++di)
   {
-    for (unsigned int dj = 0; dj < NDimensions; dj++)
+    for (unsigned int dj = 0; dj < VDimension; ++dj)
     {
-      const FixedParametersValueType v = this->m_FixedParameters[3 * NDimensions + (di * NDimensions + dj)];
+      const FixedParametersValueType v = this->m_FixedParameters[3 * VDimension + (di * VDimension + dj)];
       direction[di][dj] = static_cast<typename DirectionType::ValueType>(v);
     }
   }
   return direction;
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 void
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetTransformDomainMeshSize(
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::SetTransformDomainMeshSize(
   const MeshSizeType & meshSize)
 {
   if (this->GetTransformDomainMeshSize() != meshSize)
@@ -228,13 +229,13 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetTransformD
   }
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 auto
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::GetTransformDomainMeshSize() const -> MeshSizeType
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::GetTransformDomainMeshSize() const -> MeshSizeType
 {
   MeshSizeType meshSize;
 
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     using ValueType = typename MeshSizeType::SizeValueType;
     meshSize[i] = static_cast<ValueType>(this->m_FixedParameters[i]) - SplineOrder;
@@ -242,9 +243,9 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::GetTransformD
   return meshSize;
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 void
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetFixedParametersFromCoefficientImageInformation()
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::SetFixedParametersFromCoefficientImageInformation()
 {
   // Fixed Parameters store the following information:
   //  grid size
@@ -254,41 +255,41 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetFixedParam
 
   // Set the grid size parameters
   const SizeType & gridSize = this->m_CoefficientImages[0]->GetLargestPossibleRegion().GetSize();
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     this->m_FixedParameters[i] = static_cast<FixedParametersValueType>(gridSize[i]);
   }
 
   const OriginType & origin = this->m_CoefficientImages[0]->GetOrigin();
 
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
-    this->m_FixedParameters[NDimensions + i] = static_cast<FixedParametersValueType>(origin[i]);
+    this->m_FixedParameters[VDimension + i] = static_cast<FixedParametersValueType>(origin[i]);
   }
 
   // Set the spacing parameters
   const SpacingType & spacing = this->m_CoefficientImages[0]->GetSpacing();
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
-    this->m_FixedParameters[2 * NDimensions + i] = static_cast<FixedParametersValueType>(spacing[i]);
+    this->m_FixedParameters[2 * VDimension + i] = static_cast<FixedParametersValueType>(spacing[i]);
   }
 
   // Set the direction parameters
   const DirectionType & direction = this->m_CoefficientImages[0]->GetDirection();
-  for (unsigned int di = 0; di < NDimensions; di++)
+  for (unsigned int di = 0; di < VDimension; ++di)
   {
-    for (unsigned int dj = 0; dj < NDimensions; dj++)
+    for (unsigned int dj = 0; dj < VDimension; ++dj)
     {
-      this->m_FixedParameters[3 * NDimensions + (di * NDimensions + dj)] =
+      this->m_FixedParameters[3 * VDimension + (di * VDimension + dj)] =
         static_cast<FixedParametersValueType>(direction[di][dj]);
     }
   }
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 void
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetFixedParametersFromTransformDomainInformation(
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::SetFixedParametersFromTransformDomainInformation(
   const OriginType &             meshOrigin,
   const PhysicalDimensionsType & meshPhysical,
   const DirectionType &          meshDirection,
@@ -296,7 +297,7 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetFixedParam
 {
 
   // Set the grid size parameters
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     this->m_FixedParameters[i] = static_cast<FixedParametersValueType>(meshSize[i] + SplineOrder);
   }
@@ -306,41 +307,41 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetFixedParam
   using PointType = typename ImageType::PointType;
   PointType origin;
   origin.Fill(0.0);
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     ScalarType gridSpacing = meshPhysical[i] / static_cast<ScalarType>(meshSize[i]);
     origin[i] = -0.5 * gridSpacing * (SplineOrder - 1);
   }
 
   origin = meshDirection * origin;
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
-    this->m_FixedParameters[NDimensions + i] = static_cast<FixedParametersValueType>(origin[i] + meshOrigin[i]);
+    this->m_FixedParameters[VDimension + i] = static_cast<FixedParametersValueType>(origin[i] + meshOrigin[i]);
   }
 
   // Set the spacing parameters
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     ScalarType gridSpacing = meshPhysical[i] / static_cast<ScalarType>(meshSize[i]);
 
-    this->m_FixedParameters[2 * NDimensions + i] = static_cast<FixedParametersValueType>(gridSpacing);
+    this->m_FixedParameters[2 * VDimension + i] = static_cast<FixedParametersValueType>(gridSpacing);
   }
 
   // Set the direction parameters
-  for (unsigned int di = 0; di < NDimensions; di++)
+  for (unsigned int di = 0; di < VDimension; ++di)
   {
-    for (unsigned int dj = 0; dj < NDimensions; dj++)
+    for (unsigned int dj = 0; dj < VDimension; ++dj)
     {
-      this->m_FixedParameters[3 * NDimensions + (di * NDimensions + dj)] =
+      this->m_FixedParameters[3 * VDimension + (di * VDimension + dj)] =
         static_cast<FixedParametersValueType>(meshDirection[di][dj]);
     }
   }
 }
 
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 void
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetCoefficientImageInformationFromFixedParameters()
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::SetCoefficientImageInformationFromFixedParameters()
 {
   // Fixed Parameters store the following information:
   //  grid size
@@ -351,7 +352,7 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetCoefficien
 
   // set the grid size parameters
   SizeType gridSize;
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     gridSize[i] = static_cast<SizeValueType>(this->m_FixedParameters[i]);
   }
@@ -359,33 +360,33 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetCoefficien
 
   // Set the origin parameters
   OriginType origin;
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
-    origin[i] = this->m_FixedParameters[NDimensions + i];
+    origin[i] = this->m_FixedParameters[VDimension + i];
   }
   this->m_CoefficientImages[0]->SetOrigin(origin);
 
   // Set the spacing parameters
   SpacingType spacing;
-  for (unsigned int i = 0; i < NDimensions; i++)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
-    spacing[i] = this->m_FixedParameters[2 * NDimensions + i];
+    spacing[i] = this->m_FixedParameters[2 * VDimension + i];
   }
   this->m_CoefficientImages[0]->SetSpacing(spacing);
 
   // Set the direction parameters
   DirectionType direction;
-  for (unsigned int di = 0; di < NDimensions; di++)
+  for (unsigned int di = 0; di < VDimension; ++di)
   {
-    for (unsigned int dj = 0; dj < NDimensions; dj++)
+    for (unsigned int dj = 0; dj < VDimension; ++dj)
     {
-      direction[di][dj] = this->m_FixedParameters[3 * NDimensions + (di * NDimensions + dj)];
+      direction[di][dj] = this->m_FixedParameters[3 * VDimension + (di * VDimension + dj)];
     }
   }
   this->m_CoefficientImages[0]->SetDirection(direction);
 
   // Copy the information to the rest of the images
-  for (unsigned int i = 1; i < SpaceDimension; i++)
+  for (unsigned int i = 1; i < SpaceDimension; ++i)
   {
     this->m_CoefficientImages[i]->CopyInformation(this->m_CoefficientImages[0]);
     this->m_CoefficientImages[i]->SetRegions(this->m_CoefficientImages[0]->GetLargestPossibleRegion());
@@ -403,16 +404,16 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetCoefficien
   }
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 void
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetFixedParameters(
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::SetFixedParameters(
   const FixedParametersType & passedParameters)
 {
   // Check if the number of passedParameters match the
   // expected number of this->m_FixedParameters
   if (passedParameters.Size() == this->m_FixedParameters.Size())
   {
-    for (unsigned int i = 0; i < NDimensions * (3 + NDimensions); ++i)
+    for (unsigned int i = 0; i < VDimension * (3 + VDimension); ++i)
     {
       this->m_FixedParameters[i] = passedParameters[i];
     }
@@ -428,14 +429,14 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetFixedParam
   this->SetCoefficientImageInformationFromFixedParameters();
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 void
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetCoefficientImages(
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::SetCoefficientImages(
   const CoefficientImageArray & images)
 {
   bool validArrayOfImages = true;
 
-  for (unsigned int j = 0; j < SpaceDimension; j++)
+  for (unsigned int j = 0; j < SpaceDimension; ++j)
   {
     validArrayOfImages &= (images[j].IsNotNull());
   }
@@ -452,7 +453,7 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetCoefficien
 
   const SizeValueType totalParameters = numberOfPixels * SpaceDimension;
   this->m_InternalParametersBuffer.SetSize(totalParameters);
-  for (unsigned int j = 0; j < SpaceDimension; j++)
+  for (unsigned int j = 0; j < SpaceDimension; ++j)
   {
     const SizeValueType numberOfPixels_j = images[j]->GetLargestPossibleRegion().GetNumberOfPixels();
     if (numberOfPixels_j * SpaceDimension != totalParameters)
@@ -476,9 +477,9 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::SetCoefficien
   this->SetParameters(this->m_InternalParametersBuffer);
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 bool
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::InsideValidRegion(ContinuousIndexType & index) const
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::InsideValidRegion(ContinuousIndexType & index) const
 {
   const SizeType gridSize = this->m_CoefficientImages[0]->GetLargestPossibleRegion().GetSize();
 
@@ -486,7 +487,7 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::InsideValidRe
 
   // Needed so that index can be changed
   bool inside = true;
-  for (unsigned int j = 0; j < SpaceDimension; j++)
+  for (unsigned int j = 0; j < SpaceDimension; ++j)
   {
     const ScalarType maxLimit =
       static_cast<ScalarType>(gridSize[j]) - 0.5 * static_cast<ScalarType>(SplineOrder - 1) - 1.0;
@@ -508,20 +509,21 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::InsideValidRe
   return inside;
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 void
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::TransformPoint(const InputPointType &    point,
-                                                                                  OutputPointType &         outputPoint,
-                                                                                  WeightsType &             weights,
-                                                                                  ParameterIndexArrayType & indices,
-                                                                                  bool & inside) const
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::TransformPoint(const InputPointType &    point,
+                                                                                 OutputPointType &         outputPoint,
+                                                                                 WeightsType &             weights,
+                                                                                 ParameterIndexArrayType & indices,
+                                                                                 bool &                    inside) const
 {
   inside = true;
 
   if (this->m_CoefficientImages[0]->GetBufferPointer())
   {
-    ContinuousIndexType index;
-    this->m_CoefficientImages[0]->TransformPhysicalPointToContinuousIndex(point, index);
+    ContinuousIndexType index =
+      this->m_CoefficientImages[0]
+        ->template TransformPhysicalPointToContinuousIndex<typename ContinuousIndexType::ValueType>(point);
 
     // NOTE: if the support region does not lie totally within the grid
     // we assume zero displacement and return the input point
@@ -539,9 +541,7 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::TransformPoin
     // For each dimension, correlate coefficient with weights
     SizeType supportSize;
     supportSize.Fill(SplineOrder + 1);
-    RegionType supportRegion;
-    supportRegion.SetSize(supportSize);
-    supportRegion.SetIndex(supportIndex);
+    const RegionType supportRegion(supportIndex, supportSize);
 
     outputPoint.Fill(NumericTraits<ScalarType>::ZeroValue());
 
@@ -549,7 +549,7 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::TransformPoin
     IteratorType                coeffIterator[SpaceDimension];
     unsigned long               counter = 0;
     const ParametersValueType * basePointer = this->m_CoefficientImages[0]->GetBufferPointer();
-    for (unsigned int j = 0; j < SpaceDimension; j++)
+    for (unsigned int j = 0; j < SpaceDimension; ++j)
     {
       coeffIterator[j] = IteratorType(this->m_CoefficientImages[j], supportRegion);
     }
@@ -558,8 +558,8 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::TransformPoin
     {
       while (!coeffIterator[0].IsAtEndOfLine())
       {
-        // Multiply weigth with coefficient
-        for (unsigned int j = 0; j < SpaceDimension; j++)
+        // Multiply weight with coefficient
+        for (unsigned int j = 0; j < SpaceDimension; ++j)
         {
           outputPoint[j] += static_cast<ScalarType>(weights[counter] * coeffIterator[j].Get());
         }
@@ -569,20 +569,20 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::TransformPoin
 
         // Go to next coefficient in the support region
         ++counter;
-        for (unsigned int j = 0; j < SpaceDimension; j++)
+        for (unsigned int j = 0; j < SpaceDimension; ++j)
         {
           ++(coeffIterator[j]);
         }
       } // end scanline
 
-      for (unsigned int j = 0; j < SpaceDimension; j++)
+      for (unsigned int j = 0; j < SpaceDimension; ++j)
       {
         coeffIterator[j].NextLine();
       }
     }
 
     // Return results
-    for (unsigned int j = 0; j < SpaceDimension; j++)
+    for (unsigned int j = 0; j < SpaceDimension; ++j)
     {
       outputPoint[j] += point[j];
     }
@@ -590,29 +590,28 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::TransformPoin
   else
   {
     itkWarningMacro("B-spline coefficients have not been set");
-    for (unsigned int j = 0; j < SpaceDimension; j++)
+    for (unsigned int j = 0; j < SpaceDimension; ++j)
     {
       outputPoint[j] = point[j];
     }
   }
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 void
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::ComputeJacobianWithRespectToParameters(
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::ComputeJacobianWithRespectToParameters(
   const InputPointType & point,
   JacobianType &         jacobian) const
 {
   // Zero all components of jacobian
   jacobian.SetSize(SpaceDimension, this->GetNumberOfParameters());
   jacobian.Fill(0.0);
-  RegionType supportRegion;
-  SizeType   supportSize;
+  SizeType supportSize;
   supportSize.Fill(SplineOrder + 1);
-  supportRegion.SetSize(supportSize);
 
-  ContinuousIndexType index;
-  this->m_CoefficientImages[0]->TransformPhysicalPointToContinuousIndex(point, index);
+  ContinuousIndexType index =
+    this->m_CoefficientImages[0]
+      ->template TransformPhysicalPointToContinuousIndex<typename ContinuousIndexType::ValueType>(point);
 
   // NOTE: if the support region does not lie totally within the grid we assume
   // zero displacement and do no computations beyond zeroing out the value
@@ -623,19 +622,19 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::ComputeJacobi
   }
 
   // Compute interpolation weights
-  WeightsType weights(this->m_WeightsFunction->GetNumberOfWeights());
+  WeightsType weights;
 
   IndexType supportIndex;
   this->m_WeightsFunction->Evaluate(index, weights, supportIndex);
 
-  supportRegion.SetIndex(supportIndex);
+  const RegionType supportRegion(supportIndex, supportSize);
 
   IndexType startIndex = this->m_CoefficientImages[0]->GetLargestPossibleRegion().GetIndex();
 
   const MeshSizeType meshSize = this->GetTransformDomainMeshSize();
   SizeType           cumulativeGridSizes;
   cumulativeGridSizes[0] = (meshSize[0] + SplineOrder);
-  for (unsigned int d = 1; d < SpaceDimension; d++)
+  for (unsigned int d = 1; d < SpaceDimension; ++d)
   {
     cumulativeGridSizes[d] = cumulativeGridSizes[d - 1] * (meshSize[d] + SplineOrder);
   }
@@ -649,22 +648,22 @@ BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::ComputeJacobi
     typename ImageType::OffsetType currentIndex = It.GetIndex() - startIndex;
 
     unsigned long number = currentIndex[0];
-    for (unsigned int d = 1; d < SpaceDimension; d++)
+    for (unsigned int d = 1; d < SpaceDimension; ++d)
     {
       number += (currentIndex[d] * cumulativeGridSizes[d - 1]);
     }
 
-    for (unsigned int d = 0; d < SpaceDimension; d++)
+    for (unsigned int d = 0; d < SpaceDimension; ++d)
     {
       jacobian(d, number + d * numberOfParametersPerDimension) = weights[counter];
     }
-    counter++;
+    ++counter;
   }
 }
 
-template <typename TParametersValueType, unsigned int NDimensions, unsigned int VSplineOrder>
+template <typename TParametersValueType, unsigned int VDimension, unsigned int VSplineOrder>
 void
-BSplineTransform<TParametersValueType, NDimensions, VSplineOrder>::PrintSelf(std::ostream & os, Indent indent) const
+BSplineTransform<TParametersValueType, VDimension, VSplineOrder>::PrintSelf(std::ostream & os, Indent indent) const
 {
   this->Superclass::PrintSelf(os, indent);
 

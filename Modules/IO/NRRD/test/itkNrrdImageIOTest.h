@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,6 +25,7 @@
 #include "itkNrrdImageIO.h"
 #include "itkImage.h"
 #include "itkRandomImageSource.h"
+#include "itkTestingMacros.h"
 
 template <typename TPixelType, unsigned int VImageDimension>
 typename itk::Image<TPixelType, VImageDimension>::Pointer
@@ -38,7 +39,7 @@ itkNrrdImageIOTestGenerateRandomImage(unsigned int size)
   typename ImageType::SpacingType spacing;
   typename ImageType::PointType   origin;
 
-  for (unsigned int i = 0; i < VImageDimension; i++)
+  for (unsigned int i = 0; i < VImageDimension; ++i)
   {
     sz[i] = size;
     spacing[i] = static_cast<float>(i + 1);
@@ -63,6 +64,20 @@ itkNrrdImageIOTestReadWriteTest(std::string fn, unsigned int size, std::string i
   typename itk::ImageFileWriter<ImageType>::Pointer writer = itk::ImageFileWriter<ImageType>::New();
 
   itk::NrrdImageIO::Pointer io = itk::NrrdImageIO::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(io, NrrdImageIO, ImageIOBase);
+
+
+  ITK_TEST_EXPECT_TRUE(io->SupportsDimension(VImageDimension));
+
+  constexpr unsigned int NRRD_DIM_MAX = 16; // taken from NrrdIO.h which is not in the include path
+  unsigned long          dim = NRRD_DIM_MAX + 1;
+  ITK_TEST_EXPECT_TRUE(!io->SupportsDimension(dim));
+
+  // Binary files have no image information to read
+  io->WriteImageInformation();
+
+
   reader->SetImageIO(io);
   writer->SetImageIO(io);
 
@@ -73,16 +88,10 @@ itkNrrdImageIOTestReadWriteTest(std::string fn, unsigned int size, std::string i
     typename itk::ImageFileReader<ImageType>::Pointer tmpReader = itk::ImageFileReader<ImageType>::New();
     tmpReader->SetImageIO(io);
     tmpReader->SetFileName(inputFile.c_str());
-    try
-    {
-      tmpReader->Update();
-      std::cout << "DONE READING INPUT IMAGE" << std::endl;
-    }
-    catch (const itk::ExceptionObject & e)
-    {
-      std::cerr << e << std::endl;
-      return EXIT_FAILURE;
-    }
+
+    ITK_TRY_EXPECT_NO_EXCEPTION(tmpReader->Update());
+
+    std::cout << "DONE READING INPUT IMAGE" << std::endl;
 
     image = tmpReader->GetOutput();
   }
@@ -119,20 +128,14 @@ itkNrrdImageIOTestReadWriteTest(std::string fn, unsigned int size, std::string i
   image->Print(std::cout);
   std::cout << "----------" << std::endl;
 
-  try
-  {
-    writer->Update();
-    std::cout << "DONE WRITING TEST IMAGE" << std::endl;
-    reader->Update();
-    std::cout << "DONE READING TEST IMAGE" << std::endl;
-  }
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cerr << "Exception in file reader or writer " << std::endl;
-    std::cerr << e.GetDescription() << std::endl;
-    std::cerr << e.GetLocation() << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+
+  std::cout << "DONE WRITING TEST IMAGE" << std::endl;
+
+
+  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
+
+  std::cout << "DONE READING TEST IMAGE" << std::endl;
 
   // Print the image information.
 

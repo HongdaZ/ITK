@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,6 +24,7 @@
 
 using Matrix2Type = itk::Matrix<double, 2, 2>;
 using Vector2Type = itk::Vector<double, 2>;
+using Matrix3Type = itk::Matrix<double, 3, 3>;
 
 namespace
 {
@@ -31,7 +32,7 @@ namespace
 void
 PrintVector(const Vector2Type & v)
 {
-  for (unsigned int i = 0; i < Vector2Type::Dimension; i++)
+  for (unsigned int i = 0; i < Vector2Type::Dimension; ++i)
   {
     std::cout << v[i] << ", ";
   }
@@ -50,9 +51,9 @@ testMatrix(const TMatrix & m1, const TMatrix & m2, int maxUlps = 4)
 {
   bool pass = true;
 
-  for (unsigned int i = 0; i < TMatrix::RowDimensions; i++)
+  for (unsigned int i = 0; i < TMatrix::RowDimensions; ++i)
   {
-    for (unsigned int j = 0; j < TMatrix::ColumnDimensions; j++)
+    for (unsigned int j = 0; j < TMatrix::ColumnDimensions; ++j)
     {
       if (!testValue(m1[i][j], m2[i][j], maxUlps))
       {
@@ -69,7 +70,7 @@ testVector(const TVector & v1, const TVector & v2, int maxUlps = 4)
 {
   bool pass = true;
 
-  for (unsigned int i = 0; i < TVector::Dimension; i++)
+  for (unsigned int i = 0; i < TVector::Dimension; ++i)
   {
     if (!testValue(v1[i], v2[i], maxUlps))
     {
@@ -91,7 +92,7 @@ testVariableVector(const TVector & v1, const TVector & v2, int maxUlps = 4)
   {
     return false;
   }
-  for (unsigned int i = 0; i < D1; i++)
+  for (unsigned int i = 0; i < D1; ++i)
   {
     if (!testValue(v1[i], v2[i], maxUlps))
     {
@@ -122,12 +123,11 @@ itkAffineTransformTest(int, char *[])
   int any = 0; // Any errors detected in testing?
 
   Matrix2Type matrix2, matrix2Truth;
-  Matrix2Type inverse2;
   Vector2Type vector2, vector2Truth;
 
   /* Create a 2D identity transformation and show its parameters */
   using Affine2DType = itk::AffineTransform<double, 2>;
-  Affine2DType::Pointer id2 = Affine2DType::New();
+  auto id2 = Affine2DType::New();
   matrix2 = id2->GetMatrix();
   vector2 = id2->GetOffset();
   std::cout << "Matrix from instantiating an identity transform:" << std::endl << matrix2;
@@ -156,12 +156,12 @@ itkAffineTransformTest(int, char *[])
   vector2[0] = 5;
   vector2[1] = 6;
 
-  Affine2DType::Pointer aff2 = Affine2DType::New();
+  auto aff2 = Affine2DType::New();
   aff2->SetMatrix(matrix2);
   aff2->SetOffset(vector2);
-  for (unsigned int i = 0; i < 2; i++)
+  for (unsigned int i = 0; i < 2; ++i)
   {
-    for (unsigned int j = 0; j < 2; j++)
+    for (unsigned int j = 0; j < 2; ++j)
     {
       matrix2[i][j] = 0.0;
     }
@@ -171,7 +171,7 @@ itkAffineTransformTest(int, char *[])
   aff2->Print(std::cout);
 
   /* Get and test inverse of whole transform */
-  Affine2DType::Pointer affInv2 = Affine2DType::New();
+  auto affInv2 = Affine2DType::New();
   if (!aff2->GetInverse(affInv2))
   {
     std::cout << "Test transform does not have an inverse when expected." << std::endl;
@@ -201,9 +201,9 @@ itkAffineTransformTest(int, char *[])
   vector2[1] = 1;
   aff2->SetMatrix(matrix2);
   aff2->SetOffset(vector2);
-  for (unsigned int i = 0; i < 2; i++)
+  for (unsigned int i = 0; i < 2; ++i)
   {
-    for (unsigned int j = 0; j < 2; j++)
+    for (unsigned int j = 0; j < 2; ++j)
     {
       matrix2[i][j] = 0.0;
     }
@@ -476,7 +476,7 @@ itkAffineTransformTest(int, char *[])
   Affine3DType::MatrixType matrix3Truth;
 
   /* Create a 3D transform and rotate in 3D */
-  Affine3DType::Pointer  aff3 = Affine3DType::New();
+  auto                   aff3 = Affine3DType::New();
   itk::Vector<double, 3> axis;
   axis[0] = .707;
   axis[1] = .707;
@@ -502,7 +502,7 @@ itkAffineTransformTest(int, char *[])
   }
 
   /* Generate inverse transform */
-  Affine3DType::Pointer inv3 = Affine3DType::New();
+  auto inv3 = Affine3DType::New();
   if (!aff3->GetInverse(inv3))
   {
     std::cout << "Cannot compute inverse transformation" << std::endl;
@@ -543,7 +543,7 @@ itkAffineTransformTest(int, char *[])
   }
 
   /* Test output of ComputeJacobianWithRespectToParameters */
-  Affine3DType::Pointer jaff = Affine3DType::New();
+  auto jaff = Affine3DType::New();
 
   Affine3DType::InputPointType jpoint;
   jpoint[0] = 5.0;
@@ -559,9 +559,9 @@ itkAffineTransformTest(int, char *[])
                     0, 0,  0,  0, 1, 0, 0, 0, 0, 0, 0, 0, 5, 10, 15, 0, 0,  1 };
   vnl_matrix<double>         vnlData(data, 3, 12);
   Affine3DType::JacobianType expectedJacobian(vnlData);
-  for (unsigned int i = 0; i < 3; i++)
+  for (unsigned int i = 0; i < 3; ++i)
   {
-    for (unsigned int j = 0; j < 12; j++)
+    for (unsigned int j = 0; j < 12; ++j)
     {
       if (!testValue(expectedJacobian[i][j], jaffJacobian[i][j]))
       {
@@ -572,25 +572,62 @@ itkAffineTransformTest(int, char *[])
   }
 
   /* Test ComputeJacobianWithRespectToPosition. Should return Matrix. */
-  const Affine3DType::MatrixType     jaffMatrix = jaff->GetMatrix();
+  matrix3Truth[0][0] = 1;
+  matrix3Truth[0][1] = 2;
+  matrix3Truth[0][2] = 3;
+  matrix3Truth[1][0] = 4;
+  matrix3Truth[1][1] = 5;
+  matrix3Truth[1][2] = 6;
+  matrix3Truth[2][0] = 7;
+  matrix3Truth[2][1] = 8;
+  matrix3Truth[2][2] = 8;
+
+  jaff->SetMatrix(matrix3Truth);
   Affine3DType::JacobianPositionType jaffJacobianPosition;
   jaff->ComputeJacobianWithRespectToPosition(jpoint, jaffJacobianPosition);
-  for (unsigned int i = 0; i < Affine3DType::MatrixType::RowDimensions; i++)
+  for (unsigned int i = 0; i < Affine3DType::MatrixType::RowDimensions; ++i)
   {
-    for (unsigned int j = 0; j < Affine3DType::MatrixType::ColumnDimensions; j++)
+    for (unsigned int j = 0; j < Affine3DType::MatrixType::ColumnDimensions; ++j)
     {
-      if (!testValue(jaffJacobianPosition[i][j], jaffMatrix[i][j]))
+      if (!testValue(jaffJacobianPosition[i][j], matrix3Truth[i][j]))
       {
         std::cout << "Failed ComputeJacobianWithRespectToPosition." << std::endl
                   << "jaffJacobianPosition: " << jaffJacobianPosition << std::endl
-                  << "jaffMatrix: " << jaffMatrix << std::endl;
+                  << "matrix3Truth: " << matrix3Truth << std::endl;
+        return EXIT_FAILURE;
+      }
+    }
+  }
+
+  /* Test ComputeInverseJacobianWithRespectToPosition. Should return the inverse Matrix. */
+  Matrix3Type matrix3invTruth;
+  matrix3invTruth[0][0] = -8. / 3.;
+  matrix3invTruth[0][1] = 8. / 3.;
+  matrix3invTruth[0][2] = -1;
+  matrix3invTruth[1][0] = 10. / 3.;
+  matrix3invTruth[1][1] = -13. / 3.;
+  matrix3invTruth[1][2] = 2;
+  matrix3invTruth[2][0] = -1;
+  matrix3invTruth[2][1] = 2;
+  matrix3invTruth[2][2] = -1;
+  Affine3DType::JacobianPositionType jaffInverseJacobianPosition;
+  jaff->ComputeInverseJacobianWithRespectToPosition(jpoint, jaffInverseJacobianPosition);
+  for (unsigned int i = 0; i < Affine3DType::MatrixType::RowDimensions; ++i)
+  {
+    for (unsigned int j = 0; j < Affine3DType::MatrixType::ColumnDimensions; ++j)
+    {
+      if (itk::Math::abs(jaffInverseJacobianPosition[i][j] - matrix3invTruth[i][j]) > 1e-13)
+      {
+        std::cout << "Failed ComputeInverseJacobianWithRespectToPosition." << std::endl
+                  << "jaffInverseJacobianPosition: " << jaffInverseJacobianPosition << std::endl
+                  << "matrix3invTruth: " << matrix3invTruth << std::endl;
         return EXIT_FAILURE;
       }
     }
   }
 
   /* Test SetParameters */
-  Affine3DType::Pointer paff = Affine3DType::New();
+  auto paff = Affine3DType::New();
   paff->Print(std::cout);
   Affine3DType::ParametersType parameters1(paff->GetNumberOfParameters());
   Affine3DType::ParametersType fixed_parameters = paff->GetFixedParameters();
@@ -620,9 +657,9 @@ itkAffineTransformTest(int, char *[])
   paff->Print(std::cout);
 
   // TEST INVERSE OF INVERSE
-  Affine3DType::Pointer paff_inv = Affine3DType::New();
+  auto paff_inv = Affine3DType::New();
   paff->GetInverse(paff_inv);
-  Affine3DType::Pointer paff_inv_inv = Affine3DType::New();
+  auto paff_inv_inv = Affine3DType::New();
   paff_inv->GetInverse(paff_inv_inv);
 
   std::cout << "TEST INVERSE" << std::endl;
@@ -639,7 +676,7 @@ itkAffineTransformTest(int, char *[])
     {
       const double v = (parameters1[q] - parameters1_inv_inv[q]);
       // Protect against numerical errors when v~=-0 with abs.
-      mag_error += sqrt(std::abs(v));
+      mag_error += sqrt(itk::Math::abs(v));
     }
     if (mag_error > 1e-4)
     {
@@ -673,7 +710,7 @@ itkAffineTransformTest(int, char *[])
 
   Affine3DType::ParametersType parametersRead(paff->GetNumberOfParameters());
   parametersRead = paff->GetParameters();
-  for (unsigned int k = 0; k < paff->GetNumberOfParameters(); k++)
+  for (unsigned int k = 0; k < paff->GetNumberOfParameters(); ++k)
   {
     if (!testValue(parameters1[k], parametersRead[k]))
     {
@@ -686,7 +723,7 @@ itkAffineTransformTest(int, char *[])
   Affine3DType::DerivativeType update(paff->GetNumberOfParameters());
   Affine3DType::ParametersType updateTruth;
   updateTruth = parameters1;
-  for (unsigned int i = 0; i < paff->GetNumberOfParameters(); i++)
+  for (unsigned int i = 0; i < paff->GetNumberOfParameters(); ++i)
   {
     update[i] = i / 10.0;
     updateTruth[i] += update[i];
@@ -694,7 +731,7 @@ itkAffineTransformTest(int, char *[])
   /* Update all the parameters, with default scaling factor of 1 */
   paff->UpdateTransformParameters(update);
   parametersRead = paff->GetParameters();
-  for (unsigned int k = 0; k < paff->GetNumberOfParameters(); k++)
+  for (unsigned int k = 0; k < paff->GetNumberOfParameters(); ++k)
   {
     if (itk::Math::NotAlmostEquals(updateTruth[k], parametersRead[k]))
     {
@@ -708,14 +745,14 @@ itkAffineTransformTest(int, char *[])
   }
   /* Update with a non-unit scaling factor */
   double factor = 0.5;
-  for (unsigned int i = 0; i < paff->GetNumberOfParameters(); i++)
+  for (unsigned int i = 0; i < paff->GetNumberOfParameters(); ++i)
   {
     update[i] = i;
     updateTruth[i] += update[i] * factor;
   }
   paff->UpdateTransformParameters(update, factor);
   parametersRead = paff->GetParameters();
-  for (unsigned int k = 0; k < paff->GetNumberOfParameters(); k++)
+  for (unsigned int k = 0; k < paff->GetNumberOfParameters(); ++k)
   {
     if (itk::Math::NotAlmostEquals(updateTruth[k], parametersRead[k]))
     {
@@ -730,7 +767,7 @@ itkAffineTransformTest(int, char *[])
   {
     // Test SetParameters and GetInverse
     using TransformType = itk::AffineTransform<double, 2>;
-    TransformType::Pointer transform = TransformType::New();
+    auto transform = TransformType::New();
 
     TransformType::ParametersType parameters2;
     TransformType::ParametersType expectedParameters;
@@ -745,7 +782,7 @@ itkAffineTransformTest(int, char *[])
     expectedParameters.Fill(0.0);
     expectedParameters[0] = 1.0;
     expectedParameters[3] = 1.0;
-    for (unsigned int k = 0; k < transform->GetNumberOfParameters(); k++)
+    for (unsigned int k = 0; k < transform->GetNumberOfParameters(); ++k)
     {
       if (!testValue(parameters2[k], expectedParameters[k]))
       {
@@ -764,7 +801,7 @@ itkAffineTransformTest(int, char *[])
 
     transform->SetParameters(expectedParameters);
     parameters2 = transform->GetParameters();
-    for (unsigned int k = 0; k < transform->GetNumberOfParameters(); k++)
+    for (unsigned int k = 0; k < transform->GetNumberOfParameters(); ++k)
     {
       if (!testValue(parameters2[k], expectedParameters[k]))
       {
@@ -783,7 +820,7 @@ itkAffineTransformTest(int, char *[])
 
     transform->SetParameters(expectedParameters);
 
-    TransformType::Pointer other = TransformType::New();
+    auto other = TransformType::New();
     transform->GetInverse(other);
 
     TransformType::Pointer otherbis = dynamic_cast<TransformType *>(transform->GetInverseTransform().GetPointer());
@@ -797,7 +834,7 @@ itkAffineTransformTest(int, char *[])
 
     other->Print(std::cout);
     otherbis->Print(std::cout);
-    for (unsigned int k = 0; k < transform->GetNumberOfParameters(); k++)
+    for (unsigned int k = 0; k < transform->GetNumberOfParameters(); ++k)
     {
       if (!testValue(parameters2[k], expectedParameters[k]))
       {
@@ -808,7 +845,7 @@ itkAffineTransformTest(int, char *[])
         break;
       }
     }
-    for (unsigned int k = 0; k < transform->GetNumberOfParameters(); k++)
+    for (unsigned int k = 0; k < transform->GetNumberOfParameters(); ++k)
     {
       if (!testValue(parameters2bis[k], expectedParameters[k]))
       {
@@ -821,8 +858,8 @@ itkAffineTransformTest(int, char *[])
     }
 
     // Try to invert a singular transform
-    TransformType::Pointer singularTransform = TransformType::New();
-    TransformType::Pointer singularTransformInverse = TransformType::New();
+    auto singularTransform = TransformType::New();
+    auto singularTransformInverse = TransformType::New();
     singularTransform->Scale(0.0);
     if (!singularTransform->GetInverse(singularTransformInverse))
     {

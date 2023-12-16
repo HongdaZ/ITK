@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkNoiseBaseImageFilter_hxx
 #define itkNoiseBaseImageFilter_hxx
 
-#include "itkNoiseBaseImageFilter.h"
 #include <ctime>
 
 namespace itk
@@ -44,14 +43,14 @@ NoiseBaseImageFilter<TInputImage, TOutputImage>::SetSeed()
 }
 
 template <class TInputImage, class TOutputImage>
-typename NoiseBaseImageFilter<TInputImage, TOutputImage>::OutputImagePixelType
-NoiseBaseImageFilter<TInputImage, TOutputImage>::ClampCast(const double & value)
+auto
+NoiseBaseImageFilter<TInputImage, TOutputImage>::ClampCast(const double value) -> OutputImagePixelType
 {
-  if (value >= (double)NumericTraits<OutputImagePixelType>::max())
+  if (value >= static_cast<double>(NumericTraits<OutputImagePixelType>::max()))
   {
     return NumericTraits<OutputImagePixelType>::max();
   }
-  else if (value <= (double)NumericTraits<OutputImagePixelType>::NonpositiveMin())
+  else if (value <= static_cast<double>(NumericTraits<OutputImagePixelType>::NonpositiveMin()))
   {
     return NumericTraits<OutputImagePixelType>::NonpositiveMin();
   }

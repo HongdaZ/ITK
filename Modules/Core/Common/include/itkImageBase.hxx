@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@
 #ifndef itkImageBase_hxx
 #define itkImageBase_hxx
 
-#include "itkImageBase.h"
 
 #include <mutex>
 #include "itkProcessObject.h"
@@ -38,18 +37,6 @@
 
 namespace itk
 {
-
-template <unsigned int VImageDimension>
-ImageBase<VImageDimension>::ImageBase()
-{
-  m_Spacing.Fill(1.0);
-  m_Origin.Fill(0.0);
-  m_Direction.SetIdentity();
-  m_InverseDirection.SetIdentity();
-  m_IndexToPhysicalPoint.SetIdentity();
-  m_PhysicalPointToIndex.SetIdentity();
-}
-
 
 template <unsigned int VImageDimension>
 void
@@ -82,16 +69,25 @@ template <unsigned int VImageDimension>
 void
 ImageBase<VImageDimension>::SetSpacing(const SpacingType & spacing)
 {
-  for (unsigned int i = 0; i < VImageDimension; i++)
+  for (unsigned int i = 0; i < VImageDimension; ++i)
   {
-    if (this->m_Spacing[i] < 0.0)
+    // Check for zero-valued spacing
+    if (spacing[i] == 0.0)
     {
+      itkExceptionMacro(
+        "Zero-valued spacing is not supported and may result in undefined behavior.\nRefusing to change spacing from "
+        << this->m_Spacing << " to " << spacing);
+    }
+
+    // Check for negative-valued spacing
+    if (spacing[i] < 0.0)
+    {
+      constexpr char message[] = "Negative spacing is not supported and may result in undefined behavior.\n";
 #if !defined(ITK_LEGACY_REMOVE)
-      itkWarningMacro("Negative spacing is not supported and may result in undefined behavior. Spacing is "
-                      << this->m_Spacing);
+      itkWarningMacro(<< message << "Proceeding to set spacing to " << spacing);
       break;
 #else
-      itkExceptionMacro("Negative spacing is not allowed: Spacing is " << this->m_Spacing);
+      itkExceptionMacro(<< message << "Refusing to change spacing from " << this->m_Spacing << " to " << spacing);
 #endif
     }
   }
@@ -144,9 +140,15 @@ ImageBase<VImageDimension>::SetDirection(const DirectionType & direction)
 {
   bool modified = false;
 
-  for (unsigned int r = 0; r < VImageDimension; r++)
+  if (vnl_determinant(direction.GetVnlMatrix()) == 0.0)
   {
-    for (unsigned int c = 0; c < VImageDimension; c++)
+    itkExceptionMacro("Bad direction, determinant is 0. Refusing to change direction from " << this->m_Direction
+                                                                                            << " to " << direction);
+  }
+
+  for (unsigned int r = 0; r < VImageDimension; ++r)
+  {
+    for (unsigned int c = 0; c < VImageDimension; ++c)
     {
       if (Math::NotExactlyEquals(m_Direction[r][c], direction[r][c]))
       {
@@ -170,18 +172,9 @@ ImageBase<VImageDimension>::ComputeIndexToPhysicalPointMatrices()
 {
   DirectionType scale;
 
-  for (unsigned int i = 0; i < VImageDimension; i++)
+  for (unsigned int i = 0; i < VImageDimension; ++i)
   {
-    if (this->m_Spacing[i] == 0.0)
-    {
-      itkExceptionMacro("A spacing of 0 is not allowed: Spacing is " << this->m_Spacing);
-    }
     scale[i][i] = this->m_Spacing[i];
-  }
-
-  if (vnl_determinant(this->m_Direction.GetVnlMatrix()) == 0.0)
-  {
-    itkExceptionMacro(<< "Bad direction, determinant is 0. Direction is " << this->m_Direction);
   }
 
   this->m_IndexToPhysicalPoint = this->m_Direction * scale;
@@ -201,7 +194,7 @@ ImageBase<VImageDimension>::ComputeOffsetTable()
 
   // m_OffsetTable[0] = (OffsetValueType)num;
   m_OffsetTable[0] = num;
-  for (unsigned int i = 0; i < VImageDimension; i++)
+  for (unsigned int i = 0; i < VImageDimension; ++i)
   {
     num *= bufferSize[i];
     // m_OffsetTable[i+1] = (OffsetValueType)num;
@@ -220,9 +213,11 @@ template <unsigned int VImageDimension>
 void
 ImageBase<VImageDimension>::UpdateOutputInformation()
 {
-  if (this->GetSource())
+  const auto source = this->GetSource();
+
+  if (source)
   {
-    this->GetSource()->UpdateOutputInformation();
+    source->UpdateOutputInformation();
   }
   else
   {
@@ -256,7 +251,7 @@ ImageBase<VImageDimension>::UpdateOutputData()
 {
   // If the requested region does not contain any pixels then there is
   // no reason to Update the output data. This is needed so that
-  // filters don't need to update all inputs. This occours in
+  // filters don't need to update all inputs. This occurs in
   // ImageBase as  oppose to DataObject, but cause this statement
   // requires the specific GetNumberOfPixels methods ( as oppose to a
   // generic Region::IsEmpty method ).
@@ -359,7 +354,7 @@ ImageBase<VImageDimension>::RequestedRegionIsOutsideOfTheBufferedRegion()
   const SizeType & requestedRegionSize = this->GetRequestedRegion().GetSize();
   const SizeType & bufferedRegionSize = this->GetBufferedRegion().GetSize();
 
-  for (i = 0; i < VImageDimension; i++)
+  for (i = 0; i < VImageDimension; ++i)
   {
     if ((requestedRegionIndex[i] < bufferedRegionIndex[i]) ||
         ((requestedRegionIndex[i] + static_cast<OffsetValueType>(requestedRegionSize[i])) >
@@ -389,7 +384,7 @@ ImageBase<VImageDimension>::VerifyRequestedRegion()
   const SizeType & requestedRegionSize = this->GetRequestedRegion().GetSize();
   const SizeType & largestPossibleRegionSize = this->GetLargestPossibleRegion().GetSize();
 
-  for (i = 0; i < VImageDimension; i++)
+  for (i = 0; i < VImageDimension; ++i)
   {
     if ((requestedRegionIndex[i] < largestPossibleRegionIndex[i]) ||
         ((requestedRegionIndex[i] + static_cast<OffsetValueType>(requestedRegionSize[i])) >

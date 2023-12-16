@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@ itkConstantPadImageTest(int, char *[])
   using FloatImage = itk::Image<float, 2>;
 
   // Test the creation of an image with native type
-  ShortImage::Pointer image = ShortImage::New();
+  auto image = ShortImage::New();
 
   // fill in an image
   ShortImage::IndexType  index = { { 0, 0 } };
@@ -53,7 +53,7 @@ itkConstantPadImageTest(int, char *[])
 
   // Create a filter
   using PadFilterType = itk::ConstantPadImageFilter<ShortImage, FloatImage>;
-  PadFilterType::Pointer   constantPad = PadFilterType::New();
+  auto                     constantPad = PadFilterType::New();
   itk::SimpleFilterWatcher watch(constantPad);
   constantPad->SetInput(image);
 
@@ -147,7 +147,7 @@ itkConstantPadImageTest(int, char *[])
 
   // Create a stream
   using StreamingFilter = itk::StreamingImageFilter<FloatImage, FloatImage>;
-  StreamingFilter::Pointer stream = StreamingFilter::New();
+  auto stream = StreamingFilter::New();
   stream->SetInput(constantPad->GetOutput());
   stream->SetNumberOfStreamDivisions(2);
 

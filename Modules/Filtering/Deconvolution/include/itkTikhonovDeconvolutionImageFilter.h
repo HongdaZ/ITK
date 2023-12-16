@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class TikhonovDeconvolutionImageFilter
+ * \class TikhonovDeconvolutionImageFilter
  * \brief An inverse deconvolution filter regularized in the Tikhonov sense.
  *
  * The Tikhonov deconvolution filter is the inverse deconvolution
@@ -55,7 +55,7 @@ class ITK_TEMPLATE_EXPORT TikhonovDeconvolutionImageFilter
   : public InverseDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TikhonovDeconvolutionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(TikhonovDeconvolutionImageFilter);
 
   using Self = TikhonovDeconvolutionImageFilter;
   using Superclass = InverseDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>;
@@ -74,26 +74,26 @@ public:
   using InputImageType = TInputImage;
   using OutputImageType = TOutputImage;
   using KernelImageType = TKernelImage;
-  using InputPixelType = typename Superclass::InputPixelType;
-  using OutputPixelType = typename Superclass::OutputPixelType;
-  using KernelPixelType = typename Superclass::KernelPixelType;
-  using InputIndexType = typename Superclass::InputIndexType;
-  using OutputIndexType = typename Superclass::OutputIndexType;
-  using KernelIndexType = typename Superclass::KernelIndexType;
-  using InputSizeType = typename Superclass::InputSizeType;
-  using OutputSizeType = typename Superclass::OutputSizeType;
-  using KernelSizeType = typename Superclass::KernelSizeType;
-  using SizeValueType = typename Superclass::SizeValueType;
-  using InputRegionType = typename Superclass::InputRegionType;
-  using OutputRegionType = typename Superclass::OutputRegionType;
-  using KernelRegionType = typename Superclass::KernelRegionType;
+  using typename Superclass::InputPixelType;
+  using typename Superclass::OutputPixelType;
+  using typename Superclass::KernelPixelType;
+  using typename Superclass::InputIndexType;
+  using typename Superclass::OutputIndexType;
+  using typename Superclass::KernelIndexType;
+  using typename Superclass::InputSizeType;
+  using typename Superclass::OutputSizeType;
+  using typename Superclass::KernelSizeType;
+  using typename Superclass::SizeValueType;
+  using typename Superclass::InputRegionType;
+  using typename Superclass::OutputRegionType;
+  using typename Superclass::KernelRegionType;
 
   /** Internal image types. */
-  using InternalImageType = typename Superclass::InternalImageType;
-  using InternalImagePointerType = typename Superclass::InternalImagePointerType;
-  using InternalComplexType = typename Superclass::InternalComplexType;
-  using InternalComplexImageType = typename Superclass::InternalComplexImageType;
-  using InternalComplexImagePointerType = typename Superclass::InternalComplexImagePointerType;
+  using typename Superclass::InternalImageType;
+  using typename Superclass::InternalImagePointerType;
+  using typename Superclass::InternalComplexType;
+  using typename Superclass::InternalComplexImageType;
+  using typename Superclass::InternalComplexImagePointerType;
 
   /** The regularization factor. Larger values reduce the dominance of
    * noise in the solution, but results in higher approximation error
@@ -130,17 +130,14 @@ public:
     , m_KernelZeroMagnitudeThreshold(f.m_KernelZeroMagnitudeThreshold)
   {}
 
+  bool
+  operator==(const TikhonovDeconvolutionFunctor &) const
+  {
+    return true;
+  }
 
-  bool
-  operator!=(const TikhonovDeconvolutionFunctor &) const
-  {
-    return false;
-  }
-  bool
-  operator==(const TikhonovDeconvolutionFunctor & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(TikhonovDeconvolutionFunctor);
+
   inline TOutput
   operator()(const TInput1 & I, const TInput2 & H) const
   {

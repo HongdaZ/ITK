@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,13 +18,14 @@
 
 #include "itkCentralDifferenceImageFunction.h"
 #include "itkImageRegionIteratorWithIndex.h"
+#include "itkTestingMacros.h"
 
 int
 itkCentralDifferenceImageFunctionSpeedTest(int argc, char * argv[])
 {
   if (argc != 6)
   {
-    std::cerr << "usage: size reps doEAI doEACI doE" << std::endl;
+    std::cerr << "usage: " << itkNameOfTestExecutableMacro(argv) << " size reps doEAI doEACI doE" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -41,7 +42,7 @@ itkCentralDifferenceImageFunctionSpeedTest(int argc, char * argv[])
   using PixelType = unsigned int;
   using ImageType = itk::Image<PixelType, ImageDimension>;
 
-  ImageType::Pointer  image = ImageType::New();
+  auto                image = ImageType::New();
   ImageType::SizeType size;
   size.Fill(imageSize);
   ImageType::RegionType region(size);
@@ -67,7 +68,7 @@ itkCentralDifferenceImageFunctionSpeedTest(int argc, char * argv[])
   using FunctionType = itk::CentralDifferenceImageFunction<ImageType, CoordRepType>;
   using OutputType = FunctionType::OutputType;
 
-  FunctionType::Pointer function = FunctionType::New();
+  auto function = FunctionType::New();
 
   function->SetInputImage(image);
 
@@ -79,7 +80,7 @@ itkCentralDifferenceImageFunctionSpeedTest(int argc, char * argv[])
   std::cout << "UseImageDirection: " << function->GetUseImageDirection() << std::endl;
 
   /// loop
-  for (int l = 0; l < reps; l++)
+  for (int l = 0; l < reps; ++l)
   {
     iter.GoToBegin();
     while (!iter.IsAtEnd())

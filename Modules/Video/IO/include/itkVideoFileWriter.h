@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 {
 
 /**
- *\class VideoFileWriter
+ * \class VideoFileWriter
  * \brief Writer that takes in a VideoStream and writes the frames to a file
  *
  * This class is a subclass of TemporalProcessObject which specifically takes a
@@ -40,7 +40,7 @@ template <typename TInputVideoStream>
 class ITK_TEMPLATE_EXPORT VideoFileWriter : public TemporalProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VideoFileWriter);
+  ITK_DISALLOW_COPY_AND_MOVE(VideoFileWriter);
 
   /** Standard class type aliases. */
   using Self = VideoFileWriter<TInputVideoStream>;
@@ -74,7 +74,7 @@ public:
 
   /** Specify the FourCC to use for video encoding. FourCC, or four character
    * code, is commonly used to denote the codec to be used to encode video by
-   * many libraries. See http://en.wikipedia.org/wiki/FourCC for more
+   * many libraries. See https://en.wikipedia.org/wiki/FourCC for more
    * information. */
   itkSetStringMacro(FourCC);
   itkGetStringMacro(FourCC);

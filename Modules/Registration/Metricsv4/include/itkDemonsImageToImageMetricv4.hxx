@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkDemonsImageToImageMetricv4_hxx
 #define itkDemonsImageToImageMetricv4_hxx
 
-#include "itkDemonsImageToImageMetricv4.h"
 
 namespace itk
 {
@@ -84,7 +83,7 @@ DemonsImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalCo
   }
 
   this->m_Normalizer = NumericTraits<TInternalComputationValueType>::ZeroValue();
-  for (ImageDimensionType k = 0; k < dimension; k++)
+  for (ImageDimensionType k = 0; k < dimension; ++k)
   {
     this->m_Normalizer += imageSpacing[k] * imageSpacing[k];
   }

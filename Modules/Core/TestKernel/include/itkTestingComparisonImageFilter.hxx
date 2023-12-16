@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkTestingComparisonImageFilter_hxx
 #define itkTestingComparisonImageFilter_hxx
 
-#include "itkTestingComparisonImageFilter.h"
 
 #include "itkConstNeighborhoodIterator.h"
 #include "itkImageRegionIterator.h"
@@ -78,7 +77,7 @@ template <typename TInputImage, typename TOutputImage>
 void
 ComparisonImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  ThreadIdType numberOfThreads = this->GetNumberOfWorkUnits();
+  ThreadIdType numberOfWorkUnits = this->GetNumberOfWorkUnits();
 
   // Initialize statistics about difference image.
   m_MinimumDifference = NumericTraits<OutputPixelType>::max();
@@ -88,10 +87,10 @@ ComparisonImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
   m_NumberOfPixelsWithDifferences = 0;
 
   // Resize the thread temporaries
-  m_ThreadDifferenceSum.SetSize(numberOfThreads);
-  m_ThreadMinimumDifference.SetSize(numberOfThreads);
-  m_ThreadMaximumDifference.SetSize(numberOfThreads);
-  m_ThreadNumberOfPixels.SetSize(numberOfThreads);
+  m_ThreadDifferenceSum.SetSize(numberOfWorkUnits);
+  m_ThreadMinimumDifference.SetSize(numberOfWorkUnits);
+  m_ThreadMaximumDifference.SetSize(numberOfWorkUnits);
+  m_ThreadNumberOfPixels.SetSize(numberOfWorkUnits);
 
   // Initialize the temporaries
   m_ThreadMinimumDifference.Fill(NumericTraits<OutputPixelType>::max());
@@ -124,7 +123,7 @@ ComparisonImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(const Out
 
   if (validImage->GetBufferedRegion() != testImage->GetBufferedRegion())
   {
-    itkExceptionMacro(<< "Input images have different Buffered Regions.")
+    itkExceptionMacro(<< "Input images have different Buffered Regions.");
   }
 
   // Create a radius of pixels.
@@ -240,9 +239,9 @@ void
 ComparisonImageFilter<TInputImage, TOutputImage>::AfterThreadedGenerateData()
 {
   // Set statistics about difference image.
-  ThreadIdType numberOfThreads = this->GetNumberOfWorkUnits();
+  ThreadIdType numberOfWorkUnits = this->GetNumberOfWorkUnits();
 
-  for (ThreadIdType i = 0; i < numberOfThreads; ++i)
+  for (ThreadIdType i = 0; i < numberOfWorkUnits; ++i)
   {
     m_TotalDifference += m_ThreadDifferenceSum[i];
     m_NumberOfPixelsWithDifferences += m_ThreadNumberOfPixels[i];

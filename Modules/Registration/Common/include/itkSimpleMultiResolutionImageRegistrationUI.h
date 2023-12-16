@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,7 +70,8 @@ protected:
 // This UI allows the number of iterations and learning rate
 // to be changes at each resolution level.
 template <typename TRegistration>
-class SimpleMultiResolutionImageRegistrationUI2 : public SimpleMultiResolutionImageRegistrationUI<TRegistration>
+class ITK_TEMPLATE_EXPORT SimpleMultiResolutionImageRegistrationUI2
+  : public SimpleMultiResolutionImageRegistrationUI<TRegistration>
 {
 public:
   using Superclass = SimpleMultiResolutionImageRegistrationUI<

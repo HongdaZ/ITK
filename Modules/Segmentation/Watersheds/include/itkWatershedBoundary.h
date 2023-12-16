@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,6 +54,8 @@ template <typename TScalar, unsigned int TDimension>
 class ITK_TEMPLATE_EXPORT Boundary : public DataObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_MOVE(Boundary);
+
   /** The dimensionality of this boundary.  For example, if the boundary
    * of a set of planes, it has dimensionality 2.  If the boundary is
    * a set of lines, it has dimensionality 1.  Dimensionality is one less
@@ -64,7 +66,7 @@ public:
    * The IndexType.first is the dimension of the face and IndexType.second is a
    * binary value 0 or 1 indicating the LOW face or the HIGH face,
    * respectively.    */
-  using IndexType = std::pair<unsigned, unsigned>;
+  using IndexType = std::pair<unsigned int, unsigned int>;
   using ImageType = Image<IdentifierType, TDimension>;
   using ImageIndexType = typename ImageType::IndexType;
   using ScalarType = TScalar;
@@ -127,7 +129,7 @@ public:
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
   itkNewMacro(Self);
-  itkTypeMacro(WatershedBoundary, DataObject);
+  itkTypeMacro(Boundary, DataObject);
 
   /** The following averts an internal compiler error on microsoft compilers */
   using FacePointer = typename face_t::Pointer;
@@ -143,7 +145,7 @@ public:
    * the number of the axial dimension and highlow is 0 for the LOW
    * face and 1 for the HIGH face.   */
   FacePointer
-  GetFace(unsigned dimension, unsigned highlow)
+  GetFace(unsigned int dimension, unsigned int highlow)
   {
     if (highlow == 0)
     {
@@ -162,7 +164,7 @@ public:
   }
 
   void
-  SetFace(FacePointer f, unsigned dimension, unsigned highlow)
+  SetFace(FacePointer f, unsigned int dimension, unsigned int highlow)
   {
     if (highlow == 0)
     {
@@ -182,7 +184,7 @@ public:
     return this->GetFlatHash(idx.first, idx.second);
   }
   flat_hash_t *
-  GetFlatHash(unsigned dimension, unsigned highlow)
+  GetFlatHash(unsigned int dimension, unsigned int highlow)
   {
     if (highlow == 0)
     {
@@ -200,7 +202,7 @@ public:
     this->SetFlatHash(l, idx.first, idx.second);
   }
   void
-  SetFlatHash(flat_hash_t & l, unsigned dimension, unsigned highlow)
+  SetFlatHash(flat_hash_t & l, unsigned int dimension, unsigned int highlow)
   {
     if (highlow == 0)
     {
@@ -223,7 +225,7 @@ public:
     this->SetValid(l, idx.first, idx.second);
   }
   void
-  SetValid(bool b, unsigned dimension, unsigned highlow)
+  SetValid(bool b, unsigned int dimension, unsigned int highlow)
   {
     if (highlow == 0)
     {
@@ -242,7 +244,7 @@ public:
     return this->GetValid(idx.first, idx.second);
   }
   bool
-  GetValid(unsigned dimension, unsigned highlow) const
+  GetValid(unsigned int dimension, unsigned int highlow) const
   {
     if (highlow == 0)
     {
@@ -257,10 +259,7 @@ public:
 protected:
   Boundary();
   ~Boundary() override = default;
-  Boundary(const Self &) {}
-  void
-  operator=(const Self &)
-  {}
+
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 

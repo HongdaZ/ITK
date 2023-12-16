@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class BinaryPruningImageFilter
+ * \class BinaryPruningImageFilter
  *
  * \brief This filter removes "spurs" of less than a certain
  * length in the input image.
@@ -59,7 +59,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT BinaryPruningImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryPruningImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BinaryPruningImageFilter);
 
   /** Standard class type aliases. */
   using Self = BinaryPruningImageFilter;

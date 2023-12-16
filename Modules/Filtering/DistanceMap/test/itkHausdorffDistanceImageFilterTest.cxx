@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,23 +18,28 @@
 
 #include "itkHausdorffDistanceImageFilter.h"
 #include "itkSimpleFilterWatcher.h"
+#include "itkTestingMacros.h"
 
 int
-itkHausdorffDistanceImageFilterTest(int, char *[])
+itkHausdorffDistanceImageFilterTest(int argc, char * argv[])
 {
+  if (argc != 2)
+  {
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " useImageSpacing" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  constexpr unsigned int ImageDimension = 3;
 
   using Pixel1Type = unsigned int;
   using Pixel2Type = float;
-  enum
-  {
-    ImageDimension = 3
-  };
 
   using Image1Type = itk::Image<Pixel1Type, ImageDimension>;
   using Image2Type = itk::Image<Pixel2Type, ImageDimension>;
 
-  Image1Type::Pointer image1 = Image1Type::New();
-  Image2Type::Pointer image2 = Image2Type::New();
+  auto image1 = Image1Type::New();
+  auto image2 = Image2Type::New();
 
   Image1Type::SizeType size;
   size.Fill(50);
@@ -80,76 +85,22 @@ itkHausdorffDistanceImageFilterTest(int, char *[])
     ++it2;
   }
 
-  int exit_status = EXIT_SUCCESS; // If no failures detected, then EXIT_SUCCESS
-  // compute the directed Hausdorff distance h(image1,image2)
-  {
-    using FilterType = itk::DirectedHausdorffDistanceImageFilter<Image1Type, Image2Type>;
-    FilterType::Pointer      filter = FilterType::New();
-    itk::SimpleFilterWatcher watcher(filter, "filter");
+  // If no failures detected, then EXIT_SUCCESS
+  int exit_status = EXIT_SUCCESS;
 
-    filter->SetInput1(image1);
-    filter->SetInput2(image2);
-    filter->Update();
-    filter->Print(std::cout);
-
-    // check results
-    const FilterType::RealType trueDistance = 10 * std::sqrt(static_cast<double>(ImageDimension));
-    const FilterType::RealType distance = filter->GetDirectedHausdorffDistance();
-
-    std::cout << " True distance: " << trueDistance << std::endl;
-    std::cout << " Computed computed: " << distance << std::endl;
-    std::cout << " Average distance: " << filter->GetAverageHausdorffDistance() << std::endl;
-    if (itk::Math::abs(trueDistance - distance) > 0.1)
-    {
-      std::cout << "Test failed. " << std::endl;
-      exit_status = EXIT_FAILURE;
-    }
-    if (itk::Math::abs(6.5 - filter->GetAverageHausdorffDistance()) > 0.1)
-    {
-      std::cout << "Test failed, average distance too great. " << std::endl;
-      exit_status = EXIT_FAILURE;
-    }
-  }
-
-  // compute the directed Hausdorff distance h(image2,image1)
-  {
-    using FilterType = itk::DirectedHausdorffDistanceImageFilter<Image2Type, Image1Type>;
-    FilterType::Pointer filter = FilterType::New();
-
-    filter->SetInput1(image2);
-    filter->SetInput2(image1);
-    filter->Update();
-
-    // check results
-    const FilterType::RealType trueDistance = 5 * std::sqrt(static_cast<double>(ImageDimension));
-    const FilterType::RealType distance = filter->GetDirectedHausdorffDistance();
-
-    std::cout << " True distance: " << trueDistance << std::endl;
-    std::cout << " Computed computed: " << distance << std::endl;
-    std::cout << " Average distance: " << filter->GetAverageHausdorffDistance() << std::endl;
-
-    if (itk::Math::abs(trueDistance - distance) > 0.1)
-    {
-      std::cout << "Test failed. " << std::endl;
-      exit_status = EXIT_FAILURE;
-    }
-    if (itk::Math::abs(2.5 - filter->GetAverageHausdorffDistance()) > 0.1)
-    {
-      std::cout << "Test failed, average distance too great. " << std::endl;
-      exit_status = EXIT_FAILURE;
-    }
-  }
-
-  // compute the Hausdorff distance H(image1,image2)
+  // Compute the Hausdorff distance H(image1,image2)
   {
     using FilterType = itk::HausdorffDistanceImageFilter<Image1Type, Image2Type>;
-    FilterType::Pointer filter = FilterType::New();
+    auto filter = FilterType::New();
+
+    ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, HausdorffDistanceImageFilter, ImageToImageFilter);
+
 
     filter->SetInput1(image1);
     filter->SetInput2(image2);
     filter->Update();
 
-    // check results
+    // Check results
     const FilterType::RealType trueDistance = 10 * std::sqrt(static_cast<double>(ImageDimension));
     const FilterType::RealType distance = filter->GetHausdorffDistance();
 
@@ -164,21 +115,21 @@ itkHausdorffDistanceImageFilterTest(int, char *[])
     }
     if (itk::Math::abs(4.5 - filter->GetAverageHausdorffDistance()) > 0.1)
     {
-      std::cout << "Test failed, average distance too great. " << std::endl;
+      std::cout << "Test failed, average distance incorrect. " << std::endl;
       exit_status = EXIT_FAILURE;
     }
   }
 
-  // compute the Hausdorff distance H(image2,image1)
+  // Compute the Hausdorff distance H(image2,image1)
   {
     using FilterType = itk::HausdorffDistanceImageFilter<Image2Type, Image1Type>;
-    FilterType::Pointer filter = FilterType::New();
+    auto filter = FilterType::New();
 
     filter->SetInput1(image2);
     filter->SetInput2(image1);
     filter->Update();
 
-    // check results
+    // Check results
     const FilterType::RealType trueDistance = 10 * std::sqrt(static_cast<double>(ImageDimension));
     const FilterType::RealType distance = filter->GetHausdorffDistance();
 
@@ -193,12 +144,12 @@ itkHausdorffDistanceImageFilterTest(int, char *[])
     }
     if (itk::Math::abs(4.5 - filter->GetAverageHausdorffDistance()) > 0.1)
     {
-      std::cout << "Test failed, average distance too great. " << std::endl;
+      std::cout << "Test failed, average distance incorrect. " << std::endl;
       exit_status = EXIT_FAILURE;
     }
   }
 
-  // compute the Hausdorff distance H(image2,image1)
+  // Compute the Hausdorff distance H(image2,image1)
   {
     Image1Type::SpacingType spacing1 = image1->GetSpacing();
     spacing1[0] = spacing1[0] / 2;
@@ -210,17 +161,22 @@ itkHausdorffDistanceImageFilterTest(int, char *[])
     spacing2[1] = spacing2[1] / 2;
     spacing2[2] = spacing2[2] / 2;
     image2->SetSpacing(spacing2);
+
     using FilterType = itk::HausdorffDistanceImageFilter<Image2Type, Image1Type>;
-    FilterType::Pointer filter = FilterType::New();
+    auto filter = FilterType::New();
+
+    auto useImageSpacing = static_cast<bool>(std::stoi(argv[1]));
+    filter->SetUseImageSpacing(useImageSpacing);
+    ITK_TEST_SET_GET_VALUE(useImageSpacing, filter->GetUseImageSpacing());
 
     filter->SetInput1(image2);
     filter->SetInput2(image1);
-    filter->SetUseImageSpacing(true);
     filter->Update();
 
-    // check results
+    // Check results
     const FilterType::RealType trueDistance =
       10 * std::sqrt(spacing1[0] * spacing1[0] + spacing1[1] * spacing1[1] + spacing1[2] * spacing1[2]);
+    // Note that the following is only correct because spacing is the same across dimensions:
     const FilterType::RealType trueAverageDistance = 4.5 * spacing1[0];
     const FilterType::RealType distance = filter->GetHausdorffDistance();
 
@@ -235,18 +191,18 @@ itkHausdorffDistanceImageFilterTest(int, char *[])
     }
     if (itk::Math::abs(trueAverageDistance - filter->GetAverageHausdorffDistance()) > 0.1)
     {
-      std::cout << "Test failed, average distance too great. " << std::endl;
+      std::cout << "Test failed, average distance incorrect. " << std::endl;
       exit_status = EXIT_FAILURE;
     }
   }
 
   if (exit_status == EXIT_SUCCESS)
   {
-    std::cout << "All Test passed. " << std::endl;
+    std::cout << "All tests passed. " << std::endl;
   }
   else
   {
-    std::cout << "All Test failed. " << std::endl;
+    std::cout << "Some test failed. " << std::endl;
   }
   return exit_status;
 }

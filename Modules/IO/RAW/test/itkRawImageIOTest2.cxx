@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 #include "itkTextOutput.h"
 #include "itkRawImageIO.h"
 #include "itkImageFileReader.h"
+#include "itkTestingMacros.h"
 
 
 // Specific ImageIO test
@@ -31,7 +32,8 @@ itkRawImageIOTest2(int argc, char * argv[])
 
   if (argc < 2)
   {
-    itkGenericOutputMacro(<< "Need a file to process");
+    std::cerr << "Missing Parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " inputFilename" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -52,14 +54,17 @@ itkRawImageIOTest2(int argc, char * argv[])
   unsigned int dim[3] = { 50, 50, 10 };
   double       spacing[3] = { 1.0, 1.0, 1.0 };
   double       origin[3] = { 0.0, 0.0, 0.0 };
-  for (unsigned int i = 0; i < 3; i++)
+  for (unsigned int i = 0; i < 3; ++i)
   {
     io->SetDimensions(i, dim[i]);
     io->SetSpacing(i, spacing[i]);
     io->SetOrigin(i, origin[i]);
   }
   io->SetHeaderSize(0);
-  io->SetImageMask(0x7fff);
+  unsigned short imageMask = 0x7fff;
+  io->SetImageMask(imageMask);
+  ITK_TEST_SET_GET_VALUE(imageMask, io->GetImageMask());
+
   io->SetByteOrderToLittleEndian();
   io->SetPixelType(itk::IOPixelEnum::RGB);
   io->SetComponentType(itk::IOComponentEnum::UCHAR);
@@ -72,9 +77,12 @@ itkRawImageIOTest2(int argc, char * argv[])
   reader = itk::ImageFileReader<RGBImage3DType>::New();
   reader->SetFileName(argv[1]);
   reader->SetImageIO(io);
-  reader->Update();
+
+  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
+
 
   reader->GetOutput()->Print(std::cout);
 
+  std::cout << "Test finished." << std::endl;
   return EXIT_SUCCESS;
 }

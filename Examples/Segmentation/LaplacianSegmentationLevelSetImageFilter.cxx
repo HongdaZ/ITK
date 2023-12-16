@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -117,7 +117,7 @@ main(int argc, char * argv[])
   using ThresholdingFilterType =
     itk::BinaryThresholdImageFilter<InternalImageType, OutputImageType>;
 
-  ThresholdingFilterType::Pointer thresholder = ThresholdingFilterType::New();
+  auto thresholder = ThresholdingFilterType::New();
 
   thresholder->SetUpperThreshold(10.0);
   thresholder->SetLowerThreshold(0.0);
@@ -128,9 +128,9 @@ main(int argc, char * argv[])
   using ReaderType = itk::ImageFileReader<InternalImageType>;
   using WriterType = itk::ImageFileWriter<OutputImageType>;
 
-  ReaderType::Pointer reader1 = ReaderType::New();
-  ReaderType::Pointer reader2 = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
+  auto reader1 = ReaderType::New();
+  auto reader2 = ReaderType::New();
+  auto writer = WriterType::New();
 
   reader1->SetFileName(argv[1]);
   reader2->SetFileName(argv[2]);
@@ -149,7 +149,7 @@ main(int argc, char * argv[])
   using DiffusionFilterType =
     itk::GradientAnisotropicDiffusionImageFilter<InternalImageType,
                                                  InternalImageType>;
-  DiffusionFilterType::Pointer diffusion = DiffusionFilterType::New();
+  auto diffusion = DiffusionFilterType::New();
   diffusion->SetNumberOfIterations(std::stoi(argv[4]));
   diffusion->SetTimeStep(0.125);
   diffusion->SetConductanceParameter(std::stod(argv[5]));
@@ -187,7 +187,7 @@ main(int argc, char * argv[])
 
   //  Software Guide : BeginCodeSnippet
   laplacianSegmentation->SetCurvatureScaling(1.0);
-  laplacianSegmentation->SetPropagationScaling(::std::stod(argv[6]));
+  laplacianSegmentation->SetPropagationScaling(std::stod(argv[6]));
   //  Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex
@@ -200,7 +200,7 @@ main(int argc, char * argv[])
 
   // Software Guide : BeginCodeSnippet
   laplacianSegmentation->SetMaximumRMSError(0.002);
-  laplacianSegmentation->SetNumberOfIterations(::std::stoi(argv[8]));
+  laplacianSegmentation->SetNumberOfIterations(std::stoi(argv[8]));
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex
@@ -212,7 +212,7 @@ main(int argc, char * argv[])
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  laplacianSegmentation->SetIsoSurfaceValue(::std::stod(argv[7]));
+  laplacianSegmentation->SetIsoSurfaceValue(std::stod(argv[7]));
   // Software Guide : EndCodeSnippet
 
   //  Software Guide : BeginLatex

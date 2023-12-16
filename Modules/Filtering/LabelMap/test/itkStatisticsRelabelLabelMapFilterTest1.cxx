@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,52 +29,47 @@ int
 itkStatisticsRelabelLabelMapFilterTest1(int argc, char * argv[])
 {
 
-  if (argc != 6)
+  if (argc < 6)
   {
-    std::cerr << "usage: " << argv[0] << " input feature output";
-    std::cerr << "background reverseOrdering attribute" << std::endl;
+    std::cerr << "Missing Parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv)
+              << " input feature output background reverseOrdering attribute" << std::endl;
     return EXIT_FAILURE;
   }
 
-  constexpr unsigned int dim = 2;
+  constexpr unsigned int Dimension = 2;
 
   using PixelType = unsigned char;
 
-  using ImageType = itk::Image<PixelType, dim>;
+  using ImageType = itk::Image<PixelType, Dimension>;
 
-  using StatisticsLabelObjectType = itk::StatisticsLabelObject<PixelType, dim>;
+  using StatisticsLabelObjectType = itk::StatisticsLabelObject<PixelType, Dimension>;
   using LabelMapType = itk::LabelMap<StatisticsLabelObjectType>;
 
   // Reading Image File
   using ReaderType = itk::ImageFileReader<ImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
-  ReaderType::Pointer reader2 = ReaderType::New();
+  auto reader2 = ReaderType::New();
   reader2->SetFileName(argv[2]);
 
   // Converting LabelImage to StatisticsLabelMap
   using I2LType = itk::LabelImageToStatisticsLabelMapFilter<ImageType, ImageType, LabelMapType>;
-  I2LType::Pointer i2l = I2LType::New();
+  auto i2l = I2LType::New();
   i2l->SetInput(reader->GetOutput());
   i2l->SetFeatureImage(reader2->GetOutput());
 
   using RelabelType = itk::StatisticsRelabelLabelMapFilter<LabelMapType>;
-  RelabelType::Pointer relabel = RelabelType::New();
+  auto relabel = RelabelType::New();
 
-  // testing get and set macros for ReverseOrdering
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(relabel, StatisticsRelabelLabelMapFilter, ShapeRelabelLabelMapFilter);
+
+
   bool reverseOrdering = std::stoi(argv[4]);
   relabel->SetReverseOrdering(reverseOrdering);
-  ITK_TEST_SET_GET_VALUE(reverseOrdering, relabel->GetReverseOrdering());
+  ITK_TEST_SET_GET_BOOLEAN(relabel, ReverseOrdering, reverseOrdering);
 
-  // testing boolean macro for ReverseOrdering
-  relabel->ReverseOrderingOff();
-  ITK_TEST_SET_GET_VALUE(false, relabel->GetReverseOrdering());
-
-  relabel->ReverseOrderingOn();
-  ITK_TEST_SET_GET_VALUE(true, relabel->GetReverseOrdering());
-
-  // testing get and set macros for Attribute
   unsigned int attribute = std::stoi(argv[5]);
   relabel->SetAttribute(attribute);
   ITK_TEST_SET_GET_VALUE(attribute, relabel->GetAttribute());
@@ -87,17 +82,19 @@ itkStatisticsRelabelLabelMapFilterTest1(int argc, char * argv[])
   itk::SimpleFilterWatcher watcher(relabel, "filter");
 
   using L2ImageType = itk::LabelMapToLabelImageFilter<LabelMapType, ImageType>;
-  L2ImageType::Pointer l2i = L2ImageType::New();
+  auto l2i = L2ImageType::New();
   l2i->SetInput(relabel->GetOutput());
 
   using WriterType = itk::ImageFileWriter<ImageType>;
 
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(l2i->GetOutput());
   writer->SetFileName(argv[3]);
   writer->UseCompressionOn();
 
   ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
 
+
+  std::cout << "Test finished." << std::endl;
   return EXIT_SUCCESS;
 }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkJointHistogramMutualInformationImageToImageMetricv4_hxx
 
 #include "itkCompensatedSummation.h"
-#include "itkJointHistogramMutualInformationImageToImageMetricv4.h"
 #include "itkImageIterator.h"
 #include "itkDiscreteGaussianImageFilter.h"
 
@@ -148,16 +147,10 @@ JointHistogramMutualInformationImageToImageMetricv4<TFixedImage,
 
   // Allocate memory for the joint PDF.
 
-  // Instantiate a region, index, size
-  JointPDFRegionType jointPDFRegion;
-  JointPDFIndexType  jointPDFIndex;
-  JointPDFSizeType   jointPDFSize;
+  // Instantiate a region
 
   // the jointPDF is of size NumberOfBins x NumberOfBins
-  jointPDFSize.Fill(m_NumberOfHistogramBins);
-  jointPDFIndex.Fill(0);
-  jointPDFRegion.SetIndex(jointPDFIndex);
-  jointPDFRegion.SetSize(jointPDFSize);
+  const JointPDFRegionType jointPDFRegion(JointPDFSizeType::Filled(m_NumberOfHistogramBins));
 
   // Set the regions and allocate
   this->m_JointPDF->SetRegions(jointPDFRegion);
@@ -179,18 +172,12 @@ JointHistogramMutualInformationImageToImageMetricv4<TFixedImage,
   this->m_FixedImageMarginalPDF = MarginalPDFType::New();
   this->m_MovingImageMarginalPDF = MarginalPDFType::New();
 
-  // Instantiate a region, index, size
+  // Instantiate a region
   using MarginalPDFRegionType = typename MarginalPDFType::RegionType;
   using MarginalPDFSizeType = typename MarginalPDFType::SizeType;
-  MarginalPDFRegionType marginalPDFRegion;
-  MarginalPDFIndexType  marginalPDFIndex;
-  MarginalPDFSizeType   marginalPDFSize;
 
   // the marginalPDF is of size NumberOfBins x NumberOfBins
-  marginalPDFSize.Fill(m_NumberOfHistogramBins);
-  marginalPDFIndex.Fill(0);
-  marginalPDFRegion.SetIndex(marginalPDFIndex);
-  marginalPDFRegion.SetSize(marginalPDFSize);
+  const MarginalPDFRegionType marginalPDFRegion(MarginalPDFSizeType::Filled(m_NumberOfHistogramBins));
 
   // Set the regions and allocate
   this->m_FixedImageMarginalPDF->SetRegions(marginalPDFRegion);
@@ -261,10 +248,10 @@ JointHistogramMutualInformationImageToImageMetricv4<TFixedImage,
   if (this->m_VarianceForJointPDFSmoothing > NumericTraits<JointPDFValueType>::ZeroValue())
   {
     using DgType = DiscreteGaussianImageFilter<JointPDFType, JointPDFType>;
-    typename DgType::Pointer dg = DgType::New();
+    auto dg = DgType::New();
     dg->SetInput(this->m_JointPDF);
     dg->SetVariance(this->m_VarianceForJointPDFSmoothing);
-    dg->SetUseImageSpacingOff();
+    dg->UseImageSpacingOff();
     dg->SetMaximumError(.01f);
     dg->Update();
     this->m_JointPDF = (dg->GetOutput());
@@ -368,12 +355,12 @@ JointHistogramMutualInformationImageToImageMetricv4<TFixedImage,
   TInternalComputationValueType                       local_mi;
   TInternalComputationValueType                       eps = NumericTraits<TInternalComputationValueType>::epsilon();
   typename JointPDFType::IndexType                    index;
-  for (SizeValueType ii = 0; ii < m_NumberOfHistogramBins; ii++)
+  for (SizeValueType ii = 0; ii < m_NumberOfHistogramBins; ++ii)
   {
     MarginalPDFIndexType mind;
     mind[0] = ii;
     px = this->m_FixedImageMarginalPDF->GetPixel(mind);
-    for (SizeValueType jj = 0; jj < m_NumberOfHistogramBins; jj++)
+    for (SizeValueType jj = 0; jj < m_NumberOfHistogramBins; ++jj)
     {
       mind[0] = jj;
       py = this->m_MovingImageMarginalPDF->GetPixel(mind);
@@ -382,7 +369,7 @@ JointHistogramMutualInformationImageToImageMetricv4<TFixedImage,
       index[1] = jj;
       pxy = m_JointPDF->GetPixel(index);
       local_mi = 0;
-      if (fabs(denom) > eps)
+      if (itk::Math::abs(denom) > eps)
       {
         if (pxy / denom > eps)
         {

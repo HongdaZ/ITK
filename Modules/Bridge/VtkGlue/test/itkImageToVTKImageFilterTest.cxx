@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,12 +37,12 @@ itkImageToVTKImageFilterTest(int, char *[])
   size[0] = 40;
   size[1] = 10;
   size[2] = 20;
-  SourceType::Pointer source = SourceType::New();
+  auto source = SourceType::New();
   source->SetSize(size);
 
   SpacingType spacing;
   spacing[0] = 0.5;
-  spacing[1] = -2;
+  spacing[1] = 2;
   spacing[2] = 1;
   OriginType origin;
   origin[0] = -1.5;
@@ -61,7 +61,7 @@ itkImageToVTKImageFilterTest(int, char *[])
   auto input = source->GetOutput();
   input->Print(std::cout);
 
-  ConnectorType::Pointer connector = ConnectorType::New();
+  auto connector = ConnectorType::New();
   connector->SetInput(input);
   connector->UpdateLargestPossibleRegion();
   connector->Update();

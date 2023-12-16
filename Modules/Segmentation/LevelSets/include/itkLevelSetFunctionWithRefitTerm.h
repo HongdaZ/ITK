@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ template <typename TImageType, typename TSparseImageType>
 class ITK_TEMPLATE_EXPORT LevelSetFunctionWithRefitTerm : public LevelSetFunction<TImageType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetFunctionWithRefitTerm);
+  ITK_DISALLOW_COPY_AND_MOVE(LevelSetFunctionWithRefitTerm);
 
   /** Standard class type aliases. */
   using Self = LevelSetFunctionWithRefitTerm;
@@ -67,13 +67,13 @@ public:
   itkNewMacro(Self);
 
   /** Extract some parameters from the superclass. */
-  using ImageType = typename Superclass::ImageType;
-  using FloatOffsetType = typename Superclass::FloatOffsetType;
-  using ScalarValueType = typename Superclass::ScalarValueType;
-  using GlobalDataStruct = typename Superclass::GlobalDataStruct;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
-  using NeighborhoodScalesType = typename Superclass::NeighborhoodScalesType;
-  using TimeStepType = typename Superclass::TimeStepType;
+  using typename Superclass::ImageType;
+  using typename Superclass::FloatOffsetType;
+  using typename Superclass::ScalarValueType;
+  using typename Superclass::GlobalDataStruct;
+  using typename Superclass::NeighborhoodType;
+  using typename Superclass::NeighborhoodScalesType;
+  using typename Superclass::TimeStepType;
 
   using NeighborhoodSizeValueType = typename NeighborhoodType::SizeValueType;
 

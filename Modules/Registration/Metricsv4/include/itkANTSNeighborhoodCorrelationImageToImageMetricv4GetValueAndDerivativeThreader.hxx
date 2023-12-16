@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader_hxx
 #define itkANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader_hxx
 
-#include "itkANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader.h"
 
 namespace itk
 {
@@ -34,11 +33,13 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<TDo
     const ThreadIdType                                                                         threadId)
 {
   /* Store the casted pointer to avoid dynamic casting in tight loops. */
-  this->m_ANTSAssociate = dynamic_cast<TNeighborhoodCorrelationMetric *>(this->m_Associate);
-  if (this->m_ANTSAssociate == nullptr)
+  auto associate = dynamic_cast<TNeighborhoodCorrelationMetric *>(this->m_Associate);
+  if (associate == nullptr)
   {
     itkExceptionMacro("Dynamic casting of associate pointer failed.");
   }
+
+  std::call_once(this->m_ANTSAssociateOnceFlag, [this, &associate]() { this->m_ANTSAssociate = associate; });
 
   VirtualPointType   virtualPoint;
   MeasureType        metricValueResult = NumericTraits<MeasureType>::ZeroValue();
@@ -51,7 +52,7 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<TDo
   DerivativeType & localDerivativeResult = this->m_GetValueAndDerivativePerThreadVariables[threadId].LocalDerivatives;
 
   /* Create an iterator over the virtual sub region */
-  // this->m_ANTSAssociate->InitializeScanning( virtualImageSubRegion, scanIt, scanMem, scanParameters );
+  // associate->InitializeScanning( virtualImageSubRegion, scanIt, scanMem, scanParameters );
   this->InitializeScanning(virtualImageSubRegion, scanIt, scanMem, scanParameters);
 
   /* Iterate over the sub region */
@@ -59,7 +60,7 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<TDo
   while (!scanIt.IsAtEnd())
   {
     /* Get the virtual point */
-    this->m_ANTSAssociate->TransformVirtualIndexToPhysicalPoint(scanIt.GetIndex(), virtualPoint);
+    associate->TransformVirtualIndexToPhysicalPoint(scanIt.GetIndex(), virtualPoint);
 
     /* Call the user method in derived classes to do the specific
      * calculations for value and derivative. */
@@ -73,13 +74,12 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<TDo
           scanIt, scanMem, scanParameters, localDerivativeResult, metricValueResult, threadId);
       }
     }
-    catch (ExceptionObject & exc)
+    catch (const ExceptionObject & exc)
     {
       // NOTE: there must be a cleaner way to do this:
       std::string msg("Caught exception: \n");
       msg += exc.what();
-      ExceptionObject err(__FILE__, __LINE__, msg);
-      throw err;
+      throw ExceptionObject(__FILE__, __LINE__, msg);
     }
 
     /* Assign the results */
@@ -151,7 +151,7 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
   SizeValueType diameter = 2 * scanParameters.radius[0];
 
   const LocalRealType localZero = NumericTraits<LocalRealType>::ZeroValue();
-  for (SizeValueType i = numberOfFillZero; i < (diameter + NumericTraits<SizeValueType>::OneValue()); i++)
+  for (SizeValueType i = numberOfFillZero; i < (diameter + NumericTraits<SizeValueType>::OneValue()); ++i)
   {
     LocalRealType sumFixed2 = localZero;
     LocalRealType sumMoving2 = localZero;
@@ -191,13 +191,12 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
             this->m_ANTSAssociate->TransformAndEvaluateMovingPoint(virtualPoint, mappedMovingPoint, movingImageValue);
         }
       }
-      catch (ExceptionObject & exc)
+      catch (const ExceptionObject & exc)
       {
         // NOTE: there must be a cleaner way to do this:
         std::string msg("Caught exception: \n");
         msg += exc.what();
-        ExceptionObject err(__FILE__, __LINE__, msg);
-        throw err;
+        throw ExceptionObject(__FILE__, __LINE__, msg);
       }
 
 
@@ -276,13 +275,12 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
           this->m_ANTSAssociate->TransformAndEvaluateMovingPoint(virtualPoint, mappedMovingPoint, movingImageValue);
       }
     }
-    catch (ExceptionObject & exc)
+    catch (const ExceptionObject & exc)
     {
       // NOTE: there must be a cleaner way to do this:
       std::string msg("Caught exception: \n");
       msg += exc.what();
-      ExceptionObject err(__FILE__, __LINE__, msg);
-      throw err;
+      throw ExceptionObject(__FILE__, __LINE__, msg);
     }
     if (pointIsValid)
     {
@@ -470,13 +468,12 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
       }
     }
   }
-  catch (ExceptionObject & exc)
+  catch (const ExceptionObject & exc)
   {
     // NOTE: there must be a cleaner way to do this:
     std::string msg("Caught exception: \n");
     msg += exc.what();
-    ExceptionObject err(__FILE__, __LINE__, msg);
-    throw err;
+    throw ExceptionObject(__FILE__, __LINE__, msg);
   }
 
   if (pointIsValid)
@@ -487,8 +484,14 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
     scanMem.sFixedFixed = sFixedFixed;
     scanMem.sMovingMoving = sMovingMoving;
 
-    scanMem.fixedImageGradient = fixedImageGradient;
-    scanMem.movingImageGradient = movingImageGradient;
+    if (this->m_ANTSAssociate->GetComputeDerivative() && this->m_ANTSAssociate->GetGradientSourceIncludesFixed())
+    {
+      scanMem.fixedImageGradient = fixedImageGradient;
+    }
+    if (this->m_ANTSAssociate->GetComputeDerivative() && this->m_ANTSAssociate->GetGradientSourceIncludesMoving())
+    {
+      scanMem.movingImageGradient = movingImageGradient;
+    }
 
     scanMem.mappedFixedPoint = mappedFixedPoint;
     scanMem.mappedMovingPoint = mappedMovingPoint;
@@ -523,7 +526,7 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
 
   LocalRealType sFixedFixed_sMovingMoving = sFixedFixed * sMovingMoving;
 
-  if (fabs(sFixedFixed_sMovingMoving) > NumericTraits<LocalRealType>::epsilon())
+  if (itk::Math::abs(sFixedFixed_sMovingMoving) > NumericTraits<LocalRealType>::epsilon())
   {
     localCC = sFixedMoving * sFixedMoving / (sFixedFixed_sMovingMoving);
   }
@@ -539,7 +542,7 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
       return;
     }
 
-    for (ImageDimensionType qq = 0; qq < TImageToImageMetric::VirtualImageDimension; qq++)
+    for (ImageDimensionType qq = 0; qq < TImageToImageMetric::VirtualImageDimension; ++qq)
     {
       derivWRTImage[qq] = 2.0 * sFixedMoving / (sFixedFixed_sMovingMoving) *
                           (fixedI - sFixedMoving / sMovingMoving * movingI) * movingImageGradient[qq];
@@ -558,10 +561,10 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<
     NumberOfParametersType numberOfLocalParameters =
       this->m_Associate->GetMovingTransform()->GetNumberOfLocalParameters();
 
-    for (NumberOfParametersType par = 0; par < numberOfLocalParameters; par++)
+    for (NumberOfParametersType par = 0; par < numberOfLocalParameters; ++par)
     {
       deriv[par] = NumericTraits<DerivativeValueType>::ZeroValue();
-      for (ImageDimensionType dim = 0; dim < TImageToImageMetric::MovingImageDimension; dim++)
+      for (ImageDimensionType dim = 0; dim < TImageToImageMetric::MovingImageDimension; ++dim)
       {
         deriv[par] += derivWRTImage[dim] * jacobian(dim, par);
       }
@@ -594,11 +597,9 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<TDo
 
 
   // convert virtualPoint to a single point region
-  ImageRegionType singlePointRegion;
-  singlePointRegion.SetIndex(virtualIndex);
   typename ImageRegionType::SizeType singlePointSize;
   singlePointSize.Fill(1);
-  singlePointRegion.SetSize(singlePointSize);
+  const ImageRegionType singlePointRegion(virtualIndex, singlePointSize);
 
   // use scanning variables just for a single point region
   // iterate over the single point and initialize the scanning variables
@@ -619,13 +620,12 @@ ANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader<TDo
         scanIt, scanMem, scanParameters, localDerivativeResult, metricValueResult, threadId);
     }
   }
-  catch (ExceptionObject & exc)
+  catch (const ExceptionObject & exc)
   {
     // NOTE: there must be a cleaner way to do this:
     std::string msg("Caught exception: \n");
     msg += exc.what();
-    ExceptionObject err(__FILE__, __LINE__, msg);
-    throw err;
+    throw ExceptionObject(__FILE__, __LINE__, msg);
   }
 
   /* Assign the results */

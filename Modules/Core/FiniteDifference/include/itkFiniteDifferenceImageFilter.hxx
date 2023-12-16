@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,6 @@
 #include "itkImageRegionIterator.h"
 #include "itkMacro.h"
 #include "itkEventObject.h"
-#include "itkFiniteDifferenceImageFilter.h"
 
 namespace itk
 {
@@ -168,7 +167,7 @@ FiniteDifferenceImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRe
 template <typename TInputImage, typename TOutputImage>
 typename FiniteDifferenceImageFilter<TInputImage, TOutputImage>::TimeStepType
 FiniteDifferenceImageFilter<TInputImage, TOutputImage>::ResolveTimeStep(const std::vector<TimeStepType> & timeStepList,
-                                                                        const std::vector<bool> &         valid) const
+                                                                        const BooleanStdVectorType &      valid) const
 {
   TimeStepType oMin = NumericTraits<TimeStepType>::ZeroValue();
   bool         flag = false;
@@ -259,14 +258,14 @@ FiniteDifferenceImageFilter<TInputImage, TOutputImage>::InitializeFunctionCoeffi
     using SpacingType = typename TOutputImage::SpacingType;
     const SpacingType & spacing = outputImage->GetSpacing();
 
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       coeffs[i] = 1.0 / static_cast<double>(spacing[i]);
     }
   }
   else
   {
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       coeffs[i] = 1.0;
     }

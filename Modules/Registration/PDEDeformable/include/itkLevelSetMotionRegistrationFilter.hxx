@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,13 +17,10 @@
  *=========================================================================*/
 #ifndef itkLevelSetMotionRegistrationFilter_hxx
 #define itkLevelSetMotionRegistrationFilter_hxx
-#include "itkLevelSetMotionRegistrationFilter.h"
 
 namespace itk
 {
-/**
- * Default constructor
- */
+
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
 LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::LevelSetMotionRegistrationFilter()
 {
@@ -44,15 +41,13 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
                                                                                            Indent         indent) const
 {
   Superclass::PrintSelf(os, indent);
-  os << indent << "Intensity difference threshold: " << this->GetIntensityDifferenceThreshold() << std::endl;
-  os << indent << "Gradient magnitude threshold: " << this->GetGradientMagnitudeThreshold() << std::endl;
-  os << indent << "Gradient smoothing standard deviations: " << this->GetGradientSmoothingStandardDeviations()
+
+  os << indent << "IntensityDifferenceThreshold: " << this->GetIntensityDifferenceThreshold() << std::endl;
+  os << indent << "GradientMagnitudeThreshold: " << this->GetGradientMagnitudeThreshold() << std::endl;
+  os << indent << "GradientSmoothingStandardDeviations: " << this->GetGradientSmoothingStandardDeviations()
      << std::endl;
 }
 
-/*
- * Set the function state values before each iteration
- */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
 void
 LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::InitializeIteration()
@@ -79,9 +74,6 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
   }
 }
 
-/**
- * Get the metric value from the difference function
- */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
 bool
 LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::Halt()
@@ -97,9 +89,6 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
   return halt;
 }
 
-/**
- * Get the metric value from the difference function
- */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
 double
 LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::GetMetric() const
@@ -114,9 +103,6 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
   return drfp->GetMetric();
 }
 
-/**
- *
- */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
 double
 LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::GetAlpha() const
@@ -131,9 +117,6 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
   return drfp->GetAlpha();
 }
 
-/**
- *
- */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
 void
 LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::SetAlpha(double alpha)
@@ -148,9 +131,6 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
   drfp->SetAlpha(alpha);
 }
 
-/**
- *
- */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
 double
 LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::GetIntensityDifferenceThreshold() const
@@ -165,9 +145,6 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
   return drfp->GetIntensityDifferenceThreshold();
 }
 
-/**
- *
- */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
 void
 LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::SetIntensityDifferenceThreshold(
@@ -183,9 +160,6 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
   drfp->SetIntensityDifferenceThreshold(threshold);
 }
 
-/**
- *
- */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
 double
 LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::GetGradientMagnitudeThreshold() const
@@ -200,9 +174,6 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
   return drfp->GetGradientMagnitudeThreshold();
 }
 
-/**
- *
- */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
 void
 LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::SetGradientMagnitudeThreshold(
@@ -218,9 +189,6 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
   drfp->SetGradientMagnitudeThreshold(threshold);
 }
 
-/**
- *
- */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
 double
 LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::
@@ -236,9 +204,6 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
   return drfp->GetGradientSmoothingStandardDeviations();
 }
 
-/**
- *
- */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
 void
 LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::SetGradientSmoothingStandardDeviations(
@@ -254,9 +219,6 @@ LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>:
   drfp->SetGradientSmoothingStandardDeviations(sigma);
 }
 
-/**
- * Get the metric value from the difference function
- */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
 void
 LevelSetMotionRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::ApplyUpdate(const TimeStepType & dt)

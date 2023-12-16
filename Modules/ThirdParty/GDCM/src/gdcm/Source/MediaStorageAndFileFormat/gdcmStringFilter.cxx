@@ -42,6 +42,13 @@ std::string StringFilter::ToString(const Tag& t) const
   return ToStringPair(t).second;
 }
 
+std::string StringFilter::ToString(const PrivateTag& privTag) const
+{
+  const DataSet &ds = GetFile().GetDataSet();
+  const DataElement &de = ds.GetDataElement(privTag);
+  return ToStringPair(de).second;
+}
+
 std::string StringFilter::ToString(const DataElement& de) const
 {
   return ToStringPair(de).second;
@@ -274,7 +281,7 @@ bool StringFilter::ExecuteQuery(std::string const & query_const,
       assert( bv /*|| bv->IsEmpty()*/ );
       retvalue = std::string( bv->GetPointer(), bv->GetLength() );
       // Let's remove any trailing \0 :
-      retvalue.resize( std::min( retvalue.size(), strlen( retvalue.c_str() ) ) ); // strlen is garantee to be lower or equal to ::size()
+      retvalue.resize( std::min( retvalue.size(), strlen( retvalue.c_str() ) ) ); // strlen is guarantee to be lower or equal to ::size()
       }
     else
       {
@@ -412,7 +419,7 @@ std::pair<std::string, std::string> StringFilter::ToStringPairInternal(const Dat
       assert( bv /*|| bv->IsEmpty()*/ );
       ret.second = std::string( bv->GetPointer(), bv->GetLength() );
       // Let's remove any trailing \0 :
-      ret.second.resize( std::min( ret.second.size(), strlen( ret.second.c_str() ) ) ); // strlen is garantee to be lower or equal to ::size()
+      ret.second.resize( std::min( ret.second.size(), strlen( ret.second.c_str() ) ) ); // strlen is guarantee to be lower or equal to ::size()
       }
     else
       {

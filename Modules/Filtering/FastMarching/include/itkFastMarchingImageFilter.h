@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,14 +30,14 @@
 
 namespace itk
 {
-/**\class FastMarchingImageFilterEnums
+/** \class FastMarchingImageFilterEnums
  * \brief Contains all enum classes used by the FastMarchingImageFilter class.
  * \ingroup ITKFastMarching
  */
 class FastMarchingImageFilterEnums
 {
 public:
-  /**\class Label
+  /** \class Label
    * \ingroup ITKFastMarching
    * \ingroup LevelSetSegmentation
    * Enum of Fast Marching algorithm point types. FarPoints represent far
@@ -58,7 +58,7 @@ extern ITKFastMarching_EXPORT std::ostream &
                               operator<<(std::ostream & out, const FastMarchingImageFilterEnums::Label value);
 
 /**
- *\class FastMarchingImageFilter
+ * \class FastMarchingImageFilter
  * \brief Solve an Eikonal equation using Fast Marching
  *
  * Fast marching solves an Eikonal equation where the speed is always
@@ -132,11 +132,11 @@ extern ITKFastMarching_EXPORT std::ostream &
  * \ingroup LevelSetSegmentation
  * \ingroup ITKFastMarching
  */
-template <typename TLevelSet, typename TSpeedImage = Image<float, TLevelSet ::ImageDimension>>
+template <typename TLevelSet, typename TSpeedImage = Image<float, TLevelSet::ImageDimension>>
 class ITK_TEMPLATE_EXPORT FastMarchingImageFilter : public ImageToImageFilter<TSpeedImage, TLevelSet>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(FastMarchingImageFilter);
 
   /** Standard class typdedefs. */
   using Self = FastMarchingImageFilter;
@@ -179,7 +179,7 @@ public:
     {
       m_Axis = axis;
     }
-    const AxisNodeType &
+    AxisNodeType &
     operator=(const NodeType & node)
     {
       this->NodeType::operator=(node);

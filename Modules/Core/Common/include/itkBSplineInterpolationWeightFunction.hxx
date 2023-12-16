@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,57 +18,26 @@
 #ifndef itkBSplineInterpolationWeightFunction_hxx
 #define itkBSplineInterpolationWeightFunction_hxx
 
-#include "itkBSplineInterpolationWeightFunction.h"
+#include "itkBSplineKernelFunction.h"
 #include "itkImage.h"
 #include "itkMatrix.h"
 #include "itkMath.h"
-#include "itkIndexRange.h"
 
 namespace itk
 {
-/** Constructor */
+
+#if __cplusplus < 201703L
+// For compatibility with pre C++17 International Standards, a constexpr static
+// data member may be redundantly redeclared outside the class with no
+// initializer. This usage is deprecated.
+//
+// For C++14 and earlier, the definition of static constexpr must be outside of
+// class until C++17, see .h file for declaration & initialization
+
 template <typename TCoordRep, unsigned int VSpaceDimension, unsigned int VSplineOrder>
-BSplineInterpolationWeightFunction<TCoordRep, VSpaceDimension, VSplineOrder>::BSplineInterpolationWeightFunction()
-{
-  // Initialize the number of weights;
-  m_NumberOfWeights =
-    static_cast<unsigned int>(std::pow(static_cast<double>(SplineOrder + 1), static_cast<double>(SpaceDimension)));
-
-  // Initialize support region is a hypercube of length SplineOrder + 1
-  m_SupportSize.Fill(SplineOrder + 1);
-
-  // Initialize offset to index lookup table
-  m_OffsetToIndexTable.set_size(m_NumberOfWeights, SpaceDimension);
-
-  unsigned int counter = 0;
-
-  for (const IndexType index : Experimental::ZeroBasedIndexRange<VSpaceDimension>(m_SupportSize))
-  {
-    for (unsigned int j = 0; j < SpaceDimension; j++)
-    {
-      m_OffsetToIndexTable[counter][j] = index[j];
-    }
-    ++counter;
-  }
-
-
-  // Initialize the interpolation kernel
-  m_Kernel = KernelType::New();
-}
-
-/**
- * Standard "PrintSelf" method
- */
-template <typename TCoordRep, unsigned int VSpaceDimension, unsigned int VSplineOrder>
-void
-BSplineInterpolationWeightFunction<TCoordRep, VSpaceDimension, VSplineOrder>::PrintSelf(std::ostream & os,
-                                                                                        Indent         indent) const
-{
-  Superclass::PrintSelf(os, indent);
-
-  os << indent << "NumberOfWeights: " << m_NumberOfWeights << std::endl;
-  os << indent << "SupportSize: " << m_SupportSize << std::endl;
-}
+constexpr typename BSplineInterpolationWeightFunction<TCoordRep, VSpaceDimension, VSplineOrder>::SizeType
+  BSplineInterpolationWeightFunction<TCoordRep, VSpaceDimension, VSplineOrder>::SupportSize;
+#endif
 
 /** Compute weights for interpolation at continuous index position */
 template <typename TCoordRep, unsigned int VSpaceDimension, unsigned int VSplineOrder>
@@ -76,7 +45,7 @@ typename BSplineInterpolationWeightFunction<TCoordRep, VSpaceDimension, VSplineO
 BSplineInterpolationWeightFunction<TCoordRep, VSpaceDimension, VSplineOrder>::Evaluate(
   const ContinuousIndexType & index) const
 {
-  WeightsType weights(m_NumberOfWeights);
+  WeightsType weights;
   IndexType   startIndex;
 
   this->Evaluate(index, weights, startIndex);
@@ -95,7 +64,7 @@ BSplineInterpolationWeightFunction<TCoordRep, VSpaceDimension, VSplineOrder>::Ev
   unsigned int j, k;
 
   // Find the starting index of the support region
-  for (j = 0; j < SpaceDimension; j++)
+  for (j = 0; j < SpaceDimension; ++j)
   {
     // Note that the expression passed to Math::Floor is adapted to work around
     // a compiler bug which caused endless compilations (apparently), by
@@ -105,22 +74,22 @@ BSplineInterpolationWeightFunction<TCoordRep, VSpaceDimension, VSplineOrder>::Ev
 
   // Compute the weights
   Matrix<double, SpaceDimension, SplineOrder + 1> weights1D;
-  for (j = 0; j < SpaceDimension; j++)
+  for (j = 0; j < SpaceDimension; ++j)
   {
     double x = index[j] - static_cast<double>(startIndex[j]);
 
-    for (k = 0; k <= SplineOrder; k++)
+    for (k = 0; k <= SplineOrder; ++k)
     {
-      weights1D[j][k] = m_Kernel->Evaluate(x);
+      weights1D[j][k] = BSplineKernelFunction<SplineOrder>::FastEvaluate(x);
       x -= 1.0;
     }
   }
 
-  for (k = 0; k < m_NumberOfWeights; k++)
+  for (k = 0; k < Self::NumberOfWeights; ++k)
   {
     weights[k] = 1.0;
 
-    for (j = 0; j < SpaceDimension; j++)
+    for (j = 0; j < SpaceDimension; ++j)
     {
       weights[k] *= weights1D[j][m_OffsetToIndexTable[k][j]];
     }

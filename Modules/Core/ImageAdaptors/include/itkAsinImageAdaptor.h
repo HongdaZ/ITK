@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,13 +52,13 @@ public:
   static inline void
   Set(TInternalType & output, const TExternalType & input)
   {
-    output = (TInternalType)std::asin((double)input);
+    output = (TInternalType)std::asin(static_cast<double>(input));
   }
 
   static inline TExternalType
   Get(const TInternalType & input)
   {
-    return (TExternalType)std::asin((double)input);
+    return (TExternalType)std::asin(static_cast<double>(input));
   }
 };
 } // end namespace Accessor
@@ -78,7 +78,7 @@ class AsinImageAdaptor
   : public ImageAdaptor<TImage, Accessor::AsinPixelAccessor<typename TImage::PixelType, TOutputPixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AsinImageAdaptor);
+  ITK_DISALLOW_COPY_AND_MOVE(AsinImageAdaptor);
 
   /** Standard class type aliases. */
   using Self = AsinImageAdaptor;

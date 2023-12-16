@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class ScalarImageToRunLengthFeaturesFilter
+ * \class ScalarImageToRunLengthFeaturesFilter
  *  \brief This class computes run length descriptions from an image.
  *
  * By default, run length features are computed for each spatial
@@ -82,7 +82,7 @@ namespace Statistics
  * gray-level run-length distributions. Pattern Recognition Letters, 12:490-502,
  * 1991.
  *
- * IJ article: https://hdl.handle.net/1926/1374
+ * IJ article: https://www.insight-journal.org/browse/publication/231
  *
  * \sa ScalarImageToRunLengthFeaturesFilter
  * \sa ScalarImageToRunLengthMatrixFilter
@@ -193,7 +193,7 @@ public:
   /** Set the pixel value of the mask that should be considered "inside" the
       object. Optional; for default value see above. */
   void
-  SetInsidePixelValue(PixelType InsidePixelValue);
+  SetInsidePixelValue(PixelType insidePixelValue);
 
   itkGetConstMacro(FastCalculations, bool);
   itkSetMacro(FastCalculations, bool);

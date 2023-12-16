@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class OneWayEquivalencyTable
+ * \class OneWayEquivalencyTable
  * \brief Hash table to manage integral label equivalencies that are order dependent.
  *
  * OneWayEquivalencyTable is a variation on itk::EquivalencyTable that
@@ -47,7 +47,7 @@ namespace itk
 class ITKWatersheds_EXPORT OneWayEquivalencyTable : public DataObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(OneWayEquivalencyTable);
+  ITK_DISALLOW_COPY_AND_MOVE(OneWayEquivalencyTable);
 
   /**  Standard type alias and smart pointer declarations.   */
   using Self = OneWayEquivalencyTable;
@@ -94,7 +94,7 @@ public:
     }
     else
     {
-      return (*result).second;
+      return result->second;
     }
   }
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,25 +41,18 @@ public:
     , m_WindowMinimum(0)
   {}
   ~IntensityWindowingTransform() = default;
-  bool
-  operator!=(const IntensityWindowingTransform & other) const
-  {
-    if (Math::NotExactlyEquals(m_Factor, other.m_Factor) || Math::NotExactlyEquals(m_Offset, other.m_Offset) ||
-        Math::NotExactlyEquals(m_OutputMaximum, other.m_OutputMaximum) ||
-        Math::NotExactlyEquals(m_OutputMinimum, other.m_OutputMinimum) ||
-        Math::NotExactlyEquals(m_WindowMaximum, other.m_WindowMaximum) ||
-        Math::NotExactlyEquals(m_WindowMinimum, other.m_WindowMinimum))
-    {
-      return true;
-    }
-    return false;
-  }
 
   bool
   operator==(const IntensityWindowingTransform & other) const
   {
-    return !(*this != other);
+    return Math::ExactlyEquals(m_Factor, other.m_Factor) && Math::ExactlyEquals(m_Offset, other.m_Offset) &&
+           Math::ExactlyEquals(m_OutputMaximum, other.m_OutputMaximum) &&
+           Math::ExactlyEquals(m_OutputMinimum, other.m_OutputMinimum) &&
+           Math::ExactlyEquals(m_WindowMaximum, other.m_WindowMaximum) &&
+           Math::ExactlyEquals(m_WindowMinimum, other.m_WindowMinimum);
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(IntensityWindowingTransform);
 
   void
   SetFactor(RealType a)
@@ -118,7 +111,7 @@ private:
 } // end namespace Functor
 
 /**
- *\class IntensityWindowingImageFilter
+ * \class IntensityWindowingImageFilter
  * \brief Applies a linear transformation to the intensity levels of the
  * input Image that are inside a user-defined interval. Values below this
  * interval are mapped to a constant. Values over the interval are mapped
@@ -153,7 +146,7 @@ class ITK_TEMPLATE_EXPORT IntensityWindowingImageFilter
       Functor::IntensityWindowingTransform<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(IntensityWindowingImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(IntensityWindowingImageFilter);
 
   /** Standard class type aliases. */
   using Self = IntensityWindowingImageFilter;

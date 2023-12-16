@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,7 +46,7 @@ itkStatisticsImageFilterTest(int argc, char * argv[])
 
   itk::Statistics::MersenneTwisterRandomVariateGenerator::GetInstance()->SetSeed(987);
 
-  FloatImage::Pointer    image = FloatImage::New();
+  auto                   image = FloatImage::New();
   FloatImage::RegionType region;
   FloatImage::SizeType   size;
   size.Fill(64);
@@ -66,12 +66,17 @@ itkStatisticsImageFilterTest(int argc, char * argv[])
   float sumOfSquares = std::pow(fillValue, 2.0) * static_cast<float>(region.GetNumberOfPixels());
 
   using FilterType = itk::StatisticsImageFilter<FloatImage>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, StatisticsImageFilter, ImageSink);
+
 
   itk::SimpleFilterWatcher filterWatch(filter);
 
-  filter->SetInput(image);
   filter->SetNumberOfStreamDivisions(numberOfStreamDivisions);
+  ITK_TEST_SET_GET_VALUE(numberOfStreamDivisions, filter->GetNumberOfStreamDivisions());
+
+  filter->SetInput(image);
 
   ITK_TRY_EXPECT_NO_EXCEPTION(filter->Update());
 
@@ -112,7 +117,7 @@ itkStatisticsImageFilterTest(int argc, char * argv[])
   // Now generate a real image
 
   using SourceType = itk::RandomImageSource<FloatImage>;
-  SourceType::Pointer source = SourceType::New();
+  auto source = SourceType::New();
 
   FloatImage::SizeValueType randomSize[3] = { 17, 8, 241 };
 
@@ -142,7 +147,7 @@ itkStatisticsImageFilterTest(int argc, char * argv[])
   double knownVariance = 10.0;
 
   using DoubleImage = itk::Image<double, 3>;
-  DoubleImage::Pointer    dImage = DoubleImage::New();
+  auto                    dImage = DoubleImage::New();
   DoubleImage::SizeType   dsize;
   DoubleImage::IndexType  dindex;
   DoubleImage::RegionType dregion;
@@ -159,7 +164,7 @@ itkStatisticsImageFilterTest(int argc, char * argv[])
     ++it;
   }
   using DFilterType = itk::StatisticsImageFilter<DoubleImage>;
-  DFilterType::Pointer dfilter = DFilterType::New();
+  auto dfilter = DFilterType::New();
   dfilter->SetInput(dImage);
   dfilter->SetNumberOfStreamDivisions(numberOfStreamDivisions);
   ITK_TRY_EXPECT_NO_EXCEPTION(dfilter->UpdateLargestPossibleRegion());

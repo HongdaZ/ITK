@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class MINCImageIOFactory
+ * \class MINCImageIOFactory
  * \brief Create instances of MINCImageIO objects using an object factory.
  *
  * \ingroup ITKIOMINC
@@ -33,8 +33,7 @@ namespace itk
  * This code was contributed in the Insight Journal paper:
  * "MINC2.0 IO Support for ITK"
  * by Baghdadi L.
- * https://hdl.handle.net/1926/191
- * http://www.insight-journal.org/browse/publication/88
+ * https://www.insight-journal.org/browse/publication/88
  *
  * And Modified by Vladimir S. FONOV during ITK-MINC Hackathon
  *
@@ -42,7 +41,7 @@ namespace itk
 class ITKIOMINC_EXPORT MINCImageIOFactory : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MINCImageIOFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(MINCImageIOFactory);
 
   /** Standard class type aliases. */
   using Self = MINCImageIOFactory;
@@ -67,7 +66,7 @@ public:
   static void
   RegisterOneFactory()
   {
-    MINCImageIOFactory::Pointer MINCFactory = MINCImageIOFactory::New();
+    auto MINCFactory = MINCImageIOFactory::New();
 
     ObjectFactoryBase::RegisterFactoryInternal(MINCFactory);
   }

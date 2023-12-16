@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkShapePriorMAPCostFunctionBase_hxx
 #define itkShapePriorMAPCostFunctionBase_hxx
 
-#include "itkShapePriorMAPCostFunctionBase.h"
 
 namespace itk
 {
@@ -50,8 +49,9 @@ ShapePriorMAPCostFunctionBase<TFeatureImage, TOutputPixel>::PrintSelf(std::ostre
  *
  */
 template <typename TFeatureImage, typename TOutputPixel>
-typename ShapePriorMAPCostFunctionBase<TFeatureImage, TOutputPixel>::MeasureType
+auto
 ShapePriorMAPCostFunctionBase<TFeatureImage, TOutputPixel>::GetValue(const ParametersType & parameters) const
+  -> MeasureType
 {
   return (this->ComputeLogInsideTerm(parameters) + this->ComputeLogGradientTerm(parameters) +
           this->ComputeLogShapePriorTerm(parameters) + this->ComputeLogPosePriorTerm(parameters));

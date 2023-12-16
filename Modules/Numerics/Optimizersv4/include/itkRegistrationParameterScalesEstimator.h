@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@
 
 namespace itk
 {
-/**\class RegistrationParameterScalesEstimatorEnums
+/** \class RegistrationParameterScalesEstimatorEnums
  * \brief This class contains all the enum classes used by RegistrationParameterScalesEstimator class.
  * \ingroup ITKOptimizersv4
  */
@@ -39,7 +39,7 @@ class RegistrationParameterScalesEstimatorEnums
 {
 public:
   /**
-   *\class SamplingStrategy
+   * \class SamplingStrategy
    * \ingroup ITKOptimizersv4
    * The strategies to sample physical points in the virtual domain. */
   enum class SamplingStrategy : uint8_t
@@ -57,7 +57,7 @@ extern ITKOptimizersv4_EXPORT std::ostream &
                               operator<<(std::ostream & out, const RegistrationParameterScalesEstimatorEnums::SamplingStrategy value);
 
 /**
- *\class RegistrationParameterScalesEstimator
+ * \class RegistrationParameterScalesEstimator
  *  \brief Implements a registration helper class for estimating scales of
  * transform parameters and step sizes.
  *
@@ -81,7 +81,7 @@ class ITK_TEMPLATE_EXPORT RegistrationParameterScalesEstimator
   : public OptimizerParameterScalesEstimatorTemplate<typename TMetric::ParametersValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegistrationParameterScalesEstimator);
+  ITK_DISALLOW_COPY_AND_MOVE(RegistrationParameterScalesEstimator);
 
   /** Standard class type aliases. */
   using Self = RegistrationParameterScalesEstimator;
@@ -90,14 +90,14 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(RegistrationParameterScalesEstimator, Superclass);
+  itkTypeMacro(RegistrationParameterScalesEstimator, OptimizerParameterScalesEstimatorTemplate);
 
   /** Type of scales */
-  using ScalesType = typename Superclass::ScalesType;
+  using typename Superclass::ScalesType;
   /** Type of parameters of the optimizer */
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
   /** Type of float */
-  using FloatType = typename Superclass::FloatType;
+  using typename Superclass::FloatType;
 
   using MetricType = TMetric;
   using MetricPointer = typename MetricType::Pointer;
@@ -236,7 +236,7 @@ protected:
 
   /** Compute the transform Jacobian at a physical point. */
   void
-  ComputeSquaredJacobianNorms(const VirtualPointType & p, ParametersType & squareNorms);
+  ComputeSquaredJacobianNorms(const VirtualPointType & point, ParametersType & squareNorms);
 
   /** Check if the transform being optimized has local support. */
   bool
@@ -304,10 +304,10 @@ protected:
 
   /** Get the current sampling strategy. Note that this is changed
    * internally as the class is used for scale or step estimation. */
-  itkGetMacro(SamplingStrategy, SamplingStrategyType)
+  itkGetMacro(SamplingStrategy, SamplingStrategyType);
 
-    /** the metric object */
-    MetricPointer m_Metric;
+  /** the metric object */
+  MetricPointer m_Metric;
 
   /** the samples in the virtual domain */
   SamplePointContainerType m_SamplePoints;

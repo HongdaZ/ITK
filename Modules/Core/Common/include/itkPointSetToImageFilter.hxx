@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkPointSetToImageFilter_hxx
 #define itkPointSetToImageFilter_hxx
 
-#include "itkPointSetToImageFilter.h"
 
 #include "itkBoundingBox.h"
 #include "itkImageRegionIteratorWithIndex.h"
@@ -59,16 +58,16 @@ PointSetToImageFilter<TInputPointSet, TOutputImage>::SetInput(unsigned int index
 
 /** Get the input point-set */
 template <typename TInputPointSet, typename TOutputImage>
-const typename PointSetToImageFilter<TInputPointSet, TOutputImage>::InputPointSetType *
-PointSetToImageFilter<TInputPointSet, TOutputImage>::GetInput()
+auto
+PointSetToImageFilter<TInputPointSet, TOutputImage>::GetInput() -> const InputPointSetType *
 {
   return itkDynamicCastInDebugMode<const TInputPointSet *>(this->GetPrimaryInput());
 }
 
 /** Get the input point-set */
 template <typename TInputPointSet, typename TOutputImage>
-const typename PointSetToImageFilter<TInputPointSet, TOutputImage>::InputPointSetType *
-PointSetToImageFilter<TInputPointSet, TOutputImage>::GetInput(unsigned int idx)
+auto
+PointSetToImageFilter<TInputPointSet, TOutputImage>::GetInput(unsigned int idx) -> const InputPointSetType *
 {
   return itkDynamicCastInDebugMode<const TInputPointSet *>(this->ProcessObject::GetInput(idx));
 }
@@ -124,14 +123,14 @@ PointSetToImageFilter<TInputPointSet, TOutputImage>::GenerateData()
                                       InputPointSetDimension,
                                       typename InputPointSetType::CoordRepType,
                                       typename InputPointSetType::PointsContainer>;
-  typename BoundingBoxType::Pointer bb = BoundingBoxType::New();
+  auto bb = BoundingBoxType::New();
   bb->SetPoints(InputPointSet->GetPoints());
   bb->ComputeBoundingBox();
 
-  for (i = 0; i < InputPointSetDimension; i++)
+  for (i = 0; i < InputPointSetDimension; ++i)
   {
     size[i] = static_cast<SizeValueType>(bb->GetBounds()[2 * i + 1] - bb->GetBounds()[2 * i]);
-    origin[i] = 0; // bb->GetBounds()[2*i];
+    origin[i] = bb->GetBounds()[2 * i];
   }
 
   typename OutputImageType::RegionType region;
@@ -142,7 +141,7 @@ PointSetToImageFilter<TInputPointSet, TOutputImage>::GenerateData()
   // PointSet's bounding box will be used as default.
 
   bool specified = false;
-  for (i = 0; i < OutputImageDimension; i++)
+  for (i = 0; i < OutputImageDimension; ++i)
   {
     if (m_Size[i] != NumericTraits<SizeValueType>::ZeroValue())
     {
@@ -168,7 +167,7 @@ PointSetToImageFilter<TInputPointSet, TOutputImage>::GenerateData()
   // the point-set is used as default.
 
   specified = false;
-  for (i = 0; i < OutputImageDimension; i++)
+  for (i = 0; i < OutputImageDimension; ++i)
   {
     if (Math::NotExactlyEquals(m_Spacing[i],
                                NumericTraits<typename NumericTraits<SpacingType>::ValueType>::ZeroValue()))
@@ -184,7 +183,7 @@ PointSetToImageFilter<TInputPointSet, TOutputImage>::GenerateData()
   }
 
   specified = false;
-  for (i = 0; i < OutputImageDimension; i++)
+  for (i = 0; i < OutputImageDimension; ++i)
   {
     if (Math::NotExactlyEquals(m_Origin[i], NumericTraits<typename NumericTraits<PointType>::ValueType>::ZeroValue()))
     {
@@ -195,7 +194,7 @@ PointSetToImageFilter<TInputPointSet, TOutputImage>::GenerateData()
 
   if (specified)
   {
-    for (i = 0; i < OutputImageDimension; i++)
+    for (i = 0; i < OutputImageDimension; ++i)
     {
       origin[i] = m_Origin[i]; // set origin
     }

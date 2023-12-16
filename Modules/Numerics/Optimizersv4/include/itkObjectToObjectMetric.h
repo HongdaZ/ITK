@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ namespace itk
 {
 
 /**
- *\class ObjectToObjectMetric
+ * \class ObjectToObjectMetric
  * \brief Computes similarity between regions of two objects.
  *
  * This class is templated over the dimensionality of the two input objects.
@@ -92,7 +92,7 @@ template <unsigned int TFixedDimension,
 class ITK_TEMPLATE_EXPORT ObjectToObjectMetric : public ObjectToObjectMetricBaseTemplate<TParametersValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ObjectToObjectMetric);
+  ITK_DISALLOW_COPY_AND_MOVE(ObjectToObjectMetric);
 
   /** Standard class type aliases. */
   using Self = ObjectToObjectMetric;
@@ -110,20 +110,20 @@ public:
   using InternalComputationValueType = TParametersValueType;
 
   /**  Type of the measure. */
-  using MeasureType = typename Superclass::MeasureType;
+  using typename Superclass::MeasureType;
 
   /**  Type of object. */
   using ObjectType = typename Superclass::Object;
 
   /**  Type of the derivative. */
-  using DerivativeType = typename Superclass::DerivativeType;
-  using DerivativeValueType = typename Superclass::DerivativeValueType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeValueType;
 
   /**  Type of the parameters. */
-  using ParametersType = typename Superclass::ParametersType;
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::NumberOfParametersType;
 
-  using GradientSourceEnum = typename Superclass::GradientSourceEnum;
+  using typename Superclass::GradientSourceEnum;
 
   /** Dimension type */
   using DimensionType = SizeValueType;
@@ -213,28 +213,29 @@ public:
 
   /** Get the number of valid points after a call to evaluate the
    * metric. */
-  itkGetConstMacro(NumberOfValidPoints, SizeValueType)
+  itkGetConstMacro(NumberOfValidPoints, SizeValueType);
 
-    /** Define the virtual reference space. This space defines the resolution
-     * at which the registration is performed as well as the physical coordinate
-     * system.  Useful for unbiased registration.
-     * This method will allocate \c m_VirtualImage with the passed
-     * information, with the pixel buffer left unallocated.
-     * Metric evaluation will be performed within the constraints of the virtual
-     * domain depending on implementation in derived classes.
-     * A default domain is created during initialization in derived
-     * classes according to their need.
-     * \param spacing   spacing
-     * \param origin    origin
-     * \param direction direction
-     * \param region    region is used to set all image regions.
-     *
-     * \sa SetVirtualDomainFromImage
-     */
-    void SetVirtualDomain(const VirtualSpacingType &   spacing,
-                          const VirtualOriginType &    origin,
-                          const VirtualDirectionType & direction,
-                          const VirtualRegionType &    region);
+  /** Define the virtual reference space. This space defines the resolution
+   * at which the registration is performed as well as the physical coordinate
+   * system.  Useful for unbiased registration.
+   * This method will allocate \c m_VirtualImage with the passed
+   * information, with the pixel buffer left unallocated.
+   * Metric evaluation will be performed within the constraints of the virtual
+   * domain depending on implementation in derived classes.
+   * A default domain is created during initialization in derived
+   * classes according to their need.
+   * \param spacing   spacing
+   * \param origin    origin
+   * \param direction direction
+   * \param region    region is used to set all image regions.
+   *
+   * \sa SetVirtualDomainFromImage
+   */
+  void
+  SetVirtualDomain(const VirtualSpacingType &   spacing,
+                   const VirtualOriginType &    origin,
+                   const VirtualDirectionType & direction,
+                   const VirtualRegionType &    region);
 
   /** Use a virtual domain image to define the virtual reference space.
    * \sa SetVirtualDomain */

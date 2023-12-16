@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -80,7 +80,7 @@ itkJoinSeriesImageFilterTest(int, char *[])
   std::vector<InputImageType::Pointer> inputs;
 
   PixelType counter1 = 0;
-  for (int i = 0; i < numInputs; i++)
+  for (int i = 0; i < numInputs; ++i)
   {
     inputs.push_back(InputImageType::New());
     inputs[i]->SetLargestPossibleRegion(region);
@@ -102,7 +102,7 @@ itkJoinSeriesImageFilterTest(int, char *[])
   // Create the filter
   using JoinSeriesImageType = itk::JoinSeriesImageFilter<InputImageType, OutputImageType>;
 
-  JoinSeriesImageType::Pointer joinSeriesImage = JoinSeriesImageType::New();
+  auto joinSeriesImage = JoinSeriesImageType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(joinSeriesImage, JoinSeriesImageFilter, ImageToImageFilter);
 
@@ -125,7 +125,7 @@ itkJoinSeriesImageFilterTest(int, char *[])
   joinSeriesImage->SetOrigin(originValue);
   ITK_TEST_SET_GET_VALUE(originValue, joinSeriesImage->GetOrigin());
 
-  for (int i = 0; i < numInputs; i++)
+  for (int i = 0; i < numInputs; ++i)
   {
     joinSeriesImage->SetInput(i, inputs[i]);
   }
@@ -133,13 +133,13 @@ itkJoinSeriesImageFilterTest(int, char *[])
   // Test the ProgressReporter
   ShowProgressObject progressWatch(joinSeriesImage);
   using CommandType = itk::SimpleMemberCommand<ShowProgressObject>;
-  CommandType::Pointer command = CommandType::New();
+  auto command = CommandType::New();
   command->SetCallbackFunction(&progressWatch, &ShowProgressObject::ShowProgress);
   joinSeriesImage->AddObserver(itk::ProgressEvent(), command);
 
   // Test streaming
   using StreamingImageType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-  StreamingImageType::Pointer streamingImage = StreamingImageType::New();
+  auto streamingImage = StreamingImageType::New();
   streamingImage->SetInput(joinSeriesImage->GetOutput());
   streamingImage->SetNumberOfStreamDivisions(streamDivisions);
 
@@ -161,7 +161,7 @@ itkJoinSeriesImageFilterTest(int, char *[])
   OutputImageType::Pointer output = streamingImage->GetOutput();
 
 
-  // Check the informations
+  // Check the information
   if (output->GetLargestPossibleRegion() != expectedRegion)
   {
     std::cout << "LargestPossibleRegion mismatch" << std::endl;
@@ -210,7 +210,7 @@ itkJoinSeriesImageFilterTest(int, char *[])
   {
     joinSeriesImage->Update();
   }
-  catch (itk::InvalidRequestedRegionError & err)
+  catch (const itk::InvalidRequestedRegionError & err)
   {
     std::cout << err << std::endl;
     passed = true;

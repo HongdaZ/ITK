@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class Subsample
+ * \class Subsample
  * \brief This class stores a subset of instance identifiers from another sample
  * object. You can create a subsample out of another sample object or another
  * subsample object. The class is useful when storing or extracting a portion
@@ -42,7 +42,7 @@ template <typename TSample>
 class ITK_TEMPLATE_EXPORT Subsample : public TSample
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Subsample);
+  ITK_DISALLOW_COPY_AND_MOVE(Subsample);
 
   /** Standard class type aliases */
   using Self = Subsample;
@@ -174,16 +174,12 @@ public:
     }
 
     bool
-    operator!=(const ConstIterator & it)
-    {
-      return (m_Iter != it.m_Iter);
-    }
-
-    bool
-    operator==(const ConstIterator & it)
+    operator==(const ConstIterator & it) const
     {
       return (m_Iter == it.m_Iter);
     }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
 
     ConstIterator &
     operator++()

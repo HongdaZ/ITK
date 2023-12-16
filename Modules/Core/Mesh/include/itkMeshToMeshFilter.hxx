@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,6 @@
 #define itkMeshToMeshFilter_hxx
 
 #include "itkMesh.h"
-#include "itkMeshToMeshFilter.h"
 
 namespace itk
 {
@@ -58,8 +57,8 @@ MeshToMeshFilter<TInputMesh, TOutputMesh>::SetInput(const TInputMesh * input)
  *
  */
 template <typename TInputMesh, typename TOutputMesh>
-const typename MeshToMeshFilter<TInputMesh, TOutputMesh>::InputMeshType *
-MeshToMeshFilter<TInputMesh, TOutputMesh>::GetInput() const
+auto
+MeshToMeshFilter<TInputMesh, TOutputMesh>::GetInput() const -> const InputMeshType *
 {
   return itkDynamicCastInDebugMode<const TInputMesh *>(this->GetPrimaryInput());
 }
@@ -68,8 +67,8 @@ MeshToMeshFilter<TInputMesh, TOutputMesh>::GetInput() const
  *
  */
 template <typename TInputMesh, typename TOutputMesh>
-const typename MeshToMeshFilter<TInputMesh, TOutputMesh>::InputMeshType *
-MeshToMeshFilter<TInputMesh, TOutputMesh>::GetInput(unsigned int idx) const
+auto
+MeshToMeshFilter<TInputMesh, TOutputMesh>::GetInput(unsigned int idx) const -> const InputMeshType *
 {
   return dynamic_cast<const TInputMesh *>(this->ProcessObject::GetInput(idx));
 }
@@ -84,8 +83,8 @@ MeshToMeshFilter<TInputMesh, TOutputMesh>::CopyInputMeshToOutputMeshPoints()
   using OutputPointsContainer = typename TOutputMesh::PointsContainer;
   using InputPointsContainer = typename TInputMesh::PointsContainer;
 
-  typename OutputPointsContainer::Pointer outputPoints = OutputPointsContainer::New();
-  const InputPointsContainer *            inputPoints = inputMesh->GetPoints();
+  auto                         outputPoints = OutputPointsContainer::New();
+  const InputPointsContainer * inputPoints = inputMesh->GetPoints();
 
   if (inputPoints)
   {
@@ -117,8 +116,8 @@ MeshToMeshFilter<TInputMesh, TOutputMesh>::CopyInputMeshToOutputMeshPointData()
   using OutputPointDataContainer = typename TOutputMesh::PointDataContainer;
   using InputPointDataContainer = typename TInputMesh::PointDataContainer;
 
-  typename OutputPointDataContainer::Pointer outputPointData = OutputPointDataContainer::New();
-  const InputPointDataContainer *            inputPointData = inputMesh->GetPointData();
+  auto                            outputPointData = OutputPointDataContainer::New();
+  const InputPointDataContainer * inputPointData = inputMesh->GetPointData();
 
   if (inputPointData)
   {
@@ -150,8 +149,8 @@ MeshToMeshFilter<TInputMesh, TOutputMesh>::CopyInputMeshToOutputMeshCellLinks()
   using OutputCellLinksContainer = typename TOutputMesh::CellLinksContainer;
   using InputCellLinksContainer = typename TInputMesh::CellLinksContainer;
 
-  typename OutputCellLinksContainer::Pointer outputCellLinks = OutputCellLinksContainer::New();
-  const InputCellLinksContainer *            inputCellLinks = inputMesh->GetCellLinks();
+  auto                            outputCellLinks = OutputCellLinksContainer::New();
+  const InputCellLinksContainer * inputCellLinks = inputMesh->GetCellLinks();
 
   if (inputCellLinks)
   {
@@ -186,8 +185,8 @@ MeshToMeshFilter<TInputMesh, TOutputMesh>::CopyInputMeshToOutputMeshCells()
 
   outputMesh->SetCellsAllocationMethod(MeshEnums::MeshClassCellsAllocationMethod::CellsAllocatedDynamicallyCellByCell);
 
-  typename OutputCellsContainer::Pointer outputCells = OutputCellsContainer::New();
-  const InputCellsContainer *            inputCells = inputMesh->GetCells();
+  auto                        outputCells = OutputCellsContainer::New();
+  const InputCellsContainer * inputCells = inputMesh->GetCells();
 
   if (inputCells)
   {
@@ -226,8 +225,8 @@ MeshToMeshFilter<TInputMesh, TOutputMesh>::CopyInputMeshToOutputMeshCellData()
   using OutputCellDataContainer = typename TOutputMesh::CellDataContainer;
   using InputCellDataContainer = typename TInputMesh::CellDataContainer;
 
-  typename OutputCellDataContainer::Pointer outputCellData = OutputCellDataContainer::New();
-  const InputCellDataContainer *            inputCellData = inputMesh->GetCellData();
+  auto                           outputCellData = OutputCellDataContainer::New();
+  const InputCellDataContainer * inputCellData = inputMesh->GetCellData();
 
   if (inputCellData)
   {

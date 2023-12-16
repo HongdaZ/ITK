@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ itkQuadEdgeMeshDeletePointAndReorderIDsTest(int, char *[])
   using CellType = MeshType::CellType;
   using QEPolygonCellType = itk::QuadEdgeMeshPolygonCell<CellType>;
 
-  MeshType::Pointer   mesh = MeshType::New();
+  auto                mesh = MeshType::New();
   MeshType::PointType pts[5];
   MeshType::PixelType ptData = 0.;
 
@@ -49,7 +49,7 @@ itkQuadEdgeMeshDeletePointAndReorderIDsTest(int, char *[])
   pts[4][1] = 0.0;
   pts[4][2] = 1.0;
 
-  for (unsigned int e = 0; e < 5; e++)
+  for (unsigned int e = 0; e < 5; ++e)
   {
     mesh->SetPoint(e, pts[e]);
     mesh->SetPointData(e, e);
@@ -60,7 +60,7 @@ itkQuadEdgeMeshDeletePointAndReorderIDsTest(int, char *[])
 
   CellType::CellAutoPointer cellpointer;
   QEPolygonCellType *       poly;
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 4; ++i)
   {
     poly = new QEPolygonCellType(3);
     cellpointer.TakeOwnership(poly);

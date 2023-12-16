@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkWhitakerSparseLevelSetImage_hxx
 #define itkWhitakerSparseLevelSetImage_hxx
 
-#include "itkWhitakerSparseLevelSetImage.h"
 
 namespace itk
 {
@@ -32,8 +31,8 @@ WhitakerSparseLevelSetImage<TOutput, VDimension>::WhitakerSparseLevelSetImage()
 }
 
 template <typename TOutput, unsigned int VDimension>
-typename WhitakerSparseLevelSetImage<TOutput, VDimension>::OutputType
-WhitakerSparseLevelSetImage<TOutput, VDimension>::Evaluate(const InputType & inputIndex) const
+auto
+WhitakerSparseLevelSetImage<TOutput, VDimension>::Evaluate(const InputType & inputIndex) const -> OutputType
 {
   InputType mapIndex = inputIndex - this->m_DomainOffset;
   auto      layerIt = this->m_Layers.begin();

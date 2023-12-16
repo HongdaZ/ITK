@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkWarpVectorImageFilter_hxx
 #define itkWarpVectorImageFilter_hxx
-#include "itkWarpVectorImageFilter.h"
 
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionIteratorWithIndex.h"
@@ -36,13 +35,13 @@ WarpVectorImageFilter<TInputImage, TOutputImage, TDisplacementField>::WarpVector
   m_OutputOrigin.Fill(0.0);
   m_OutputDirection.SetIdentity();
 
-  for (unsigned int i = 0; i < PixelDimension; i++)
+  for (unsigned int i = 0; i < PixelDimension; ++i)
   {
     m_EdgePaddingValue[i] = 0;
   }
 
   // Setup default interpolator
-  typename DefaultInterpolatorType::Pointer interp = DefaultInterpolatorType::New();
+  auto interp = DefaultInterpolatorType::New();
 
   m_Interpolator = static_cast<InterpolatorType *>(interp.GetPointer());
   this->DynamicMultiThreadingOn();
@@ -111,8 +110,8 @@ WarpVectorImageFilter<TInputImage, TOutputImage, TDisplacementField>::SetDisplac
 
 
 template <typename TInputImage, typename TOutputImage, typename TDisplacementField>
-typename WarpVectorImageFilter<TInputImage, TOutputImage, TDisplacementField>::DisplacementFieldType *
-WarpVectorImageFilter<TInputImage, TOutputImage, TDisplacementField>::GetDisplacementField()
+auto
+WarpVectorImageFilter<TInputImage, TOutputImage, TDisplacementField>::GetDisplacementField() -> DisplacementFieldType *
 {
   return itkDynamicCastInDebugMode<DisplacementFieldType *>(this->ProcessObject::GetInput(1));
 }
@@ -163,7 +162,7 @@ WarpVectorImageFilter<TInputImage, TOutputImage, TDisplacementField>::DynamicThr
     displacement = fieldIt.Get();
 
     // compute the required input image point
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       point[j] += displacement[j];
     }
@@ -174,7 +173,7 @@ WarpVectorImageFilter<TInputImage, TOutputImage, TDisplacementField>::DynamicThr
       using OutputType = typename InterpolatorType::OutputType;
       const OutputType interpolatedValue = m_Interpolator->Evaluate(point);
 
-      for (unsigned int k = 0; k < PixelDimension; k++)
+      for (unsigned int k = 0; k < PixelDimension; ++k)
       {
         outputValue[k] = static_cast<ValueType>(interpolatedValue[k]);
       }

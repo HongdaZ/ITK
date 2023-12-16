@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkConstNeighborhoodIterator.h"
 #include "itkZeroFluxNeumannBoundaryCondition.h"
 #include "itkInterpolateImageFunction.h"
+#include "itkMath.h"
 
 namespace itk
 {
@@ -262,10 +263,10 @@ template <typename TInputImage,
           typename TWindowFunction = Function::HammingWindowFunction<VRadius>,
           class TBoundaryCondition = ZeroFluxNeumannBoundaryCondition<TInputImage, TInputImage>,
           class TCoordRep = double>
-class WindowedSincInterpolateImageFunction : public InterpolateImageFunction<TInputImage, TCoordRep>
+class ITK_TEMPLATE_EXPORT WindowedSincInterpolateImageFunction : public InterpolateImageFunction<TInputImage, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WindowedSincInterpolateImageFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(WindowedSincInterpolateImageFunction);
 
   /** Standard class type aliases. */
   using Self = WindowedSincInterpolateImageFunction;
@@ -281,29 +282,29 @@ public:
   itkNewMacro(Self);
 
   /** OutputType type alias support */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   /** InputImageType type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
 
   /** RealType type alias support */
-  using RealType = typename Superclass::RealType;
+  using typename Superclass::RealType;
 
   /** Dimension underlying input image. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Index type alias support */
-  using IndexType = typename Superclass::IndexType;
-  using IndexValueType = typename Superclass::IndexValueType;
+  using typename Superclass::IndexType;
+  using typename Superclass::IndexValueType;
 
   /** Size type alias support */
-  using SizeType = typename Superclass::SizeType;
+  using typename Superclass::SizeType;
 
   /** Image type definition */
   using ImageType = TInputImage;
 
   /** ContinuousIndex type alias support */
-  using ContinuousIndexType = typename Superclass::ContinuousIndexType;
+  using typename Superclass::ContinuousIndexType;
 
   void
   SetInputImage(const ImageType * image) override;
@@ -326,8 +327,8 @@ public:
   }
 
 protected:
-  WindowedSincInterpolateImageFunction();
-  ~WindowedSincInterpolateImageFunction() override;
+  WindowedSincInterpolateImageFunction() = default;
+  ~WindowedSincInterpolateImageFunction() override = default;
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 
@@ -336,20 +337,20 @@ private:
   using IteratorType = ConstNeighborhoodIterator<ImageType, TBoundaryCondition>;
 
   // Constant to store twice the radius
-  static const unsigned int m_WindowSize;
+  static constexpr unsigned int m_WindowSize{ 2 * VRadius };
 
   /** The function object, used to compute window */
   TWindowFunction m_WindowFunction;
 
+  /** Size of the offset table */
+  static constexpr unsigned int m_OffsetTableSize = Math::UnsignedPower(m_WindowSize, ImageDimension);
+
   /** The offset array, used to keep a list of relevant
    * offsets in the neihborhoodIterator */
-  unsigned int * m_OffsetTable;
-
-  /** Size of the offset table */
-  unsigned int m_OffsetTableSize;
+  unsigned int m_OffsetTable[m_OffsetTableSize];
 
   /** Index into the weights array for each offset */
-  unsigned int ** m_WeightOffsetTable;
+  unsigned int m_WeightOffsetTable[m_OffsetTableSize][ImageDimension];
 
   /** The sinc function */
   inline double

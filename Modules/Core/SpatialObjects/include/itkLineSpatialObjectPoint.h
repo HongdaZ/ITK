@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,17 +25,17 @@
 namespace itk
 {
 /**
- *\class LineSpatialObjectPoint
+ * \class LineSpatialObjectPoint
  * \brief Point used for a line definition
  *
  * This class contains all the functions necessary to define a point
  * that can be used to build lines.
  * This Class derives from SpatialObjectPoint.
- * A LineSpatialObjectPoint has NDimension-1 normals.
+ * A LineSpatialObjectPoint has VDimension-1 normals.
  * \ingroup ITKSpatialObjects
  *
  * \sphinx
- * \sphinxexample{Core/SpatialObjects/LineSpacialObject,Line Spatial Object}
+ * \sphinxexample{Core/SpatialObjects/LineSpatialObject,Line Spatial Object}
  * \endsphinx
  */
 
@@ -51,6 +51,9 @@ public:
 
   /** Constructor */
   LineSpatialObjectPoint();
+
+  /** Copy Constructor */
+  LineSpatialObjectPoint(const LineSpatialObjectPoint & other);
 
   /** Destructor */
   ~LineSpatialObjectPoint() override = default;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ namespace itk
  * It has configurable amount, radius (sigma) and threshold,
  * and whether to clamp the resulting values to the range of output type.
  *
- * Formula: sharpened=original+[abs(original-blurred)-threshold]*amount
+ * Formula: sharpened=original+[itk::Math::abs(original-blurred)-threshold]*amount
  *
  * If clamping is turned off (it is on by default),
  * casting to output pixel format is done using C++ defaults,
@@ -55,7 +55,7 @@ template <typename TInputImage, typename TOutputImage = TInputImage, typename TI
 class ITK_TEMPLATE_EXPORT UnsharpMaskImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(UnsharpMaskImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(UnsharpMaskImageFilter);
 
   /**
    * Standard "Self" & Superclass type alias.
@@ -193,16 +193,12 @@ private:
     }
 
     bool
-    operator==(const UnsharpMaskingFunctor & other)
+    operator==(const UnsharpMaskingFunctor & other) const
     {
       return (m_Amount == other.m_Amount) && (m_Threshold == other.m_Threshold) && (m_Clamp == other.m_Clamp);
     }
 
-    bool
-    operator!=(const UnsharpMaskingFunctor & other)
-    {
-      return !(*this == other);
-    }
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(UnsharpMaskingFunctor);
 
     inline OutPixelType
     operator()(const InPixelType & v, const FunctorRealType & s) const

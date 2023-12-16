@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,10 +17,7 @@
  *=========================================================================*/
 // Disable warning for long symbol names in this file only
 
-/**
- * This is a test file for the itkSurfaceSpatialObject class.
- */
-
+#include "itkTestingMacros.h"
 #include "itkSurfaceSpatialObject.h"
 #include "itkMath.h"
 
@@ -37,12 +34,12 @@ itkSurfaceSpatialObjectTest(int, char *[])
 
   SurfaceType::SurfacePointListType list;
   unsigned int                      i;
-  for (i = 0; i < 10; i++)
+  for (i = 0; i < 10; ++i)
   {
     SurfacePointType p;
     p.SetPositionInObjectSpace(i, i + 1, i + 2);
     VectorType normal;
-    for (unsigned int j = 0; j < 3; j++)
+    for (unsigned int j = 0; j < 3; ++j)
     {
       normal[j] = j;
     }
@@ -85,15 +82,21 @@ itkSurfaceSpatialObjectTest(int, char *[])
   i = 0;
   while (it != Surface->GetPoints().end())
   {
-    for (unsigned int d = 0; d < 3; d++)
+    for (unsigned int d = 0; d < 3; ++d)
     {
-      if (itk::Math::NotExactlyEquals((*it).GetPositionInWorldSpace()[d], i + d))
+      if (itk::Math::NotExactlyEquals(it->GetPositionInWorldSpace()[d], i + d))
       {
         std::cout << "[FAILED]" << std::endl;
         return EXIT_FAILURE;
       }
 
-      if (itk::Math::NotExactlyEquals((*it).GetNormalInObjectSpace()[d], d))
+      if (itk::Math::NotExactlyEquals(it->GetNormalInObjectSpace()[d], d))
+      {
+        std::cout << "[FAILED]" << std::endl;
+        return EXIT_FAILURE;
+      }
+
+      if (itk::Math::NotExactlyEquals(it->GetNormalInWorldSpace()[d], d))
       {
         std::cout << "[FAILED]" << std::endl;
         return EXIT_FAILURE;
@@ -157,5 +160,72 @@ itkSurfaceSpatialObjectTest(int, char *[])
   }
   std::cout << "[PASSED]" << std::endl;
 
+  // Test Copy and Assignment for SurfacePointType
+  {
+    SurfacePointType pOriginal;
+
+    // itk::SpatialObjectPoint
+    pOriginal.SetId(250);
+    pOriginal.SetColor(0.5, 0.4, 0.3, 0.2);
+    pOriginal.SetPositionInObjectSpace(42, 41, 43);
+
+
+    // itk::SurfaceSpatialObjectPoint
+    VectorType normal;
+    normal.Fill(276);
+    pOriginal.SetNormalInObjectSpace(normal);
+
+    Surface->AddPoint(pOriginal);
+
+    // Must get a copy of the added point. Each point contains a pointer
+    //   to the spatial object that it is a part of.  That assignment is
+    //   needed to determine the WorldSpace of the point - which is defined
+    //   by the tree of spatial objects it is a part of.
+    pOriginal = Surface->GetPoints().back();
+
+    for (size_t j = 0; j < 3; ++j)
+    {
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetNormalInWorldSpace()[j], normal[j]));
+    }
+    pOriginal.SetNormalInWorldSpace(normal);
+    for (size_t j = 0; j < 3; ++j)
+    {
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetNormalInObjectSpace()[j], normal[j]));
+    }
+
+    // Copy
+    SurfacePointType pCopy(pOriginal);
+    // Assign
+    SurfacePointType pAssign = pOriginal;
+
+    std::vector<SurfacePointType> pointVector;
+    pointVector.push_back(pCopy);
+    pointVector.push_back(pAssign);
+
+    for (const auto & pv : pointVector)
+    {
+      // itk::SpatialObjectPoint
+      ITK_TEST_EXPECT_EQUAL(pOriginal.GetId(), pv.GetId());
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetRed(), pv.GetRed()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetGreen(), pv.GetGreen()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetBlue(), pv.GetBlue()));
+      ITK_TEST_EXPECT_TRUE(itk::Math::AlmostEquals(pOriginal.GetAlpha(), pv.GetAlpha()));
+      for (size_t j = 0; j < 3; ++j)
+      {
+        ITK_TEST_EXPECT_TRUE(
+          itk::Math::AlmostEquals(pOriginal.GetPositionInObjectSpace()[j], pv.GetPositionInObjectSpace()[j]));
+      }
+      // itk::SurfaceSpatialObjectPoint
+      for (size_t j = 0; j < 3; ++j)
+      {
+        ITK_TEST_EXPECT_TRUE(
+          itk::Math::AlmostEquals(pOriginal.GetNormalInObjectSpace()[j], pv.GetNormalInObjectSpace()[j]));
+        ITK_TEST_EXPECT_TRUE(
+          itk::Math::AlmostEquals(pOriginal.GetNormalInWorldSpace()[j], pv.GetNormalInObjectSpace()[j]));
+      }
+    }
+  }
+
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

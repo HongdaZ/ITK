@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkFFTWInverseFFTImageFilter_hxx
 
 #include "itkFullToHalfHermitianImageFilter.h"
-#include "itkFFTWInverseFFTImageFilter.h"
 
 #include "itkImageRegionIterator.h"
 #include "itkProgressReporter.h"
@@ -68,7 +67,7 @@ FFTWInverseFFTImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData
   unsigned int totalOutputSize = 1;
   unsigned int totalInputSize = 1;
 
-  for (unsigned i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     totalOutputSize *= outputSize[i];
     totalInputSize *= inputSize[i];
@@ -76,7 +75,7 @@ FFTWInverseFFTImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData
 
   // Cut the full complex image to just the portion needed by FFTW.
   using FullToHalfFilterType = FullToHalfHermitianImageFilter<InputImageType>;
-  typename FullToHalfFilterType::Pointer fullToHalfFilter = FullToHalfFilterType::New();
+  auto fullToHalfFilter = FullToHalfFilterType::New();
   fullToHalfFilter->SetInput(this->GetInput());
   fullToHalfFilter->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   fullToHalfFilter->UpdateLargestPossibleRegion();
@@ -87,7 +86,7 @@ FFTWInverseFFTImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData
   typename FFTWProxyType::PlanType plan;
 
   int sizes[ImageDimension];
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     sizes[(ImageDimension - 1) - i] = outputSize[i];
   }

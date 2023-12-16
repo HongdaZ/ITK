@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,11 +35,11 @@ itkMembershipSampleTest3(int, char *[])
 
   using MembershipSampleType = itk::Statistics::MembershipSample<SampleType>;
 
-  SampleType::Pointer sample = SampleType::New();
+  auto sample = SampleType::New();
 
   sample->SetMeasurementVectorSize(MeasurementVectorSize);
 
-  MembershipSampleType::Pointer membershipSample = MembershipSampleType::New();
+  auto membershipSample = MembershipSampleType::New();
 
   membershipSample->SetSample(sample);
 
@@ -67,9 +67,9 @@ itkMembershipSampleTest3(int, char *[])
   std::cout << "Sample length = " << sample->GetMeasurementVectorSize() << std::endl;
   std::cout << "Vector length = " << itk::NumericTraits<MeasurementVectorType>::GetLength(mv) << std::endl;
 
-  for (unsigned int i = 0; i < sampleSize; i++)
+  for (unsigned int i = 0; i < sampleSize; ++i)
   {
-    for (unsigned int j = 0; j < MeasurementVectorSize; j++)
+    for (unsigned int j = 0; j < MeasurementVectorSize; ++j)
     {
       mv[j] = rand() / (RAND_MAX + 1.0);
     }

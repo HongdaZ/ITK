@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkShapeOpeningLabelMapFilter_hxx
 #define itkShapeOpeningLabelMapFilter_hxx
 
-#include "itkShapeOpeningLabelMapFilter.h"
 #include "itkLabelMapUtilities.h"
 
 namespace itk
@@ -26,7 +25,7 @@ namespace itk
 template <typename TImage>
 ShapeOpeningLabelMapFilter<TImage>::ShapeOpeningLabelMapFilter()
 {
-  m_Lambda = NumericTraits<double>::ZeroValue();
+  m_Lambda = 0.0;
   m_ReverseOrdering = false;
   m_Attribute = LabelObjectType::NUMBER_OF_PIXELS;
 

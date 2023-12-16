@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 #include "itkMath.h"
 #include "itkZeroFluxNeumannPadImageFilter.h"
 #include "itkStreamingImageFilter.h"
+#include "itkTestingMacros.h"
 
 using ShortImage = itk::Image<short, 2>;
 using FloatImage = itk::Image<float, 2>;
@@ -54,7 +55,7 @@ VerifyFilterOutput(const ShortImage * inputImage, const FloatImage * outputImage
     else
     {
       ShortImage::IndexType borderIdx = idx;
-      for (unsigned int i = 0; i < ShortImage::ImageDimension; i++)
+      for (unsigned int i = 0; i < ShortImage::ImageDimension; ++i)
       {
         if (borderIdx[i] < inputIndex[i])
         {
@@ -149,7 +150,7 @@ VerifyFilter(const ShortImage *    inputImage,
 
   // Create a streaming filter
   using StreamingFilter = itk::StreamingImageFilter<FloatImage, FloatImage>;
-  StreamingFilter::Pointer stream = StreamingFilter::New();
+  auto stream = StreamingFilter::New();
   stream->SetInput(padFilter->GetOutput());
   stream->SetNumberOfStreamDivisions(3);
   stream->UpdateLargestPossibleRegion();
@@ -171,7 +172,7 @@ int
 itkZeroFluxNeumannPadImageFilterTest(int, char *[])
 {
   // Test the creation of an image with native type
-  ShortImage::Pointer inputImage = ShortImage::New();
+  auto inputImage = ShortImage::New();
 
   // Fill in a test image
   ShortImage::IndexType  inputIndex = { { 0, 0 } };
@@ -192,7 +193,11 @@ itkZeroFluxNeumannPadImageFilterTest(int, char *[])
   }
 
   // Create a filter
-  FilterType::Pointer padFilter = FilterType::New();
+  auto padFilter = FilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(padFilter, ZeroFluxNeumannPadImageFilter, PadImageFilter);
+
+
   padFilter->SetInput(inputImage);
 
   // itk::SimpleFilterWatcher watcher( padFilter );

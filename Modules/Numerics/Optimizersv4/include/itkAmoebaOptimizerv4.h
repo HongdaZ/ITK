@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,11 +21,12 @@
 #include "itkSingleValuedNonLinearVnlOptimizerv4.h"
 #include "vnl/algo/vnl_amoeba.h"
 #include "ITKOptimizersv4Export.h"
+#include <memory> // For unique_ptr.
 
 namespace itk
 {
 /**
- *\class AmoebaOptimizerv4
+ * \class AmoebaOptimizerv4
  * \brief Wrap of the vnl_amoeba algorithm
  *
  * AmoebaOptimizerv4 is a wrapper around the vnl_amoeba algorithm which
@@ -61,7 +62,7 @@ namespace itk
 class ITKOptimizersv4_EXPORT AmoebaOptimizerv4 : public SingleValuedNonLinearVnlOptimizerv4
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(AmoebaOptimizerv4);
+  ITK_DISALLOW_COPY_AND_MOVE(AmoebaOptimizerv4);
 
   /** Standard "Self" type alias. */
   using Self = AmoebaOptimizerv4;
@@ -153,12 +154,12 @@ private:
   void
   ValidateSettings();
 
-  ParametersType::ValueType m_ParametersConvergenceTolerance;
-  MeasureType               m_FunctionConvergenceTolerance;
-  bool                      m_AutomaticInitialSimplex;
-  ParametersType            m_InitialSimplexDelta;
-  bool                      m_OptimizeWithRestarts;
-  vnl_amoeba *              m_VnlOptimizer;
+  ParametersType::ValueType   m_ParametersConvergenceTolerance;
+  MeasureType                 m_FunctionConvergenceTolerance;
+  bool                        m_AutomaticInitialSimplex;
+  ParametersType              m_InitialSimplexDelta;
+  bool                        m_OptimizeWithRestarts;
+  std::unique_ptr<vnl_amoeba> m_VnlOptimizer;
 
   std::ostringstream m_StopConditionDescription;
 };

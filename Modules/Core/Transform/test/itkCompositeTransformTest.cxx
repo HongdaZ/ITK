@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,9 +35,9 @@ testPoint(const TPoint & p1, const TPoint & p2)
 {
   bool pass = true;
 
-  for (unsigned int i = 0; i < TPoint::PointDimension; i++)
+  for (unsigned int i = 0; i < TPoint::PointDimension; ++i)
   {
-    if (std::fabs(p1[i] - p2[i]) > epsilon)
+    if (itk::Math::abs(p1[i] - p2[i]) > epsilon)
     {
       pass = false;
     }
@@ -52,11 +52,11 @@ testMatrix(const TMatrix & m1, const TMatrix & m2)
   unsigned int i, j;
   bool         pass = true;
 
-  for (i = 0; i < TMatrix::RowDimensions; i++)
+  for (i = 0; i < TMatrix::RowDimensions; ++i)
   {
-    for (j = 0; j < TMatrix::ColumnDimensions; j++)
+    for (j = 0; j < TMatrix::ColumnDimensions; ++j)
     {
-      if (std::fabs(m1[i][j] - m2[i][j]) > epsilon)
+      if (itk::Math::abs(m1[i][j] - m2[i][j]) > epsilon)
       {
         pass = false;
       }
@@ -72,11 +72,11 @@ testJacobian(const TArray2D & m1, const TArray2D & m2)
   unsigned int i, j;
   bool         pass = true;
 
-  for (i = 0; i < m1.rows(); i++)
+  for (i = 0; i < m1.rows(); ++i)
   {
-    for (j = 0; j < m1.cols(); j++)
+    for (j = 0; j < m1.cols(); ++j)
     {
-      if (std::fabs(m1[i][j] - m2[i][j]) > epsilon)
+      if (itk::Math::abs(m1[i][j] - m2[i][j]) > epsilon)
       {
         pass = false;
       }
@@ -91,9 +91,9 @@ testVectorArray(const TVector & v1, const TVector & v2)
 {
   bool pass = true;
 
-  for (unsigned int i = 0; i < v1.Size(); i++)
+  for (unsigned int i = 0; i < v1.Size(); ++i)
   {
-    if (std::fabs(v1[i] - v2[i]) > epsilon)
+    if (itk::Math::abs(v1[i] - v2[i]) > epsilon)
     {
       pass = false;
     }
@@ -108,19 +108,19 @@ testVectorArray(const TVector & v1, const TVector & v2)
 int
 itkCompositeTransformTest(int, char *[])
 {
-  constexpr unsigned int NDimensions = 2;
+  constexpr unsigned int VDimension = 2;
 
   /* Create composite transform */
-  using CompositeType = itk::CompositeTransform<double, NDimensions>;
+  using CompositeType = itk::CompositeTransform<double, VDimension>;
   using ScalarType = CompositeType::ScalarType;
 
-  CompositeType::Pointer compositeTransform = CompositeType::New();
+  auto compositeTransform = CompositeType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(compositeTransform, CompositeTransform, MultiTransform);
 
   /* Test obects */
-  using Matrix2Type = itk::Matrix<ScalarType, NDimensions, NDimensions>;
-  using Vector2Type = itk::Vector<ScalarType, NDimensions>;
+  using Matrix2Type = itk::Matrix<ScalarType, VDimension, VDimension>;
+  using Vector2Type = itk::Vector<ScalarType, VDimension>;
 
 
   /* Test that we have an empty the queue */
@@ -159,10 +159,10 @@ itkCompositeTransformTest(int, char *[])
 
 
   /* Add an affine transform */
-  using AffineType = itk::AffineTransform<ScalarType, NDimensions>;
-  AffineType::Pointer affine = AffineType::New();
-  Matrix2Type         matrix2;
-  Vector2Type         vector2;
+  using AffineType = itk::AffineTransform<ScalarType, VDimension>;
+  auto        affine = AffineType::New();
+  Matrix2Type matrix2;
+  Vector2Type vector2;
   matrix2[0][0] = 1;
   matrix2[0][1] = 2;
   matrix2[1][0] = 3;
@@ -309,7 +309,7 @@ itkCompositeTransformTest(int, char *[])
   }
 
   /* Test inverse */
-  CompositeType::Pointer         inverseTransform = CompositeType::New();
+  auto                           inverseTransform = CompositeType::New();
   CompositeType::OutputPointType inverseTruth, inverseOutput;
   if (!compositeTransform->GetInverse(inverseTransform))
   {
@@ -347,7 +347,7 @@ itkCompositeTransformTest(int, char *[])
   /*
    * Create and add 2nd transform
    */
-  AffineType::Pointer affine2 = AffineType::New();
+  auto affine2 = AffineType::New();
   matrix2[0][0] = 11;
   matrix2[0][1] = 22;
   matrix2[1][0] = 33;
@@ -494,7 +494,7 @@ itkCompositeTransformTest(int, char *[])
   /* Test IsLinear() by calling on each sub transform */
   std::cout << "Test IsLinear" << std::endl;
   bool allAreLinear = true;
-  for (unsigned int n = 0; n < compositeTransform->GetNumberOfTransforms(); n++)
+  for (unsigned int n = 0; n < compositeTransform->GetNumberOfTransforms(); ++n)
   {
     if (!compositeTransform->GetNthTransformConstPointer(n)->IsLinear())
     {
@@ -525,11 +525,11 @@ itkCompositeTransformTest(int, char *[])
   parametersTruth.SetSize(affine2ParamsN + affineParamsN);
   /* Fill using different method than is used in the class.
      Remember we added affine2 2nd, so it's at front of queue */
-  for (unsigned int n = 0; n < affine2ParamsN; n++)
+  for (unsigned int n = 0; n < affine2ParamsN; ++n)
   {
     parametersTruth.SetElement(n, affine2->GetParameters().GetElement(n));
   }
-  for (unsigned int n = 0; n < affineParamsN; n++)
+  for (unsigned int n = 0; n < affineParamsN; ++n)
   {
     parametersTruth.SetElement(n + affine2ParamsN, affine->GetParameters().GetElement(n));
   }
@@ -570,11 +570,11 @@ itkCompositeTransformTest(int, char *[])
   affine2ParamsN = affine2->GetFixedParameters().Size();
   parametersTruth.SetSize(affine2ParamsN + affineParamsN);
   parametersTruth.Fill(0); // Try this to quiet valgrind
-  for (unsigned int n = 0; n < affine2ParamsN; n++)
+  for (unsigned int n = 0; n < affine2ParamsN; ++n)
   {
     parametersTruth.SetElement(n, affine2->GetFixedParameters().GetElement(n));
   }
-  for (unsigned int n = 0; n < affineParamsN; n++)
+  for (unsigned int n = 0; n < affineParamsN; ++n)
   {
     parametersTruth.SetElement(n + affine2ParamsN, affine->GetFixedParameters().GetElement(n));
   }
@@ -611,7 +611,7 @@ itkCompositeTransformTest(int, char *[])
    */
 
   /* Add yet another affine transform */
-  AffineType::Pointer affine3 = AffineType::New();
+  auto affine3 = AffineType::New();
   matrix2[0][0] = 1.1;
   matrix2[0][1] = 2.2;
   matrix2[1][0] = 3.3;
@@ -702,11 +702,11 @@ itkCompositeTransformTest(int, char *[])
   affineParamsN = affine->GetNumberOfParameters();
   unsigned int affine3ParamsN = affine3->GetNumberOfParameters();
   parametersTruth.SetSize(affineParamsN + affine3ParamsN);
-  for (unsigned int n = 0; n < affine3ParamsN; n++)
+  for (unsigned int n = 0; n < affine3ParamsN; ++n)
   {
     parametersTruth.SetElement(n, affine3->GetParameters().GetElement(n));
   }
-  for (unsigned int n = 0; n < affineParamsN; n++)
+  for (unsigned int n = 0; n < affineParamsN; ++n)
   {
     parametersTruth.SetElement(n + affine3ParamsN, affine->GetParameters().GetElement(n));
   }
@@ -773,10 +773,11 @@ itkCompositeTransformTest(int, char *[])
 
     /* Update partially two transforms, with a scaling factor */
     compositeTransform->SetNthTransformToOptimizeOn(0);
+    compositeTransform->SetNthTransformToOptimizeOff(1);
     truth = compositeTransform->GetParameters();
     update.SetSize(compositeTransform->GetNumberOfParameters());
     AffineType::ScalarType factor = 0.5;
-    for (unsigned int i = 0; i < compositeTransform->GetNumberOfParameters(); i++)
+    for (unsigned int i = 0; i < compositeTransform->GetNumberOfParameters(); ++i)
     {
       update[i] = i;
       truth[i] += update[i] * factor;
@@ -834,20 +835,20 @@ itkCompositeTransformTest(int, char *[])
    * transforms
    */
 
-  CompositeType::Pointer nestedCompositeTransform = CompositeType::New();
-  CompositeType::Pointer compositeTransform1 = CompositeType::New();
-  CompositeType::Pointer compositeTransform2 = CompositeType::New();
-  CompositeType::Pointer compositeTransform3 = CompositeType::New();
-  CompositeType::Pointer compositeTransform4 = CompositeType::New();
+  auto nestedCompositeTransform = CompositeType::New();
+  auto compositeTransform1 = CompositeType::New();
+  auto compositeTransform2 = CompositeType::New();
+  auto compositeTransform3 = CompositeType::New();
+  auto compositeTransform4 = CompositeType::New();
 
-  using TranslationTransformType = itk::TranslationTransform<double, NDimensions>;
+  using TranslationTransformType = itk::TranslationTransform<double, VDimension>;
   using TranslationTransformPointer = TranslationTransformType::Pointer;
   using TranslationTransformVector = std::vector<TranslationTransformPointer>;
   TranslationTransformVector translationTransformVector(12);
-  for (itk::SizeValueType n = 0; n < 12; n++)
+  for (itk::SizeValueType n = 0; n < 12; ++n)
   {
     translationTransformVector[n] = TranslationTransformType::New();
-    TranslationTransformType::ParametersType params(NDimensions);
+    TranslationTransformType::ParametersType params(VDimension);
     params.Fill(n);
     translationTransformVector[n]->SetParameters(params);
   }
@@ -892,7 +893,7 @@ itkCompositeTransformTest(int, char *[])
 
   /* Verify the transform order */
   bool passed = true;
-  for (itk::SizeValueType n = 0; n < 12; n++)
+  for (itk::SizeValueType n = 0; n < 12; ++n)
   {
     const TranslationTransformType::ParametersType & params = translationTransformVector[n]->GetParameters();
     if (itk::Math::NotExactlyEquals(params[0], n))
@@ -903,7 +904,7 @@ itkCompositeTransformTest(int, char *[])
   if (!passed)
   {
     std::cout << "Transform are not in correct order after flattening: " << std::endl;
-    for (itk::SizeValueType n = 0; n < 12; n++)
+    for (itk::SizeValueType n = 0; n < 12; ++n)
     {
       const TranslationTransformType::ParametersType & params = translationTransformVector[n]->GetParameters();
       std::cout << " " << params[0];

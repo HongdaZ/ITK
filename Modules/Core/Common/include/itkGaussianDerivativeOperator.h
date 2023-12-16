@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -69,7 +69,7 @@ extern ITKCommon_EXPORT std::ostream &
  *     it performs only smoothing as a standard itk::GaussianOperator)
  *
  * (3) The "maximum error" allowed in the discrete Gaussian
- * function.  "Maximum errror" is defined as the difference between the area
+ * function.  "Maximum error" is defined as the difference between the area
  * under the discrete Gaussian curve and the area under the continuous
  * Gaussian. Maximum error affects the Gaussian operator size. Care should
  * be taken not to make this value too small relative to the variance
@@ -81,10 +81,10 @@ extern ITKCommon_EXPORT std::ostream &
  * Primal Sketch. Dissertation. Royal Institute of Technology, Stockholm,
  * Sweden. May 1991.).
  *
- * \author Ivan Macia, VICOMTech, Spain, http://www.vicomtech.es
+ * \author Ivan Macia, Vicomtech, Spain, https://www.vicomtech.org/en
  *
  * This implementation is derived from the Insight Journal paper:
- * https://hdl.handle.net/1926/1290
+ * https://www.insight-journal.org/browse/publication/179
  *
  * \note GaussianDerivativeOperator does not have any user-declared "special member function",
  * following the C++ Rule of Zero: the compiler will generate them if necessary.
@@ -108,6 +108,9 @@ public:
   /** Standard class type aliases. */
   using Self = GaussianDerivativeOperator;
   using Superclass = NeighborhoodOperator<TPixel, VDimension, TAllocator>;
+
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(GaussianDerivativeOperator, NeighborhoodOperator);
 
   using InterpolationModeEnum = GaussianDerivativeOperatorEnums::InterpolationMode;
 
@@ -188,6 +191,7 @@ public:
   {
     m_MaximumKernelWidth = n;
   }
+  itkGetConstMacro(MaximumKernelWidth, unsigned int);
 
   /** Sets/Get the order of the derivative. */
   void
@@ -201,12 +205,12 @@ public:
     return m_Order;
   }
 
-  /** Prints member variables */
   void
-  PrintSelf(std::ostream & os, Indent i) const override;
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 protected:
-  using CoefficientVector = typename Superclass::CoefficientVector;
+  /** Type alias support for coefficient vector type.*/
+  using typename Superclass::CoefficientVector;
 
   /** Returns the value of the modified Bessel function I0(x) at a point x >= 0.
    */
@@ -235,17 +239,10 @@ protected:
   }
 
 private:
-  /* methods for generations of the coefficients for a gaussian
-   * operator of 0-order respecting the remaining parameters */
+  /* Methods for generations of the coefficients for a Gaussian
+   * operator of 0-order respecting the remaining parameters. */
   CoefficientVector
   GenerateGaussianCoefficients() const;
-
-  /** For compatibility with itkWarningMacro */
-  const char *
-  GetNameOfClass() const override
-  {
-    return "itkGaussianDerivativeOperator";
-  }
 
   /** Normalize derivatives across scale space */
   bool m_NormalizeAcrossScale{ true };

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class IsoContourDistanceImageFilter
+ * \class IsoContourDistanceImageFilter
  *  \brief Compute an approximate distance from an interpolated isocontour
  *  to the close grid points.
  *
@@ -59,7 +59,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT IsoContourDistanceImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(IsoContourDistanceImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(IsoContourDistanceImageFilter);
 
   /** Standard class type aliases. */
   using Self = IsoContourDistanceImageFilter;
@@ -74,8 +74,8 @@ public:
   itkTypeMacro(IsoContourDistanceImageFilter, ImageToImageFilter);
 
   /**Typedefs from the superclass */
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::OutputImageType;
 
   /** Dimensionality of input and output data is assumed to be the same.
    * It is inherited from the superclass. */

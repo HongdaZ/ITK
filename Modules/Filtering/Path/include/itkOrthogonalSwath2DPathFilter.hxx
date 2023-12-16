@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,40 +18,12 @@
 #ifndef itkOrthogonalSwath2DPathFilter_hxx
 #define itkOrthogonalSwath2DPathFilter_hxx
 
-#include "itkOrthogonalSwath2DPathFilter.h"
+#include "itkMakeUniqueForOverwrite.h"
 #include "itkMath.h"
 #include "itkNumericTraits.h"
 
 namespace itk
 {
-/**
- * Constructor
- */
-template <typename TParametricPath, typename TSwathMeritImage>
-OrthogonalSwath2DPathFilter<TParametricPath, TSwathMeritImage>::OrthogonalSwath2DPathFilter()
-{
-  SizeType size;
-
-  // Initialize the member variables
-  size[0] = 0;
-  size[1] = 0;
-  m_SwathSize = size;
-  m_StepValues = nullptr;
-  m_MeritValues = nullptr;
-  m_OptimumStepsValues = nullptr;
-  m_FinalOffsetValues = OrthogonalCorrectionTableType::New();
-}
-
-/**
- * Destructor
- */
-template <typename TParametricPath, typename TSwathMeritImage>
-OrthogonalSwath2DPathFilter<TParametricPath, TSwathMeritImage>::~OrthogonalSwath2DPathFilter()
-{
-  delete[] m_StepValues;
-  delete[] m_MeritValues;
-  delete[] m_OptimumStepsValues;
-}
 
 /**
  * GenerateData Performs the reflection
@@ -65,12 +37,9 @@ OrthogonalSwath2DPathFilter<TParametricPath, TSwathMeritImage>::GenerateData()
 
   // Re-initialize the member variables
   m_SwathSize = swathMeritImage->GetLargestPossibleRegion().GetSize();
-  delete[] m_StepValues;
-  delete[] m_MeritValues;
-  delete[] m_OptimumStepsValues;
-  m_StepValues = new int[m_SwathSize[0] * m_SwathSize[1] * m_SwathSize[1]];
-  m_MeritValues = new double[m_SwathSize[0] * m_SwathSize[1] * m_SwathSize[1]];
-  m_OptimumStepsValues = new int[m_SwathSize[0]];
+  m_StepValues = make_unique_for_overwrite<int[]>(m_SwathSize[0] * m_SwathSize[1] * m_SwathSize[1]);
+  m_MeritValues = make_unique_for_overwrite<double[]>(m_SwathSize[0] * m_SwathSize[1] * m_SwathSize[1]);
+  m_OptimumStepsValues = make_unique_for_overwrite<int[]>(m_SwathSize[0]);
   m_FinalOffsetValues->Initialize();
 
   // Perform the remaining calculations; use dynamic programming
@@ -85,14 +54,14 @@ OrthogonalSwath2DPathFilter<TParametricPath, TSwathMeritImage>::GenerateData()
   // CalcFirstStep (x=0)
   // Enter the initial merit values
   index[0] = 0;
-  for (F = 0; F < m_SwathSize[1]; F++)
+  for (F = 0; F < m_SwathSize[1]; ++F)
   {
-    for (L = 0; L < m_SwathSize[1]; L++)
+    for (L = 0; L < m_SwathSize[1]; ++L)
     {
       if (F == L)
       {
         index[1] = F;
-        MeritValue(F, L, 0) = (double)swathMeritImage->GetPixel(index);
+        MeritValue(F, L, 0) = static_cast<double>(swathMeritImage->GetPixel(index));
         StepValue(F, L, 0) = F;
       }
       else
@@ -105,9 +74,9 @@ OrthogonalSwath2DPathFilter<TParametricPath, TSwathMeritImage>::GenerateData()
   // end of double for-loop covering F & L
 
   // PrepForRemainingSteps
-  for (F = 0; F < m_SwathSize[1]; F++)
+  for (F = 0; F < m_SwathSize[1]; ++F)
   {
-    for (L = 0; L < m_SwathSize[1]; L++)
+    for (L = 0; L < m_SwathSize[1]; ++L)
     {
       // find merit for x=1
       if (itk::Math::abs(F - L) <= 1)
@@ -119,7 +88,7 @@ OrthogonalSwath2DPathFilter<TParametricPath, TSwathMeritImage>::GenerateData()
         index2[1] = L;
         // Here we know in advance that Pixel(0,F) =
         // Max(l=L-1..L+1){Merit(F,l,0)}
-        MeritValue(F, L, 1) = double(swathMeritImage->GetPixel(index) + swathMeritImage->GetPixel(index2));
+        MeritValue(F, L, 1) = static_cast<double>(swathMeritImage->GetPixel(index) + swathMeritImage->GetPixel(index2));
       }
       else
       {
@@ -132,27 +101,27 @@ OrthogonalSwath2DPathFilter<TParametricPath, TSwathMeritImage>::GenerateData()
   // end of double for-loop covering F & L
 
   // CalcRestPath
-  for (x = 1; x < m_SwathSize[0] - 1; x++)
+  for (x = 1; x < m_SwathSize[0] - 1; ++x)
   {
-    for (F = 0; F < m_SwathSize[1]; F++)
+    for (F = 0; F < m_SwathSize[1]; ++F)
     {
-      for (L = 0; L < m_SwathSize[1]; L++)
+      for (L = 0; L < m_SwathSize[1]; ++L)
       {
         int bestL = FindAndStoreBestErrorStep(x, F, L);
         index[0] = x + 1;
         index[1] = L;
-        MeritValue(F, L, x + 1) = MeritValue(F, bestL, x) + double(swathMeritImage->GetPixel(index));
+        MeritValue(F, L, x + 1) = MeritValue(F, bestL, x) + static_cast<double>(swathMeritImage->GetPixel(index));
       }
     }
   }
-  // end of tripple for-loop covering x & F & L
+  // end of triple for-loop covering x & F & L
 
   // Find the best starting and ending points (F & L) for the path
   int    bestF = 0, bestL = 0;
   double meritTemp, meritMax = NumericTraits<double>::NonpositiveMin();
-  for (F = 0; F < m_SwathSize[1]; F++)
+  for (F = 0; F < m_SwathSize[1]; ++F)
   {
-    for (L = 0; L < m_SwathSize[1]; L++)
+    for (L = 0; L < m_SwathSize[1]; ++L)
     {
       if (itk::Math::abs(F - L) <= 1) // only accept closed paths
       {
@@ -180,9 +149,10 @@ OrthogonalSwath2DPathFilter<TParametricPath, TSwathMeritImage>::GenerateData()
   }
 
   // Convert from absolute indices to +/- orthogonal offset values
-  for (x = 0; x < m_SwathSize[0]; x++)
+  for (x = 0; x < m_SwathSize[0]; ++x)
   {
-    m_FinalOffsetValues->InsertElement(x, double(m_OptimumStepsValues[x] - int(m_SwathSize[1] / 2)));
+    m_FinalOffsetValues->InsertElement(
+      x, static_cast<double>(m_OptimumStepsValues[x] - static_cast<int>(m_SwathSize[1] / 2)));
   }
 
   // setup the output path
@@ -196,9 +166,9 @@ void
 OrthogonalSwath2DPathFilter<TParametricPath, TSwathMeritImage>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
-  os << indent << "StepValues:  " << m_StepValues << std::endl;
-  os << indent << "MeritValues:  " << m_MeritValues << std::endl;
-  os << indent << "OptimumStepsValues:  " << m_OptimumStepsValues << std::endl;
+  os << indent << "StepValues:  " << m_StepValues.get() << std::endl;
+  os << indent << "MeritValues:  " << m_MeritValues.get() << std::endl;
+  os << indent << "OptimumStepsValues:  " << m_OptimumStepsValues.get() << std::endl;
   os << indent << "FinalOffsetValues:  " << m_FinalOffsetValues << std::endl;
 }
 

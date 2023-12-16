@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,7 +48,7 @@ public:
   using IndexType = typename LevelSetImageType::IndexType;
 
   /** The definition for the normal vector type of the scalar image. */
-  using NodeDataType = Vector<NodeValueType, TImageType ::ImageDimension>;
+  using NodeDataType = Vector<NodeValueType, TImageType::ImageDimension>;
 
   /** Container for output data (normal vectors). */
   NodeDataType m_Data;
@@ -154,7 +154,7 @@ class ITK_TEMPLATE_EXPORT SparseFieldFourthOrderLevelSetImageFilter
   : public SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SparseFieldFourthOrderLevelSetImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SparseFieldFourthOrderLevelSetImageFilter);
 
   /** Standard class type aliases */
   using Self = SparseFieldFourthOrderLevelSetImageFilter;
@@ -169,12 +169,12 @@ public:
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Typedefs derived from the superclass. */
-  using OutputImageType = typename Superclass::OutputImageType;
-  using ValueType = typename Superclass::ValueType;
-  using IndexType = typename Superclass::IndexType;
-  using LayerType = typename Superclass::LayerType;
-  using RadiusType = typename Superclass::RadiusType;
-  using NeighborhoodScalesType = typename Superclass::NeighborhoodScalesType;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::ValueType;
+  using typename Superclass::IndexType;
+  using typename Superclass::LayerType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::NeighborhoodScalesType;
 
   /** The storage class used as the node type for the sparse normal vector
       image. */
@@ -215,6 +215,7 @@ public:
   itkSetMacro(NormalProcessConductance, ValueType);
   itkSetMacro(NormalProcessUnsharpFlag, bool);
   itkGetConstReferenceMacro(NormalProcessUnsharpFlag, bool);
+  itkBooleanMacro(NormalProcessUnsharpFlag);
   itkSetMacro(NormalProcessUnsharpWeight, ValueType);
   itkGetConstReferenceMacro(NormalProcessUnsharpWeight, ValueType);
 
@@ -229,7 +230,7 @@ public:
   unsigned int
   GetMinimumNumberOfLayers() const
   {
-    return (int)std::ceil(m_CurvatureBandWidth + Self::ImageDimension);
+    return static_cast<int>(std::ceil(m_CurvatureBandWidth + Self::ImageDimension));
   }
 
   /** This overrides SparseFieldLevelSetImageFilter's SetNumberOfLayers to make
@@ -267,7 +268,7 @@ public:
       ProcessNormals();
     }
 
-    m_RefitIteration++;
+    ++m_RefitIteration;
   }
 
 #ifdef ITK_USE_CONCEPT_CHECKING
@@ -285,7 +286,7 @@ protected:
   /** This method computes curvature from normal vectors stored in a sparse
       image neighborhood. */
   ValueType
-  ComputeCurvatureFromSparseImageNeighborhood(SparseImageIteratorType & neighborhood) const;
+  ComputeCurvatureFromSparseImageNeighborhood(SparseImageIteratorType & it) const;
 
   /** This method computes curvature from the processed normal vectors over
    *  the region specified by the CurvatureBandWidth parameter. The

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,16 +21,8 @@
 #include "itkTestingMacros.h"
 
 int
-itkLevelSetDomainPartitionImageWithKdTreeTest(int argc, char * argv[])
+itkLevelSetDomainPartitionImageWithKdTreeTest(int, char *[])
 {
-
-  if (argc < 1)
-  {
-    std::cerr << "Missing Arguments" << std::endl;
-    std::cerr << "Program " << itkNameOfTestExecutableMacro(argv) << std::endl;
-    return EXIT_FAILURE;
-  }
-
   constexpr unsigned int Dimension = 2;
 
   using InputPixelType = unsigned short;
@@ -69,7 +61,7 @@ itkLevelSetDomainPartitionImageWithKdTreeTest(int argc, char * argv[])
   region.SetSize(size);
 
   // Binary initialization
-  InputImageType::Pointer binary = InputImageType::New();
+  auto binary = InputImageType::New();
   binary->SetRegions(region);
   binary->SetSpacing(spacing);
   binary->SetOrigin(origin);
@@ -81,11 +73,11 @@ itkLevelSetDomainPartitionImageWithKdTreeTest(int argc, char * argv[])
   LevelSetDomainRegionVectorType regionVector;
   regionVector.resize(numberOfLevelSetFunctions);
 
-  CentroidVectorType  mv;
-  SampleType::Pointer sample = SampleType::New();
+  CentroidVectorType mv;
+  auto               sample = SampleType::New();
   sample->SetMeasurementVectorSize(Dimension);
 
-  for (unsigned int i = 0; i < numberOfLevelSetFunctions; i++)
+  for (unsigned int i = 0; i < numberOfLevelSetFunctions; ++i)
   {
     index[0] = 10 * i;
     index[1] = 0;
@@ -102,17 +94,26 @@ itkLevelSetDomainPartitionImageWithKdTreeTest(int argc, char * argv[])
     sample->PushBack(mv);
   }
 
-  TreeGeneratorType::Pointer treeGenerator = TreeGeneratorType::New();
+  auto treeGenerator = TreeGeneratorType::New();
   treeGenerator->SetSample(sample);
   treeGenerator->SetBucketSize(2);
   treeGenerator->Update();
   TreeType::Pointer kdtree = treeGenerator->GetOutput();
 
-  DomainPartitionSourceType::Pointer partitionSource = DomainPartitionSourceType::New();
+  auto partitionSource = DomainPartitionSourceType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    partitionSource, LevelSetDomainPartitionImageWithKdTree, LevelSetDomainPartitionImage);
+
+
   partitionSource->SetNumberOfLevelSetFunctions(numberOfLevelSetFunctions);
   partitionSource->SetImage(binary);
   partitionSource->SetLevelSetDomainRegionVector(regionVector);
-  partitionSource->SetNumberOfNeighbors(3);
+
+  typename DomainPartitionSourceType::NeighborsIdType numberOfNeighbors = 3;
+  partitionSource->SetNumberOfNeighbors(numberOfNeighbors);
+  ITK_TEST_SET_GET_VALUE(numberOfNeighbors, partitionSource->GetNumberOfNeighbors());
+
   partitionSource->SetKdTree(kdtree);
   partitionSource->PopulateListDomain();
 

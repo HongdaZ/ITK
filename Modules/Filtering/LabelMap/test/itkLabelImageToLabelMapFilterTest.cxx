@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,27 +20,37 @@
 #include "itkLabelImageToLabelMapFilter.h"
 #include "itkTestingMacros.h"
 
-int
-itkLabelImageToLabelMapFilterTest(int argc, char * argv[])
+void
+zeroSizeCase()
 {
+  // test filter with zero sized image
+  constexpr unsigned int ImageDimension = 3;
+  using PixelType = unsigned char;
+  using ImageType = itk::Image<PixelType, ImageDimension>;
+  auto p_filter = itk::LabelImageToLabelMapFilter<ImageType>::New();
+  auto p_image = ImageType::New();
 
-  if (argc != 1)
-  {
-    std::cerr << "usage: " << itkNameOfTestExecutableMacro(argv) << "" << std::endl;
-    return EXIT_FAILURE;
-  }
+  // The image region is empty by default: do not set any region to it and allocate memory
+  p_image->Allocate(true);
 
-  constexpr int dim = 2;
+  p_filter->SetInput(p_image);
+  p_filter->Update();
+}
 
-  using LabelObjectType = itk::LabelObject<unsigned long, dim>;
+int
+itkLabelImageToLabelMapFilterTest(int, char *[])
+{
+  constexpr int Dimension = 2;
+
+  using LabelObjectType = itk::LabelObject<unsigned long, Dimension>;
   using IndexType = LabelObjectType::IndexType;
   using LabelMapType = itk::LabelMap<LabelObjectType>;
   using SizeType = LabelMapType::SizeType;
-  using ImageType = itk::Image<unsigned char, dim>;
+  using ImageType = itk::Image<unsigned char, Dimension>;
 
   using LabelImageToLabelMapFilterType = itk::LabelImageToLabelMapFilter<ImageType, LabelMapType>;
 
-  ImageType::Pointer image = ImageType::New();
+  auto image = ImageType::New();
 
   SizeType sizeIn;
   sizeIn[0] = 11;
@@ -54,7 +64,7 @@ itkLabelImageToLabelMapFilterTest(int argc, char * argv[])
 
   IndexType idxVertical;
   idxVertical[0] = 5;
-  for (int ctr = 0; ctr < 11; ctr++)
+  for (int ctr = 0; ctr < 11; ++ctr)
   {
     idxHorizontal[0] = ctr;
     idxVertical[1] = ctr;
@@ -65,7 +75,7 @@ itkLabelImageToLabelMapFilterTest(int argc, char * argv[])
   idxHorizontal[1] = 7;
   idxVertical[0] = 7;
 
-  for (int ctr = 0; ctr < 11; ctr++)
+  for (int ctr = 0; ctr < 11; ++ctr)
   {
     idxHorizontal[0] = ctr;
     idxVertical[1] = ctr;
@@ -76,14 +86,18 @@ itkLabelImageToLabelMapFilterTest(int argc, char * argv[])
   idxHorizontal[0] = 7;
   image->SetPixel(idxHorizontal, 3);
 
-  LabelImageToLabelMapFilterType::Pointer conversion = LabelImageToLabelMapFilterType::New();
+  auto conversion = LabelImageToLabelMapFilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(conversion, LabelImageToLabelMapFilter, ImageToImageFilter);
+
+
   conversion->SetInput(image);
   conversion->SetBackgroundValue(255);
   conversion->Update();
 
-  itkAssertOrThrowMacro((conversion->GetBackgroundValue() == 255), "Error conversion background value.")
+  itkAssertOrThrowMacro((conversion->GetBackgroundValue() == 255), "Error conversion background value.");
 
-    LabelMapType::Pointer map;
+  LabelMapType::Pointer map;
   map = conversion->GetOutput();
 
   itkAssertOrThrowMacro((map->GetBackgroundValue() == 255), "Error in Label Image (background).");
@@ -91,9 +105,9 @@ itkLabelImageToLabelMapFilterTest(int argc, char * argv[])
   map->Print(std::cout);
 
   std::cout << "Printing out map." << std::endl;
-  for (int ctrI = 0; ctrI < 11; ctrI++)
+  for (int ctrI = 0; ctrI < 11; ++ctrI)
   {
-    for (int ctrJ = 0; ctrJ < 11; ctrJ++)
+    for (int ctrJ = 0; ctrJ < 11; ++ctrJ)
     {
       IndexType index;
       index[0] = ctrI;
@@ -127,9 +141,10 @@ itkLabelImageToLabelMapFilterTest(int argc, char * argv[])
       }
     }
   }
-  std::cout << "End - Printing out map." << std::endl << std::endl;
 
-  conversion->Print(std::cout);
+  zeroSizeCase();
 
+
+  std::cout << "Test finished." << std::endl;
   return EXIT_SUCCESS;
 }

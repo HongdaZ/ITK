@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMeanSquaresPointSetToImageMetric_hxx
 #define itkMeanSquaresPointSetToImageMetric_hxx
 
-#include "itkMeanSquaresPointSetToImageMetric.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
 
 namespace itk
@@ -142,17 +141,17 @@ MeanSquaresPointSetToImageMetric<TFixedPointSet, TMovingImage>::GetDerivative(
       using CoordRepType = typename OutputPointType::CoordRepType;
       using MovingImageContinuousIndexType = ContinuousIndex<CoordRepType, MovingImageType::ImageDimension>;
 
-      MovingImageContinuousIndexType tempIndex;
-      this->m_MovingImage->TransformPhysicalPointToContinuousIndex(transformedPoint, tempIndex);
+      const MovingImageContinuousIndexType tempIndex =
+        this->m_MovingImage->template TransformPhysicalPointToContinuousIndex<CoordRepType>(transformedPoint);
 
       typename MovingImageType::IndexType mappedIndex;
       mappedIndex.CopyWithRound(tempIndex);
 
       const GradientPixelType gradient = this->GetGradientImage()->GetPixel(mappedIndex);
-      for (unsigned int par = 0; par < ParametersDimension; par++)
+      for (unsigned int par = 0; par < ParametersDimension; ++par)
       {
         RealType sum = NumericTraits<RealType>::ZeroValue();
-        for (unsigned int dim = 0; dim < Self::FixedPointSetDimension; dim++)
+        for (unsigned int dim = 0; dim < Self::FixedPointSetDimension; ++dim)
         {
           sum += 2.0 * diff * jacobian(dim, par) * gradient[dim];
         }
@@ -170,7 +169,7 @@ MeanSquaresPointSetToImageMetric<TFixedPointSet, TMovingImage>::GetDerivative(
   }
   else
   {
-    for (unsigned int i = 0; i < ParametersDimension; i++)
+    for (unsigned int i = 0; i < ParametersDimension; ++i)
     {
       derivative[i] /= this->m_NumberOfPixelsCounted;
     }
@@ -242,17 +241,17 @@ MeanSquaresPointSetToImageMetric<TFixedPointSet, TMovingImage>::GetValueAndDeriv
       using CoordRepType = typename OutputPointType::CoordRepType;
       using MovingImageContinuousIndexType = ContinuousIndex<CoordRepType, MovingImageType::ImageDimension>;
 
-      MovingImageContinuousIndexType tempIndex;
-      this->m_MovingImage->TransformPhysicalPointToContinuousIndex(transformedPoint, tempIndex);
+      const MovingImageContinuousIndexType tempIndex =
+        this->m_MovingImage->template TransformPhysicalPointToContinuousIndex<CoordRepType>(transformedPoint);
 
       typename MovingImageType::IndexType mappedIndex;
       mappedIndex.CopyWithRound(tempIndex);
 
       const GradientPixelType gradient = this->GetGradientImage()->GetPixel(mappedIndex);
-      for (unsigned int par = 0; par < ParametersDimension; par++)
+      for (unsigned int par = 0; par < ParametersDimension; ++par)
       {
         RealType sum = NumericTraits<RealType>::ZeroValue();
-        for (unsigned int dim = 0; dim < Self::FixedPointSetDimension; dim++)
+        for (unsigned int dim = 0; dim < Self::FixedPointSetDimension; ++dim)
         {
           sum += 2.0 * diff * jacobian(dim, par) * gradient[dim];
         }
@@ -270,7 +269,7 @@ MeanSquaresPointSetToImageMetric<TFixedPointSet, TMovingImage>::GetValueAndDeriv
   }
   else
   {
-    for (unsigned int i = 0; i < ParametersDimension; i++)
+    for (unsigned int i = 0; i < ParametersDimension; ++i)
     {
       derivative[i] /= this->m_NumberOfPixelsCounted;
     }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class ConvertLabelMapFilter
+ * \class ConvertLabelMapFilter
  * \brief Converts the LabelObjects of a LabelMap to a different type of LabelObejct
  *
  * The LabelObjects are copied and not simply dynamically casted so the filter ensures
@@ -32,8 +32,7 @@ namespace itk
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/584  or
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  * \sa LabelMapToBinaryImageFilter, LabelMapMaskImageFilter
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
@@ -44,7 +43,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT ConvertLabelMapFilter : public LabelMapFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConvertLabelMapFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ConvertLabelMapFilter);
 
   /** Standard class type aliases. */
   using Self = ConvertLabelMapFilter;

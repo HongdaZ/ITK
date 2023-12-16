@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,6 @@
 
 #include <iostream>
 
-#include "itkBinaryThinningImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include <vector>
 
@@ -42,8 +41,8 @@ BinaryThinningImageFilter<TInputImage, TOutputImage>::BinaryThinningImageFilter(
  *  Return the thinning Image pointer
  */
 template <typename TInputImage, typename TOutputImage>
-typename BinaryThinningImageFilter<TInputImage, TOutputImage>::OutputImageType *
-BinaryThinningImageFilter<TInputImage, TOutputImage>::GetThinning()
+auto
+BinaryThinningImageFilter<TInputImage, TOutputImage>::GetThinning() -> OutputImageType *
 {
   return dynamic_cast<OutputImageType *>(this->ProcessObject::GetOutput(0));
 }
@@ -145,7 +144,7 @@ BinaryThinningImageFilter<TInputImage, TOutputImage>::ComputeThinImage()
   {
     noChange = true;
     // Loop through the thinning steps.
-    for (int step = 1; step <= 4; step++)
+    for (int step = 1; step <= 4; ++step)
     {
       pixelsToDelete.clear();
       // Loop through the image.
@@ -176,7 +175,7 @@ BinaryThinningImageFilter<TInputImage, TOutputImage>::ComputeThinImage()
           // seven 8-neighbors valued 1.  Having only one such
           // neighbor implies that p1 is the end point of a skeleton
           // stroke and obviously should not be deleted.  Deleting p1
-          // if it has seven such neighbos would cause erosion into a region.
+          // if it has seven such neighbors would cause erosion into a region.
           PixelType numberOfOnNeighbors = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
 
           if (numberOfOnNeighbors > 1 && numberOfOnNeighbors < 7)
@@ -193,11 +192,12 @@ BinaryThinningImageFilter<TInputImage, TOutputImage>::ComputeThinImage()
           // thinning operation.
           // First find the total number of transitions, and then
           // divide by 2.
-          const PixelType transitions = (std::abs(static_cast<int>(p3 - p2)) + std::abs(static_cast<int>(p4 - p3)) +
-                                         std::abs(static_cast<int>(p5 - p4)) + std::abs(static_cast<int>(p6 - p5)) +
-                                         std::abs(static_cast<int>(p7 - p6)) + std::abs(static_cast<int>(p8 - p7)) +
-                                         std::abs(static_cast<int>(p9 - p8)) + std::abs(static_cast<int>(p2 - p9))) /
-                                        2;
+          const PixelType transitions =
+            (itk::Math::abs(static_cast<int>(p3 - p2)) + itk::Math::abs(static_cast<int>(p4 - p3)) +
+             itk::Math::abs(static_cast<int>(p5 - p4)) + itk::Math::abs(static_cast<int>(p6 - p5)) +
+             itk::Math::abs(static_cast<int>(p7 - p6)) + itk::Math::abs(static_cast<int>(p8 - p7)) +
+             itk::Math::abs(static_cast<int>(p9 - p8)) + itk::Math::abs(static_cast<int>(p2 - p9))) /
+            2;
 
           if (transitions == 1)
           {
@@ -271,7 +271,7 @@ BinaryThinningImageFilter<TInputImage, TOutputImage>::ComputeThinImage()
 
       // Loop through the vector of pixels to delete and set these pixels to 0 in
       // the image.
-      for (pixelsToDeleteIt = pixelsToDelete.begin(); pixelsToDeleteIt != pixelsToDelete.end(); pixelsToDeleteIt++)
+      for (pixelsToDeleteIt = pixelsToDelete.begin(); pixelsToDeleteIt != pixelsToDelete.end(); ++pixelsToDeleteIt)
       {
         thinImage->SetPixel(*pixelsToDeleteIt, 0);
       }

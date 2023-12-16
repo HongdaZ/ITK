@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkRGBAPixel_hxx
 #define itkRGBAPixel_hxx
-#include "itkRGBAPixel.h"
 #include "itkNumericTraits.h"
 #include <algorithm>
 
@@ -38,7 +37,7 @@ RGBAPixel<T>::operator+(const Self & r) const
 {
   Self result;
 
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     result[i] = (*this)[i] + r[i];
   }
@@ -51,7 +50,7 @@ RGBAPixel<T>::operator-(const Self & r) const
 {
   Self result;
 
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     result[i] = (*this)[i] - r[i];
   }
@@ -62,7 +61,7 @@ template <typename T>
 const RGBAPixel<T> &
 RGBAPixel<T>::operator+=(const Self & r)
 {
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     (*this)[i] += r[i];
   }
@@ -73,7 +72,7 @@ template <typename T>
 const RGBAPixel<T> &
 RGBAPixel<T>::operator-=(const Self & r)
 {
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     (*this)[i] -= r[i];
   }
@@ -84,7 +83,7 @@ template <typename T>
 const RGBAPixel<T> &
 RGBAPixel<T>::operator*=(const ComponentType & r)
 {
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     (*this)[i] *= r;
   }
@@ -96,7 +95,7 @@ template <typename T>
 const RGBAPixel<T> &
 RGBAPixel<T>::operator/=(const ComponentType & r)
 {
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     (*this)[i] /= r;
   }
@@ -108,7 +107,7 @@ RGBAPixel<T> RGBAPixel<T>::operator*(const ComponentType & r) const
 {
   Self result;
 
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     result[i] = (*this)[i] * r;
   }
@@ -121,7 +120,7 @@ RGBAPixel<T>::operator/(const ComponentType & r) const
 {
   Self result;
 
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     result[i] = (*this)[i] / r;
   }
@@ -132,7 +131,7 @@ template <typename T>
 bool
 RGBAPixel<T>::operator==(const Self & r) const
 {
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     if ((*this)[i] != r[i])
     {
@@ -150,8 +149,8 @@ RGBAPixel<T>::operator<(const Self & r) const
 }
 
 template <typename T>
-typename RGBAPixel<T>::LuminanceType
-RGBAPixel<T>::GetLuminance() const
+auto
+RGBAPixel<T>::GetLuminance() const -> LuminanceType
 {
   const LuminanceType luminance = 0.30 * static_cast<LuminanceType>(this->GetRed()) +
                                   0.59 * static_cast<LuminanceType>(this->GetGreen()) +

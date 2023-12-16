@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,14 +51,14 @@ itkDemonsImageToImageMetricv4Test(int, char ** const)
   direction.SetIdentity();
 
   /* Create simple test images. */
-  ImageType::Pointer fixedImage = ImageType::New();
+  auto fixedImage = ImageType::New();
   fixedImage->SetRegions(region);
   fixedImage->SetSpacing(spacing);
   fixedImage->SetOrigin(origin);
   fixedImage->SetDirection(direction);
   fixedImage->Allocate();
 
-  ImageType::Pointer movingImage = ImageType::New();
+  auto movingImage = ImageType::New();
   movingImage->SetRegions(region);
   movingImage->SetSpacing(spacing);
   movingImage->SetOrigin(origin);
@@ -93,12 +93,12 @@ itkDemonsImageToImageMetricv4Test(int, char ** const)
   using DisplacementTransformType =
     itk::GaussianSmoothingOnUpdateDisplacementFieldTransform<double, imageDimensionality>;
 
-  TranslationTransformType::Pointer translationTransform = TranslationTransformType::New();
+  auto translationTransform = TranslationTransformType::New();
   translationTransform->SetIdentity();
 
-  DisplacementTransformType::Pointer displacementTransform = DisplacementTransformType::New();
+  auto displacementTransform = DisplacementTransformType::New();
   using DisplacementFieldType = DisplacementTransformType::DisplacementFieldType;
-  DisplacementFieldType::Pointer field = DisplacementFieldType::New();
+  auto field = DisplacementFieldType::New();
   field->SetRegions(fixedImage->GetLargestPossibleRegion());
   field->CopyInformation(fixedImage);
   field->Allocate();
@@ -112,7 +112,7 @@ itkDemonsImageToImageMetricv4Test(int, char ** const)
   /* The metric */
   using MetricType = itk::DemonsImageToImageMetricv4<ImageType, ImageType, ImageType>;
 
-  MetricType::Pointer metric = MetricType::New();
+  auto metric = MetricType::New();
 
   /* Assign images and transforms.
    * By not setting a virtual domain image or virtual domain settings,

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class IsolatedConnectedImageFilter
+ * \class IsolatedConnectedImageFilter
  * \brief Label pixels that are connected to one set of seeds but not
  * another.
  *
@@ -72,7 +72,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT IsolatedConnectedImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(IsolatedConnectedImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(IsolatedConnectedImageFilter);
 
   /** Standard class type aliases. */
   using Self = IsolatedConnectedImageFilter;

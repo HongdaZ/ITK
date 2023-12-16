@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,6 @@
 #include <algorithm>
 #include <vector>
 #include <queue>
-#include "itkMRASlabIdentifier.h"
 #include "itkImageRegionIterator.h"
 #include "itkMath.h"
 
@@ -63,7 +62,7 @@ MRASlabIdentifier<TInputImage>::GenerateSlabRegions()
   std::vector<double> avgMin(totalSlices);
   // calculate minimum intensities for each slice
   ImagePixelType pixel;
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 3; ++i)
   {
     if (i != m_SlicingDirection)
     {
@@ -111,7 +110,7 @@ MRASlabIdentifier<TInputImage>::GenerateSlabRegions()
       mins.pop();
     }
 
-    avgMin[count] = sum / (double)m_NumberOfSamples;
+    avgMin[count] = sum / static_cast<double>(m_NumberOfSamples);
 
     ++count;
     ++currentSlice;
@@ -126,7 +125,7 @@ MRASlabIdentifier<TInputImage>::GenerateSlabRegions()
     ++am_iter;
   }
 
-  double average = sum / (double)totalSlices;
+  double average = sum / static_cast<double>(totalSlices);
 
   // determine slabs
   am_iter = avgMin.begin();
@@ -158,8 +157,8 @@ MRASlabIdentifier<TInputImage>::GenerateSlabRegions()
       slabBegin += slabLength;
       slabLength = 0;
     }
-    am_iter++;
-    slabLength++;
+    ++am_iter;
+    ++slabLength;
   }
   slabIndex[m_SlicingDirection] = slabBegin;
   slabSize[m_SlicingDirection] = slabLength;
@@ -169,8 +168,8 @@ MRASlabIdentifier<TInputImage>::GenerateSlabRegions()
 }
 
 template <typename TInputImage>
-typename MRASlabIdentifier<TInputImage>::SlabRegionVectorType
-MRASlabIdentifier<TInputImage>::GetSlabRegionVector()
+auto
+MRASlabIdentifier<TInputImage>::GetSlabRegionVector() -> SlabRegionVectorType
 {
   return m_Slabs;
 }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 #include "itkTIFFReaderInternal.h"
 #include "itksys/SystemTools.hxx"
 #include "itkMetaDataObject.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 #include "itk_tiff.h"
 
@@ -151,11 +152,11 @@ TIFFImageIO::ReadVolume(void * buffer)
   const size_t width{ m_InternalImage->m_Width };
   const size_t height{ m_InternalImage->m_Height };
 
-  for (uint16 page = 0; page < m_InternalImage->m_NumberOfPages; page++)
+  for (uint16_t page = 0; page < m_InternalImage->m_NumberOfPages; ++page)
   {
     if (m_InternalImage->m_IgnoredSubFiles > 0)
     {
-      int32 subfiletype = 6;
+      int32_t subfiletype = 6;
       if (TIFFGetField(m_InternalImage->m_Image, TIFFTAG_SUBFILETYPE, &subfiletype))
       {
         if (subfiletype & FILETYPE_REDUCEDIMAGE || subfiletype & FILETYPE_MASK)
@@ -402,9 +403,17 @@ TIFFImageIO::ReadImageInformation()
   }
   else if (m_InternalImage->m_BitsPerSample == 32)
   {
-    if (m_InternalImage->m_SampleFormat == 3)
+    switch (m_InternalImage->m_SampleFormat)
     {
-      m_ComponentType = IOComponentEnum::FLOAT;
+      case 1:
+        m_ComponentType = IOComponentEnum::UINT;
+        break;
+      case 2:
+        m_ComponentType = IOComponentEnum::INT;
+        break;
+      case 3:
+        m_ComponentType = IOComponentEnum::FLOAT;
+        break;
     }
   }
   else
@@ -498,14 +507,18 @@ TIFFImageIO::ReadImageInformation()
 
     if (!m_IsReadAsScalarPlusPalette)
     {
-      itkDebugMacro(<< "Using TIFFReadRGBAImage");
+      itkDebugMacro(<< "Using TIFFReadRGBAImageOriented");
+      if (m_InternalImage->m_BitsPerSample > 8)
+      {
+        itkWarningMacro("Falling back to suboptimal 8-bit RGBA reader. Data loss will occur with reduced bit depth.");
+      }
       this->SetNumberOfComponents(4);
       this->SetPixelType(IOPixelEnum::RGBA);
       m_ComponentType = IOComponentEnum::UCHAR;
     }
     else
     {
-      itkDebugMacro(<< "Using TIFFReadRGBImage");
+      itkDebugMacro(<< "Using TIFFReadRGBAImageOriented");
       itkWarningMacro(<< "Could not read this palette image as scalar+Palette because of its TIFF format");
       // can't read as scalar+palette so reset type to RGB
       m_IsReadAsScalarPlusPalette = false;
@@ -557,21 +570,21 @@ TIFFImageIO::InternalWrite(const void * buffer)
 {
   const auto * outPtr = static_cast<const char *>(buffer);
 
-  uint16 page, pages = 1;
+  uint16_t page, pages = 1;
 
   const SizeValueType width = m_Dimensions[0];
   const SizeValueType height = m_Dimensions[1];
   if (m_NumberOfDimensions == 3)
   {
-    pages = static_cast<uint16>(m_Dimensions[2]);
+    pages = static_cast<uint16_t>(m_Dimensions[2]);
   }
 
-  auto   scomponents = static_cast<uint16>(this->GetNumberOfComponents());
+  auto   scomponents = static_cast<uint16_t>(this->GetNumberOfComponents());
   double resolution_x{ m_Spacing[0] != 0.0 ? 25.4 / m_Spacing[0] : 0.0 };
   double resolution_y{ m_Spacing[1] != 0.0 ? 25.4 / m_Spacing[1] : 0.0 };
   // rowsperstrip is set to a default value but modified based on the tif scanlinesize before
   // passing it into the TIFFSetField (see below).
-  auto     rowsperstrip = uint32{ 0 };
+  auto     rowsperstrip = uint32_t{ 0 };
   uint16_t bps;
 
   switch (this->GetComponentType())
@@ -632,14 +645,14 @@ TIFFImageIO::InternalWrite(const void * buffer)
     TIFFSetField(tif, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_IEEEFP);
   }
 
-  auto w = static_cast<uint32>(width);
-  auto h = static_cast<uint32>(height);
+  auto w = static_cast<uint32_t>(width);
+  auto h = static_cast<uint32_t>(height);
 
   if (m_NumberOfDimensions == 3)
   {
     TIFFCreateDirectory(tif);
   }
-  for (page = 0; page < pages; page++)
+  for (page = 0; page < pages; ++page)
   {
     TIFFSetDirectory(tif, page);
     TIFFSetField(tif, TIFFTAG_IMAGEWIDTH, w);
@@ -662,27 +675,25 @@ TIFFImageIO::InternalWrite(const void * buffer)
     {
       // if number of scalar components is greater than 3, that means we assume
       // there is alpha.
-      uint16 extra_samples = scomponents - 3;
-      auto * sample_info = new uint16[scomponents - 3];
+      uint16_t   extra_samples = scomponents - 3;
+      const auto sample_info = make_unique_for_overwrite<uint16_t[]>(scomponents - 3);
       sample_info[0] = EXTRASAMPLE_ASSOCALPHA;
-      for (uint16 cc = 1; cc < scomponents - 3; cc++)
+      for (uint16_t cc = 1; cc < scomponents - 3; ++cc)
       {
         sample_info[cc] = EXTRASAMPLE_UNSPECIFIED;
       }
-      TIFFSetField(tif, TIFFTAG_EXTRASAMPLES, extra_samples, sample_info);
-      delete[] sample_info;
+      TIFFSetField(tif, TIFFTAG_EXTRASAMPLES, extra_samples, sample_info.get());
     }
 
-    uint16 compression;
+    uint16_t compression;
 
     if (m_UseCompression)
     {
       switch (m_Compression)
       {
         case TIFFImageIO::LZW:
-          itkWarningMacro(
-            << "LZW compression is patented outside US so it is disabled. packbits compression will be used instead");
-          ITK_FALLTHROUGH;
+          compression = COMPRESSION_LZW;
+          break;
         case TIFFImageIO::PackBits:
           compression = COMPRESSION_PACKBITS;
           break;
@@ -749,7 +760,7 @@ TIFFImageIO::InternalWrite(const void * buffer)
     // achieved when the STRIP_SIZE_DEFAULT is increased to 1 MB.
     // This results in an increase in memory usage but no increase in writing time when writing
     // locally and significant writing time improvement when writing over sshfs.
-    // For example, writing a 2048x2048 uint16 image with 8 kB per strip leads to 2 rows per strip
+    // For example, writing a 2048x2048 uint16_t image with 8 kB per strip leads to 2 rows per strip
     // and takes about 120 seconds writing over sshfs.
     // Using 1 MB per strip leads to 256 rows per strip, which takes only 4 seconds to write over sshfs.
     // Rather than change that value in the third party libtiff library, we instead compute the
@@ -811,8 +822,8 @@ TIFFImageIO::InternalWrite(const void * buffer)
     rowLength *= this->GetNumberOfComponents();
     rowLength *= width;
 
-    uint32 row = 0;
-    for (unsigned int idx2 = 0; idx2 < height; idx2++)
+    uint32_t row = 0;
+    for (unsigned int idx2 = 0; idx2 < height; ++idx2)
     {
       if (TIFFWriteScanline(tif, const_cast<char *>(outPtr), row, 0) < 0)
       {
@@ -858,11 +869,11 @@ typedef enum
 } ITK_TIFF_MOC_TIFFSetGetFieldType;
 struct _TIFFField
 {
-  uint32 field_tag;                                /* field's tag */
+  uint32_t field_tag;                              /* field's tag */
   short field_readcount;                           /* read count/TIFF_VARIABLE/TIFF_SPP */
   short field_writecount;                          /* write count/TIFF_VARIABLE */
   TIFFDataType field_type;                         /* type of associated data */
-  uint32 reserved;                                 /* reserved for future extension */
+  uint32_t reserved;                               /* reserved for future extension */
   ITK_TIFF_MOC_TIFFSetGetFieldType set_field_type; /* type to be passed to TIFFSetField */
   ITK_TIFF_MOC_TIFFSetGetFieldType get_field_type; /* type to be passed to TIFFGetField */
   unsigned short field_bit;                        /* bit in fieldsset bit vector */
@@ -974,7 +985,7 @@ TIFFImageIO::ReadRawByteFromTag(unsigned int t, unsigned int & value_count)
   }
   else if (itkTIFFFieldReadCount(fld) == TIFF_VARIABLE)
   {
-    uint16 cnt;
+    uint16_t cnt;
     ret = TIFFGetField(m_InternalImage->m_Image, tag, &cnt, &raw_data);
     value_count = cnt;
   }
@@ -1028,21 +1039,21 @@ TIFFImageIO::AllocateTiffPalette(uint16_t bps)
   m_ColorBlue = nullptr;
 
   // bpp is 16 at maximum for palette image
-  tmsize_t array_size = tmsize_t{ 1 } << bps * sizeof(uint16);
-  m_ColorRed = static_cast<uint16 *>(_TIFFmalloc(array_size));
+  tmsize_t array_size = tmsize_t{ 1 } << bps * sizeof(uint16_t);
+  m_ColorRed = static_cast<uint16_t *>(_TIFFmalloc(array_size));
   if (!m_ColorRed)
   {
     _TIFFfree(m_ColorRed);
     itkExceptionMacro("Can't allocate space for Red channel of component tables.");
   }
-  m_ColorGreen = static_cast<uint16 *>(_TIFFmalloc(array_size));
+  m_ColorGreen = static_cast<uint16_t *>(_TIFFmalloc(array_size));
   if (!m_ColorGreen)
   {
     _TIFFfree(m_ColorRed);
     _TIFFfree(m_ColorGreen);
     itkExceptionMacro("Can't allocate space for Green channel of component tables.");
   }
-  m_ColorBlue = static_cast<uint16 *>(_TIFFmalloc(array_size));
+  m_ColorBlue = static_cast<uint16_t *>(_TIFFmalloc(array_size));
   if (!m_ColorBlue)
   {
     _TIFFfree(m_ColorRed);
@@ -1051,7 +1062,7 @@ TIFFImageIO::AllocateTiffPalette(uint16_t bps)
     itkExceptionMacro("Can't allocate space for Blue channel of component tables.");
   }
   // TIFF palette length is fixed for a given bpp
-  uint64 TIFFPaletteLength = uint64{ 1 } << bps;
+  uint64_t TIFFPaletteLength = uint64_t{ 1 } << bps;
   for (size_t i = 0; i < TIFFPaletteLength; ++i)
   {
     if (i < m_ColorPalette.size())
@@ -1100,7 +1111,7 @@ TIFFImageIO::ReadTIFFTags()
     }
     raw_data = nullptr;
 
-    uint32 tag = TIFFGetTagListEntry(m_InternalImage->m_Image, i);
+    uint32_t tag = TIFFGetTagListEntry(m_InternalImage->m_Image, i);
 
     const itkTIFFField * field = TIFFFieldWithTag(m_InternalImage->m_Image, tag);
 
@@ -1130,7 +1141,7 @@ TIFFImageIO::ReadTIFFTags()
       }
       else if (read_count == TIFF_VARIABLE)
       {
-        uint16 cnt;
+        uint16_t cnt;
         if (TIFFGetField(m_InternalImage->m_Image, tag, &cnt, &raw_data) != 1)
         {
           continue;
@@ -1182,21 +1193,22 @@ TIFFImageIO::ReadTIFFTags()
                   << value_count << " " << raw_data);
 
 
-#define itkEncapsulate(T1, T2)                                                                                         \
-  if (value_count > 1)                                                                                                 \
-  {                                                                                                                    \
-    auto      v_c = static_cast<size_t>(value_count);                                                                  \
-    Array<T1> a(v_c);                                                                                                  \
-    for (unsigned int cnt = 0; cnt < v_c; ++cnt)                                                                       \
-    {                                                                                                                  \
-      a[cnt] = (static_cast<const T2 *>(raw_data))[cnt];                                                               \
-    }                                                                                                                  \
-    EncapsulateMetaData<itk::Array<T1>>(dict, field_name, a);                                                          \
-  }                                                                                                                    \
-  else                                                                                                                 \
-  {                                                                                                                    \
-    EncapsulateMetaData<T1>(dict, field_name, (static_cast<const T2 *>(raw_data))[0]);                                 \
-  }
+#define itkEncapsulate(T1, T2)                                                         \
+  if (value_count > 1)                                                                 \
+  {                                                                                    \
+    auto      v_c = static_cast<size_t>(value_count);                                  \
+    Array<T1> a(v_c);                                                                  \
+    for (unsigned int cnt = 0; cnt < v_c; ++cnt)                                       \
+    {                                                                                  \
+      a[cnt] = (static_cast<const T2 *>(raw_data))[cnt];                               \
+    }                                                                                  \
+    EncapsulateMetaData<itk::Array<T1>>(dict, field_name, a);                          \
+  }                                                                                    \
+  else                                                                                 \
+  {                                                                                    \
+    EncapsulateMetaData<T1>(dict, field_name, (static_cast<const T2 *>(raw_data))[0]); \
+  }                                                                                    \
+  ITK_MACROEND_NOOP_STATEMENT
 
     try
     {
@@ -1218,19 +1230,19 @@ TIFFImageIO::ReadTIFFTags()
             dict, field_name, Array<char>(static_cast<const char *>(raw_data), static_cast<size_t>(value_count)));
           break;
         case TIFF_SHORT:
-          itkEncapsulate(unsigned short, uint16);
+          itkEncapsulate(unsigned short, uint16_t);
           break;
         case TIFF_LONG:
-          EncapsulateMetaData<unsigned int>(dict, field_name, (static_cast<const uint32 *>(raw_data))[0]);
+          EncapsulateMetaData<unsigned int>(dict, field_name, (static_cast<const uint32_t *>(raw_data))[0]);
           break;
         case TIFF_SBYTE:
-          EncapsulateMetaData<signed char>(dict, field_name, (static_cast<const int8 *>(raw_data))[0]);
+          EncapsulateMetaData<signed char>(dict, field_name, (static_cast<const int8_t *>(raw_data))[0]);
           break;
         case TIFF_SSHORT:
-          EncapsulateMetaData<short>(dict, field_name, (static_cast<const int16 *>(raw_data))[0]);
+          EncapsulateMetaData<short>(dict, field_name, (static_cast<const int16_t *>(raw_data))[0]);
           break;
         case TIFF_SLONG:
-          itkEncapsulate(int, int32);
+          itkEncapsulate(int, int32_t);
           break;
         case TIFF_FLOAT:
           itkEncapsulate(float, float);
@@ -1273,21 +1285,21 @@ TIFFImageIO::ReadTIFFTags()
 void
 TIFFImageIO::ReadCurrentPage(void * buffer, size_t pixelOffset)
 {
-  const uint32 width = m_InternalImage->m_Width;
-  const uint32 height = m_InternalImage->m_Height;
+  const uint32_t width = m_InternalImage->m_Width;
+  const uint32_t height = m_InternalImage->m_Height;
 
 
   if (!m_InternalImage->CanRead())
   {
-    uint32 * tempImage = nullptr;
+    uint32_t * tempImage = nullptr;
 
     if (this->GetNumberOfComponents() == 4 && m_ComponentType == IOComponentEnum::UCHAR)
     {
-      tempImage = static_cast<uint32 *>(buffer) + (pixelOffset / 4);
+      tempImage = static_cast<uint32_t *>(buffer) + (pixelOffset / 4);
     }
     else
     {
-      itkExceptionMacro("Logic Error: Unexpected buffer type!")
+      itkExceptionMacro("Logic Error: Unexpected buffer type!");
     }
 
     if (!TIFFReadRGBAImageOriented(m_InternalImage->m_Image, width, height, tempImage, ORIENTATION_TOPLEFT, 1))
@@ -1393,7 +1405,7 @@ TIFFImageIO::ReadGenericImage(void * _out, unsigned int width, unsigned int heig
       break;
   }
 
-  for (uint32 row = 0; row < height; ++row)
+  for (uint32_t row = 0; row < height; ++row)
   {
     if (TIFFReadScanline(m_InternalImage->m_Image, buf, row, 0) <= 0)
     {

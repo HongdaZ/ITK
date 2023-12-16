@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ namespace itk
 {
 
 /**
- *\class RegistrationParameterScalesFromShiftBase
+ * \class RegistrationParameterScalesFromShiftBase
  *  \brief Registration helper base class for estimating scales of
  * transform parameters from the maximum voxel shift caused by a parameter
  * change.
@@ -45,7 +45,7 @@ class ITK_TEMPLATE_EXPORT RegistrationParameterScalesFromShiftBase
   : public RegistrationParameterScalesEstimator<TMetric>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegistrationParameterScalesFromShiftBase);
+  ITK_DISALLOW_COPY_AND_MOVE(RegistrationParameterScalesFromShiftBase);
 
   /** Standard class type aliases. */
   using Self = RegistrationParameterScalesFromShiftBase;
@@ -57,23 +57,23 @@ public:
   itkTypeMacro(RegistrationParameterScalesFromShiftBase, RegistrationParameterScalesEstimator);
 
   /** Type of scales */
-  using ScalesType = typename Superclass::ScalesType;
+  using typename Superclass::ScalesType;
   /** Type of parameters of the optimizer */
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
   using ParametersValueType = typename ParametersType::ValueType;
   /** Type of float */
-  using FloatType = typename Superclass::FloatType;
+  using typename Superclass::FloatType;
 
-  using VirtualPointType = typename Superclass::VirtualPointType;
-  using VirtualIndexType = typename Superclass::VirtualIndexType;
-  using MovingTransformType = typename Superclass::MovingTransformType;
-  using FixedTransformType = typename Superclass::FixedTransformType;
-  using JacobianType = typename Superclass::JacobianType;
-  using VirtualImageConstPointer = typename Superclass::VirtualImageConstPointer;
+  using typename Superclass::VirtualPointType;
+  using typename Superclass::VirtualIndexType;
+  using typename Superclass::MovingTransformType;
+  using typename Superclass::FixedTransformType;
+  using typename Superclass::JacobianType;
+  using typename Superclass::VirtualImageConstPointer;
 
   /** Estimate parameter scales */
   void
-  EstimateScales(ScalesType & scales) override;
+  EstimateScales(ScalesType & parameterScales) override;
 
   /** Estimate the scale of a step */
   FloatType

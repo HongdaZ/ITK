@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,9 +30,9 @@ CheckEqual(itk::Point<double, 2> p1, itk::Point<double, 2> p2)
 {
   const double epsilon = 1e-5;
 
-  for (unsigned int i = 0; i < 2; i++)
+  for (unsigned int i = 0; i < 2; ++i)
   {
-    if (std::fabs(p1[i] - p2[i]) > epsilon)
+    if (itk::Math::abs(p1[i] - p2[i]) > epsilon)
     {
       std::cout << p1 << " != " << p2 << ":[ FAILED ]" << std::endl;
       return false;
@@ -45,14 +45,8 @@ CheckEqual(itk::Point<double, 2> p1, itk::Point<double, 2> p2)
 } // namespace
 
 int
-itkEuler2DTransformTest(int argc, char * argv[])
+itkEuler2DTransformTest(int, char *[])
 {
-  if (argc < 1)
-  {
-    std::cout << "Usage: " << itkNameOfTestExecutableMacro(argv) << std::endl;
-    return EXIT_FAILURE;
-  }
-
   std::cout << "==================================" << std::endl;
   std::cout << "Testing Euler Angles 2D Transform" << std::endl << std::endl;
 
@@ -61,7 +55,7 @@ itkEuler2DTransformTest(int argc, char * argv[])
   bool                   Ok = true;
 
   using EulerTransformType = itk::Euler2DTransform<double>;
-  EulerTransformType::Pointer eulerTransform = EulerTransformType::New();
+  auto eulerTransform = EulerTransformType::New();
 
   // Testing Identity
   std::cout << "Testing identity transform: ";
@@ -94,9 +88,9 @@ itkEuler2DTransformTest(int argc, char * argv[])
 
   EulerTransformType::OutputPointType r;
   r = eulerTransform->TransformPoint(p);
-  for (unsigned int i = 0; i < N; i++)
+  for (unsigned int i = 0; i < N; ++i)
   {
-    if (std::fabs(q[i] - r[i]) > epsilon)
+    if (itk::Math::abs(q[i] - r[i]) > epsilon)
     {
       Ok = false;
       break;
@@ -126,9 +120,9 @@ itkEuler2DTransformTest(int argc, char * argv[])
   q = p + ioffset;
 
   r = eulerTransform->TransformPoint(p);
-  for (unsigned int i = 0; i < N; i++)
+  for (unsigned int i = 0; i < N; ++i)
   {
-    if (std::fabs(q[i] - r[i]) > epsilon)
+    if (itk::Math::abs(q[i] - r[i]) > epsilon)
     {
       Ok = false;
       break;
@@ -174,10 +168,10 @@ itkEuler2DTransformTest(int argc, char * argv[])
   eulerTransform->SetIdentity();
   eulerTransform->SetRotation(0.2);
 
-  EulerTransformType::Pointer t2 = EulerTransformType::New();
+  auto t2 = EulerTransformType::New();
   t2->SetIdentity();
   t2->Compose(eulerTransform);
-  if (std::fabs(t2->GetParameters()[0] - 0.2) > 0.0001)
+  if (itk::Math::abs(t2->GetParameters()[0] - 0.2) > 0.0001)
   {
     std::cout << " [ FAILED ] " << std::endl;
     return EXIT_FAILURE;
@@ -187,7 +181,7 @@ itkEuler2DTransformTest(int argc, char * argv[])
   {
     // Test instantiation, inverse computation, back transform etc.
     using TransformType = EulerTransformType;
-    TransformType::Pointer t1 = TransformType::New();
+    auto t1 = TransformType::New();
 
     // Set parameters
     TransformType::ParametersType parameters2(t1->GetNumberOfParameters());
@@ -223,7 +217,7 @@ itkEuler2DTransformTest(int argc, char * argv[])
       return EXIT_FAILURE;
     }
 
-    TransformType::Pointer t2dash = TransformType::New();
+    auto t2dash = TransformType::New();
     t1->GetInverse(t2dash);
     TransformType::InputPointType p3dash;
     p3dash = t2dash->TransformPoint(p2);
@@ -262,7 +256,7 @@ itkEuler2DTransformTest(int argc, char * argv[])
     }
 
     // Test compose
-    TransformType::Pointer t4 = TransformType::New();
+    auto t4 = TransformType::New();
 
     parameters2[0] = 14.7 / 180.0 * itk::Math::pi;
     parameters2[1] = 67.1;
@@ -307,7 +301,7 @@ itkEuler2DTransformTest(int argc, char * argv[])
     t4->ComputeJacobianWithRespectToParameters(p1, jacobian2);
 
     TransformType::JacobianType approxJacobian = jacobian2;
-    for (unsigned int k = 0; k < t1->GetNumberOfParameters(); k++)
+    for (unsigned int k = 0; k < t1->GetNumberOfParameters(); ++k)
     {
       constexpr double              delta = 0.001;
       TransformType::ParametersType plusParameters;
@@ -325,7 +319,7 @@ itkEuler2DTransformTest(int argc, char * argv[])
       plusPoint = t4->TransformPoint(p1);
       t4->SetParameters(minusParameters);
       minusPoint = t4->TransformPoint(p1);
-      for (unsigned int j = 0; j < 2; j++)
+      for (unsigned int j = 0; j < 2; ++j)
       {
         double approxDerivative = (plusPoint[j] - minusPoint[j]) / (2.0 * delta);
         double computedDerivative = jacobian2[j][k];
@@ -348,15 +342,15 @@ itkEuler2DTransformTest(int argc, char * argv[])
   {
     // Test Set/Get Matrix and Set/Get Offset
     using TransformType = EulerTransformType;
-    TransformType::Pointer t1 = TransformType::New();
-    TransformType::Pointer t23 = TransformType::New();
+    auto t1 = TransformType::New();
+    auto t23 = TransformType::New();
 
     TransformType::InputPointType center;
     center[0] = 9.0;
     center[1] = 10.0;
 
     TransformType::ParametersType parameters3(t1->GetNumberOfParameters());
-    for (unsigned int j = 0; j < t1->GetNumberOfParameters(); j++)
+    for (unsigned int j = 0; j < t1->GetNumberOfParameters(); ++j)
     {
       parameters3[j] = static_cast<double>(j) + 1.0;
     }
@@ -388,9 +382,9 @@ itkEuler2DTransformTest(int argc, char * argv[])
     TransformType::ParametersType pdash = t23->GetParameters();
 
     std::cout << "Test Set/GetMatrix() and Set/GetOffset(): ";
-    for (unsigned int j = 0; j < t1->GetNumberOfParameters(); j++)
+    for (unsigned int j = 0; j < t1->GetNumberOfParameters(); ++j)
     {
-      if (std::fabs(parameters3[j] - pdash[j]) > epsilon)
+      if (itk::Math::abs(parameters3[j] - pdash[j]) > epsilon)
       {
         std::cout << "Expected: " << parameters3 << std::endl;
         std::cout << "Got: " << pdash << std::endl;

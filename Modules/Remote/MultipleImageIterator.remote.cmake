@@ -27,12 +27,12 @@
 #--   - [ ] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -51,11 +51,10 @@ The MultipleImageIterator is a simple wrapper class that tries to make this more
 
 A more detailed description can be found in the Insight Journal article::
 Schaerer J. \"A MultipleImageIterator for iterating over multiple images simultaneously\".
-  http://hdl.handle.net/10380/3455
-  http://www.insight-journal.org/browse/publication/915
+  https://www.insight-journal.org/browse/publication/915
   December, 2014.
 "
   MODULE_COMPLIANCE_LEVEL 2
   GIT_REPOSITORY ${git_protocol}://github.com/KitwareMedical/MultipleImageIterator.git
-  GIT_TAG 3b71d6e8611cf01e4f59df2e5f94854c9a42fbf2
+  GIT_TAG 046e70f43f56ac1a0e32e083fb1fe1d1379a1f73
   )

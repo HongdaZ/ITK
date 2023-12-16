@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,10 +19,10 @@
 #ifndef itkGPUImageDataManager_h
 #define itkGPUImageDataManager_h
 
-#include <itkObject.h>
-#include <itkTimeStamp.h>
-#include <itkLightObject.h>
-#include <itkObjectFactory.h>
+#include "itkObject.h"
+#include "itkTimeStamp.h"
+#include "itkLightObject.h"
+#include "itkObjectFactory.h"
 #include "itkOpenCLUtil.h"
 #include "itkGPUDataManager.h"
 #include "itkGPUContextManager.h"
@@ -30,7 +30,7 @@
 
 namespace itk
 {
-template <typename TPixel, unsigned int NDimension>
+template <typename TPixel, unsigned int VDimension>
 class GPUImage;
 
 /**
@@ -49,7 +49,7 @@ class ITK_TEMPLATE_EXPORT GPUImageDataManager : public GPUDataManager
   friend class GPUImage<typename ImageType::PixelType, ImageType::ImageDimension>;
 
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUImageDataManager);
+  ITK_DISALLOW_COPY_AND_MOVE(GPUImageDataManager);
 
   using Self = GPUImageDataManager;
   using Superclass = GPUDataManager;

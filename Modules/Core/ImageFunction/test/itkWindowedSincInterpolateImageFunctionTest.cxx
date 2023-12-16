@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -151,7 +151,7 @@ itkWindowedSincInterpolateImageFunctionTest(int, char *[])
 
 
   // Create a test image
-  ImageType::Pointer    image = ImageType::New();
+  auto                  image = ImageType::New();
   ImageType::RegionType region;
   region.SetSize(size);
 
@@ -174,7 +174,7 @@ itkWindowedSincInterpolateImageFunctionTest(int, char *[])
     index = iter.GetIndex();
     value = 0;
 
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       value += index[j];
     }
@@ -185,7 +185,7 @@ itkWindowedSincInterpolateImageFunctionTest(int, char *[])
   }
 
   // Create the interpolator
-  InterpolatorType::Pointer interp = InterpolatorType::New();
+  auto interp = InterpolatorType::New();
   interp->SetInputImage(image);
   interp->Print(std::cout);
 

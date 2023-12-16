@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class HessianToObjectnessMeasureImageFilter
+ * \class HessianToObjectnessMeasureImageFilter
  * \brief A filter to enhance M-dimensional objects in N-dimensional images
  *
  * The objectness measure is a generalization of Frangi's vesselness measure,
@@ -44,7 +44,7 @@ namespace itk
  * Science, pages 130-137, Springer Verlag, 1998.
  *
  * Additional information can be from in the Insight Journal:
- * https://hdl.handle.net/1926/576
+ * https://www.insight-journal.org/browse/publication/175
  *
  * \author Luca Antiga Ph.D.  Medical Imaging Unit,
  *                            Bioengineering Department, Mario Negri Institute, Italy.
@@ -61,7 +61,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT HessianToObjectnessMeasureImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(HessianToObjectnessMeasureImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(HessianToObjectnessMeasureImageFilter);
 
   /** Standard class type aliases. */
   using Self = HessianToObjectnessMeasureImageFilter;
@@ -69,14 +69,14 @@ public:
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::OutputImageType;
   using InputPixelType = typename InputImageType::PixelType;
   using OutputPixelType = typename OutputImageType::PixelType;
   using OutputImageRegionType = typename OutputImageType::RegionType;
 
   /** Image dimension */
-  static constexpr unsigned int ImageDimension = InputImageType ::ImageDimension;
+  static constexpr unsigned int ImageDimension = InputImageType::ImageDimension;
 
   using EigenValueType = double;
   using EigenValueArrayType = itk::FixedArray<EigenValueType, Self::ImageDimension>;
@@ -145,7 +145,7 @@ private:
   // functor used to sort the eigenvalues are to be sorted
   // |e1|<=|e2|<=...<=|eN|
   //
-  // Returns ( abs(a) < abs(b) )
+  // Returns ( itk::Math::abs(a) < itk::Math::abs(b) )
   struct AbsLessCompare
   {
     bool

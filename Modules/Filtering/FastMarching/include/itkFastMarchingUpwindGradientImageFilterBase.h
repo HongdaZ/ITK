@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class FastMarchingUpwindGradientImageFilterBase
+ * \class FastMarchingUpwindGradientImageFilterBase
  *
  * \brief Generates the upwind gradient field of fast marching arrival times.
  *
@@ -55,14 +55,14 @@ class ITK_TEMPLATE_EXPORT FastMarchingUpwindGradientImageFilterBase
   : public FastMarchingImageFilterBase<TInput, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingUpwindGradientImageFilterBase);
+  ITK_DISALLOW_COPY_AND_MOVE(FastMarchingUpwindGradientImageFilterBase);
 
   /** Standard class typdedefs. */
   using Self = FastMarchingUpwindGradientImageFilterBase;
   using Superclass = FastMarchingImageFilterBase<TInput, TOutput>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
-  using Traits = typename Superclass::Traits;
+  using typename Superclass::Traits;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -73,10 +73,10 @@ public:
   /** The dimension of the level set. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
-  using NodeType = typename Superclass::NodeType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputPixelType = typename Superclass::OutputPixelType;
-  using OutputSpacingType = typename Superclass::OutputSpacingType;
+  using typename Superclass::NodeType;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::OutputPixelType;
+  using typename Superclass::OutputSpacingType;
 
   /** GradientPixel type alias support */
   using GradientPixelType = CovariantVector<OutputPixelType, ImageDimension>;
@@ -99,7 +99,7 @@ protected:
   PrintSelf(std::ostream & os, Indent indent) const override;
 
   void
-  InitializeOutput(OutputImageType * oImage) override;
+  InitializeOutput(OutputImageType * output) override;
 
   void
   UpdateNeighbors(OutputImageType * oImage, const NodeType & iNode) override;
@@ -142,10 +142,10 @@ protected:
 //  /** The dimension of the level set. */
 //  static constexpr unsigned int ImageDimension = //                      Superclass::ImageDimension;
 
-//  using NodeType = typename Superclass::NodeType;
-//  using OutputImageType = typename Superclass::OutputImageType;
-//  using OutputPixelType = typename Superclass::OutputPixelType;
-//  using OutputSpacingType = typename Superclass::OutputSpacingType;
+//  using typename Superclass::NodeType;
+//  using typename Superclass::OutputImageType;
+//  using typename Superclass::OutputPixelType;
+//  using typename Superclass::OutputSpacingType;
 
 //  /** GradientPixel type alias support */
 //  using GradientPixelType = CovariantVector< OutputPixelType,

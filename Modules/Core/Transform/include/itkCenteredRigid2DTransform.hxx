@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkCenteredRigid2DTransform_hxx
 #define itkCenteredRigid2DTransform_hxx
 
-#include "itkCenteredRigid2DTransform.h"
 
 namespace itk
 {
@@ -60,7 +59,7 @@ CenteredRigid2DTransform<TParametersValueType>::SetParameters(const ParametersTy
   this->SetVarAngle(angle);
   // Set the center
   InputPointType center;
-  for (unsigned int i = 0; i < SpaceDimension; i++)
+  for (unsigned int i = 0; i < SpaceDimension; ++i)
   {
     center[i] = parameters[i + 1];
   }
@@ -68,7 +67,7 @@ CenteredRigid2DTransform<TParametersValueType>::SetParameters(const ParametersTy
 
   // Set the translation
   OutputVectorType translation;
-  for (unsigned int j = 0; j < SpaceDimension; j++)
+  for (unsigned int j = 0; j < SpaceDimension; ++j)
   {
     translation[j] = parameters[j + 1 + SpaceDimension];
   }
@@ -87,8 +86,8 @@ CenteredRigid2DTransform<TParametersValueType>::SetParameters(const ParametersTy
 
 
 template <typename TParametersValueType>
-const typename CenteredRigid2DTransform<TParametersValueType>::ParametersType &
-CenteredRigid2DTransform<TParametersValueType>::GetParameters() const
+auto
+CenteredRigid2DTransform<TParametersValueType>::GetParameters() const -> const ParametersType &
 {
   itkDebugMacro(<< "Getting parameters ");
   // Parameters are ordered as:
@@ -101,12 +100,12 @@ CenteredRigid2DTransform<TParametersValueType>::GetParameters() const
   // Get the angle
   this->m_Parameters[0] = this->GetAngle();
   // Get the center
-  for (unsigned int i = 0; i < SpaceDimension; i++)
+  for (unsigned int i = 0; i < SpaceDimension; ++i)
   {
     this->m_Parameters[i + 1] = this->GetCenter()[i];
   }
   // Get the translation
-  for (unsigned int j = 0; j < SpaceDimension; j++)
+  for (unsigned int j = 0; j < SpaceDimension; ++j)
   {
     this->m_Parameters[j + 1 + SpaceDimension] = this->GetTranslation()[j];
   }
@@ -162,8 +161,8 @@ CenteredRigid2DTransform<TParametersValueType>::SetFixedParameters(const FixedPa
 
 
 template <typename TParametersValueType>
-const typename CenteredRigid2DTransform<TParametersValueType>::FixedParametersType &
-CenteredRigid2DTransform<TParametersValueType>::GetFixedParameters() const
+auto
+CenteredRigid2DTransform<TParametersValueType>::GetFixedParameters() const -> const FixedParametersType &
 {
   // return dummy parameters
   return this->m_FixedParameters;
@@ -197,8 +196,8 @@ CenteredRigid2DTransform<TParametersValueType>::GetInverse(Self * inverse) const
 
 
 template <typename TParametersValueType>
-typename CenteredRigid2DTransform<TParametersValueType>::InverseTransformBasePointer
-CenteredRigid2DTransform<TParametersValueType>::GetInverseTransform() const
+auto
+CenteredRigid2DTransform<TParametersValueType>::GetInverseTransform() const -> InverseTransformBasePointer
 {
   Pointer inv = New();
 

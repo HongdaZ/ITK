@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageToNeighborhoodSampleAdaptor_hxx
 #define itkImageToNeighborhoodSampleAdaptor_hxx
 
-#include "itkImageToNeighborhoodSampleAdaptor.h"
 
 namespace itk
 {
@@ -34,18 +33,15 @@ ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::ImageToNeighborhoo
   m_Radius.Fill(0);
   m_NeighborIndexInternal.Fill(0);
 
-  NeighborhoodIndexType start;
-  NeighborhoodSizeType  sz;
-  start.Fill(0);
-  sz.Fill(0);
-  m_Region.SetIndex(start);
-  m_Region.SetSize(sz);
+  m_Region.SetIndex({ { 0 } });
+  m_Region.SetSize({ { 0 } });
   this->SetMeasurementVectorSize(1);
 }
 
 template <typename TImage, typename TBoundaryCondition>
-const typename ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::MeasurementVectorType &
+auto
 ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::GetMeasurementVector(InstanceIdentifier id) const
+  -> const MeasurementVectorType &
 {
   if (m_Image.IsNull())
   {
@@ -74,8 +70,8 @@ ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::GetMeasurementVect
 
 /** returns the number of measurement vectors in this container*/
 template <typename TImage, typename TBoundaryCondition>
-typename ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::InstanceIdentifier
-ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::Size() const
+auto
+ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::Size() const -> InstanceIdentifier
 {
   if (m_Image.IsNull())
   {
@@ -173,8 +169,8 @@ ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::SetRadius(const Ne
 }
 
 template <typename TImage, typename TBoundaryCondition>
-typename ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::NeighborhoodRadiusType
-ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::GetRadius() const
+auto
+ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::GetRadius() const -> NeighborhoodRadiusType
 {
   return m_Radius;
 }
@@ -203,15 +199,15 @@ ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::SetRegion(const Re
 }
 
 template <typename TImage, typename TBoundaryCondition>
-typename ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::RegionType
-ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::GetRegion() const
+auto
+ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::GetRegion() const -> RegionType
 {
   return m_Region;
 }
 
 template <typename TImage, typename TBoundaryCondition>
 void
-ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::SetUseImageRegion(const bool & flag)
+ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::SetUseImageRegion(const bool flag)
 {
   if (flag != m_UseImageRegion)
   {
@@ -224,8 +220,8 @@ ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::SetUseImageRegion(
 }
 
 template <typename TImage, typename TBoundaryCondition>
-typename ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::TotalAbsoluteFrequencyType
-ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::GetTotalFrequency() const
+auto
+ImageToNeighborhoodSampleAdaptor<TImage, TBoundaryCondition>::GetTotalFrequency() const -> TotalAbsoluteFrequencyType
 {
   if (m_Image.IsNull())
   {

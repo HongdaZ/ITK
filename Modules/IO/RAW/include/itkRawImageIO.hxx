@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkRawImageIO_hxx
 #define itkRawImageIO_hxx
 
-#include "itkRawImageIO.h"
 #include "itkIntTypes.h"
 
 
@@ -102,8 +101,8 @@ RawImageIO<TPixel, VImageDimension>::GetHeaderSize()
     file.seekg(0, std::ios::end);
 
     m_HeaderSize =
-      static_cast<SizeValueType>(static_cast<typename ::itk::intmax_t>(file.tellg()) -
-                                 static_cast<typename ::itk::intmax_t>(this->m_Strides[m_FileDimensionality + 1]));
+      static_cast<SizeValueType>(static_cast<typename itk::intmax_t>(file.tellg()) -
+                                 static_cast<typename itk::intmax_t>(this->m_Strides[m_FileDimensionality + 1]));
   }
 
   return m_HeaderSize;

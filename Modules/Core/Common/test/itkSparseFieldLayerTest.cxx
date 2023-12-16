@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,10 +37,10 @@ itkSparseFieldLayerTest(int, char *[])
 
   itk::SparseFieldLayer<node_type>::Pointer layer = itk::SparseFieldLayer<node_type>::New();
 
-  for (j = 0; j < 2; j++)
+  for (j = 0; j < 2; ++j)
   {
     std::cout << "---------------" << std::endl;
-    for (i = 0; i < 4000; i++)
+    for (i = 0; i < 4000; ++i)
     {
       (store + i)->value = i;
     }
@@ -48,7 +48,7 @@ itkSparseFieldLayerTest(int, char *[])
     layer->Print(std::cout);
     std::cout << layer->Size() << std::endl;
 
-    for (i = 0; i < 4000; i++)
+    for (i = 0; i < 4000; ++i)
     {
       layer->PushFront(store + i);
     }
@@ -57,7 +57,7 @@ itkSparseFieldLayerTest(int, char *[])
     std::cout << layer->Size() << std::endl;
 
     rlist = layer->SplitRegions(5);
-    for (int k = 0; k < 5; k++)
+    for (int k = 0; k < 5; ++k)
     {
       std::cout << "Region begin:" << (rlist[k].first)->value << std::endl;
     }
@@ -67,7 +67,7 @@ itkSparseFieldLayerTest(int, char *[])
     i = 3999;
     while (cit != layer->End())
     {
-      if ((*cit).value != i || cit->value != i)
+      if (cit->value != i || cit->value != i)
         return EXIT_FAILURE;
       ++cit;
       --i;
@@ -77,27 +77,27 @@ itkSparseFieldLayerTest(int, char *[])
     i = 3999;
     while (it != layer->End())
     {
-      if ((*it).value != i || it->value != i)
+      if (it->value != i || it->value != i)
         return EXIT_FAILURE;
-      (*it).value = 32567;
-      if ((*it).value != 32567 || it->value != 32567)
+      it->value = 32567;
+      if (it->value != 32567 || it->value != 32567)
         return EXIT_FAILURE;
       ++it;
       --i;
     }
 
-    for (i = 0; i < 5000; i++)
+    for (i = 0; i < 5000; ++i)
     {
       layer->PopFront();
     }
     layer->Print(std::cout);
     std::cout << layer->Size() << std::endl;
 
-    for (i = 0; i < 4000; i++)
+    for (i = 0; i < 4000; ++i)
     {
       layer->PushFront(store + i);
     }
-    for (i = 0; i < 5000; i++)
+    for (i = 0; i < 5000; ++i)
     {
       layer->Unlink(layer->Front());
     }

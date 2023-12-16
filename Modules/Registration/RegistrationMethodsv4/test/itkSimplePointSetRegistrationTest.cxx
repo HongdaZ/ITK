@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkAffineTransform.h"
 #include "itkEuclideanDistancePointSetToPointSetMetricv4.h"
 #include "itkRegistrationParameterScalesFromPhysicalShift.h"
+#include "itkTestingMacros.h"
 
 template <typename TFilter>
 class CommandIterationUpdate : public itk::Command
@@ -109,7 +110,7 @@ itkSimplePointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[
   using PointSetType = itk::PointSet<unsigned int, Dimension>;
 
   using PointSetMetricType = itk::EuclideanDistancePointSetToPointSetMetricv4<PointSetType>;
-  PointSetMetricType::Pointer metric = PointSetMetricType::New();
+  auto metric = PointSetMetricType::New();
 
   using PointSetType = PointSetMetricType::FixedPointSetType;
   using PointType = PointSetType::PointType;
@@ -119,15 +120,15 @@ itkSimplePointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[
   using MovingImageType = itk::Image<PixelType, Dimension>;
 
 
-  PointSetType::Pointer fixedPoints = PointSetType::New();
+  auto fixedPoints = PointSetType::New();
   fixedPoints->Initialize();
 
-  PointSetType::Pointer movingPoints = PointSetType::New();
+  auto movingPoints = PointSetType::New();
   movingPoints->Initialize();
 
   // two circles with a small offset
   PointType offset;
-  for (unsigned int d = 0; d < PointSetType::PointDimension; d++)
+  for (unsigned int d = 0; d < PointSetType::PointDimension; ++d)
   {
     offset[d] = 2.0;
   }
@@ -172,7 +173,7 @@ itkSimplePointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[
   fixedImageDirection.SetIdentity();
   fixedImageSpacing.Fill(1);
 
-  FixedImageType::Pointer fixedImage = FixedImageType::New();
+  auto fixedImage = FixedImageType::New();
   fixedImage->SetRegions(fixedImageSize);
   fixedImage->SetOrigin(fixedImageOrigin);
   fixedImage->SetDirection(fixedImageDirection);
@@ -180,7 +181,7 @@ itkSimplePointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[
   fixedImage->Allocate();
 
   using AffineTransformType = itk::AffineTransform<double, PointSetType::PointDimension>;
-  AffineTransformType::Pointer transform = AffineTransformType::New();
+  auto transform = AffineTransformType::New();
   transform->SetIdentity();
 
   metric->SetFixedPointSet(fixedPoints);
@@ -201,7 +202,7 @@ itkSimplePointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[
 
   // optimizer
   using OptimizerType = itk::GradientDescentOptimizerv4;
-  OptimizerType::Pointer optimizer = OptimizerType::New();
+  auto optimizer = OptimizerType::New();
   optimizer->SetMetric(metric);
   optimizer->SetNumberOfIterations(numberOfIterations);
   optimizer->SetScalesEstimator(shiftScaleEstimator);
@@ -210,28 +211,25 @@ itkSimplePointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[
   optimizer->SetConvergenceWindowSize(10);
 
   using AffineRegistrationType = itk::ImageRegistrationMethodv4<FixedImageType, MovingImageType>;
-  AffineRegistrationType::Pointer affineSimple = AffineRegistrationType::New();
+  auto affineSimple = AffineRegistrationType::New();
   affineSimple->SetObjectName("affineSimple");
+
   affineSimple->SetFixedPointSet(fixedPoints);
+  ITK_TEST_SET_GET_VALUE(fixedPoints, affineSimple->GetFixedPointSet());
+
   affineSimple->SetMovingPointSet(movingPoints);
+  ITK_TEST_SET_GET_VALUE(movingPoints, affineSimple->GetMovingPointSet());
+
   affineSimple->SetInitialTransform(transform);
   affineSimple->SetMetric(metric);
   affineSimple->SetOptimizer(optimizer);
 
   using AffineCommandType = CommandIterationUpdate<AffineRegistrationType>;
-  AffineCommandType::Pointer affineObserver = AffineCommandType::New();
+  auto affineObserver = AffineCommandType::New();
   affineSimple->AddObserver(itk::MultiResolutionIterationEvent(), affineObserver);
 
-  try
-  {
-    std::cout << "Point set affine registration update" << std::endl;
-    affineSimple->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cerr << "Exception caught: " << e << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(affineSimple->Update());
+
 
   // applying the resultant transform to moving points and verify result
   std::cout << "Fixed\tMoving\tMovingTransformed\tFixedTransformed\tDiff" << std::endl;
@@ -239,7 +237,7 @@ itkSimplePointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[
   PointType::ValueType                             tolerance = 1e-2;
   AffineTransformType::InverseTransformBasePointer affineInverseTransform =
     affineSimple->GetModifiableTransform()->GetInverseTransform();
-  for (unsigned int n = 0; n < movingPoints->GetNumberOfPoints(); n++)
+  for (unsigned int n = 0; n < movingPoints->GetNumberOfPoints(); ++n)
   {
     // compare the points in virtual domain
     PointType transformedMovingPoint = affineInverseTransform->TransformPoint(movingPoints->GetPoint(n));
@@ -250,7 +248,7 @@ itkSimplePointSetRegistrationTest(int itkNotUsed(argc), char * itkNotUsed(argv)[
     difference[1] = transformedMovingPoint[1] - fixedPoint[1];
     std::cout << fixedPoints->GetPoint(n) << "\t" << movingPoints->GetPoint(n) << "\t" << transformedMovingPoint << "\t"
               << transformedFixedPoint << "\t" << difference << std::endl;
-    if (fabs(difference[0]) > tolerance || fabs(difference[1]) > tolerance)
+    if (itk::Math::abs(difference[0]) > tolerance || itk::Math::abs(difference[1]) > tolerance)
     {
       passed = false;
     }

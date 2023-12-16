@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkConstNeighborhoodIterator_hxx
 #define itkConstNeighborhoodIterator_hxx
-#include "itkConstNeighborhoodIterator.h"
 namespace itk
 {
 template <typename TImage, typename TBoundaryCondition>
@@ -30,7 +29,7 @@ ConstNeighborhoodIterator<TImage, TBoundaryCondition>::InBounds() const
   }
 
   bool ans = true;
-  for (DimensionValueType i = 0; i < Dimension; i++)
+  for (DimensionValueType i = 0; i < Dimension; ++i)
   {
     if (m_Loop[i] < m_InnerBoundsLow[i] || m_Loop[i] >= m_InnerBoundsHigh[i])
     {
@@ -144,8 +143,9 @@ ConstNeighborhoodIterator<TImage, TBoundaryCondition>::IndexInBounds(const Neigh
 }
 
 template <typename TImage, typename TBoundaryCondition>
-typename ConstNeighborhoodIterator<TImage, TBoundaryCondition>::PixelType
+auto
 ConstNeighborhoodIterator<TImage, TBoundaryCondition>::GetPixel(NeighborIndexType n, bool & IsInBounds) const
+  -> PixelType
 {
   // If the region the iterator is walking (padded by the neighborhood size)
   // never bumps up against the bounds of the buffered region, then don't
@@ -182,11 +182,12 @@ ConstNeighborhoodIterator<TImage, TBoundaryCondition>::GetPixel(NeighborIndexTyp
 }
 
 template <typename TImage, typename TBoundaryCondition>
-typename ConstNeighborhoodIterator<TImage, TBoundaryCondition>::OffsetType
+auto
 ConstNeighborhoodIterator<TImage, TBoundaryCondition>::ComputeInternalIndex(const NeighborIndexType n) const
+  -> OffsetType
 {
   OffsetType ans;
-  auto       r = (unsigned long)n;
+  auto       r = static_cast<unsigned long>(n);
   for (long i = static_cast<long>(Dimension) - 1; i >= 0; --i)
   {
     ans[i] = static_cast<OffsetValueType>(r / this->GetStride(i));
@@ -196,46 +197,18 @@ ConstNeighborhoodIterator<TImage, TBoundaryCondition>::ComputeInternalIndex(cons
 }
 
 template <typename TImage, typename TBoundaryCondition>
-typename ConstNeighborhoodIterator<TImage, TBoundaryCondition>::RegionType
-ConstNeighborhoodIterator<TImage, TBoundaryCondition>::GetBoundingBoxAsImageRegion() const
+auto
+ConstNeighborhoodIterator<TImage, TBoundaryCondition>::GetBoundingBoxAsImageRegion() const -> RegionType
 {
   const IndexValueType zero = NumericTraits<IndexValueType>::ZeroValue();
-  RegionType           ans;
-
-  ans.SetIndex(this->GetIndex(zero));
-  ans.SetSize(this->GetSize());
+  const RegionType     ans(this->GetIndex(zero), this->GetSize());
 
   return ans;
 }
 
 template <typename TImage, typename TBoundaryCondition>
 ConstNeighborhoodIterator<TImage, TBoundaryCondition>::ConstNeighborhoodIterator()
-
 {
-  IndexType zeroIndex;
-  zeroIndex.Fill(0);
-  SizeType zeroSize;
-  zeroSize.Fill(0);
-
-  m_Bound.Fill(0);
-  m_Begin = nullptr;
-  m_BeginIndex.Fill(0);
-
-  m_End = nullptr;
-  m_EndIndex.Fill(0);
-  m_Loop.Fill(0);
-  m_Region.SetIndex(zeroIndex);
-  m_Region.SetSize(zeroSize);
-
-  m_WrapOffset.Fill(0);
-
-  for (DimensionValueType i = 0; i < Dimension; i++)
-  {
-    m_InBounds[i] = false;
-  }
-
-  this->ResetBoundaryCondition();
-
   m_BoundaryCondition = &m_InternalBoundaryCondition;
 }
 
@@ -297,8 +270,8 @@ ConstNeighborhoodIterator<TImage, TBoundaryCondition>::SetEndIndex()
 }
 
 template <typename TImage, typename TBoundaryCondition>
-typename ConstNeighborhoodIterator<TImage, TBoundaryCondition>::NeighborhoodType
-ConstNeighborhoodIterator<TImage, TBoundaryCondition>::GetNeighborhood() const
+auto
+ConstNeighborhoodIterator<TImage, TBoundaryCondition>::GetNeighborhood() const -> NeighborhoodType
 {
   OffsetType OverlapLow, OverlapHigh, temp, offset;
 
@@ -327,7 +300,7 @@ ConstNeighborhoodIterator<TImage, TBoundaryCondition>::GetNeighborhood() const
   else
   {
     // Calculate overlap & initialize index
-    for (DimensionValueType i = 0; i < Dimension; i++)
+    for (DimensionValueType i = 0; i < Dimension; ++i)
     {
       OverlapLow[i] = m_InnerBoundsLow[i] - m_Loop[i];
       OverlapHigh[i] = static_cast<OffsetValueType>(this->GetSize(i)) - ((m_Loop[i] + 2) - m_InnerBoundsHigh[i]);
@@ -640,12 +613,12 @@ ConstNeighborhoodIterator<TImage, TBoundaryCondition>::PrintSelf(std::ostream & 
   os << "}" << std::endl;
 
   os << indent << ",  m_InnerBoundsLow = { ";
-  for (i = 0; i < Dimension; i++)
+  for (i = 0; i < Dimension; ++i)
   {
     os << m_InnerBoundsLow[i] << " ";
   }
   os << "}, m_InnerBoundsHigh = { ";
-  for (i = 0; i < Dimension; i++)
+  for (i = 0; i < Dimension; ++i)
   {
     os << m_InnerBoundsHigh[i] << " ";
   }

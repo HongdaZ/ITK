@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ public:
   {
     m_TestFailure = false;
     m_NumberOfWorkUnits = number_of_threads;
-    for (unsigned int i = 0; i < number_of_threads - 1; i++)
+    for (unsigned int i = 0; i < number_of_threads - 1; ++i)
     {
       m_Counter[i] = 0;
     }
@@ -54,7 +54,7 @@ BarrierTestIncrement(void * ptr)
   itk::ThreadIdType threadId = ((itk::MultiThreaderBase::WorkUnitInfo *)(ptr))->WorkUnitID;
   auto * data = static_cast<BarrierTestUserData *>(((itk::MultiThreaderBase::WorkUnitInfo *)(ptr))->UserData);
 
-  for (unsigned int i = 0; i < data->m_NumberOfIterations; i++)
+  for (unsigned int i = 0; i < data->m_NumberOfIterations; ++i)
   {
     // set the value for this iteration
     data->m_Counter[threadId] = i;
@@ -72,13 +72,13 @@ BarrierCheckIncrement(void * ptr)
 {
   auto * data = static_cast<BarrierTestUserData *>(((itk::MultiThreaderBase::WorkUnitInfo *)(ptr))->UserData);
 
-  for (unsigned int i = 0; i < data->m_NumberOfIterations; i++)
+  for (unsigned int i = 0; i < data->m_NumberOfIterations; ++i)
   {
     // Wait for other threads to populate the m_Counter array
     data->m_FirstBarrier->Wait();
 
     // Check the values in the m_Counter array
-    for (unsigned int j = 0; j < data->m_NumberOfWorkUnits - 1; j++)
+    for (unsigned int j = 0; j < data->m_NumberOfWorkUnits - 1; ++j)
     {
       if (data->m_Counter[j] != i)
       {
@@ -114,7 +114,7 @@ BarrierSpecialTest(void * ptr)
 {
   auto * data = static_cast<BarrierTestUserData *>(((itk::MultiThreaderBase::WorkUnitInfo *)(ptr))->UserData);
 
-  for (unsigned int j = 0; j < 1000; j++)
+  for (unsigned int j = 0; j < 1000; ++j)
   {
     data->m_FirstBarrier->Wait();
   }
@@ -131,7 +131,7 @@ itkBarrierTest(int argc, char * argv[])
   itk::ThreadIdType number_of_threads = 4;
   if (argc > 1)
   {
-    number_of_threads = ::std::stoi(argv[1]);
+    number_of_threads = std::stoi(argv[1]);
   }
 
   BarrierTestUserData data(number_of_threads);
@@ -150,7 +150,7 @@ itkBarrierTest(int argc, char * argv[])
     multithreader->SetNumberOfWorkUnits(number_of_threads);
     multithreader->SetSingleMethod(BarrierTestCallback, &data);
 
-    for (unsigned int i = 0; i < 5; i++) // repeat test 5 times
+    for (unsigned int i = 0; i < 5; ++i) // repeat test 5 times
     {
       multithreader->SingleMethodExecute();
     }

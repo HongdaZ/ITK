@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,7 +73,7 @@ itkBinShrinkImageFilterTest2(int, char *[])
   using ImageType = itk::Image<PixelType, ImageDimension>;
 
   using SourceType = itk::PhysicalPointImageSource<ImageType>;
-  SourceType::Pointer source = SourceType::New();
+  auto source = SourceType::New();
 
   SourceType::SizeValueType size[] = { 512, 509 };
   source->SetSize(size);
@@ -94,7 +94,7 @@ itkBinShrinkImageFilterTest2(int, char *[])
       std::cout << "Testing with shrink factors:" << xf << " " << yf << std::endl;
 
       using FilterType = itk::BinShrinkImageFilter<ImageType, ImageType>;
-      FilterType::Pointer shrink = FilterType::New();
+      auto shrink = FilterType::New();
 
       shrink->SetInput(source->GetOutput());
 

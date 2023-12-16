@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class SimpleContourExtractorImageFilter
+ * \class SimpleContourExtractorImageFilter
  * \brief Computes an image of contours which will be the contour
  * of the first image.
  *
@@ -53,7 +53,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT SimpleContourExtractorImageFilter : public BoxImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SimpleContourExtractorImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SimpleContourExtractorImageFilter);
 
   /** Extract dimension from input and output image. */
   static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;

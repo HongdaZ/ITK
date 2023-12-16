@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,14 +18,13 @@
 #ifndef itkNeighborhoodIterator_hxx
 #define itkNeighborhoodIterator_hxx
 
-#include "itkNeighborhoodIterator.h"
 
 namespace itk
 {
 
 template <typename TImage, typename TBoundaryCondition>
 void
-NeighborhoodIterator<TImage, TBoundaryCondition>::SetPixel(const unsigned n, const PixelType & v)
+NeighborhoodIterator<TImage, TBoundaryCondition>::SetPixel(const unsigned int n, const PixelType & v)
 {
 
   if (this->m_NeedToUseBoundaryCondition == false)
@@ -96,7 +95,7 @@ NeighborhoodIterator<TImage, TBoundaryCondition>::SetPixel(const unsigned n, con
 
 template <typename TImage, typename TBoundaryCondition>
 void
-NeighborhoodIterator<TImage, TBoundaryCondition>::SetPixel(const unsigned n, const PixelType & v, bool & status)
+NeighborhoodIterator<TImage, TBoundaryCondition>::SetPixel(const unsigned int n, const PixelType & v, bool & status)
 {
   unsigned int i;
   OffsetType   temp;
@@ -124,7 +123,7 @@ NeighborhoodIterator<TImage, TBoundaryCondition>::SetPixel(const unsigned n, con
     // Here, we are checking whether the particular pixel in the
     // neighborhood is within the bounds (when the neighborhood is not
     // completely in bounds, it is usually partly in bounds)
-    for (i = 0; i < Superclass::Dimension; i++)
+    for (i = 0; i < Superclass::Dimension; ++i)
     {
       if (!this->m_InBounds[i]) // Part of dimension spills out of bounds
       {
@@ -168,14 +167,14 @@ NeighborhoodIterator<TImage, TBoundaryCondition>::SetNeighborhood(const Neighbor
 
   if (this->m_NeedToUseBoundaryCondition == false)
   {
-    for (N_it = N.Begin(), this_it = this->Begin(); this_it < _end; this_it++, N_it++)
+    for (N_it = N.Begin(), this_it = this->Begin(); this_it < _end; ++this_it, ++N_it)
     {
       this->m_NeighborhoodAccessorFunctor.Set(*this_it, *N_it);
     }
   }
   else if (this->InBounds())
   {
-    for (N_it = N.Begin(), this_it = this->Begin(); this_it < _end; this_it++, N_it++)
+    for (N_it = N.Begin(), this_it = this->Begin(); this_it < _end; ++this_it, ++N_it)
     {
       this->m_NeighborhoodAccessorFunctor.Set(*this_it, *N_it);
     }
@@ -183,7 +182,7 @@ NeighborhoodIterator<TImage, TBoundaryCondition>::SetNeighborhood(const Neighbor
   else
   {
     // Calculate overlap & initialize index
-    for (i = 0; i < Superclass::Dimension; i++)
+    for (i = 0; i < Superclass::Dimension; ++i)
     {
       OverlapLow[i] = this->m_InnerBoundsLow[i] - this->m_Loop[i];
       OverlapHigh[i] =
@@ -192,7 +191,7 @@ NeighborhoodIterator<TImage, TBoundaryCondition>::SetNeighborhood(const Neighbor
     }
 
     // Iterate through neighborhood
-    for (N_it = N.Begin(), this_it = this->Begin(); this_it < _end; N_it++, this_it++)
+    for (N_it = N.Begin(), this_it = this->Begin(); this_it < _end; ++N_it, ++this_it)
     {
       flag = true;
       for (i = 0; i < Superclass::Dimension; ++i)
@@ -212,7 +211,7 @@ NeighborhoodIterator<TImage, TBoundaryCondition>::SetNeighborhood(const Neighbor
       for (i = 0; i < Superclass::Dimension; ++i) // Update index
       {
         temp[i]++;
-        if ((unsigned int)(temp[i]) == this->GetSize(i))
+        if (static_cast<unsigned int>(temp[i]) == this->GetSize(i))
         {
           temp[i] = 0;
         }

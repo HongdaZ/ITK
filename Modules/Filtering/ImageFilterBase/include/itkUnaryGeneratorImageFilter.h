@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,8 +34,8 @@ namespace itk
  * the type of the output image.
  *
  * This filter allows per-pixel operations to be specified in several
- * way:
- * - ITK traditional "Functor" class with operator()
+ * ways:
+ * - traditional ITK "Functor" class with operator()
  * - C++11 lambda functions, with closures
  * - C++ std::function
  * - C-style function pointers
@@ -52,10 +52,10 @@ namespace itk
  *
  */
 template <typename TInputImage, typename TOutputImage>
-class UnaryGeneratorImageFilter : public InPlaceImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT UnaryGeneratorImageFilter : public InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(UnaryGeneratorImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(UnaryGeneratorImageFilter);
 
   /** Standard class typedefs. */
   using Self = UnaryGeneratorImageFilter;

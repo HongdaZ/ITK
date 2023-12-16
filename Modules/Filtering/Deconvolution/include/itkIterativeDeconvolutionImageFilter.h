@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class IterativeDeconvolutionImageFilter
+ * \class IterativeDeconvolutionImageFilter
  * \brief Abstract base class for filters that implement iterative
  * deconvolution algorithms.
  *
@@ -44,7 +44,7 @@ namespace itk
  *
  * "Deconvolution: infrastructure and reference algorithms"
  * by Gaetan Lehmann
- * https://hdl.handle.net/10380/3207
+ * https://www.insight-journal.org/browse/publication/753
  *
  * \ingroup ITKDeconvolution
  */
@@ -56,7 +56,7 @@ class ITK_TEMPLATE_EXPORT IterativeDeconvolutionImageFilter
   : public FFTConvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInternalPrecision>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(IterativeDeconvolutionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(IterativeDeconvolutionImageFilter);
 
   /** Standard type alias. */
   using Self = IterativeDeconvolutionImageFilter;
@@ -70,11 +70,11 @@ public:
   using OutputImageType = TOutputImage;
 
   /** Internal types used by the FFT filters. */
-  using InternalImageType = typename Superclass::InternalImageType;
-  using InternalImagePointerType = typename Superclass::InternalImagePointerType;
-  using InternalComplexType = typename Superclass::InternalComplexType;
-  using InternalComplexImageType = typename Superclass::InternalComplexImageType;
-  using InternalComplexImagePointerType = typename Superclass::InternalComplexImagePointerType;
+  using typename Superclass::InternalImageType;
+  using typename Superclass::InternalImagePointerType;
+  using typename Superclass::InternalComplexType;
+  using typename Superclass::InternalComplexImageType;
+  using typename Superclass::InternalComplexImagePointerType;
 
   /** Runtime information support. */
   itkTypeMacro(IterativeDeconvolutionImageFilter, ConvolutionImageFilterBase);
@@ -136,8 +136,8 @@ protected:
   /** Intermediate results. Protected for easy access by subclasses. */
   InternalImagePointerType m_CurrentEstimate;
 
-  using FFTFilterType = typename Superclass::FFTFilterType;
-  using IFFTFilterType = typename Superclass::IFFTFilterType;
+  using typename Superclass::FFTFilterType;
+  using typename Superclass::IFFTFilterType;
 
   void
   PrintSelf(std::ostream & os, Indent indent) const override;

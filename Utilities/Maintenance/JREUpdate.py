@@ -14,35 +14,33 @@ Currently, the tarball needs to be uploaded manually to data.kitware.com.
 In the future, the Python girder client can be used for automatic upload.
 """
 
-from __future__ import print_function
 
 import os
 import subprocess
 import tarfile
 import tempfile
 
-platforms = ['linux-amd64',
-    'linux',
+platforms = [
+    "linux-amd64",
+    "linux",
     # Newer MacOX will eventually need a download for Java7 (once the security
     # vulnerabilities are gone.
     #'macosx',
-    'win32',
-    'win64']
+    "win32",
+    "win64",
+]
 
 os.chdir(tempfile.gettempdir())
 for platform in platforms:
-    call = ['git', 'clone',
-            '--depth', '0',
-            'git://fiji.sc/java/' + platform + '.git']
+    call = ["git", "clone", "--depth", "0", "git://fiji.sc/java/" + platform + ".git"]
     subprocess.check_call(call)
 
 for platform in platforms:
-    print('Writing tarball for ' + platform + '...')
+    print("Writing tarball for " + platform + "...")
     os.chdir(platform)
     version = os.listdir(os.getcwd())[1]
     os.chdir(version)
-    tarballFile = version + '.tar.bz2'
-    with tarfile.open(tarballFile, 'w:bz2', dereference=True) as \
-        tarball:
-            tarball.add('jre')
-    os.chdir(os.path.join('..', '..'))
+    tarballFile = version + ".tar.bz2"
+    with tarfile.open(tarballFile, "w:bz2", dereference=True) as tarball:
+        tarball.add("jre")
+    os.chdir(os.path.join("..", ".."))

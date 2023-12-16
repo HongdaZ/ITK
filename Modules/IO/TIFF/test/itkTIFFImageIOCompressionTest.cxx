@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,8 +37,8 @@ itkTIFFImageIOCompressionTestHelper(int, char * argv[], int JPEGQuality)
   using ReaderType = itk::ImageFileReader<ImageType>;
   using WriterType = itk::ImageFileWriter<ImageType>;
 
-  typename ReaderType::Pointer reader = ReaderType::New();
-  typename WriterType::Pointer writer = WriterType::New();
+  auto reader = ReaderType::New();
+  auto writer = WriterType::New();
 
 
   itk::TIFFImageIO::Pointer imageIO = itk::TIFFImageIO::New();
@@ -141,9 +141,7 @@ itkTIFFImageIOCompressionTest(int argc, char * argv[])
   if (argc < 4)
   {
     std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " inputFile"
-              << " outputFile"
-              << "compression"
-              << "[JPEGQuality]" << std::endl;
+              << " outputFile compression [JPEGQuality]" << std::endl;
     return EXIT_FAILURE;
   }
 

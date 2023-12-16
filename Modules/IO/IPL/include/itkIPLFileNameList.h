@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,23 +39,23 @@
 /** Set built-in type.  Creates member Set"name"() (e.g., SetVisibility()); */
 #define IPLSetMacroDeclaration(name, type) virtual void Set##name(const type _arg);
 
-#define IPLSetMacroDefinition(class, name, type)                                                                       \
-  void class ::Set##name(const type _arg)                                                                              \
-  {                                                                                                                    \
-    CLANG_PRAGMA_PUSH                                                                                                  \
-    CLANG_SUPPRESS_Wfloat_equal if (this->m_##name != _arg) CLANG_PRAGMA_POP { this->m_##name = _arg; }                \
+#define IPLSetMacroDefinition(class, name, type)                                                        \
+  void class ::Set##name(const type _arg)                                                               \
+  {                                                                                                     \
+    CLANG_PRAGMA_PUSH                                                                                   \
+    CLANG_SUPPRESS_Wfloat_equal if (this->m_##name != _arg) CLANG_PRAGMA_POP { this->m_##name = _arg; } \
   }
 
 /** Get built-in type.  Creates member Get"name"() (e.g., GetVisibility()); */
 #define IPLGetMacroDeclaration(name, type) virtual type Get##name();
 
-#define IPLGetMacroDefinition(class, name, type)                                                                       \
+#define IPLGetMacroDefinition(class, name, type) \
   type class ::Get##name() { return this->m_##name; }
 
 namespace itk
 {
 /**
- *\class IPLSortInfo
+ * \class IPLSortInfo
  *  \brief -- holds info on one file for IPLCommonImageIO
  * \ingroup ITKIOIPL
  */
@@ -111,7 +111,7 @@ private:
 };
 
 /**
- *\class IPLFileNameList
+ * \class IPLFileNameList
  *  \brief -- stores filename+info to be enumerated for IPLCommonImageIO
  * \ingroup ITKIOIPL
  */
@@ -219,7 +219,7 @@ public:
       {
         return true;
       }
-      it++;
+      ++it;
     }
     m_List.push_back(new IPLFileSortInfo(filename,
                                          sliceLocation,

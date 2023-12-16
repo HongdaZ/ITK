@@ -27,12 +27,12 @@
 #--   - [X] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -46,12 +46,11 @@ itk_fetch_module(RLEImage
 "Run-length encoded memory compression scheme for an itk::Image.
 
 Insight Journal article:
-http://www.insight-journal.org/browse/publication/978
-http://hdl.handle.net/10380/3562
+https://www.insight-journal.org/browse/publication/978
 
 This work is supported by NIH grant R01 EB014346
 'Continued development and maintenance of the ITK-SNAP 3D image segmentation software'."
   MODULE_COMPLIANCE_LEVEL 3
   GIT_REPOSITORY ${git_protocol}://github.com/KitwareMedical/ITKRLEImage.git
-  GIT_TAG 32e4ee6e75d0609021c619ace8bd423125787d64
+  GIT_TAG 0c7971981a38bc3191f8e36ccee1fe483d9dd2e3
   )

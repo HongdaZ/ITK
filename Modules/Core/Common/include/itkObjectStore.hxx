@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkObjectStore_hxx
 #define itkObjectStore_hxx
 
-#include "itkObjectStore.h"
 
 namespace itk
 {
@@ -52,7 +51,7 @@ ObjectStore<TObjectType>::Reserve(SizeValueType n)
   m_Store.push_back(new_block);
 
   m_FreeList.reserve(n);
-  for (ObjectType * ptr = new_block.Begin; ptr < new_block.Begin + new_block.Size; ptr++)
+  for (ObjectType * ptr = new_block.Begin; ptr < new_block.Begin + new_block.Size; ++ptr)
   {
     m_FreeList.push_back(ptr);
   }
@@ -60,8 +59,8 @@ ObjectStore<TObjectType>::Reserve(SizeValueType n)
 }
 
 template <typename TObjectType>
-typename ObjectStore<TObjectType>::ObjectType *
-ObjectStore<TObjectType>::Borrow()
+auto
+ObjectStore<TObjectType>::Borrow() -> ObjectType *
 {
   ObjectType * p;
 

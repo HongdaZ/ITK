@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageToRectilinearFEMObjectFilter_hxx
 #define itkImageToRectilinearFEMObjectFilter_hxx
 
-#include "itkImageToRectilinearFEMObjectFilter.h"
 #include "itkFEMElement2DC0LinearQuadrilateral.h"
 #include "itkFEMElement3DC0LinearHexahedron.h"
 #include <cmath>
@@ -65,8 +64,8 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::SetInput(unsigned int index, Inp
  *
  */
 template <typename TInputImage>
-typename ImageToRectilinearFEMObjectFilter<TInputImage>::InputImageType *
-ImageToRectilinearFEMObjectFilter<TInputImage>::GetInput()
+auto
+ImageToRectilinearFEMObjectFilter<TInputImage>::GetInput() -> InputImageType *
 {
   if (this->GetNumberOfInputs() < 1)
   {
@@ -80,8 +79,8 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::GetInput()
  *
  */
 template <typename TInputImage>
-typename ImageToRectilinearFEMObjectFilter<TInputImage>::InputImageType *
-ImageToRectilinearFEMObjectFilter<TInputImage>::GetInput(unsigned int idx)
+auto
+ImageToRectilinearFEMObjectFilter<TInputImage>::GetInput(unsigned int idx) -> InputImageType *
 {
   return itkDynamicCastInDebugMode<InputImageType *>(this->ProcessObject::GetInput(idx));
 }
@@ -90,8 +89,9 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::GetInput(unsigned int idx)
  *
  */
 template <typename TInputImage>
-typename ImageToRectilinearFEMObjectFilter<TInputImage>::DataObjectPointer
+auto
 ImageToRectilinearFEMObjectFilter<TInputImage>::MakeOutput(DataObjectPointerArraySizeType itkNotUsed(idx))
+  -> DataObjectPointer
 {
   return FEMObjectType::New().GetPointer();
 }
@@ -100,8 +100,8 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::MakeOutput(DataObjectPointerArra
  *
  */
 template <typename TInputImage>
-typename ImageToRectilinearFEMObjectFilter<TInputImage>::FEMObjectType *
-ImageToRectilinearFEMObjectFilter<TInputImage>::GetOutput()
+auto
+ImageToRectilinearFEMObjectFilter<TInputImage>::GetOutput() -> FEMObjectType *
 {
   if (this->GetNumberOfOutputs() < 1)
   {
@@ -115,8 +115,8 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::GetOutput()
  *
  */
 template <typename TInputImage>
-typename ImageToRectilinearFEMObjectFilter<TInputImage>::FEMObjectType *
-ImageToRectilinearFEMObjectFilter<TInputImage>::GetOutput(unsigned int idx)
+auto
+ImageToRectilinearFEMObjectFilter<TInputImage>::GetOutput(unsigned int idx) -> FEMObjectType *
 {
   auto * out = dynamic_cast<FEMObjectType *>(this->ProcessObject::GetOutput(idx));
 
@@ -177,10 +177,10 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::Generate2DRectilinearMesh()
   }
 
   int gn = 0; // number of node
-  for (typename ImageSizeType::SizeValueType j = 0; j <= m_NumberOfElements[1]; j++)
+  for (typename ImageSizeType::SizeValueType j = 0; j <= m_NumberOfElements[1]; ++j)
   {
     nodeIndex[1] = j * m_PixelsPerElement[1];
-    for (typename ImageSizeType::SizeValueType i = 0; i <= m_NumberOfElements[0]; i++)
+    for (typename ImageSizeType::SizeValueType i = 0; i <= m_NumberOfElements[0]; ++i)
     {
       nodeIndex[0] = i * m_PixelsPerElement[0];
       image->TransformIndexToPhysicalPoint(nodeIndex, nodePoint);
@@ -190,7 +190,7 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::Generate2DRectilinearMesh()
       n = Element::Node::New();
       n->SetCoordinates(pt);
       n->SetGlobalNumber(gn);
-      gn++;
+      ++gn;
       femObject->AddNextNode(n);
     }
   }
@@ -198,21 +198,21 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::Generate2DRectilinearMesh()
   // Create elements
   gn = 0; // global number of the element
   Element2DC0LinearQuadrilateral::Pointer e;
-  for (unsigned int j = 0; j < m_NumberOfElements[1]; j++)
+  for (unsigned int j = 0; j < m_NumberOfElements[1]; ++j)
   {
-    for (unsigned int i = 0; i < m_NumberOfElements[0]; i++)
+    for (unsigned int i = 0; i < m_NumberOfElements[0]; ++i)
     {
       e = dynamic_cast<Element2DC0LinearQuadrilateral *>(m_Element->CreateAnother().GetPointer());
-      e->SetNode(0, femObject->GetNode((unsigned int)(i + (m_NumberOfElements[0] + 1) * j)));
-      e->SetNode(1, femObject->GetNode((unsigned int)(i + 1 + (m_NumberOfElements[0] + 1) * j)));
-      e->SetNode(2, femObject->GetNode((unsigned int)(i + 1 + (m_NumberOfElements[0] + 1) * (j + 1))));
-      e->SetNode(3, femObject->GetNode((unsigned int)(i + (m_NumberOfElements[0] + 1) * (j + 1))));
+      e->SetNode(0, femObject->GetNode(static_cast<unsigned int>(i + (m_NumberOfElements[0] + 1) * j)));
+      e->SetNode(1, femObject->GetNode(static_cast<unsigned int>(i + 1 + (m_NumberOfElements[0] + 1) * j)));
+      e->SetNode(2, femObject->GetNode(static_cast<unsigned int>(i + 1 + (m_NumberOfElements[0] + 1) * (j + 1))));
+      e->SetNode(3, femObject->GetNode(static_cast<unsigned int>(i + (m_NumberOfElements[0] + 1) * (j + 1))));
       e->SetGlobalNumber(gn);
       if (this->m_Material)
       {
         e->SetMaterial(dynamic_cast<itk::fem::MaterialLinearElasticity *>(femObject->GetMaterial(0).GetPointer()));
       }
-      gn++;
+      ++gn;
       femObject->AddNextElement(e);
     }
   }
@@ -265,7 +265,7 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::Generate3DRectilinearMesh()
         n = Element::Node::New();
         n->SetCoordinates(pt);
         n->SetGlobalNumber(gn);
-        gn++;
+        ++gn;
         femObject->AddNextNode(n);
       }
     }
@@ -274,44 +274,43 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::Generate3DRectilinearMesh()
   // Create elements
   gn = 0; // global number of the element
   itk::fem::Element3DC0LinearHexahedron::Pointer e;
-  for (unsigned int k = 0; k < m_NumberOfElements[2]; k++)
+  for (unsigned int k = 0; k < m_NumberOfElements[2]; ++k)
   {
-    for (unsigned int j = 0; j < m_NumberOfElements[1]; j++)
+    for (unsigned int j = 0; j < m_NumberOfElements[1]; ++j)
     {
-      for (unsigned int i = 0; i < m_NumberOfElements[0]; i++)
+      for (unsigned int i = 0; i < m_NumberOfElements[0]; ++i)
       {
         e = dynamic_cast<Element3DC0LinearHexahedron *>(m_Element->CreateAnother().GetPointer());
-        e->SetNode(
-          0,
-          femObject->GetNode((unsigned int)(i + (m_NumberOfElements[0] + 1) * (j + (m_NumberOfElements[1] + 1) * k))));
+        e->SetNode(0,
+                   femObject->GetNode(static_cast<unsigned int>(i + (m_NumberOfElements[0] + 1) *
+                                                                      (j + (m_NumberOfElements[1] + 1) * k))));
         e->SetNode(1,
-                   femObject->GetNode(
-                     (unsigned int)(i + 1 + (m_NumberOfElements[0] + 1) * (j + (m_NumberOfElements[1] + 1) * k))));
+                   femObject->GetNode(static_cast<unsigned int>(
+                     i + 1 + (m_NumberOfElements[0] + 1) * (j + (m_NumberOfElements[1] + 1) * k))));
         e->SetNode(2,
-                   femObject->GetNode(
-                     (unsigned int)(i + 1 + (m_NumberOfElements[0] + 1) * (j + 1 + (m_NumberOfElements[1] + 1) * k))));
+                   femObject->GetNode(static_cast<unsigned int>(
+                     i + 1 + (m_NumberOfElements[0] + 1) * (j + 1 + (m_NumberOfElements[1] + 1) * k))));
         e->SetNode(3,
-                   femObject->GetNode(
-                     (unsigned int)(i + (m_NumberOfElements[0] + 1) * (j + 1 + (m_NumberOfElements[1] + 1) * k))));
+                   femObject->GetNode(static_cast<unsigned int>(i + (m_NumberOfElements[0] + 1) *
+                                                                      (j + 1 + (m_NumberOfElements[1] + 1) * k))));
         e->SetNode(4,
-                   femObject->GetNode(
-                     (unsigned int)(i + (m_NumberOfElements[0] + 1) * (j + (m_NumberOfElements[1] + 1) * (k + 1)))));
+                   femObject->GetNode(static_cast<unsigned int>(i + (m_NumberOfElements[0] + 1) *
+                                                                      (j + (m_NumberOfElements[1] + 1) * (k + 1)))));
         e->SetNode(5,
                    femObject->GetNode((
                      unsigned int)(i + 1 + (m_NumberOfElements[0] + 1) * (j + (m_NumberOfElements[1] + 1) * (k + 1)))));
-        e->SetNode(
-          6,
-          femObject->GetNode(
-            (unsigned int)(i + 1 + (m_NumberOfElements[0] + 1) * (j + 1 + (m_NumberOfElements[1] + 1) * (k + 1)))));
+        e->SetNode(6,
+                   femObject->GetNode(static_cast<unsigned int>(
+                     i + 1 + (m_NumberOfElements[0] + 1) * (j + 1 + (m_NumberOfElements[1] + 1) * (k + 1)))));
         e->SetNode(7,
-                   femObject->GetNode((unsigned int)(i + (m_NumberOfElements[0] + 1) *
-                                                           (j + 1 + (m_NumberOfElements[1] + 1) * (k + 1)))));
+                   femObject->GetNode(static_cast<unsigned int>(
+                     i + (m_NumberOfElements[0] + 1) * (j + 1 + (m_NumberOfElements[1] + 1) * (k + 1)))));
         e->SetGlobalNumber(gn);
         if (this->m_Material)
         {
           e->SetMaterial(dynamic_cast<itk::fem::MaterialLinearElasticity *>(femObject->GetMaterial(0).GetPointer()));
         }
-        gn++;
+        ++gn;
         femObject->AddNextElement(e);
       }
     }

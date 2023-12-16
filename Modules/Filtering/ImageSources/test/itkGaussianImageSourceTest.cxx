@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +38,7 @@ itkGaussianImageSourceTest(int argc, char * argv[])
 
   // Create a Gaussian image source
   using GaussianSourceType = itk::GaussianImageSource<ImageType>;
-  GaussianSourceType::Pointer gaussianImage = GaussianSourceType::New();
+  auto gaussianImage = GaussianSourceType::New();
 
   ImageType::SpacingValueType spacing[] = { 1.2f, 1.3f, 1.4f };
   ImageType::PointValueType   origin[] = { 1.0f, 4.0f, 2.0f };
@@ -78,7 +78,7 @@ itkGaussianImageSourceTest(int argc, char * argv[])
   ITK_TEST_SET_GET_VALUE(direction, gaussianImage->GetDirection());
 
   // Test SetReferenceImage from GenerateImageSource base class.
-  ImageType::Pointer   referenceImage = ImageType::New();
+  auto                 referenceImage = ImageType::New();
   ImageType::IndexType startIndex;
   startIndex.Fill(0);
   ImageType::SizeType referenceSize;
@@ -186,7 +186,7 @@ itkGaussianImageSourceTest(int argc, char * argv[])
   // Write the result image
   using WriterType = itk::ImageFileWriter<ImageType>;
 
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   writer->SetFileName(argv[1]);
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,23 +25,16 @@ namespace itk
 
 namespace
 {
-std::mutex                       globalDefaultSplitterLock;
+std::once_flag                   globalDefaultSplitterOnceFlag;
 ImageRegionSplitterBase::Pointer globalDefaultSplitter;
 } // namespace
 
 const ImageRegionSplitterBase *
 ImageSourceCommon::GetGlobalDefaultSplitter()
 {
-  if (globalDefaultSplitter.IsNull())
-  {
-    // thread safe lazy initialization, prevent race condition on
-    // setting, with an atomic set if null.
-    std::lock_guard<std::mutex> lock(globalDefaultSplitterLock);
-    if (globalDefaultSplitter.IsNull())
-    {
-      globalDefaultSplitter = ImageRegionSplitterSlowDimension::New().GetPointer();
-    }
-  }
+  std::call_once(globalDefaultSplitterOnceFlag,
+                 []() { globalDefaultSplitter = ImageRegionSplitterSlowDimension::New().GetPointer(); });
+
   return globalDefaultSplitter;
 }
 

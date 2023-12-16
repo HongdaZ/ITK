@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,10 +17,17 @@
  *=========================================================================*/
 #include "itkHessianRecursiveGaussianImageFilter.h"
 #include "itkSimpleFilterWatcher.h"
+#include "itkTestingMacros.h"
 
 int
-itkHessianRecursiveGaussianFilterTest(int, char *[])
+itkHessianRecursiveGaussianFilterTest(int argc, char * argv[])
 {
+  if (argc != 3)
+  {
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " sigma normalizeAcrossScale" << std::endl;
+    return EXIT_FAILURE;
+  }
 
   // Define the dimension of the images
   constexpr unsigned int myDimension = 3;
@@ -38,7 +45,7 @@ itkHessianRecursiveGaussianFilterTest(int, char *[])
   using myRegionType = itk::ImageRegion<myDimension>;
 
   // Create the image
-  myImageType::Pointer inputImage = myImageType::New();
+  auto inputImage = myImageType::New();
 
 
   // Define their size, and start index
@@ -55,9 +62,7 @@ itkHessianRecursiveGaussianFilterTest(int, char *[])
   region.SetSize(size);
 
   // Initialize Image A
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetRegions(region);
   inputImage->Allocate();
 
   // Declare Iterator type for the input image
@@ -100,16 +105,20 @@ itkHessianRecursiveGaussianFilterTest(int, char *[])
 
 
   // Create a  Filter
-  myFilterType::Pointer    filter = myFilterType::New();
-  itk::SimpleFilterWatcher watcher(filter);
+  auto filter = myFilterType::New();
 
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, HessianRecursiveGaussianImageFilter, ImageToImageFilter);
+
+
+  auto sigma = static_cast<typename myFilterType::RealType>(std::stod(argv[1]));
+  filter->SetSigma(sigma);
+  ITK_TEST_SET_GET_VALUE(sigma, filter->GetSigma());
+
+  auto normalizeAcrossScale = static_cast<bool>(std::stoi(argv[2]));
+  ITK_TEST_SET_GET_BOOLEAN(filter, NormalizeAcrossScale, normalizeAcrossScale);
 
   // Connect the input images
   filter->SetInput(inputImage);
-
-  // Select the value of Sigma
-  filter->SetSigma(2.5);
-
 
   // Execute the filter
   filter->Update();
@@ -138,7 +147,7 @@ itkHessianRecursiveGaussianFilterTest(int, char *[])
   // the following just tests for warnings in 2D
   using my2DImageType = itk::Image<float, 2>;
   using my2DFilterType = itk::HessianRecursiveGaussianImageFilter<my2DImageType>;
-  my2DFilterType::Pointer test = my2DFilterType::New();
+  auto test = my2DFilterType::New();
   if (test.IsNull())
   {
     return EXIT_FAILURE;

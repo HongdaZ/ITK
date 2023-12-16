@@ -1,5 +1,5 @@
 # This is the root ITK CMakeLists file.
-cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 foreach(p
     ## Only policies introduced after the cmake_minimum_required
     ## version need to explicitly be set to NEW.
@@ -19,6 +19,6 @@ project(HelloWorld)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-add_executable(HelloWorld HelloWorld.cxx )
+add_executable(HelloWorld HelloWorld.cxx)
 
 target_link_libraries(HelloWorld ${ITK_LIBRARIES})

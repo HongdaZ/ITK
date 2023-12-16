@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkDiffusionTensor3DReconstructionImageFilter_hxx
 
 #include "itkMath.h"
-#include "itkDiffusionTensor3DReconstructionImageFilter.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
 #include "itkImageRegionIterator.h"
 #include "itkArray.h"
@@ -205,7 +204,7 @@ DiffusionTensor3DReconstructionImageFilter<TReferenceImagePixelType,
     using GradientIteratorType = ImageRegionConstIterator<GradientImageType>;
     std::vector<GradientIteratorType *> gradientItContainer;
 
-    for (unsigned int i = 1; i <= m_NumberOfGradientDirections; i++)
+    for (unsigned int i = 1; i <= m_NumberOfGradientDirections; ++i)
     {
 
       typename GradientImageType::Pointer gradientImagePointer =
@@ -249,7 +248,7 @@ DiffusionTensor3DReconstructionImageFilter<TReferenceImagePixelType,
       if (Math::NotAlmostEquals(b0, itk::NumericTraits<ReferencePixelType>::ZeroValue()) && unmaskedPixel &&
           (b0 >= m_Threshold))
       {
-        for (unsigned int i = 0; i < m_NumberOfGradientDirections; i++)
+        for (unsigned int i = 0; i < m_NumberOfGradientDirections; ++i)
         {
           GradientPixelType b = gradientItContainer[i]->Get();
 
@@ -284,7 +283,7 @@ DiffusionTensor3DReconstructionImageFilter<TReferenceImagePixelType,
       }
       else
       {
-        for (unsigned int i = 0; i < m_NumberOfGradientDirections; i++)
+        for (unsigned int i = 0; i < m_NumberOfGradientDirections; ++i)
         {
           ++(*gradientItContainer[i]);
         }
@@ -296,7 +295,7 @@ DiffusionTensor3DReconstructionImageFilter<TReferenceImagePixelType,
       progress.CompletedPixel();
     }
 
-    for (unsigned int i = 0; i < gradientItContainer.size(); i++)
+    for (unsigned int i = 0; i < gradientItContainer.size(); ++i)
     {
       delete gradientItContainer[i];
     }
@@ -368,7 +367,7 @@ DiffusionTensor3DReconstructionImageFilter<TReferenceImagePixelType,
       if (Math::NotAlmostEquals(b0, NumericTraits<ReferencePixelType>::ZeroValue()) && unmaskedPixel &&
           (b0 >= m_Threshold))
       {
-        for (unsigned int i = 0; i < m_NumberOfGradientDirections; i++)
+        for (unsigned int i = 0; i < m_NumberOfGradientDirections; ++i)
         {
           if (Math::AlmostEquals(b[gradientind[i]], NumericTraits<typename GradientVectorType::ValueType>::ZeroValue()))
           {
@@ -430,7 +429,7 @@ DiffusionTensor3DReconstructionImageFilter<TReferenceImagePixelType,
   }
 
   m_BMatrix.set_size(m_NumberOfGradientDirections, 6);
-  for (unsigned int m = 0; m < m_NumberOfGradientDirections; m++)
+  for (unsigned int m = 0; m < m_NumberOfGradientDirections; ++m)
   {
     m_BMatrix[m][0] = m_GradientDirectionContainer->ElementAt(gradientind[m])[0] *
                       m_GradientDirectionContainer->ElementAt(gradientind[m])[0];
@@ -466,7 +465,7 @@ const Image<TGradientImagePixelType, 3> *
 DiffusionTensor3DReconstructionImageFilter<TReferenceImagePixelType,
                                            TGradientImagePixelType,
                                            TTensorPixelType,
-                                           TMaskImageType>::GetGradientImage(unsigned index) const
+                                           TMaskImageType>::GetGradientImage(unsigned int index) const
 {
   if (m_GradientImageTypeEnumeration ==
       DiffusionTensor3DReconstructionImageFilterEnums::GradientImageFormat::GradientIsInASingleImage)

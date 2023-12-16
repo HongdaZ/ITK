@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -69,7 +69,7 @@ RGBImageTotalAbsDifference(const itk::Image<itk::RGBPixel<TPixelValue>, VDimensi
 
     TPixelValue localDiff = itk::NumericTraits<TPixelValue>::ZeroValue();
 
-    for (unsigned int i = 0; i < 3; i++)
+    for (unsigned int i = 0; i < 3; ++i)
     {
       localDiff += itk::Math::abs(validPx[i] - testPx[i]);
     }
@@ -158,7 +158,7 @@ itkOpenCVImageBridgeTestTemplatedRGB(char * argv0, char * argv1)
   //
   // Read the image directly
   //
-  typename ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv1);
   try
   {
@@ -237,7 +237,7 @@ itkOpenCVImageBridgeTestTemplatedRGB(char * argv0, char * argv1)
   cv::Mat outMat = itk::OpenCVImageBridge::ITKImageToCVMat<ImageType>(baselineImage);
 
   // check results of itk::Image -> IplImage
-  IplImage outMatAsIpl = outMat;
+  IplImage outMatAsIpl = cvIplImage(outMat);
   double   itkMatDiff = cvNorm(&outMatAsIpl, dataConvertedInIpl);
   if (itkMatDiff != 0.0)
   {

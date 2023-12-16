@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,7 +48,7 @@ template <typename TInputImage, typename TOutputImage>
 class ExampleImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExampleImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ExampleImageFilter);
 
   /**
    * Standard "Self" type alias.
@@ -123,7 +123,7 @@ ExampleImageFilter<TInputImage, TOutputImage>::Update()
 
 
 /**
- * General N-dimensional implementation of example filter.
+ * General n-dimensional implementation of example filter.
  * The Dispatch parameter is not used.  It is just used to control
  * instantiation.
  */
@@ -219,10 +219,10 @@ itkFilterDispatchTest(int, char *[])
   using Filter5d = ExampleImageFilter<Image5d, Image5d>;
 
   // Instantiate a filter of each dimension.
-  Filter2d::Pointer filter2d = Filter2d::New();
-  Filter3d::Pointer filter3d = Filter3d::New();
-  Filter4d::Pointer filter4d = Filter4d::New();
-  Filter5d::Pointer filter5d = Filter5d::New();
+  auto filter2d = Filter2d::New();
+  auto filter3d = Filter3d::New();
+  auto filter4d = Filter4d::New();
+  auto filter5d = Filter5d::New();
 
   // Try running each of the filters.  If the wrong Execute() method is
   // invoked by one of these calls, a std::string() exception will be
@@ -241,7 +241,7 @@ itkFilterDispatchTest(int, char *[])
     std::cout << "Executing 5-d filter: ";
     filter5d->Update();
   }
-  catch (std::string & err)
+  catch (const std::string & err)
   {
     std::cout << err;
     passed = false;

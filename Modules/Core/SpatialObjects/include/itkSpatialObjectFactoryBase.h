@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@
 namespace itk
 {
 /**
- *\class SpatialObjectFactoryBase
+ * \class SpatialObjectFactoryBase
  * \brief Create instances of SpatialObjects
  * \ingroup ITKSpatialObjects
  */
@@ -43,7 +43,7 @@ namespace itk
 class ITKSpatialObjects_EXPORT SpatialObjectFactoryBase : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SpatialObjectFactoryBase);
+  ITK_DISALLOW_COPY_AND_MOVE(SpatialObjectFactoryBase);
 
   /** Standard class type aliases. */
   using Self = SpatialObjectFactoryBase;
@@ -75,7 +75,7 @@ public:
     if (m_Factory == nullptr)
     {
       // Make and register the factory
-      SpatialObjectFactoryBase::Pointer p = SpatialObjectFactoryBase::New();
+      auto p = SpatialObjectFactoryBase::New();
       m_Factory = p.GetPointer();
       ObjectFactoryBase::RegisterFactory(p);
       p->RegisterDefaultSpatialObjects();

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,6 +24,7 @@
 #include "itkTransformFactory.h"
 #include "itkSimilarity2DTransform.h"
 #include "itkBSplineTransform.h"
+#include "itkTestingMacros.h"
 #include "itksys/SystemTools.hxx"
 #include <iomanip>
 
@@ -38,15 +39,15 @@
 
 template <typename TParametersValueType, typename DisplacementTransformType>
 static int
-ReadWriteTest(const std::string fileName, const bool isRealDisplacementField, const bool UseCompression)
+ReadWriteTest(const std::string fileName, const bool isRealDisplacementField, const bool useCompression)
 {
   // First make a DisplacementField with known values
   const double aNumberThatCanNotBeRepresentedInFloatingPoint = 1e-5 + 1e-7 + 1e-9 + 1e-13;
   const double requiredSpacing = 1.2 + aNumberThatCanNotBeRepresentedInFloatingPoint;
   const double requiredOrigin = 23.0 + aNumberThatCanNotBeRepresentedInFloatingPoint;
-  typename DisplacementTransformType::Pointer displacementTransform = DisplacementTransformType::New();
+  auto         displacementTransform = DisplacementTransformType::New();
   using FieldType = typename DisplacementTransformType::DisplacementFieldType;
-  typename FieldType::Pointer knownField = FieldType::New(); // This is based on itk::Image
+  auto knownField = FieldType::New(); // This is based on itk::Image
   {
     constexpr int                dimLength = 20;
     typename FieldType::SizeType size;
@@ -76,28 +77,33 @@ ReadWriteTest(const std::string fileName, const bool isRealDisplacementField, co
   // Now test reading/writing many different transform types.
 
   using TransformReaderType = itk::TransformFileReaderTemplate<TParametersValueType>;
-  typename TransformReaderType::Pointer reader = TransformReaderType::New();
+  auto reader = TransformReaderType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(reader, TransformFileReaderTemplate, LightProcessObject);
+
+
   reader->SetFileName(fileName);
+  ITK_TEST_SET_GET_VALUE(fileName, reader->GetFileName());
 
   using TransformIOType = itk::HDF5TransformIOTemplate<TParametersValueType>;
-  typename TransformIOType::Pointer transformIO = TransformIOType::New();
+  auto transformIO = TransformIOType::New();
+
   reader->SetTransformIO(transformIO);
-  if (reader->GetTransformIO() != transformIO.GetPointer())
-  {
-    std::cerr << "Set/Get TransformIO did not work correctly." << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TEST_SET_GET_VALUE(transformIO, reader->GetTransformIO());
 
   using TransformWriterType = itk::TransformFileWriterTemplate<TParametersValueType>;
-  typename TransformWriterType::Pointer writer = TransformWriterType::New();
+  auto writer = TransformWriterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(writer, TransformFileWriterTemplate, LightProcessObject);
+
+
   writer->SetFileName(fileName);
+  ITK_TEST_SET_GET_VALUE(fileName, writer->GetFileName());
+
   writer->SetTransformIO(transformIO);
-  writer->SetUseCompression(UseCompression);
-  if (writer->GetTransformIO() != transformIO.GetPointer())
-  {
-    std::cerr << "Set/Get TransformIO did not work correctly." << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TEST_SET_GET_VALUE(transformIO, writer->GetTransformIO());
+
+  ITK_TEST_SET_GET_BOOLEAN(writer, UseCompression, useCompression);
 
   try
   {
@@ -158,8 +164,8 @@ ReadWriteTest(const std::string fileName, const bool isRealDisplacementField, co
       std::cerr << "Error invalid spacing restored from disk" << std::endl;
       std::cerr << std::setprecision(17) << "\n"
                 << readDisplacement->GetSpacing() << " != " << knownField->GetSpacing() << "\n"
-                << requiredSpacing << "It is likely going trough a float truncation " << (float)requiredSpacing
-                << std::endl;
+                << requiredSpacing << "It is likely going trough a float truncation "
+                << static_cast<float>(requiredSpacing) << std::endl;
       return EXIT_FAILURE;
     }
     if ((readDisplacement->GetOrigin() != knownField->GetOrigin()) ||
@@ -177,16 +183,16 @@ ReadWriteTest(const std::string fileName, const bool isRealDisplacementField, co
 
 template <typename TParametersValueType>
 static int
-oneTest(const std::string goodname, const std::string badname, const bool UseCompression)
+oneTest(const std::string goodname, const std::string badname, const bool useCompression)
 {
   using AffineTransformType = typename itk::AffineTransform<TParametersValueType, 4>;
   using AffineTransformTypeNotRegistered = typename itk::AffineTransform<TParametersValueType, 10>;
-  typename AffineTransformType::Pointer affine = AffineTransformType::New();
+  auto affine = AffineTransformType::New();
 
-  // Set it's parameters
+  // Set its parameters
   {
     typename AffineTransformType::ParametersType p = affine->GetParameters();
-    for (unsigned int i = 0; i < p.GetSize(); i++)
+    for (unsigned int i = 0; i < p.GetSize(); ++i)
     {
       p[i] = i;
     }
@@ -194,7 +200,7 @@ oneTest(const std::string goodname, const std::string badname, const bool UseCom
   }
   {
     typename AffineTransformType::FixedParametersType p = affine->GetFixedParameters();
-    for (unsigned int i = 0; i < p.GetSize(); i++)
+    for (unsigned int i = 0; i < p.GetSize(); ++i)
     {
       p[i] = i;
     }
@@ -202,7 +208,7 @@ oneTest(const std::string goodname, const std::string badname, const bool UseCom
   }
   typename itk::TransformFileWriterTemplate<TParametersValueType>::Pointer writer =
     itk::TransformFileWriterTemplate<TParametersValueType>::New();
-  writer->SetUseCompression(UseCompression);
+  writer->SetUseCompression(useCompression);
   typename itk::TransformFileReaderTemplate<TParametersValueType>::Pointer reader =
     itk::TransformFileReaderTemplate<TParametersValueType>::New();
 
@@ -250,12 +256,12 @@ oneTest(const std::string goodname, const std::string badname, const bool UseCom
 
 
   std::cout << "Creating bad writer" << std::endl;
-  typename AffineTransformTypeNotRegistered::Pointer Bogus = AffineTransformTypeNotRegistered::New();
+  auto Bogus = AffineTransformTypeNotRegistered::New();
 
-  // Set it's parameters
+  // Set its parameters
   {
     typename AffineTransformType::ParametersType p = Bogus->GetParameters();
-    for (unsigned int i = 0; i < p.GetSize(); i++)
+    for (unsigned int i = 0; i < p.GetSize(); ++i)
     {
       p[i] = i;
     }
@@ -263,7 +269,7 @@ oneTest(const std::string goodname, const std::string badname, const bool UseCom
   }
   {
     typename AffineTransformType::FixedParametersType p = Bogus->GetFixedParameters();
-    for (unsigned int i = 0; i < p.GetSize(); i++)
+    for (unsigned int i = 0; i < p.GetSize(); ++i)
     {
       p[i] = i;
     }
@@ -271,7 +277,7 @@ oneTest(const std::string goodname, const std::string badname, const bool UseCom
   }
   typename itk::TransformFileWriterTemplate<TParametersValueType>::Pointer badwriter =
     itk::TransformFileWriterTemplate<TParametersValueType>::New();
-  badwriter->SetUseCompression(UseCompression);
+  badwriter->SetUseCompression(useCompression);
   typename itk::TransformFileReaderTemplate<TParametersValueType>::Pointer badreader =
     itk::TransformFileReaderTemplate<TParametersValueType>::New();
   badwriter->AddTransform(Bogus);
@@ -316,52 +322,52 @@ oneTest(const std::string goodname, const std::string badname, const bool UseCom
 
   int error_sum = 0;
   error_sum += ReadWriteTest<float, itk::BSplineSmoothingOnUpdateDisplacementFieldTransform<float, 2>>(
-    "f" + goodname, true, UseCompression);
+    "f" + goodname, true, useCompression);
   error_sum += ReadWriteTest<float, itk::BSplineSmoothingOnUpdateDisplacementFieldTransform<float, 3>>(
-    "f" + goodname, true, UseCompression);
+    "f" + goodname, true, useCompression);
   error_sum += ReadWriteTest<double, itk::BSplineSmoothingOnUpdateDisplacementFieldTransform<double, 2>>(
-    goodname, true, UseCompression);
+    goodname, true, useCompression);
   error_sum += ReadWriteTest<double, itk::BSplineSmoothingOnUpdateDisplacementFieldTransform<double, 3>>(
-    goodname, true, UseCompression);
+    goodname, true, useCompression);
 
-  error_sum += ReadWriteTest<float, itk::DisplacementFieldTransform<float, 2>>("f" + goodname, true, UseCompression);
-  error_sum += ReadWriteTest<float, itk::DisplacementFieldTransform<float, 3>>("f" + goodname, true, UseCompression);
-  error_sum += ReadWriteTest<double, itk::DisplacementFieldTransform<double, 2>>(goodname, true, UseCompression);
-  error_sum += ReadWriteTest<double, itk::DisplacementFieldTransform<double, 3>>(goodname, true, UseCompression);
+  error_sum += ReadWriteTest<float, itk::DisplacementFieldTransform<float, 2>>("f" + goodname, true, useCompression);
+  error_sum += ReadWriteTest<float, itk::DisplacementFieldTransform<float, 3>>("f" + goodname, true, useCompression);
+  error_sum += ReadWriteTest<double, itk::DisplacementFieldTransform<double, 2>>(goodname, true, useCompression);
+  error_sum += ReadWriteTest<double, itk::DisplacementFieldTransform<double, 3>>(goodname, true, useCompression);
 
   error_sum += ReadWriteTest<float, itk::BSplineSmoothingOnUpdateDisplacementFieldTransform<float, 2>>(
-    "f" + goodname, true, UseCompression);
+    "f" + goodname, true, useCompression);
   error_sum += ReadWriteTest<float, itk::BSplineSmoothingOnUpdateDisplacementFieldTransform<float, 3>>(
-    "f" + goodname, true, UseCompression);
+    "f" + goodname, true, useCompression);
   error_sum += ReadWriteTest<double, itk::BSplineSmoothingOnUpdateDisplacementFieldTransform<double, 2>>(
-    goodname, true, UseCompression);
+    goodname, true, useCompression);
   error_sum += ReadWriteTest<double, itk::BSplineSmoothingOnUpdateDisplacementFieldTransform<double, 3>>(
-    goodname, true, UseCompression);
+    goodname, true, useCompression);
 
   error_sum += ReadWriteTest<float, itk::GaussianSmoothingOnUpdateDisplacementFieldTransform<float, 2>>(
-    "f" + goodname, true, UseCompression);
+    "f" + goodname, true, useCompression);
   error_sum += ReadWriteTest<float, itk::GaussianSmoothingOnUpdateDisplacementFieldTransform<float, 3>>(
-    "f" + goodname, true, UseCompression);
+    "f" + goodname, true, useCompression);
   error_sum += ReadWriteTest<double, itk::GaussianSmoothingOnUpdateDisplacementFieldTransform<double, 2>>(
-    goodname, true, UseCompression);
+    goodname, true, useCompression);
   error_sum += ReadWriteTest<double, itk::GaussianSmoothingOnUpdateDisplacementFieldTransform<double, 3>>(
-    goodname, true, UseCompression);
+    goodname, true, useCompression);
 
   error_sum +=
-    ReadWriteTest<float, itk::ConstantVelocityFieldTransform<float, 2>>("f" + goodname, false, UseCompression);
+    ReadWriteTest<float, itk::ConstantVelocityFieldTransform<float, 2>>("f" + goodname, false, useCompression);
   error_sum +=
-    ReadWriteTest<float, itk::ConstantVelocityFieldTransform<float, 3>>("f" + goodname, false, UseCompression);
-  error_sum += ReadWriteTest<double, itk::ConstantVelocityFieldTransform<double, 2>>(goodname, false, UseCompression);
-  error_sum += ReadWriteTest<double, itk::ConstantVelocityFieldTransform<double, 3>>(goodname, false, UseCompression);
+    ReadWriteTest<float, itk::ConstantVelocityFieldTransform<float, 3>>("f" + goodname, false, useCompression);
+  error_sum += ReadWriteTest<double, itk::ConstantVelocityFieldTransform<double, 2>>(goodname, false, useCompression);
+  error_sum += ReadWriteTest<double, itk::ConstantVelocityFieldTransform<double, 3>>(goodname, false, useCompression);
 
   error_sum += ReadWriteTest<float, itk::GaussianExponentialDiffeomorphicTransform<float, 2>>(
-    "f" + goodname, false, UseCompression);
+    "f" + goodname, false, useCompression);
   error_sum += ReadWriteTest<float, itk::GaussianExponentialDiffeomorphicTransform<float, 3>>(
-    "f" + goodname, false, UseCompression);
+    "f" + goodname, false, useCompression);
   error_sum +=
-    ReadWriteTest<double, itk::GaussianExponentialDiffeomorphicTransform<double, 2>>(goodname, false, UseCompression);
+    ReadWriteTest<double, itk::GaussianExponentialDiffeomorphicTransform<double, 2>>(goodname, false, useCompression);
   error_sum +=
-    ReadWriteTest<double, itk::GaussianExponentialDiffeomorphicTransform<double, 3>>(goodname, false, UseCompression);
+    ReadWriteTest<double, itk::GaussianExponentialDiffeomorphicTransform<double, 3>>(goodname, false, useCompression);
 
   if (error_sum > 0)
   {
@@ -403,7 +409,7 @@ itkIOTransformHDF5Test(int argc, char * argv[])
     {
       // This test only verifies that the test can read the transform.
       using TFM_READER_TYPE = typename itk::TransformFileReaderTemplate<double>;
-      TFM_READER_TYPE::Pointer reader = TFM_READER_TYPE::New();
+      auto reader = TFM_READER_TYPE::New();
       reader->SetFileName(testType);
       reader->Update();
       TFM_READER_TYPE::TransformListType const * const myTransformList = reader->GetTransformList();

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@
 namespace itk
 {
 /**  Constructor.  */
-SingleValuedVnlCostFunctionAdaptor ::SingleValuedVnlCostFunctionAdaptor(unsigned int spaceDimension)
+SingleValuedVnlCostFunctionAdaptor::SingleValuedVnlCostFunctionAdaptor(unsigned int spaceDimension)
   : vnl_cost_function(spaceDimension)
 {
   m_ScalesInitialized = false;
@@ -32,7 +32,7 @@ SingleValuedVnlCostFunctionAdaptor ::SingleValuedVnlCostFunctionAdaptor(unsigned
 
 /** Set current parameters scaling. */
 void
-SingleValuedVnlCostFunctionAdaptor ::SetScales(const ScalesType & scales)
+SingleValuedVnlCostFunctionAdaptor::SetScales(const ScalesType & scales)
 {
   // Only the inverse is used computes the inverse at each iteration.
   // provides 1 commone place where the inverse can be computes
@@ -46,14 +46,14 @@ SingleValuedVnlCostFunctionAdaptor ::SetScales(const ScalesType & scales)
       itkGenericExceptionMacro("ERROR: Scales must have value greater than epsilon! Scale[" << i
                                                                                             << "] = " << scales[i]);
     }
-    m_InverseScales[i] = NumericTraits<double>::OneValue() / scales[i];
+    m_InverseScales[i] = 1.0 / scales[i];
   }
   m_ScalesInitialized = true;
 }
 
 /**  Delegate computation of the value to the CostFunction. */
 SingleValuedVnlCostFunctionAdaptor::InternalMeasureType
-SingleValuedVnlCostFunctionAdaptor ::f(const InternalParametersType & inparameters)
+SingleValuedVnlCostFunctionAdaptor::f(const InternalParametersType & inparameters)
 {
   if (!m_CostFunction)
   {
@@ -66,7 +66,7 @@ SingleValuedVnlCostFunctionAdaptor ::f(const InternalParametersType & inparamete
   if (m_ScalesInitialized)
   {
     const ScalesType & invScales = this->GetInverseScales();
-    for (unsigned int i = 0; i < parameters.size(); i++)
+    for (unsigned int i = 0; i < parameters.size(); ++i)
     {
       parameters[i] = inparameters[i] * invScales[i];
     }
@@ -83,7 +83,7 @@ SingleValuedVnlCostFunctionAdaptor ::f(const InternalParametersType & inparamete
     value *= -1.0;
   }
 
-  // Notify observers. This is used for overcoming the limitaion of VNL
+  // Notify observers. This is used for overcoming the limitation of VNL
   // optimizers of not providing callbacks per iteration.
   m_CachedValue = value;
   m_CachedCurrentParameters = parameters;
@@ -94,8 +94,8 @@ SingleValuedVnlCostFunctionAdaptor ::f(const InternalParametersType & inparamete
 
 /**  Delegate computation of the gradient to the costfunction.  */
 void
-SingleValuedVnlCostFunctionAdaptor ::gradf(const InternalParametersType & inparameters,
-                                           InternalDerivativeType &       gradient)
+SingleValuedVnlCostFunctionAdaptor::gradf(const InternalParametersType & inparameters,
+                                          InternalDerivativeType &       gradient)
 {
   if (!m_CostFunction)
   {
@@ -107,7 +107,7 @@ SingleValuedVnlCostFunctionAdaptor ::gradf(const InternalParametersType & inpara
   if (m_ScalesInitialized)
   {
     const ScalesType & invScales = this->GetInverseScales();
-    for (unsigned int i = 0; i < parameters.size(); i++)
+    for (unsigned int i = 0; i < parameters.size(); ++i)
     {
       parameters[i] = inparameters[i] * invScales[i];
     }
@@ -120,7 +120,7 @@ SingleValuedVnlCostFunctionAdaptor ::gradf(const InternalParametersType & inpara
   m_CostFunction->GetDerivative(parameters, m_CachedDerivative);
   this->ConvertExternalToInternalGradient(m_CachedDerivative, gradient);
 
-  // Notify observers. This is used for overcoming the limitaion of VNL
+  // Notify observers. This is used for overcoming the limitation of VNL
   // optimizers of not providing callbacks per iteration.
   // Note that m_CachedDerivative is already loaded in the GetDerivative()
   // above.
@@ -130,9 +130,9 @@ SingleValuedVnlCostFunctionAdaptor ::gradf(const InternalParametersType & inpara
 
 /**  Delegate computation of value and gradient to the costfunction.     */
 void
-SingleValuedVnlCostFunctionAdaptor ::compute(const InternalParametersType & x,
-                                             InternalMeasureType *          fun,
-                                             InternalDerivativeType *       g)
+SingleValuedVnlCostFunctionAdaptor::compute(const InternalParametersType & x,
+                                            InternalMeasureType *          fun,
+                                            InternalDerivativeType *       g)
 {
   // delegate the computation to the CostFunction
   ParametersType parameters(x.size());
@@ -141,7 +141,7 @@ SingleValuedVnlCostFunctionAdaptor ::compute(const InternalParametersType & x,
   if (m_ScalesInitialized)
   {
     const ScalesType & invScales = this->GetInverseScales();
-    for (unsigned int i = 0; i < parameters.size(); i++)
+    for (unsigned int i = 0; i < parameters.size(); ++i)
     {
       parameters[i] = x[i] * invScales[i];
     }
@@ -166,7 +166,7 @@ SingleValuedVnlCostFunctionAdaptor ::compute(const InternalParametersType & x,
     {
       *fun = static_cast<InternalMeasureType>(-measure);
     }
-    // Notify observers. This is used for overcoming the limitaion of VNL
+    // Notify observers. This is used for overcoming the limitation of VNL
     // optimizers of not providing callbacks per iteration.
     // Note that m_CachedDerivative is already loaded in the GetDerivative()
     // above.
@@ -178,14 +178,14 @@ SingleValuedVnlCostFunctionAdaptor ::compute(const InternalParametersType & x,
 
 /**  Convert external derivative measures into internal type  */
 void
-SingleValuedVnlCostFunctionAdaptor ::ConvertExternalToInternalGradient(const DerivativeType &   input,
-                                                                       InternalDerivativeType & output) const
+SingleValuedVnlCostFunctionAdaptor::ConvertExternalToInternalGradient(const DerivativeType &   input,
+                                                                      InternalDerivativeType & output) const
 {
   const unsigned int size = input.size();
 
   output = InternalDerivativeType(size);
   const ScalesType & invScales = this->GetInverseScales();
-  for (unsigned int i = 0; i < size; i++)
+  for (unsigned int i = 0; i < size; ++i)
   {
     if (!m_NegateCostFunction)
     {
@@ -206,7 +206,7 @@ SingleValuedVnlCostFunctionAdaptor ::ConvertExternalToInternalGradient(const Der
 /**  Set whether the cost function should be negated or not. This is useful for
  * adapting optimizers that are only minimizers. */
 void
-SingleValuedVnlCostFunctionAdaptor ::SetNegateCostFunction(bool flag)
+SingleValuedVnlCostFunctionAdaptor::SetNegateCostFunction(bool flag)
 {
   m_NegateCostFunction = flag;
 }
@@ -214,7 +214,7 @@ SingleValuedVnlCostFunctionAdaptor ::SetNegateCostFunction(bool flag)
 /**  Returns whether the cost function is going to be negated or not.
  *   This is useful for adapting optimizers that are only minimizers. */
 bool
-SingleValuedVnlCostFunctionAdaptor ::GetNegateCostFunction() const
+SingleValuedVnlCostFunctionAdaptor::GetNegateCostFunction() const
 {
   return m_NegateCostFunction;
 }
@@ -222,7 +222,7 @@ SingleValuedVnlCostFunctionAdaptor ::GetNegateCostFunction() const
 /**  This method reports iterations events. It is intended to
  *   help monitoring the progress of the optimization process. */
 void
-SingleValuedVnlCostFunctionAdaptor ::ReportIteration(const EventObject & event) const
+SingleValuedVnlCostFunctionAdaptor::ReportIteration(const EventObject & event) const
 {
   this->m_Reporter->InvokeEvent(event);
 }
@@ -230,21 +230,21 @@ SingleValuedVnlCostFunctionAdaptor ::ReportIteration(const EventObject & event) 
 /**  Connects a Command/Observer to the internal reporter class.
  *   This is useful for reporting iteration event to potential observers. */
 unsigned long
-SingleValuedVnlCostFunctionAdaptor ::AddObserver(const EventObject & event, Command * command) const
+SingleValuedVnlCostFunctionAdaptor::AddObserver(const EventObject & event, Command * command) const
 {
   return m_Reporter->AddObserver(event, command);
 }
 
 /**  Return the cached value of the cost function */
 const SingleValuedVnlCostFunctionAdaptor::MeasureType &
-SingleValuedVnlCostFunctionAdaptor ::GetCachedValue() const
+SingleValuedVnlCostFunctionAdaptor::GetCachedValue() const
 {
   return m_CachedValue;
 }
 
 /**  Return the cached value of the cost function derivative */
 const SingleValuedVnlCostFunctionAdaptor::DerivativeType &
-SingleValuedVnlCostFunctionAdaptor ::GetCachedDerivative() const
+SingleValuedVnlCostFunctionAdaptor::GetCachedDerivative() const
 {
   return m_CachedDerivative;
 }
@@ -252,7 +252,7 @@ SingleValuedVnlCostFunctionAdaptor ::GetCachedDerivative() const
 /**  Return the cached value of the parameters used for computing the function
  */
 const SingleValuedVnlCostFunctionAdaptor::ParametersType &
-SingleValuedVnlCostFunctionAdaptor ::GetCachedCurrentParameters() const
+SingleValuedVnlCostFunctionAdaptor::GetCachedCurrentParameters() const
 {
   return m_CachedCurrentParameters;
 }

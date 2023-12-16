@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,7 +65,7 @@ public:
   }
 
   void
-  Initialize() throw(itk::ExceptionObject) override
+  Initialize() override
   {}
 
   void
@@ -185,7 +185,7 @@ GradientDescentLineSearchOptimizerv4RunTest(itk::GradientDescentLineSearchOptimi
   // check results to see if it is within range
   //
   double trueParameters[2] = { 2, -2 };
-  for (unsigned int j = 0; j < 2; j++)
+  for (unsigned int j = 0; j < 2; ++j)
   {
     if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > 0.01)
     {
@@ -209,8 +209,12 @@ itkGradientDescentLineSearchOptimizerv4Test(int, char *[])
 
   using ScalesType = OptimizerType::ScalesType;
 
-  // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  // Declaration of an itkOptimizer
+  auto itkOptimizer = OptimizerType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    itkOptimizer, GradientDescentLineSearchOptimizerv4Template, GradientDescentOptimizerv4Template);
+
 
   // Declaration of the Metric
   GradientDescentLineSearchOptimizerv4TestMetric::Pointer metric =
@@ -246,9 +250,23 @@ itkGradientDescentLineSearchOptimizerv4Test(int, char *[])
   ScalesType scales(metric->GetNumberOfLocalParameters());
   scales.Fill(0.5);
   itkOptimizer->SetScales(scales);
-  itkOptimizer->SetLowerLimit(-10);
-  itkOptimizer->SetUpperLimit(10);
-  itkOptimizer->SetEpsilon(1.e-4);
+
+  typename OptimizerType::InternalComputationValueType epsilon = 1.e-4;
+  itkOptimizer->SetEpsilon(epsilon);
+  ITK_TEST_SET_GET_VALUE(epsilon, itkOptimizer->GetEpsilon());
+
+  typename OptimizerType::InternalComputationValueType lowerLimit = -10;
+  itkOptimizer->SetLowerLimit(lowerLimit);
+  ITK_TEST_SET_GET_VALUE(lowerLimit, itkOptimizer->GetLowerLimit());
+
+  typename OptimizerType::InternalComputationValueType upperLimit = 10;
+  itkOptimizer->SetUpperLimit(upperLimit);
+  ITK_TEST_SET_GET_VALUE(upperLimit, itkOptimizer->GetUpperLimit());
+
+  unsigned int maximumLineSearchIterations = 100;
+  itkOptimizer->SetMaximumLineSearchIterations(maximumLineSearchIterations);
+  ITK_TEST_SET_GET_VALUE(maximumLineSearchIterations, itkOptimizer->GetMaximumLineSearchIterations());
+
   metric->SetParameters(initialPosition);
   if (GradientDescentLineSearchOptimizerv4RunTest(itkOptimizer) == EXIT_FAILURE)
   {
@@ -260,31 +278,13 @@ itkGradientDescentLineSearchOptimizerv4Test(int, char *[])
   std::cout << std::endl;
   std::cout << "NumberOfIterations: " << itkOptimizer->GetNumberOfIterations();
   std::cout << std::endl;
-
-  itkOptimizer->Print(std::cout);
   std::cout << "Stop description   = " << itkOptimizer->GetStopConditionDescription() << std::endl;
 
-  OptimizerType::Pointer badOptimizer = OptimizerType::New();
-  bool                   caught = false;
-  try
-  {
-    badOptimizer->GetCurrentPosition();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cout << "Caught expected exception!";
-    std::cout << e << std::endl;
-    caught = true;
-  }
+  auto badOptimizer = OptimizerType::New();
 
-  if (!caught)
-  {
-    std::cout << "Failed to catch expected exception! " << std::endl;
-    return EXIT_FAILURE;
-  }
-  std::cout << "Printing self.. " << std::endl;
-  std::cout << itkOptimizer << std::endl;
+  ITK_TRY_EXPECT_EXCEPTION(badOptimizer->GetCurrentPosition());
 
-  std::cout << "Test passed." << std::endl;
+
+  std::cout << "Test finished." << std::endl;
   return EXIT_SUCCESS;
 }

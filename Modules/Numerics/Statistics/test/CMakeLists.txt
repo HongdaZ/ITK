@@ -93,7 +93,7 @@ itkUniformRandomSpatialNeighborSubsamplerTest.cxx
 itkVectorContainerToListSampleAdaptorTest.cxx
 itkImageToHistogramFilterTest.cxx
 itkImageToHistogramFilterTest2.cxx
-itkImageToHistogramFilterTest3.cxx
+itkScalarImageToHistogramGeneratorTest.cxx
 )
 
 CreateTestDriver(ITKStatistics  "${ITKStatistics-Test_LIBRARIES}" "${ITKStatisticsTests}")
@@ -207,13 +207,13 @@ set_tests_properties(itkKdTreeTest11 PROPERTIES ATTACHED_FILES_ON_FAIL ${TEMP}/i
 if(DOXYGEN_DOT_EXECUTABLE)
 itk_add_test(NAME itkKdTreeTest1Plot
       COMMAND ${DOXYGEN_DOT_EXECUTABLE} -Tpng -o  ${ITK_TEST_OUTPUT_DIR}/itkKdTreeTest1_100.png ${ITK_TEST_OUTPUT_DIR}/itkKdTreeTest1_100.dot)
-set_tests_properties( itkKdTreeTest1Plot PROPERTIES DEPENDS itkKdTreeTest1 )
+set_tests_properties(itkKdTreeTest1Plot PROPERTIES DEPENDS itkKdTreeTest1)
 itk_add_test(NAME itkKdTreeTest2Plot
       COMMAND ${DOXYGEN_DOT_EXECUTABLE} -Tpng -o  ${ITK_TEST_OUTPUT_DIR}/itkKdTreeTest2.png ${ITK_TEST_OUTPUT_DIR}/itkKdTreeTest2.dot)
-set_tests_properties( itkKdTreeTest2Plot PROPERTIES DEPENDS itkKdTreeTest2 )
+set_tests_properties(itkKdTreeTest2Plot PROPERTIES DEPENDS itkKdTreeTest2)
 itk_add_test(NAME itkKdTreeTest3Plot
       COMMAND ${DOXYGEN_DOT_EXECUTABLE} -Tpng -o  ${ITK_TEST_OUTPUT_DIR}/itkKdTreeTest3.png ${ITK_TEST_OUTPUT_DIR}/itkKdTreeTest3.dot)
-set_tests_properties( itkKdTreeTest3Plot PROPERTIES DEPENDS itkKdTreeTest3 )
+set_tests_properties(itkKdTreeTest3Plot PROPERTIES DEPENDS itkKdTreeTest3)
 endif()
 
 itk_add_test(NAME itkKdTreeTestSamplePoints
@@ -405,7 +405,7 @@ itk_add_test(NAME itkUniformRandomSpatialNeighborSubsamplerTest
       COMMAND ITKStatisticsTestDriver
     --compare DATA{Baseline/itkUniformRandomSubsamplingTest.mha}
               ${ITK_TEST_OUTPUT_DIR}/itkUniformRandomSubsamplingTest.mha
-    itkUniformRandomSpatialNeighborSubsamplerTest
+    itkUniformRandomSpatialNeighborSubsamplerTest 0
      ${ITK_TEST_OUTPUT_DIR}/itkUniformRandomSubsamplingTest.mha)
 itk_add_test(NAME itkVectorContainerToListSampleAdaptorTest
       COMMAND ITKStatisticsTestDriver itkVectorContainerToListSampleAdaptorTest)
@@ -417,6 +417,6 @@ itk_add_test(NAME itkImageToHistogramFilterTest2
 itk_add_test(NAME itkImageToHistogramFilterTest2_Auto
         COMMAND ITKStatisticsTestDriver itkImageToHistogramFilterTest2
         DATA{${ITK_DATA_ROOT}/Input/VisibleWomanEyeSlice.png} ${ITK_TEST_OUTPUT_DIR}/itkImageToHistogramFilterTest2.txt 1)
-itk_add_test(NAME itkImageToHistogramFilterTest3
-        COMMAND ITKStatisticsTestDriver itkImageToHistogramFilterTest3
-        DATA{${ITK_DATA_ROOT}/Input/cthead1.png} ${ITK_TEST_OUTPUT_DIR}/itkImageToHistogramFilterTest3.txt)
+itk_add_test(NAME itkScalarImageToHistogramGeneratorTest
+        COMMAND ITKStatisticsTestDriver itkScalarImageToHistogramGeneratorTest
+        DATA{${ITK_DATA_ROOT}/Input/cthead1.png} ${ITK_TEST_OUTPUT_DIR}/itkScalarImageToHistogramGeneratorTest.txt)

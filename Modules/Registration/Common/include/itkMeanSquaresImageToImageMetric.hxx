@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,11 +18,11 @@
 #ifndef itkMeanSquaresImageToImageMetric_hxx
 #define itkMeanSquaresImageToImageMetric_hxx
 
-#include "itkMeanSquaresImageToImageMetric.h"
 #include "itkCovariantVector.h"
 #include "itkImageRegionIterator.h"
 #include "itkImageIterator.h"
 #include "itkMath.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 namespace itk
 {
@@ -34,7 +34,6 @@ MeanSquaresImageToImageMetric<TFixedImage, TMovingImage>::MeanSquaresImageToImag
 {
   this->SetComputeGradient(true);
 
-  m_PerThread = nullptr;
   this->m_WithinThreadPreProcess = false;
   this->m_WithinThreadPostProcess = false;
 
@@ -42,13 +41,6 @@ MeanSquaresImageToImageMetric<TFixedImage, TMovingImage>::MeanSquaresImageToImag
   //  in the fixed image.
   //  This should be fixed in ITKv4 so that this metric behaves as the others.
   this->SetUseAllPixels(true);
-}
-
-template <typename TFixedImage, typename TMovingImage>
-MeanSquaresImageToImageMetric<TFixedImage, TMovingImage>::~MeanSquaresImageToImageMetric()
-{
-  delete[] m_PerThread;
-  m_PerThread = nullptr;
 }
 
 /**
@@ -71,13 +63,11 @@ MeanSquaresImageToImageMetric<TFixedImage, TMovingImage>::Initialize()
   this->Superclass::Initialize();
   this->Superclass::MultiThreadingInitialize();
 
-  delete[] m_PerThread;
+  m_PerThread = make_unique_for_overwrite<AlignedPerThreadType[]>(this->m_NumberOfWorkUnits);
 
-  m_PerThread = new AlignedPerThreadType[this->m_NumberOfWorkUnits];
-
-  for (ThreadIdType threadId = 0; threadId < this->m_NumberOfWorkUnits; threadId++)
+  for (ThreadIdType workUnitID = 0; workUnitID < this->m_NumberOfWorkUnits; ++workUnitID)
   {
-    m_PerThread[threadId].m_MSEDerivative.SetSize(this->m_NumberOfParameters);
+    m_PerThread[workUnitID].m_MSEDerivative.SetSize(this->m_NumberOfParameters);
   }
 }
 
@@ -97,8 +87,9 @@ MeanSquaresImageToImageMetric<TFixedImage, TMovingImage>::GetValueThreadProcessS
 }
 
 template <typename TFixedImage, typename TMovingImage>
-typename MeanSquaresImageToImageMetric<TFixedImage, TMovingImage>::MeasureType
+auto
 MeanSquaresImageToImageMetric<TFixedImage, TMovingImage>::GetValue(const ParametersType & parameters) const
+  -> MeasureType
 {
   itkDebugMacro("GetValue( " << parameters << " ) ");
 
@@ -128,7 +119,7 @@ MeanSquaresImageToImageMetric<TFixedImage, TMovingImage>::GetValue(const Paramet
   }
 
   double mse = m_PerThread[0].m_MSE;
-  for (unsigned int t = 1; t < this->m_NumberOfWorkUnits; t++)
+  for (unsigned int t = 1; t < this->m_NumberOfWorkUnits; ++t)
   {
     mse += m_PerThread[t].m_MSE;
   }
@@ -173,10 +164,10 @@ MeanSquaresImageToImageMetric<TFixedImage, TMovingImage>::GetValueAndDerivativeT
 
   // Jacobian should be evaluated at the unmapped (fixed image) point.
   transform->ComputeJacobianWithRespectToParameters(fixedImagePoint, threadS.m_Jacobian);
-  for (unsigned int par = 0; par < this->m_NumberOfParameters; par++)
+  for (unsigned int par = 0; par < this->m_NumberOfParameters; ++par)
   {
     double sum = 0.0;
-    for (unsigned int dim = 0; dim < MovingImageDimension; dim++)
+    for (unsigned int dim = 0; dim < MovingImageDimension; ++dim)
     {
       sum += 2.0 * diff * threadS.m_Jacobian(dim, par) * movingImageGradientValue[dim];
     }
@@ -215,9 +206,9 @@ MeanSquaresImageToImageMetric<TFixedImage, TMovingImage>::GetValueAndDerivative(
     derivative = DerivativeType(this->m_NumberOfParameters);
   }
   memset(derivative.data_block(), 0, this->m_NumberOfParameters * sizeof(double));
-  for (ThreadIdType threadId = 0; threadId < this->m_NumberOfWorkUnits; threadId++)
+  for (ThreadIdType workUnitID = 0; workUnitID < this->m_NumberOfWorkUnits; ++workUnitID)
   {
-    memset(m_PerThread[threadId].m_MSEDerivative.data_block(), 0, this->m_NumberOfParameters * sizeof(double));
+    memset(m_PerThread[workUnitID].m_MSEDerivative.data_block(), 0, this->m_NumberOfParameters * sizeof(double));
   }
 
 
@@ -234,17 +225,17 @@ MeanSquaresImageToImageMetric<TFixedImage, TMovingImage>::GetValueAndDerivative(
   }
 
   value = 0;
-  for (unsigned int t = 0; t < this->m_NumberOfWorkUnits; t++)
+  for (unsigned int t = 0; t < this->m_NumberOfWorkUnits; ++t)
   {
     value += m_PerThread[t].m_MSE;
-    for (unsigned int parameter = 0; parameter < this->m_NumberOfParameters; parameter++)
+    for (unsigned int parameter = 0; parameter < this->m_NumberOfParameters; ++parameter)
     {
       derivative[parameter] += m_PerThread[t].m_MSEDerivative[parameter];
     }
   }
 
   value /= this->m_NumberOfPixelsCounted;
-  for (unsigned int parameter = 0; parameter < this->m_NumberOfParameters; parameter++)
+  for (unsigned int parameter = 0; parameter < this->m_NumberOfParameters; ++parameter)
   {
     derivative[parameter] /= this->m_NumberOfPixelsCounted;
   }

@@ -219,6 +219,8 @@ itk_add_test(NAME itkTimeVaryingBSplineVelocityFieldImageRegistrationTest
               1  # number of iterations for second level of the displacement field
               1  # number of iterations for third level of the displacement field
               0.5 # learning rate
+              1.0e-7
+              10
               )
 
 set_property(TEST itkTimeVaryingBSplineVelocityFieldImageRegistrationTest APPEND PROPERTY LABELS RUNS_LONG)
@@ -253,7 +255,7 @@ itk_add_test(NAME itkQuasiNewtonOptimizerv4RegistrationTest1
               DATA{Input/r16slice_rigid.nii.gz}
               DATA{Input/r64slice.nii.gz}
               ${TEMP}/itkQuasiNewtonOptimizerv4RegistrationTest1.nii.gz
-              5 2 )
+              5 2)
 
 itk_add_test(NAME itkQuasiNewtonOptimizerv4RegistrationTest2
       COMMAND ITKRegistrationMethodsv4TestDriver
@@ -263,7 +265,7 @@ itk_add_test(NAME itkQuasiNewtonOptimizerv4RegistrationTest2
               DATA{Input/r16slice_rigid.nii.gz}
               DATA{Input/r64slice.nii.gz}
               ${TEMP}/itkQuasiNewtonOptimizerv4RegistrationTest2.nii.gz
-              5 2 )
+              5 2)
 
 itk_add_test(NAME itkQuasiNewtonOptimizerv4RegistrationTest3
       COMMAND ITKRegistrationMethodsv4TestDriver
@@ -273,7 +275,7 @@ itk_add_test(NAME itkQuasiNewtonOptimizerv4RegistrationTest3
               DATA{Input/r16slice_rigid.nii.gz}
               DATA{Input/r64slice.nii.gz}
               ${TEMP}/itkQuasiNewtonOptimizerv4RegistrationTest3.nii.gz
-              5 2 )
+              5 2)
 
 itk_add_test(NAME itkBSplineImageRegistrationTest
       COMMAND ITKRegistrationMethodsv4TestDriver
@@ -291,4 +293,5 @@ itk_add_test(NAME itkBSplineImageRegistrationTest
               10 # number of deformable iterations
               )
 set_property(TEST itkBSplineImageRegistrationTest APPEND PROPERTY LABELS RUNS_LONG)
-set_tests_properties( itkBSplineImageRegistrationTest PROPERTIES COST 30 )
+set_property(TEST itkBSplineImageRegistrationTest APPEND PROPERTY RUN_SERIAL True)
+set_tests_properties(itkBSplineImageRegistrationTest PROPERTIES COST 30)

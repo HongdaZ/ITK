@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@
 namespace itk
 {
 /**
- *\class ScalarImageKmeansImageFilter
+ * \class ScalarImageKmeansImageFilter
  * \brief Classifies the intensity values of a scalar image using the K-Means algorithm.
  *
  * Given an input image with scalar values, it uses the K-Means statistical
@@ -65,7 +65,7 @@ template <typename TInputImage, typename TOutputImage = Image<unsigned char, TIn
 class ITK_TEMPLATE_EXPORT ScalarImageKmeansImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarImageKmeansImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ScalarImageKmeansImageFilter);
 
   /** Extract dimension from input and output image. */
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;

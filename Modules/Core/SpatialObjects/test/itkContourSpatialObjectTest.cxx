@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 #include "itkContourSpatialObject.h"
 #include <iostream>
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 /**
  * This is a test for itkContourSpatialObject.  It runs all methods and checks
@@ -60,8 +61,14 @@ itkContourSpatialObjectTest(int, char *[])
   pnt[1] = 1;
   pt4.SetPickedPointInObjectSpace(pnt);
 
-  SpatialObjectType::Pointer contour = SpatialObjectType::New();
+  auto contour = SpatialObjectType::New();
 
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(contour, ContourSpatialObject, PointBasedSpatialObject);
+
+
+  auto interpolationFactor = 2u;
+  contour->SetInterpolationFactor(interpolationFactor);
+  ITK_TEST_SET_GET_VALUE(interpolationFactor, contour->GetInterpolationFactor());
 
   //
   // Test Control Points (SetControlPoints, GetControlPoints,
@@ -128,21 +135,14 @@ itkContourSpatialObjectTest(int, char *[])
   //
 
   // first set to not closed and test
-  contour->SetIsClosed(false);
-  if (contour->GetIsClosed())
-  {
-    std::cout << "[FAILED] Did not set/retrieve closed property correctly" << std::endl;
-    return EXIT_FAILURE;
-  }
+  auto isClosed = false;
+  contour->SetIsClosed(isClosed);
+  ITK_TEST_SET_GET_BOOLEAN(contour, IsClosed, isClosed);
 
   // then set it to closed and test
+  isClosed = true;
   contour->SetIsClosed(true);
-  if (!contour->GetIsClosed())
-  {
-    std::cout << "[FAILED] Did not set/retrieve closed property correctly" << std::endl;
-    return EXIT_FAILURE;
-  }
-  std::cout << "[PASSED] Set/GetClosed" << std::endl;
+  ITK_TEST_SET_GET_BOOLEAN(contour, IsClosed, isClosed);
 
 
   //
@@ -310,8 +310,7 @@ itkContourSpatialObjectTest(int, char *[])
     std::cout << "STREAMED ENUM VALUE ContourSpatialObjectEnums::InterpolationMethod: " << ee << std::endl;
   }
 
-  //
-  // All tests executed successfully
-  //
+
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

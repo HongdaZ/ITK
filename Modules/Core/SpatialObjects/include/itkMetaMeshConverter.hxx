@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMetaMeshConverter_hxx
 #define itkMetaMeshConverter_hxx
 
-#include "itkMetaMeshConverter.h"
 #include "itkTetrahedronCell.h"
 #include "itkPolygonCell.h"
 #include "itkHexahedronCell.h"
@@ -28,17 +27,18 @@
 namespace itk
 {
 
-template <unsigned int NDimensions, typename PixelType, typename TMeshTraits>
-typename MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectType *
-MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::CreateMetaObject()
+template <unsigned int VDimension, typename PixelType, typename TMeshTraits>
+auto
+MetaMeshConverter<VDimension, PixelType, TMeshTraits>::CreateMetaObject() -> MetaObjectType *
 {
   return dynamic_cast<MetaObjectType *>(new MeshMetaObjectType);
 }
 
 /** Convert a metaMesh into an Mesh SpatialObject  */
-template <unsigned int NDimensions, typename PixelType, typename TMeshTraits>
-typename MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::SpatialObjectPointer
-MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectToSpatialObject(const MetaObjectType * mo)
+template <unsigned int VDimension, typename PixelType, typename TMeshTraits>
+auto
+MetaMeshConverter<VDimension, PixelType, TMeshTraits>::MetaObjectToSpatialObject(const MetaObjectType * mo)
+  -> SpatialObjectPointer
 {
   const auto * _mesh = dynamic_cast<const MeshMetaObjectType *>(mo);
   if (_mesh == nullptr)
@@ -46,7 +46,7 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectToSpatialObjec
     itkExceptionMacro(<< "Can't convert MetaObject to MetaMesh");
   }
 
-  typename MeshSpatialObjectType::Pointer meshSO = MeshSpatialObjectType::New();
+  auto meshSO = MeshSpatialObjectType::New();
 
   meshSO->GetProperty().SetName(_mesh->Name());
   meshSO->SetId(_mesh->ID());
@@ -57,7 +57,7 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectToSpatialObjec
   meshSO->GetProperty().SetAlpha(_mesh->Color()[3]);
 
   // Create a new Mesh
-  typename MeshType::Pointer mesh = MeshType::New();
+  auto mesh = MeshType::New();
 
   // Add Points
   using PointListType = typename MeshMetaObjectType::PointListType;
@@ -67,12 +67,12 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectToSpatialObjec
   while (it_points != points.end())
   {
     typename MeshType::PointType pt;
-    for (unsigned int i = 0; i < NDimensions; i++)
+    for (unsigned int i = 0; i < VDimension; ++i)
     {
       pt[i] = ((*it_points)->m_X)[i] * _mesh->ElementSpacing(i);
     }
     mesh->SetPoint((*it_points)->m_Id, pt);
-    it_points++;
+    ++it_points;
   }
 
   // Add Cells
@@ -80,7 +80,7 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectToSpatialObjec
   using CellAutoPointer = typename CellType::CellAutoPointer;
   mesh->SetCellsAllocationMethod(MeshEnums::MeshClassCellsAllocationMethod::CellsAllocatedDynamicallyCellByCell);
 
-  for (unsigned int celltype = 0; celltype < MET_NUM_CELL_TYPES; celltype++)
+  for (unsigned int celltype = 0; celltype < MET_NUM_CELL_TYPES; ++celltype)
   {
     using CellListType = typename MetaMesh::CellListType;
     const CellListType cells = _mesh->GetCells((MET_CellGeometry)celltype);
@@ -134,13 +134,13 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectToSpatialObjec
           cell.TakeOwnership(new VertexCellType);
       }
 
-      for (unsigned int i = 0; i < MET_CellSize[celltype]; i++)
+      for (unsigned int i = 0; i < MET_CellSize[celltype]; ++i)
       {
         cell->SetPointId(i, (*it_cells)->m_PointsId[i]);
       }
 
       mesh->SetCell((*it_cells)->m_Id, cell);
-      it_cells++;
+      ++it_cells;
     }
   }
 
@@ -150,7 +150,7 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectToSpatialObjec
   auto                   it_links = links.begin();
 
   using CellLinksContainerType = typename MeshType::CellLinksContainer;
-  typename CellLinksContainerType::Pointer linkContainer = CellLinksContainerType::New();
+  auto linkContainer = CellLinksContainerType::New();
 
   while (it_links != links.end())
   {
@@ -160,37 +160,37 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectToSpatialObjec
     while (it_link != (*it_links)->m_Links.end())
     {
       pcl.insert(*it_link);
-      it_link++;
+      ++it_link;
     }
     linkContainer->InsertElement((*it_links)->m_Id, pcl);
-    it_links++;
+    ++it_links;
   }
 
   mesh->SetCellLinks(linkContainer);
 
   // Add point data
   using PointDataContainer = typename MeshType::PointDataContainer;
-  typename PointDataContainer::Pointer pointData = PointDataContainer::New();
+  auto pointData = PointDataContainer::New();
 
   auto it_pd = _mesh->GetPointData().begin();
 
   while (it_pd != _mesh->GetPointData().end())
   {
     pointData->InsertElement((*it_pd)->m_Id, static_cast<MeshData<PixelType> *>(*it_pd)->m_Data);
-    it_pd++;
+    ++it_pd;
   }
   mesh->SetPointData(pointData);
 
   // Add cell data
   using CellDataContainer = typename MeshType::CellDataContainer;
-  typename CellDataContainer::Pointer cellData = CellDataContainer::New();
+  auto cellData = CellDataContainer::New();
 
   auto it_cd = _mesh->GetCellData().begin();
   while (it_cd != _mesh->GetCellData().end())
   {
     using CellPixelType = typename MeshType::CellPixelType;
     cellData->InsertElement((*it_cd)->m_Id, static_cast<MeshData<CellPixelType> *>(*it_cd)->m_Data);
-    it_cd++;
+    ++it_cd;
   }
 
   mesh->SetCellData(cellData);
@@ -201,9 +201,10 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectToSpatialObjec
 }
 
 /** Convert a Mesh SpatialObject into a metaMesh */
-template <unsigned int NDimensions, typename PixelType, typename TMeshTraits>
-typename MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::MetaObjectType *
-MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::SpatialObjectToMetaObject(const SpatialObjectType * so)
+template <unsigned int VDimension, typename PixelType, typename TMeshTraits>
+auto
+MetaMeshConverter<VDimension, PixelType, TMeshTraits>::SpatialObjectToMetaObject(const SpatialObjectType * so)
+  -> MetaObjectType *
 {
   const MeshSpatialObjectConstPointer meshSO = dynamic_cast<const MeshSpatialObjectType *>(so);
 
@@ -211,7 +212,7 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::SpatialObjectToMetaObjec
   {
     itkExceptionMacro(<< "Can't downcast SpatialObject to MeshSpatialObject");
   }
-  auto * metamesh = new MeshMetaObjectType(NDimensions);
+  auto * metamesh = new MeshMetaObjectType(VDimension);
 
   typename MeshType::ConstPointer mesh = meshSO->GetMesh();
 
@@ -231,8 +232,8 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::SpatialObjectToMetaObjec
 
   while (it_points != points->End())
   {
-    auto * pnt = new MeshPoint(NDimensions);
-    for (unsigned int i = 0; i < NDimensions; i++)
+    auto * pnt = new MeshPoint(VDimension);
+    for (unsigned int i = 0; i < VDimension; ++i)
     {
       pnt->m_X[i] = (*it_points)->Value()[i];
     }
@@ -256,7 +257,7 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::SpatialObjectToMetaObjec
     while (itptids != (*it_cells)->Value()->PointIdsEnd())
     {
       cell->m_PointsId[i++] = *itptids;
-      itptids++;
+      ++itptids;
     }
     cell->m_Id = (*it_cells)->Index();
 
@@ -314,7 +315,7 @@ MetaMeshConverter<NDimensions, PixelType, TMeshTraits>::SpatialObjectToMetaObjec
       while (it != (*it_celllinks)->Value().end())
       {
         link->m_Links.push_back(*it);
-        it++;
+        ++it;
       }
       metamesh->GetCellLinks().push_back(link);
       ++it_celllinks;

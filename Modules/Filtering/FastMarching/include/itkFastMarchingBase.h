@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,14 +30,14 @@
 namespace itk
 {
 /**
- *\class FastMarchingTraitsEnums
+ * \class FastMarchingTraitsEnums
  * \ingroup ITKFastMarching
  * */
 class FastMarchingTraitsEnums
 {
 public:
   /**
-   *\class TopologyCheck
+   * \class TopologyCheck
    * \ingroup ITKFastMarching
    * */
   enum class TopologyCheck : uint8_t
@@ -125,7 +125,7 @@ template <typename TInput, typename TOutput>
 class ITK_TEMPLATE_EXPORT FastMarchingBase : public FastMarchingTraits<TInput, TOutput>::SuperclassType
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingBase);
+  ITK_DISALLOW_COPY_AND_MOVE(FastMarchingBase);
 
   using Traits = FastMarchingTraits<TInput, TOutput>;
   using SuperclassType = typename Traits::SuperclassType;

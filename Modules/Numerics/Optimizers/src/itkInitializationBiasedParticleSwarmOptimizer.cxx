@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@
 namespace itk
 {
 
-InitializationBiasedParticleSwarmOptimizer ::InitializationBiasedParticleSwarmOptimizer()
+InitializationBiasedParticleSwarmOptimizer::InitializationBiasedParticleSwarmOptimizer()
 {
   // magic numbers from Wachowiak et al. "An approach to multimodal biomedical
   // image registration utilizing particle swarm optimization"
@@ -32,7 +32,7 @@ InitializationBiasedParticleSwarmOptimizer ::InitializationBiasedParticleSwarmOp
 
 
 void
-InitializationBiasedParticleSwarmOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
+InitializationBiasedParticleSwarmOptimizer::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << "Acceleration coefficients [inertia, personal, global, initialization]: ";
@@ -42,7 +42,7 @@ InitializationBiasedParticleSwarmOptimizer ::PrintSelf(std::ostream & os, Indent
 
 
 void
-InitializationBiasedParticleSwarmOptimizer ::UpdateSwarm()
+InitializationBiasedParticleSwarmOptimizer::UpdateSwarm()
 {
   unsigned int                                                    j, k, n;
   itk::Statistics::MersenneTwisterRandomVariateGenerator::Pointer randomGenerator =
@@ -55,14 +55,14 @@ InitializationBiasedParticleSwarmOptimizer ::UpdateSwarm()
     this->m_InitializationCoefficient *
     (1.0 - static_cast<double>(m_IterationIndex) / static_cast<double>(m_MaximalNumberOfIterations));
 
-  for (j = 0; j < m_NumberOfParticles; j++)
+  for (j = 0; j < m_NumberOfParticles; ++j)
   {
     ParticleData &            p = m_Particles[j];
     ParametersType::ValueType phi1, phi2, phi3;
     phi1 = randomGenerator->GetVariateWithClosedRange() * this->m_PersonalCoefficient;
     phi2 = randomGenerator->GetVariateWithClosedRange() * this->m_GlobalCoefficient;
     phi3 = randomGenerator->GetVariateWithClosedRange() * initializationCoefficient;
-    for (k = 0; k < n; k++)
+    for (k = 0; k < n; ++k)
     { // update velocity
       p.m_CurrentVelocity[k] = m_InertiaCoefficient * p.m_CurrentVelocity[k] +
                                phi1 * (p.m_BestParameters[k] - p.m_CurrentParameters[k]) +

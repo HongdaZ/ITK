@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  *=========================================================================*/
 
 #include "itkNarrowBand.h"
+#include "itkTestingMacros.h"
 
 
 int
@@ -29,13 +30,17 @@ itkNarrowBandTest(int, char *[])
   using BandType = itk::NarrowBand<BandNodeType>;
   using RegionType = BandType::RegionType;
 
-  BandType::Pointer band = BandType::New();
+  auto band = BandType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(band, NarrowBand, LightObject);
+
+
   band->Reserve(100);
   // Create nodes
   BandNodeType node;
   band->SetTotalRadius(10);
   band->SetInnerRadius(5);
-  for (i = 0; i < 20; i++)
+  for (i = 0; i < 20; ++i)
   {
     node.m_Data = i * 5.0;
     node.m_Index = i;
@@ -53,7 +58,7 @@ itkNarrowBandTest(int, char *[])
 
   i = 0;
   //  BandNodeType *tmp;
-  for (; it != itend; it++)
+  for (; it != itend; ++it)
   {
     std::cout << "Node " << i << std::endl << "Index: " << it->m_Index << " Data: " << it->m_Data << std::endl;
     i++;

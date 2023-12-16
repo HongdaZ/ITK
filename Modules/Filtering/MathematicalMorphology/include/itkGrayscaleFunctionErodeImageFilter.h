@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /** \class GrayscaleFunctionErodeImageFilter
- * \brief gray scale function erosion of an image
+ * \brief Grayscale function erosion of an image.
  *
  * Erode an image using functional grayscale morphology. Function
  * erosion takes the minimum of all the pixels identified by the
@@ -51,7 +51,7 @@ class ITK_TEMPLATE_EXPORT GrayscaleFunctionErodeImageFilter
   : public MorphologyImageFilter<TInputImage, TOutputImage, TKernel>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GrayscaleFunctionErodeImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(GrayscaleFunctionErodeImageFilter);
 
   /** Standard class type aliases. */
   using Self = GrayscaleFunctionErodeImageFilter;
@@ -66,19 +66,19 @@ public:
   itkTypeMacro(GrayscaleFunctionErodeImageFilter, MorphologyImageFilter);
 
   /** Declaration of pixel type. */
-  using PixelType = typename Superclass::PixelType;
+  using typename Superclass::PixelType;
 
   /** Kernel (structuring element) iterator. */
-  using KernelIteratorType = typename Superclass::KernelIteratorType;
+  using typename Superclass::KernelIteratorType;
 
   /** Neighborhood iterator type. */
-  using NeighborhoodIteratorType = typename Superclass::NeighborhoodIteratorType;
+  using typename Superclass::NeighborhoodIteratorType;
 
   /** Kernel type alias. */
-  using KernelType = typename Superclass::KernelType;
+  using typename Superclass::KernelType;
 
   /** Default boundary condition type */
-  using DefaultBoundaryConditionType = typename Superclass::DefaultBoundaryConditionType;
+  using typename Superclass::DefaultBoundaryConditionType;
 
   /** ImageDimension constants */
   static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;

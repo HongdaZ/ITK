@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkInteriorExteriorMeshFilter_hxx
 #define itkInteriorExteriorMeshFilter_hxx
 
-#include "itkInteriorExteriorMeshFilter.h"
 #include "itkNumericTraits.h"
 #include "itkProgressReporter.h"
 
@@ -119,7 +118,7 @@ InteriorExteriorMeshFilter<TInputMesh, TOutputMesh, TSpatialFunction>::GenerateD
       {
         outputMesh->SetPointData(pointId, inputData.Value());
       }
-      pointId++;
+      ++pointId;
     }
 
     ++inputPoint;
@@ -137,7 +136,7 @@ InteriorExteriorMeshFilter<TInputMesh, TOutputMesh, TSpatialFunction>::GenerateD
 
   unsigned int maxDimension = TInputMesh::MaxTopologicalDimension;
 
-  for (unsigned int dim = 0; dim < maxDimension; dim++)
+  for (unsigned int dim = 0; dim < maxDimension; ++dim)
   {
     outputMesh->SetBoundaryAssignments(dim, inputMesh->GetBoundaryAssignments(dim));
   }

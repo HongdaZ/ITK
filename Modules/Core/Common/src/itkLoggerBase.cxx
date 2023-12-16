@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,11 +59,17 @@ LoggerBase::Write(PriorityLevelEnum level, std::string const & content)
 void
 LoggerBase::Flush()
 {
+  this->PrivateFlush();
+}
+
+void
+LoggerBase::PrivateFlush()
+{
   this->m_Output->Flush();
 }
 
 std::string
-LoggerBase ::BuildFormattedEntry(PriorityLevelEnum level, std::string const & content)
+LoggerBase::BuildFormattedEntry(PriorityLevelEnum level, std::string const & content)
 {
   static std::string m_LevelString[] = { "(MUSTFLUSH) ", "(FATAL) ", "(CRITICAL) ", "(WARNING) ",
                                          "(INFO) ",      "(DEBUG) ", "(NOTSET) " };

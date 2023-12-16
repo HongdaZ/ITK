@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class KappaSigmaThresholdImageFilter
+ * \class KappaSigmaThresholdImageFilter
  * \brief Threshold an image using Kappa-Sigma-Clipping.
  *
  * This filter creates a binary thresholded image which separates background and
@@ -36,7 +36,7 @@ namespace itk
  * \author Gaetan Lehmann
  *
  * \note This class was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/367
+ * https://www.insight-journal.org/browse/publication/132
  *
  * \sa KappaSigmaThresholdImageCalculator
  * \ingroup IntensityImageFilters
@@ -49,7 +49,7 @@ template <typename TInputImage,
 class ITK_TEMPLATE_EXPORT KappaSigmaThresholdImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(KappaSigmaThresholdImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(KappaSigmaThresholdImageFilter);
 
   /** Standard Self type alias */
   using Self = KappaSigmaThresholdImageFilter;

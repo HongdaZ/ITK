@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,7 +57,7 @@ template <unsigned int VDimension = 3>
 class ITK_TEMPLATE_EXPORT SpatialObject : public DataObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SpatialObject);
+  ITK_DISALLOW_COPY_AND_MOVE(SpatialObject);
 
   using ScalarType = double;
 
@@ -107,9 +107,12 @@ public:
 
   /** Return type for the list of children */
   using ChildrenListType = std::list<Pointer>;
+  using ChildrenConstListType = std::list<ConstPointer>;
   using ChildrenListPointer = ChildrenListType *;
+  using ChildrenConstListPointer = ChildrenConstListType *;
 
   using ObjectListType = std::list<Pointer>;
+  using ObjectConstListType = std::list<ConstPointer>;
 
   using RegionType = ImageRegion<VDimension>;
 
@@ -315,7 +318,7 @@ public:
                             CovariantVectorType &        value,
                             unsigned int                 depth = 0,
                             const std::string &          name = "",
-                            const DerivativeOffsetType & spacing = 1);
+                            const DerivativeOffsetType & offset = MakeFilled<DerivativeOffsetType>(1));
 
   /** Return the n-th order derivative value at the specified point. */
   virtual void
@@ -324,7 +327,7 @@ public:
                            CovariantVectorType &        value,
                            unsigned int                 depth = 0,
                            const std::string &          name = "",
-                           const DerivativeOffsetType & spacing = 1);
+                           const DerivativeOffsetType & offset = MakeFilled<DerivativeOffsetType>(1));
 
 
   /*********************/
@@ -371,7 +374,7 @@ public:
   /** Remove the object passed as arguments from the list of
    * children. */
   bool
-  RemoveChild(Self * object);
+  RemoveChild(Self * pointer);
 
   /** Remove all children to a given depth */
   void
@@ -385,8 +388,16 @@ public:
   virtual ChildrenListType *
   GetChildren(unsigned int depth = 0, const std::string & name = "") const;
 
+  virtual ChildrenConstListType *
+  GetConstChildren(unsigned int depth = 0, const std::string & name = "") const;
+
   virtual void
-  AddChildrenToList(ChildrenListType * children, unsigned int depth = 0, const std::string & name = "") const;
+  AddChildrenToList(ChildrenListType * childrenList, unsigned int depth = 0, const std::string & name = "") const;
+
+  virtual void
+  AddChildrenToConstList(ChildrenConstListType * childrenList,
+                         unsigned int            depth = 0,
+                         const std::string &     name = "") const;
 
   /** Returns the number of children currently assigned to the object. */
   unsigned int
@@ -394,7 +405,7 @@ public:
 
   /** Return a SpatialObject given its ID, if it is a child */
   SpatialObject<VDimension> *
-  GetObjectById(int Id);
+  GetObjectById(int id);
 
   /** In practice, this is used to transform an imported MetaIO scene hierarchy
    * specified only by Ids into the SpatialObject hierarchy specified by

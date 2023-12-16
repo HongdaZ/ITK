@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class SparseFrequencyContainer2
+ * \class SparseFrequencyContainer2
  *  \brief his class is a container for an histogram.
  *
  *  This class uses an map to store histogram. If your histogram is dense
@@ -42,7 +42,7 @@ namespace Statistics
 class ITKStatistics_EXPORT SparseFrequencyContainer2 : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SparseFrequencyContainer2);
+  ITK_DISALLOW_COPY_AND_MOVE(SparseFrequencyContainer2);
 
   /** Standard class type aliases. */
   using Self = SparseFrequencyContainer2;

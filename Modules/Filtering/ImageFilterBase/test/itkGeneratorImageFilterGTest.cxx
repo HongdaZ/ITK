@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 
 #include "itkUnaryGeneratorImageFilter.h"
 #include "itkBinaryGeneratorImageFilter.h"
+#include "itkTernaryGeneratorImageFilter.h"
 #include "itkImage.h"
 #include "itkImageRegionIterator.h"
 
@@ -39,7 +40,7 @@ struct Utilities
   static typename ImageType::Pointer
   CreateImage()
   {
-    typename ImageType::Pointer image = ImageType::New();
+    auto image = ImageType::New();
 
     typename ImageType::SizeType imageSize;
     imageSize.Fill(5);
@@ -76,6 +77,18 @@ struct Utilities
   {
     return p1 * 2 + p2;
   }
+
+  static TPixelType
+  MyTernaryFunction1(TPixelType p1, TPixelType p2, TPixelType p3)
+  {
+    return p1 + p2 + p3;
+  }
+
+  static TPixelType
+  MyTernaryFunction2(const TPixelType & p1, const TPixelType & p2, const TPixelType & p3)
+  {
+    return p1 - p2 * p3;
+  }
 };
 
 
@@ -91,7 +104,7 @@ TEST(UnaryGeneratorImageFilter, SetGetBasic)
 
 
   using FilterType = itk::UnaryGeneratorImageFilter<Utils::ImageType, Utils::ImageType>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
   filter->Print(std::cout);
 
   FilterType::ConstPointer constFilter = (const FilterType *)(filter.GetPointer());
@@ -109,7 +122,7 @@ TEST(BinaryGeneratorImageFilter, SetGetBasic)
 
 
   using FilterType = itk::BinaryGeneratorImageFilter<Utils::ImageType, Utils::ImageType, Utils::ImageType>;
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
   filter->Print(std::cout);
 
 
@@ -125,6 +138,38 @@ TEST(BinaryGeneratorImageFilter, SetGetBasic)
 
   EXPECT_NO_THROW(filter->SetConstant2(4.0));
   EXPECT_EQ(4.0, filter->GetConstant2());
+}
+
+
+TEST(TernaryGeneratorImageFilter, SetGetBasic)
+{
+
+  using Utils = Utilities<3>;
+
+  auto image = Utils::CreateImage();
+
+
+  using FilterType =
+    itk::TernaryGeneratorImageFilter<Utils::ImageType, Utils::ImageType, Utils::ImageType, Utils::ImageType>;
+  auto filter = FilterType::New();
+  filter->Print(std::cout);
+
+
+  FilterType::ConstPointer constFilter = (const FilterType *)(filter.GetPointer());
+
+  EXPECT_STREQ("TernaryGeneratorImageFilter", filter->GetNameOfClass());
+  EXPECT_STREQ("InPlaceImageFilter", filter->Superclass::GetNameOfClass());
+
+
+  EXPECT_NO_THROW(filter->SetConstant1(2.0));
+  EXPECT_EQ(2.0, filter->GetConstant1());
+
+
+  EXPECT_NO_THROW(filter->SetConstant2(4.0));
+  EXPECT_EQ(4.0, filter->GetConstant2());
+
+  EXPECT_NO_THROW(filter->SetConstant3(99.0));
+  EXPECT_EQ(99.0, filter->GetConstant3());
 }
 
 
@@ -262,4 +307,140 @@ TEST(BinaryGeneratorImageFilter, SetFunctor)
   ASSERT_TRUE(outputImage.IsNotNull());
 
   EXPECT_NEAR(2.0, outputImage->GetPixel(idx), 1e-8);
+}
+
+
+TEST(TernaryGeneratorImageFilter, SetFunctor)
+{
+
+  using Utils = Utilities<3, float>;
+
+  auto image1 = Utils::CreateImage();
+  image1->FillBuffer(1.0);
+
+  auto image2 = Utils::CreateImage();
+  image2->FillBuffer(2.0);
+
+
+  auto image3 = Utils::CreateImage();
+  image3->FillBuffer(3.0);
+
+
+  using FilterType =
+    itk::TernaryGeneratorImageFilter<Utils::ImageType, Utils::ImageType, Utils::ImageType, Utils::ImageType>;
+
+  auto filter = FilterType::New();
+  filter->SetInput1(image1);
+  filter->SetInput2(image2);
+  filter->SetInput3(image3);
+
+  Utils::ImageType::Pointer outputImage;
+
+  Utils::IndexType idx;
+  idx.Fill(0);
+
+  // Test with C style function pointer
+  filter->SetFunctor(Utils::MyTernaryFunction1);
+  EXPECT_NO_THROW(filter->Update());
+
+  outputImage = filter->GetOutput();
+  ASSERT_TRUE(outputImage.IsNotNull());
+
+  EXPECT_NEAR(6.0, outputImage->GetPixel(idx), 1e-8);
+
+
+  filter->SetFunctor(Utils::MyTernaryFunction2);
+  EXPECT_NO_THROW(filter->Update());
+
+  outputImage = filter->GetOutput();
+  ASSERT_TRUE(outputImage.IsNotNull());
+
+  EXPECT_NEAR(-5.0, outputImage->GetPixel(idx), 1e-8);
+
+  // test with std::functional
+  std::function<float(float, float, float)> func1 = Utils::MyTernaryFunction1;
+
+  filter->SetFunctor(func1);
+  EXPECT_NO_THROW(filter->Update());
+  ASSERT_TRUE(outputImage.IsNotNull());
+
+  EXPECT_NEAR(6.0, outputImage->GetPixel(idx), 1e-8);
+
+
+  std::function<float(const float &, const float &, const float &)> func2 = Utils::MyTernaryFunction2;
+
+  filter->SetFunctor(func2);
+  EXPECT_NO_THROW(filter->Update());
+  ASSERT_TRUE(outputImage.IsNotNull());
+
+  EXPECT_NEAR(-5.0, outputImage->GetPixel(idx), 1e-8);
+
+
+  // test with C++ lambda function
+  filter->SetFunctor([](const float & v1, const float & v2, const float & v3) { return 3.0 * v1 + v2 + v3; });
+  EXPECT_NO_THROW(filter->Update());
+  ASSERT_TRUE(outputImage.IsNotNull());
+
+  EXPECT_NEAR(8.0, outputImage->GetPixel(idx), 1e-8);
+}
+
+
+TEST(TernaryGeneratorImageFilter, Constants)
+{
+
+  using Utils = Utilities<3, float>;
+
+  auto image = Utils::CreateImage();
+  image->FillBuffer(0.0);
+
+
+  using FilterType =
+    itk::TernaryGeneratorImageFilter<Utils::ImageType, Utils::ImageType, Utils::ImageType, Utils::ImageType>;
+
+  auto filter = FilterType::New();
+  filter->SetConstant1(101.0f);
+  filter->SetInput2(image);
+  filter->SetInput3(image);
+
+  Utils::ImageType::Pointer outputImage;
+
+  Utils::IndexType idx;
+  idx.Fill(0);
+
+  // Test with C style function pointer
+  filter->SetFunctor(Utils::MyTernaryFunction1);
+  EXPECT_NO_THROW(filter->Update());
+
+  outputImage = filter->GetOutput();
+  ASSERT_TRUE(outputImage.IsNotNull());
+
+  EXPECT_NEAR(101.0, outputImage->GetPixel(idx), 1e-8);
+
+  filter = FilterType::New();
+  filter->SetInput1(image);
+  filter->SetConstant2(102.0f);
+  filter->SetInput3(image);
+
+  // Test with C style function pointer
+  filter->SetFunctor(Utils::MyTernaryFunction1);
+  EXPECT_NO_THROW(filter->Update());
+
+  outputImage = filter->GetOutput();
+  ASSERT_TRUE(outputImage.IsNotNull());
+
+  EXPECT_NEAR(102.0, outputImage->GetPixel(idx), 1e-8);
+
+  filter = FilterType::New();
+  filter->SetInput1(image);
+  filter->SetInput2(image);
+  filter->SetConstant3(103.0f);
+
+  // Test with C style function pointer
+  filter->SetFunctor(Utils::MyTernaryFunction1);
+  EXPECT_NO_THROW(filter->Update());
+
+  outputImage = filter->GetOutput();
+  ASSERT_TRUE(outputImage.IsNotNull());
+
+  EXPECT_NEAR(103.0, outputImage->GetPixel(idx), 1e-8);
 }

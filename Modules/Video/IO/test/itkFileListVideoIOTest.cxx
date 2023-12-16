@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -127,7 +127,7 @@ test_FileListVideoIO(const char *  input,
   std::cout << "Comparing all " << fileListIO->GetFrameTotal() << " frames" << std::endl;
 
   // Set up ImageFileReader
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
 
   // Loop through all frames
   std::vector<std::string> filenames = fileListIO->SplitFileNames(input);

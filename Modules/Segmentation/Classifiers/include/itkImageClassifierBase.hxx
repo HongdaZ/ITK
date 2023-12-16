@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkImageClassifierBase_hxx
 #define itkImageClassifierBase_hxx
-#include "itkImageClassifierBase.h"
 
 namespace itk
 {
@@ -106,12 +105,12 @@ ImageClassifierBase<TInputImage, TClassifiedImage>::Classify()
   {
     if (!(k % updateVisits))
     {
-      this->UpdateProgress((float)k / (float)totalPixels);
+      this->UpdateProgress(static_cast<float>(k) / static_cast<float>(totalPixels));
     }
 
     // Read the input vector
     inputImagePixel = inIt.Get();
-    for (classIndex = 0; classIndex < numberOfClasses; classIndex++)
+    for (classIndex = 0; classIndex < numberOfClasses; ++classIndex)
     {
       discriminantScores[classIndex] = (this->GetMembershipFunction(classIndex))->Evaluate(inputImagePixel);
     }
@@ -138,13 +137,7 @@ ImageClassifierBase<TInputImage, TClassifiedImage>::Allocate()
 
   this->SetClassifiedImage(classifiedImage);
 
-  typename TClassifiedImage::IndexType classifiedImageIndex;
-  classifiedImageIndex.Fill(0);
-
-  typename TClassifiedImage::RegionType classifiedImageRegion;
-
-  classifiedImageRegion.SetSize(inputImageSize);
-  classifiedImageRegion.SetIndex(classifiedImageIndex);
+  const typename TClassifiedImage::RegionType classifiedImageRegion(inputImageSize);
 
   classifiedImage->SetLargestPossibleRegion(classifiedImageRegion);
   classifiedImage->SetBufferedRegion(classifiedImageRegion);
@@ -158,7 +151,7 @@ ImageClassifierBase<TInputImage, TClassifiedImage>::GetPixelMembershipValue(cons
   unsigned int        numberOfClasses = this->GetNumberOfClasses();
   std::vector<double> pixelMembershipValue(numberOfClasses);
 
-  for (unsigned int classIndex = 0; classIndex < numberOfClasses; classIndex++)
+  for (unsigned int classIndex = 0; classIndex < numberOfClasses; ++classIndex)
   {
     pixelMembershipValue[classIndex] = (this->GetMembershipFunction(classIndex))->Evaluate(inputImagePixel);
   }

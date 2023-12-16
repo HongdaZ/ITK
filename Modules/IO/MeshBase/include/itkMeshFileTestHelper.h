@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 
 #include "itkMeshFileReader.h"
 #include "itkMeshFileWriter.h"
-#include <itksys/SystemTools.hxx>
+#include "itksys/SystemTools.hxx"
 
 template <typename TMesh>
 int
@@ -39,7 +39,7 @@ TestPointsContainer(typename TMesh::PointsContainerPointer points0, typename TMe
   {
     if (points0->Size() != points1->Size())
     {
-      std::cerr << "Input mesh and output mesh have different number of cells!" << std::endl;
+      std::cerr << "Input mesh and output mesh have different number of points!" << std::endl;
       return EXIT_FAILURE;
     }
 
@@ -155,7 +155,7 @@ TestPointDataContainer(typename TMesh::PointDataContainerPointer pointData0,
   {
     if (pointData0->Size() != pointData1->Size())
     {
-      std::cerr << "Input mesh and output mesh have different number of cells!" << std::endl;
+      std::cerr << "Input mesh and output mesh have different number of point data!" << std::endl;
       return EXIT_FAILURE;
     }
     PointDataContainerIterator pdIt0 = pointData0->Begin();
@@ -206,7 +206,7 @@ TestCellDataContainer(typename TMesh::CellDataContainerPointer cellData0,
   {
     if (cellData0->Size() != cellData1->Size())
     {
-      std::cerr << "Input mesh and output mesh have different number of cells!" << std::endl;
+      std::cerr << "Input mesh and output mesh have different number of cell data!" << std::endl;
       return EXIT_FAILURE;
     }
 
@@ -247,7 +247,7 @@ TestCellDataContainer(typename TMesh::CellDataContainerPointer cellData0,
 
 template <typename TMesh>
 int
-test(char * INfilename, char * OUTfilename, bool IsBinary)
+test(char * inputFileName, char * outputFileName, bool isBinary)
 {
   using MeshType = TMesh;
 
@@ -258,14 +258,14 @@ test(char * INfilename, char * OUTfilename, bool IsBinary)
   using MeshFileWriterPointer = typename MeshFileWriterType::Pointer;
 
   MeshFileReaderPointer reader = MeshFileReaderType::New();
-  reader->SetFileName(INfilename);
+  reader->SetFileName(inputFileName);
   try
   {
     reader->Update();
   }
   catch (const itk::ExceptionObject & err)
   {
-    std::cerr << "Read file " << INfilename << " failed " << std::endl;
+    std::cerr << "Read file " << inputFileName << " failed " << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
   }
@@ -278,16 +278,16 @@ test(char * INfilename, char * OUTfilename, bool IsBinary)
   }
 
   MeshFileWriterPointer writer = MeshFileWriterType::New();
-  if (itksys::SystemTools::GetFilenameLastExtension(INfilename) ==
-      itksys::SystemTools::GetFilenameLastExtension(OUTfilename))
+  if (itksys::SystemTools::GetFilenameLastExtension(inputFileName) ==
+      itksys::SystemTools::GetFilenameLastExtension(outputFileName))
   {
     writer->SetMeshIO(reader->GetModifiableMeshIO());
   }
-  writer->SetFileName(OUTfilename);
+  writer->SetFileName(outputFileName);
   writer->SetInput(reader->GetOutput());
 
   // NOTE ALEX: we should document the usage
-  if (IsBinary)
+  if (isBinary)
   {
     writer->SetFileTypeAsBINARY();
   }
@@ -298,25 +298,25 @@ test(char * INfilename, char * OUTfilename, bool IsBinary)
   }
   catch (const itk::ExceptionObject & err)
   {
-    std::cerr << "Write file " << OUTfilename << " failed " << std::endl;
+    std::cerr << "Write file " << outputFileName << " failed " << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
   }
 
-  if (!itksys::SystemTools::FilesDiffer(INfilename, OUTfilename))
+  if (!itksys::SystemTools::FilesDiffer(inputFileName, outputFileName))
   {
     return EXIT_SUCCESS;
   }
 
-  typename MeshFileReaderType::Pointer reader1 = MeshFileReaderType::New();
-  reader1->SetFileName(OUTfilename);
+  auto reader1 = MeshFileReaderType::New();
+  reader1->SetFileName(outputFileName);
   try
   {
     reader1->Update();
   }
   catch (const itk::ExceptionObject & err)
   {
-    std::cerr << "Read file " << OUTfilename << " failed " << std::endl;
+    std::cerr << "Read file " << outputFileName << " failed " << std::endl;
     std::cerr << err << std::endl;
     return EXIT_FAILURE;
   }

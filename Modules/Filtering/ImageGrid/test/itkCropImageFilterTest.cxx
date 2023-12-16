@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ itkCropImageFilterTest(int, char *[])
   // Declare the types of the images
   using ImageType = itk::Image<PixelType, ImageDimension>;
 
-  ImageType::Pointer inputImage = ImageType::New();
+  auto inputImage = ImageType::New();
 
   // Fill in the image
   ImageType::IndexType  index = { { 0, 0 } };

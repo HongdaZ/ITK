@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,6 +24,7 @@
 #include "itkBSplineDerivativeKernelFunction.h"
 #include "itkArray2D.h"
 
+#include <memory> // For unique_ptr.
 #include <mutex>
 
 
@@ -117,7 +118,7 @@ class ITK_TEMPLATE_EXPORT MattesMutualInformationImageToImageMetric
   : public ImageToImageMetric<TFixedImage, TMovingImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MattesMutualInformationImageToImageMetric);
+  ITK_DISALLOW_COPY_AND_MOVE(MattesMutualInformationImageToImageMetric);
 
   /** Standard class type aliases. */
   using Self = MattesMutualInformationImageToImageMetric;
@@ -132,26 +133,26 @@ public:
   itkTypeMacro(MattesMutualInformationImageToImageMetric, ImageToImageMetric);
 
   /** Types inherited from Superclass. */
-  using TransformType = typename Superclass::TransformType;
-  using TransformPointer = typename Superclass::TransformPointer;
-  using TransformJacobianType = typename Superclass::TransformJacobianType;
-  using InterpolatorType = typename Superclass::InterpolatorType;
-  using MeasureType = typename Superclass::MeasureType;
-  using DerivativeType = typename Superclass::DerivativeType;
-  using ParametersType = typename Superclass::ParametersType;
-  using FixedImageType = typename Superclass::FixedImageType;
-  using MovingImageType = typename Superclass::MovingImageType;
-  using MovingImagePointType = typename Superclass::MovingImagePointType;
-  using FixedImageConstPointer = typename Superclass::FixedImageConstPointer;
-  using MovingImageConstPointer = typename Superclass::MovingImageConstPointer;
-  using BSplineTransformWeightsType = typename Superclass::BSplineTransformWeightsType;
-  using BSplineTransformIndexArrayType = typename Superclass::BSplineTransformIndexArrayType;
+  using typename Superclass::TransformType;
+  using typename Superclass::TransformPointer;
+  using typename Superclass::TransformJacobianType;
+  using typename Superclass::InterpolatorType;
+  using typename Superclass::MeasureType;
+  using typename Superclass::DerivativeType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::FixedImageType;
+  using typename Superclass::MovingImageType;
+  using typename Superclass::MovingImagePointType;
+  using typename Superclass::FixedImageConstPointer;
+  using typename Superclass::MovingImageConstPointer;
+  using typename Superclass::BSplineTransformWeightsType;
+  using typename Superclass::BSplineTransformIndexArrayType;
 
-  using CoordinateRepresentationType = typename Superclass::CoordinateRepresentationType;
-  using FixedImageSampleContainer = typename Superclass::FixedImageSampleContainer;
-  using ImageDerivativesType = typename Superclass::ImageDerivativesType;
-  using WeightsValueType = typename Superclass::WeightsValueType;
-  using IndexValueType = typename Superclass::IndexValueType;
+  using typename Superclass::CoordinateRepresentationType;
+  using typename Superclass::FixedImageSampleContainer;
+  using typename Superclass::ImageDerivativesType;
+  using typename Superclass::WeightsValueType;
+  using typename Superclass::IndexValueType;
 
   using OffsetValueType = typename FixedImageType::OffsetValueType;
 
@@ -174,13 +175,13 @@ public:
 
   /** Get the derivatives of the match measure. */
   void
-  GetDerivative(const ParametersType & parameters, DerivativeType & Derivative) const override;
+  GetDerivative(const ParametersType & parameters, DerivativeType & derivative) const override;
 
   /**  Get the value and derivatives for single valued optimizers. */
   void
   GetValueAndDerivative(const ParametersType & parameters,
-                        MeasureType &          Value,
-                        DerivativeType &       Derivative) const override;
+                        MeasureType &          value,
+                        DerivativeType &       derivative) const override;
 
   /** Number of bins to used in the histogram.
    * According to Mattes et al the optimum value is 50.
@@ -259,7 +260,7 @@ public:
 
 protected:
   MattesMutualInformationImageToImageMetric();
-  ~MattesMutualInformationImageToImageMetric() override;
+  ~MattesMutualInformationImageToImageMetric() override = default;
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 
@@ -277,6 +278,10 @@ private:
   using CubicBSplineFunctionType = BSplineKernelFunction<3, PDFValueType>;
   using CubicBSplineDerivativeFunctionType = BSplineDerivativeKernelFunction<3, PDFValueType>;
 
+  /** Extract common processing for both GetValueAndDerivative and GetValue functions */
+  void
+  CommonGetValueProcessing() const;
+
   /** Precompute fixed image parzen window indices. */
   void
   ComputeFixedImageParzenWindowIndices(FixedImageSampleContainer & samples);
@@ -285,7 +290,7 @@ private:
   void
   ComputePDFDerivatives(ThreadIdType                 threadId,
                         unsigned int                 sampleNumber,
-                        int                          movingImageParzenWindowIndex,
+                        int                          pdfMovingIndex,
                         const ImageDerivativesType & movingImageGradientValue,
                         PDFValueType                 cubicBSplineDerivativeValue) const;
 
@@ -323,10 +328,6 @@ private:
   PDFValueType  m_FixedImageBinSize{ 0.0 };
   PDFValueType  m_MovingImageBinSize{ 0.0 };
 
-  /** Cubic BSpline kernel for computing Parzen histograms. */
-  typename CubicBSplineFunctionType::Pointer           m_CubicBSplineKernel;
-  typename CubicBSplineDerivativeFunctionType::Pointer m_CubicBSplineDerivativeKernel;
-
   /** Helper array for storing the values of the JointPDF ratios. */
   using PRatioType = PDFValueType;
   using PRatioArrayType = Array2D<PRatioType>;
@@ -362,9 +363,9 @@ private:
   // Due to a bug in older version of Visual Studio where std::vector resize
   // uses a value instead of a const reference, this must be a pointer.
   // See
-  //   http://thetweaker.wordpress.com/2010/05/05/stdvector-of-aligned-elements/
-  //   http://connect.microsoft.com/VisualStudio/feedback/details/692988
-  mutable AlignedMMIMetricPerThreadStruct * m_MMIMetricPerThreadVariables;
+  //   https://thetweaker.wordpress.com/2010/05/05/stdvector-of-aligned-elements/
+  //   https://connect.microsoft.com/VisualStudio/feedback/details/692988
+  std::unique_ptr<AlignedMMIMetricPerThreadStruct[]> m_MMIMetricPerThreadVariables;
 #endif
 
   bool         m_UseExplicitPDFDerivatives{ true };

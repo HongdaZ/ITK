@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,6 @@
  *=========================================================================*/
 #ifndef itkBSplineUpsampleImageFilter_hxx
 #define itkBSplineUpsampleImageFilter_hxx
-#include "itkBSplineUpsampleImageFilter.h"
 
 namespace itk
 {
@@ -95,15 +94,13 @@ BSplineUpsampleImageFilter<TInputImage, TOutputImage, ResamplerType>::GenerateIn
   typename TInputImage::SizeType  inputRequestedRegionSize;
   typename TInputImage::IndexType inputRequestedRegionStartIndex;
 
-  for (i = 0; i < TInputImage::ImageDimension; i++)
+  for (i = 0; i < TInputImage::ImageDimension; ++i)
   {
     inputRequestedRegionSize[i] = outputRequestedRegionSize[i] / 2;
-    inputRequestedRegionStartIndex[i] = outputRequestedRegionStartIndex[i] / (int)2;
+    inputRequestedRegionStartIndex[i] = outputRequestedRegionStartIndex[i] / 2;
   }
 
-  typename TInputImage::RegionType inputRequestedRegion;
-  inputRequestedRegion.SetSize(inputRequestedRegionSize);
-  inputRequestedRegion.SetIndex(inputRequestedRegionStartIndex);
+  const typename TInputImage::RegionType inputRequestedRegion(inputRequestedRegionStartIndex, inputRequestedRegionSize);
 
   inputPtr->SetRequestedRegion(inputRequestedRegion);
 }
@@ -138,20 +135,18 @@ BSplineUpsampleImageFilter<TInputImage, TOutputImage, ResamplerType>::GenerateOu
   typename TOutputImage::SizeType    outputSize;
   typename TOutputImage::IndexType   outputStartIndex;
 
-  for (i = 0; i < TOutputImage::ImageDimension; i++)
+  for (i = 0; i < TOutputImage::ImageDimension; ++i)
   {
     // TODO:  Verify this is being rounded correctly.
-    outputSpacing[i] = inputSpacing[i] / (double)2;
+    outputSpacing[i] = inputSpacing[i] / 2.0;
     // TODO:  Verify this is being rounded correctly.
-    outputSize[i] = (unsigned int)std::floor((double)(inputSize[i] * 2.0));
-    outputStartIndex[i] = (int)std::ceil((double)inputStartIndex[i] * 2.0);
+    outputSize[i] = static_cast<unsigned int>(std::floor(static_cast<double>(inputSize[i] * 2.0)));
+    outputStartIndex[i] = static_cast<int>(std::ceil(static_cast<double>(inputStartIndex[i]) * 2.0));
   }
 
   outputPtr->SetSpacing(outputSpacing);
 
-  typename TOutputImage::RegionType outputLargestPossibleRegion;
-  outputLargestPossibleRegion.SetSize(outputSize);
-  outputLargestPossibleRegion.SetIndex(outputStartIndex);
+  const typename TOutputImage::RegionType outputLargestPossibleRegion(outputStartIndex, outputSize);
 
   outputPtr->SetLargestPossibleRegion(outputLargestPossibleRegion);
 }

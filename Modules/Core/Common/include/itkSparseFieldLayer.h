@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,18 +59,7 @@ public:
     }
   }
 
-  bool
-  operator!=(const ConstSparseFieldLayerIterator o) const
-  {
-    if (m_Pointer != o.m_Pointer)
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstSparseFieldLayerIterator);
 
   ConstSparseFieldLayerIterator &
   operator++()
@@ -172,7 +161,7 @@ template <typename TNodeType>
 class ITK_TEMPLATE_EXPORT SparseFieldLayer : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SparseFieldLayer);
+  ITK_DISALLOW_COPY_AND_MOVE(SparseFieldLayer);
 
   /** Standard type alias. */
   using Self = SparseFieldLayer;

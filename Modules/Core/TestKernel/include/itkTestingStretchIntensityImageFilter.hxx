@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@
 #ifndef itkTestingStretchIntensityImageFilter_hxx
 #define itkTestingStretchIntensityImageFilter_hxx
 
-#include "itkTestingStretchIntensityImageFilter.h"
 #include "itkImageBufferRange.h"
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
@@ -60,14 +59,13 @@ StretchIntensityImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateDa
   if (m_OutputMinimum > m_OutputMaximum)
   {
     itkExceptionMacro(<< "Minimum output value cannot be greater than Maximum output value.");
-    return;
   }
 
   const TInputImage * inputImage = this->GetInput();
   m_InputMaximum = NumericTraits<InputPixelType>::NonpositiveMin();
   m_InputMinimum = NumericTraits<InputPixelType>::max();
 
-  for (const InputPixelType value : Experimental::MakeImageBufferRange(inputImage))
+  for (const InputPixelType value : MakeImageBufferRange(inputImage))
   {
     if (value > m_InputMaximum)
     {

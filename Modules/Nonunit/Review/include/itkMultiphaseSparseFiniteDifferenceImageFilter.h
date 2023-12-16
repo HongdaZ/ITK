@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -156,19 +156,19 @@ namespace itk
  *  This code was taken from the Insight Journal paper:
  *
  *      "Cell Tracking using Coupled Active Surfaces for Nuclei and Membranes"
- *      http://www.insight-journal.org/browse/publication/642
+ *      https://www.insight-journal.org/browse/publication/642
  *      https://hdl.handle.net/10380/3055
  *
  *  That is based on the papers:
  *
  *      "Level Set Segmentation: Active Contours without edge"
- *      http://www.insight-journal.org/browse/publication/322
+ *      https://www.insight-journal.org/browse/publication/322
  *      https://hdl.handle.net/1926/1532
  *
  *      and
  *
  *      "Level set segmentation using coupled active surfaces"
- *      http://www.insight-journal.org/browse/publication/323
+ *      https://www.insight-journal.org/browse/publication/323
  *      https://hdl.handle.net/1926/1533
  *
  * \ingroup ITKReview
@@ -182,7 +182,7 @@ class ITK_TEMPLATE_EXPORT MultiphaseSparseFiniteDifferenceImageFilter
   : public MultiphaseFiniteDifferenceImageFilter<TInputImage, TFeatureImage, TOutputImage, TFunction, TIdCell>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiphaseSparseFiniteDifferenceImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MultiphaseSparseFiniteDifferenceImageFilter);
 
   /** Standard class type aliases */
   using Self = MultiphaseSparseFiniteDifferenceImageFilter;
@@ -200,41 +200,41 @@ public:
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /**Typedefs from the superclass */
-  using TimeStepType = typename Superclass::TimeStepType;
+  using typename Superclass::TimeStepType;
 
   /** Information derived from the image types. */
-  using InputImageType = typename Superclass::InputImageType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using InputRegionType = typename Superclass::InputRegionType;
-  using InputSizeType = typename Superclass::InputSizeType;
-  using InputSizeValueType = typename Superclass::InputSizeValueType;
-  using InputIndexType = typename Superclass::InputIndexType;
-  using InputIndexValueType = typename Superclass::InputIndexValueType;
-  using InputPixelType = typename Superclass::InputPixelType;
-  using InputPointType = typename Superclass::InputPointType;
-  using InputSpacingType = typename Superclass::InputSpacingType;
-  using InputOffsetValueType = typename Superclass::InputOffsetValueType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::InputImagePointer;
+  using typename Superclass::InputRegionType;
+  using typename Superclass::InputSizeType;
+  using typename Superclass::InputSizeValueType;
+  using typename Superclass::InputIndexType;
+  using typename Superclass::InputIndexValueType;
+  using typename Superclass::InputPixelType;
+  using typename Superclass::InputPointType;
+  using typename Superclass::InputSpacingType;
+  using typename Superclass::InputOffsetValueType;
 
-  using FeatureImageType = typename Superclass::FeatureImageType;
-  using FeatureSizeType = typename Superclass::FeatureSizeType;
-  using FeatureImagePointer = typename Superclass::FeatureImagePointer;
-  using FeatureRegionType = typename Superclass::FeatureRegionType;
-  using FeatureSpacingType = typename Superclass::FeatureSpacingType;
-  using FeaturePointType = typename Superclass::FeaturePointType;
+  using typename Superclass::FeatureImageType;
+  using typename Superclass::FeatureSizeType;
+  using typename Superclass::FeatureImagePointer;
+  using typename Superclass::FeatureRegionType;
+  using typename Superclass::FeatureSpacingType;
+  using typename Superclass::FeaturePointType;
 
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputRegionType = typename Superclass::OutputRegionType;
-  using OutputSizeType = typename Superclass::OutputSizeType;
-  using OutputIndexType = typename Superclass::OutputIndexType;
-  using OutputIndexValueType = typename Superclass::OutputIndexValueType;
-  using OutputPixelType = typename Superclass::OutputPixelType;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::OutputImagePointer;
+  using typename Superclass::OutputRegionType;
+  using typename Superclass::OutputSizeType;
+  using typename Superclass::OutputIndexType;
+  using typename Superclass::OutputIndexValueType;
+  using typename Superclass::OutputPixelType;
 
   using ValueType = typename InputImageType::ValueType;
-  using IdCellType = typename Superclass::IdCellType;
+  using typename Superclass::IdCellType;
 
-  using FiniteDifferenceFunctionType = typename Superclass::FiniteDifferenceFunctionType;
-  using FiniteDifferenceFunctionPointer = typename Superclass::FiniteDifferenceFunctionPointer;
+  using typename Superclass::FiniteDifferenceFunctionType;
+  using typename Superclass::FiniteDifferenceFunctionPointer;
   using FiniteDifferenceFunctionFloatOffsetType = typename FiniteDifferenceFunctionType::FloatOffsetType;
 
   /** Node type used in sparse field layer lists. */
@@ -292,18 +292,7 @@ public:
    *  applications may not use this value and can safely turn the flag off. */
   itkSetMacro(InterpolateSurfaceLocation, bool);
   itkGetConstMacro(InterpolateSurfaceLocation, bool);
-
-  /** See Get/SetInterpolateSurfaceLocation */
-  void
-  InterpolateSurfaceLocationOn()
-  {
-    this->SetInterpolateSurfaceLocation(true);
-  }
-  void
-  InterpolateSurfaceLocationOff()
-  {
-    this->SetInterpolateSurfaceLocation(false);
-  }
+  itkBooleanMacro(InterpolateSurfaceLocation);
 
   void
   SetFunctionCount(const IdCellType & n)
@@ -312,7 +301,7 @@ public:
 
     m_SparseData.resize(this->m_FunctionCount, nullptr);
 
-    for (IdCellType i = 0; i < this->m_FunctionCount; i++)
+    for (IdCellType i = 0; i < this->m_FunctionCount; ++i)
     {
       m_SparseData[i] = new SparseDataStruct(i);
     }
@@ -552,8 +541,8 @@ protected:
 private:
   unsigned int m_CurrentFunctionIndex;
 
-  double       m_RMSSum;
-  unsigned int m_RMSCounter;
+  double       m_RMSSum{ 0. };
+  unsigned int m_RMSCounter{ 0 };
 
   /** This flag is true when methods need to check boundary conditions and
       false when methods do not need to check for boundary conditions. */

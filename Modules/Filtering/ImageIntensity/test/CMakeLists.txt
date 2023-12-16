@@ -77,6 +77,7 @@ itkLessTest.cxx
 itkClampImageFilterTest.cxx
 itkNthElementPixelAccessorTest2.cxx
 itkMagnitudeAndPhaseToComplexImageFilterTest.cxx
+itkRoundImageFilterTest.cxx
 )
 
 if (NOT ITK_LEGACY_REMOVE)
@@ -204,7 +205,7 @@ itk_add_test(NAME itkPowImageFilterTest
 itk_add_test(NAME itkMultiplyImageFilterTest
       COMMAND ITKImageIntensityTestDriver itkMultiplyImageFilterTest)
 itk_add_test(NAME itkWeightedAddImageFilterTest
-      COMMAND ITKImageIntensityTestDriver itkWeightedAddImageFilterTest)
+      COMMAND ITKImageIntensityTestDriver itkWeightedAddImageFilterTest 0.4)
 itk_add_test(NAME itkRescaleIntensityImageFilterTest
       COMMAND ITKImageIntensityTestDriver itkRescaleIntensityImageFilterTest)
 
@@ -343,8 +344,9 @@ itk_add_test(NAME itkMagnitudeAndPhaseToComplexImageFilterTest
     itkMagnitudeAndPhaseToComplexImageFilterTest
       DATA{Input/itkBrainSliceComplexMagnitude.mha}
       DATA{Input/itkBrainSliceComplexPhase.mha}
-      ${ITK_TEST_OUTPUT_DIR}/itkMagnitudeAndPhaseToComplexImageFilterTest.mha )
-
+      ${ITK_TEST_OUTPUT_DIR}/itkMagnitudeAndPhaseToComplexImageFilterTest.mha)
+itk_add_test(NAME itkRoundImageFilterTest
+      COMMAND ITKImageIntensityTestDriver itkRoundImageFilterTest)
 
 set(ITKImageIntensityGTests
   itkBitwiseOpsFunctorsTest.cxx

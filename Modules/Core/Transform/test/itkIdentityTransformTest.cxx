@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,16 +33,16 @@ itkIdentityTransformTest(int, char *[])
   bool                   Ok = true;
 
   using IdentityTransformType = itk::IdentityTransform<double>;
-  IdentityTransformType::Pointer transform = IdentityTransformType::New();
+  auto transform = IdentityTransformType::New();
 
   std::cout << "Testing TransformPoint: ";
   IdentityTransformType::InputPointType  p(10);
   IdentityTransformType::OutputPointType r;
 
   r = transform->TransformPoint(p);
-  for (unsigned int i = 0; i < N; i++)
+  for (unsigned int i = 0; i < N; ++i)
   {
-    if (std::fabs(p[i] - r[i]) > epsilon)
+    if (itk::Math::abs(p[i] - r[i]) > epsilon)
     {
       Ok = false;
       break;
@@ -66,9 +66,9 @@ itkIdentityTransformTest(int, char *[])
   IdentityTransformType::OutputVectorType vout;
 
   vout = transform->TransformVector(vin);
-  for (unsigned int i = 0; i < N; i++)
+  for (unsigned int i = 0; i < N; ++i)
   {
-    if (std::fabs(vout[i] - vin[i]) > epsilon)
+    if (itk::Math::abs(vout[i] - vin[i]) > epsilon)
     {
       Ok = false;
       break;
@@ -92,9 +92,9 @@ itkIdentityTransformTest(int, char *[])
   IdentityTransformType::OutputVnlVectorType vnlout;
 
   vnlout = transform->TransformVector(vnlin);
-  for (unsigned int i = 0; i < N; i++)
+  for (unsigned int i = 0; i < N; ++i)
   {
-    if (std::fabs(vnlout[i] - vnlin[i]) > epsilon)
+    if (itk::Math::abs(vnlout[i] - vnlin[i]) > epsilon)
     {
       Ok = false;
       break;
@@ -118,9 +118,9 @@ itkIdentityTransformTest(int, char *[])
   IdentityTransformType::OutputCovariantVectorType vcout;
 
   vcout = transform->TransformCovariantVector(vcin);
-  for (unsigned int i = 0; i < N; i++)
+  for (unsigned int i = 0; i < N; ++i)
   {
-    if (std::fabs(vcout[i] - vcin[i]) > epsilon)
+    if (itk::Math::abs(vcout[i] - vcin[i]) > epsilon)
     {
       Ok = false;
       break;
@@ -170,7 +170,13 @@ itkIdentityTransformTest(int, char *[])
     std::cout << " [ PASSED ] " << std::endl;
   }
 
-  IdentityTransformType::Pointer inv = IdentityTransformType::New();
+  IdentityTransformType::JacobianPositionType jacobianWrtPos;
+  transform->ComputeJacobianWithRespectToPosition(p, jacobianWrtPos);
+  IdentityTransformType::JacobianPositionType identity;
+  identity.set_identity();
+  ITK_TEST_EXPECT_EQUAL(identity, jacobianWrtPos);
+
+  auto inv = IdentityTransformType::New();
   ITK_TEST_EXPECT_TRUE(transform->GetInverse(inv));
   ITK_TEST_EXPECT_TRUE(!transform->GetInverse(nullptr));
 

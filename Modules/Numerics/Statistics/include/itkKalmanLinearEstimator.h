@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class KalmanLinearEstimator
+ * \class KalmanLinearEstimator
  * \brief Implement a linear recursive estimator.
  *
  * KalmanLinearEstimator class implements a linear recursive estimator.  The
@@ -157,7 +157,7 @@ KalmanLinearEstimator<T, VEstimatorDimension>::UpdateWithNewMeasure(const ValueT
 
   VectorType Corrector = m_Variance * newPredictor;
 
-  for (unsigned int j = 0; j < VEstimatorDimension; j++)
+  for (unsigned int j = 0; j < VEstimatorDimension; ++j)
   {
     m_Estimator(j) += Corrector(j) * errorMeasurePrediction;
   }
@@ -173,9 +173,9 @@ KalmanLinearEstimator<T, VEstimatorDimension>::UpdateVariance(const VectorType &
 
   ValueType denominator = 1.0 / (1.0 + dot_product(aux, newPredictor));
 
-  for (unsigned int col = 0; col < VEstimatorDimension; col++)
+  for (unsigned int col = 0; col < VEstimatorDimension; ++col)
   {
-    for (unsigned int row = 0; row < VEstimatorDimension; row++)
+    for (unsigned int row = 0; row < VEstimatorDimension; ++row)
     {
       m_Variance(col, row) -= aux(col) * aux(row) * denominator;
     }

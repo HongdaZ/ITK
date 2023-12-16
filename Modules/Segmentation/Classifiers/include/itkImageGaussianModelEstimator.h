@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 
 #include <cmath>
 #include <cfloat>
+#include <memory> // For unique_ptr.
 
 #include "vnl/vnl_vector.h"
 #include "vnl/vnl_matrix.h"
@@ -35,7 +36,7 @@
 namespace itk
 {
 /**
- *\class ImageGaussianModelEstimator
+ * \class ImageGaussianModelEstimator
  * \brief Base class for ImageGaussianModelEstimator object.
  *
  * itkImageGaussianModelEstimator generates the Gaussian model for given
@@ -76,7 +77,7 @@ template <typename TInputImage, typename TMembershipFunction, typename TTraining
 class ITK_TEMPLATE_EXPORT ImageGaussianModelEstimator : public ImageModelEstimatorBase<TInputImage, TMembershipFunction>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageGaussianModelEstimator);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageGaussianModelEstimator);
 
   /** Standard class type aliases. */
   using Self = ImageGaussianModelEstimator;
@@ -123,8 +124,8 @@ public:
   itkGetModifiableObjectMacro(TrainingImage, TrainingImageType);
 
 protected:
-  ImageGaussianModelEstimator();
-  ~ImageGaussianModelEstimator() override;
+  ImageGaussianModelEstimator() = default;
+  ~ImageGaussianModelEstimator() override = default;
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 
@@ -140,22 +141,24 @@ private:
   /** Dimension of each individual pixel vector. */
   static constexpr unsigned int VectorDimension = InputImagePixelType::Dimension;
 
-  MatrixType   m_NumberOfSamples;
-  MatrixType   m_Means;
-  MatrixType * m_Covariance{ nullptr };
-
-  TrainingImagePointer m_TrainingImage;
-
-  /** A function that generates the
-   * model based on the training input data.
-   * Achieves the goal of training the classifier. */
+  /** Generate the model based on the training input data.
+   * Achieves the goal of training the classifier.
+   * Takes the set of training images and internally computes the means and
+   * variance of the various classes defined in the training set.
+   */
   void
   EstimateModels() override;
 
   void
   EstimateGaussianModelParameters();
-}; // class ImageGaussianModelEstimator
-} // namespace itk
+
+  MatrixType                    m_NumberOfSamples;
+  MatrixType                    m_Means;
+  std::unique_ptr<MatrixType[]> m_Covariance{ nullptr };
+
+  TrainingImagePointer m_TrainingImage;
+};
+} // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkImageGaussianModelEstimator.hxx"

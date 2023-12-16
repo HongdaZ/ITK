@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSparseFieldFourthOrderLevelSetImageFilter_hxx
 #define itkSparseFieldFourthOrderLevelSetImageFilter_hxx
 
-#include "itkSparseFieldFourthOrderLevelSetImageFilter.h"
 #include "itkNeighborhoodIterator.h"
 #include "itkImageRegionConstIterator.h"
 #include "itkNumericTraits.h"
@@ -95,7 +94,7 @@ SparseFieldFourthOrderLevelSetImageFilter<TInputImage, TOutputImage>::ComputeCur
 
   const NeighborhoodScalesType neighborhoodScales = this->GetDifferenceFunction()->ComputeNeighborhoodScales();
 
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     stride[j] = it.GetStride(j);
     indicator[j] = one << j;
@@ -103,10 +102,10 @@ SparseFieldFourthOrderLevelSetImageFilter<TInputImage, TOutputImage>::ComputeCur
 
   curvature = NumericTraits<ValueType>::ZeroValue();
 
-  for (counter = 0; counter < m_NumVertex; counter++)
+  for (counter = 0; counter < m_NumVertex; ++counter)
   {
     position = center;
-    for (unsigned int k = 0; k < ImageDimension; k++)
+    for (unsigned int k = 0; k < ImageDimension; ++k)
     {
       if (counter & indicator[k])
       {
@@ -120,7 +119,7 @@ SparseFieldFourthOrderLevelSetImageFilter<TInputImage, TOutputImage>::ComputeCur
     else
     {
       normalvector = it.GetPixel(position)->m_Data;
-      for (unsigned int j = 0; j < ImageDimension; j++) // derivative axis
+      for (unsigned int j = 0; j < ImageDimension; ++j) // derivative axis
       {
         if (counter & indicator[j])
         {
@@ -152,7 +151,7 @@ SparseFieldFourthOrderLevelSetImageFilter<TInputImage, TOutputImage>::ComputeCur
 
   DistanceImageIteratorType distanceImageIterator(distanceImage, distanceImage->GetRequestedRegion());
   typename SparseImageIteratorType::RadiusType radius;
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     radius[j] = 1;
   }
@@ -232,7 +231,7 @@ SparseFieldFourthOrderLevelSetImageFilter<TInputImage, TOutputImage>::ProcessNor
   // on into a temporary image to  use as the input to the mini-pipeline.  This
   // avoids a complete copy of the image.
   typename OutputImageType::Pointer phi = this->GetOutput();
-  typename OutputImageType::Pointer tmp = OutputImageType::New();
+  auto                              tmp = OutputImageType::New();
   tmp->SetRequestedRegion(phi->GetRequestedRegion());
   tmp->SetBufferedRegion(phi->GetBufferedRegion());
   tmp->SetLargestPossibleRegion(phi->GetLargestPossibleRegion());

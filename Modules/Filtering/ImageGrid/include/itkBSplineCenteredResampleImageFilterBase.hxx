@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,6 @@
  *=========================================================================*/
 #ifndef itkBSplineCenteredResampleImageFilterBase_hxx
 #define itkBSplineCenteredResampleImageFilterBase_hxx
-#include "itkBSplineCenteredResampleImageFilterBase.h"
 #include "itkImageLinearIteratorWithIndex.h"
 #include "itkProgressReporter.h"
 namespace itk
@@ -244,11 +243,11 @@ BSplineCenteredResampleImageFilterBase<TInputImage, TOutputImage>::Reduce1DImage
   std::vector<double> temp;
   temp.resize(inTraverseSize);
 
-  for (inK = 0; inK < inTraverseSize; inK++)
+  for (inK = 0; inK < inTraverseSize; ++inK)
   {
     temp[inK] = in[inK] * this->m_G[0];
 
-    for (int i = 1; i < this->m_GSize; i++)
+    for (int i = 1; i < this->m_GSize; ++i)
     {
       // Calculate indices for left and right of symmetrical filter.
       i1 = inK - i;
@@ -275,7 +274,7 @@ BSplineCenteredResampleImageFilterBase<TInputImage, TOutputImage>::Reduce1DImage
     }
   }
 
-  for (outK = 0; outK < outTraverseSize; outK++)
+  for (outK = 0; outK < outTraverseSize; ++outK)
   {
     i1 = 2 * outK;
     double outVal = (temp[i1] + temp[i1 + 1]) / 2.0;
@@ -308,7 +307,7 @@ BSplineCenteredResampleImageFilterBase<TInputImage, TOutputImage>::Expand1DImage
 
   double outVal, outVal2;
 
-  for (inK = 0; inK < (IndexValueType)inTraverseSize; inK++)
+  for (inK = 0; inK < (IndexValueType)inTraverseSize; ++inK)
   {
     // outK = inK * 2L;
     outVal = in[inK] * this->m_H[0];
@@ -342,7 +341,7 @@ BSplineCenteredResampleImageFilterBase<TInputImage, TOutputImage>::Expand1DImage
     outVal2 = 0;
     for (IndexValueType k = -k0; k < this->m_HSize; k += 2L)
     {
-      IndexValueType kk = std::abs(static_cast<int>(k));
+      IndexValueType kk = itk::Math::abs(static_cast<int>(k));
       i1 = inK + (k + 1L) / 2L;
       if (i1 < 0L)
       {

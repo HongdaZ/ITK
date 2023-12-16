@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,7 +46,7 @@ template <typename TPointSet, typename TOutput = double, typename TCoordRep = do
 class ITK_TEMPLATE_EXPORT ManifoldParzenWindowsPointSetFunction : public PointSetFunction<TPointSet, TOutput, TCoordRep>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ManifoldParzenWindowsPointSetFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(ManifoldParzenWindowsPointSetFunction);
 
   using Self = ManifoldParzenWindowsPointSetFunction;
   using Superclass = PointSetFunction<TPointSet, TOutput, TCoordRep>;
@@ -59,8 +59,8 @@ public:
   /** Extract dimension from output image. */
   static constexpr unsigned int PointDimension = TPointSet::PointDimension;
 
-  using InputPointSetType = typename Superclass::InputPointSetType;
-  using InputPointType = typename Superclass::InputPointType;
+  using typename Superclass::InputPointSetType;
+  using typename Superclass::InputPointType;
 
   /** Point set type alias support */
   using PointSetType = TPointSet;

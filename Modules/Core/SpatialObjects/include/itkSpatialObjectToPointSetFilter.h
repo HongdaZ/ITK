@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class SpatialObjectToPointSetFilter
+ * \class SpatialObjectToPointSetFilter
  * \brief Base class for filters that take a SpatialObject
  *        as input and produce a PointSet as output.
  *  The pointset created is in physical space.
@@ -36,7 +36,7 @@ template <typename TPointBasedSpatialObject, typename TOutputPointSet>
 class ITK_TEMPLATE_EXPORT SpatialObjectToPointSetFilter : public MeshSource<TOutputPointSet>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SpatialObjectToPointSetFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SpatialObjectToPointSetFilter);
 
   /** Standard class type aliases. */
   using Self = SpatialObjectToPointSetFilter;
@@ -75,7 +75,7 @@ public:
   using Superclass::SetInput;
 
   void
-  SetInput(const SpatialObjectType * object);
+  SetInput(const SpatialObjectType * input);
 
   void
   SetInput(const DataObjectIdentifierType & key, const SpatialObjectType * object);

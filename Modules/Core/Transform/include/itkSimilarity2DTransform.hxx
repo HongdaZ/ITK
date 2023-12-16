@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSimilarity2DTransform_hxx
 #define itkSimilarity2DTransform_hxx
 
-#include "itkSimilarity2DTransform.h"
 #include "itkMath.h"
 
 namespace itk
@@ -70,7 +69,7 @@ Similarity2DTransform<TParametersValueType>::SetParameters(const ParametersType 
 
   // Set translation
   OffsetType translation;
-  for (unsigned int i = 0; i < SpaceDimension; i++)
+  for (unsigned int i = 0; i < SpaceDimension; ++i)
   {
     translation[i] = parameters[i + 2];
   }
@@ -88,8 +87,8 @@ Similarity2DTransform<TParametersValueType>::SetParameters(const ParametersType 
 
 
 template <typename TParametersValueType>
-const typename Similarity2DTransform<TParametersValueType>::ParametersType &
-Similarity2DTransform<TParametersValueType>::GetParameters() const
+auto
+Similarity2DTransform<TParametersValueType>::GetParameters() const -> const ParametersType &
 {
   itkDebugMacro(<< "Getting parameters ");
 
@@ -98,7 +97,7 @@ Similarity2DTransform<TParametersValueType>::GetParameters() const
 
   // Get the translation
   OffsetType translation = this->GetTranslation();
-  for (unsigned int i = 0; i < SpaceDimension; i++)
+  for (unsigned int i = 0; i < SpaceDimension; ++i)
   {
     this->m_Parameters[i + 2] = translation[i];
   }
@@ -150,7 +149,7 @@ Similarity2DTransform<TParametersValueType>::ComputeMatrixParameters()
 
   // Throw if m_Scale is zero, or a denormal floating point number (close to zero)".
   // https://bitbashing.io/comparing-floats.html
-  // http://en.cppreference.com/w/cpp/types/numeric_limits/epsilon
+  // https://en.cppreference.com/w/cpp/types/numeric_limits/epsilon
   if (m_Scale < std::numeric_limits<TParametersValueType>::min())
   {
     itkExceptionMacro(<< "Bad Rotation Matrix. Scale cannot be zero.\n"
@@ -248,7 +247,7 @@ Similarity2DTransform<TParametersValueType>::GetInverse(Self * inverse) const
     return false;
   }
   inverse->SetCenter(this->GetCenter()); // inverse have the same center
-  inverse->SetScale(NumericTraits<double>::OneValue() / this->GetScale());
+  inverse->SetScale(1.0 / this->GetScale());
   inverse->SetAngle(-this->GetAngle());
   inverse->SetTranslation(-(this->GetInverseMatrix() * this->GetTranslation()));
 
@@ -257,8 +256,8 @@ Similarity2DTransform<TParametersValueType>::GetInverse(Self * inverse) const
 
 
 template <typename TParametersValueType>
-typename Similarity2DTransform<TParametersValueType>::InverseTransformBasePointer
-Similarity2DTransform<TParametersValueType>::GetInverseTransform() const
+auto
+Similarity2DTransform<TParametersValueType>::GetInverseTransform() const -> InverseTransformBasePointer
 {
   Pointer inv = New();
 

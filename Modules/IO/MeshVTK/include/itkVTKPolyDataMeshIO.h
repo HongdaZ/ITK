@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,6 +24,7 @@
 #include "itkMeshIOBase.h"
 #include "itkVectorContainer.h"
 #include "itkNumberToString.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 #include <fstream>
 #include <vector>
@@ -31,7 +32,7 @@
 namespace itk
 {
 /**
- *\class VTKPolyDataMeshIO
+ * \class VTKPolyDataMeshIO
  * \brief This class defines how to read and write vtk legacy file format.
  *
  * \author Wanlin Zhu. Uviversity of New South Wales, Australia.
@@ -41,7 +42,7 @@ namespace itk
 class ITKIOMeshVTK_EXPORT VTKPolyDataMeshIO : public MeshIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VTKPolyDataMeshIO);
+  ITK_DISALLOW_COPY_AND_MOVE(VTKPolyDataMeshIO);
 
   /** Standard "Self" type alias. */
   using Self = VTKPolyDataMeshIO;
@@ -67,12 +68,12 @@ public:
   /**-------- This part of the interfaces deals with reading data. ----- */
 
   /** Determine if the file can be read with this MeshIO implementation.
-   * \param FileNameToRead The name of the file to test for reading.
+   * \param fileName The name of the file to test for reading.
    * \post Sets classes MeshIOBase::m_FileName variable to be FileNameToWrite
    * \return Returns true if this MeshIO can read the file specified.
    */
   bool
-  CanReadFile(const char * FileNameToRead) override;
+  CanReadFile(const char * fileName) override;
 
   /** Set the spacing and dimension information for the set filename. */
   void
@@ -93,12 +94,12 @@ public:
 
   /*-------- This part of the interfaces deals with writing data. ----- */
   /** Determine if the file can be written with this MeshIO implementation.
-   * \param FileNameToWrite The name of the file to test for writing.
+   * \param fileName The name of the file to test for writing.
    * \post Sets classes MeshIOBase::m_FileName variable to be FileNameToWrite
    * \return Returns true if this MeshIO can write the file specified.
    */
   bool
-  CanWriteFile(const char * FileNameToWrite) override;
+  CanWriteFile(const char * fileName) override;
 
   /** Set the spacing and dimension information for the set filename. */
   void
@@ -145,30 +146,34 @@ protected:
 
     SizeValueType index = 0;
 
-    for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ii++)
+    for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ++ii)
     {
       auto cellType = static_cast<CellGeometryEnum>(static_cast<int>(buffer[index++]));
       auto nn = static_cast<unsigned int>(buffer[index++]);
       switch (cellType)
       {
         case CellGeometryEnum::VERTEX_CELL:
-          numberOfVertices++;
+          ++numberOfVertices;
           numberOfVertexIndices += nn + 1;
           break;
         case CellGeometryEnum::LINE_CELL:
-          numberOfLines++;
+          ++numberOfLines;
+          numberOfLineIndices += nn + 1;
+          break;
+        case CellGeometryEnum::POLYLINE_CELL:
+          ++numberOfLines;
           numberOfLineIndices += nn + 1;
           break;
         case CellGeometryEnum::TRIANGLE_CELL:
-          numberOfPolygons++;
+          ++numberOfPolygons;
           numberOfPolygonIndices += nn + 1;
           break;
         case CellGeometryEnum::POLYGON_CELL:
-          numberOfPolygons++;
+          ++numberOfPolygons;
           numberOfPolygonIndices += nn + 1;
           break;
         case CellGeometryEnum::QUADRILATERAL_CELL:
-          numberOfPolygons++;
+          ++numberOfPolygons;
           numberOfPolygonIndices += nn + 1;
           break;
         default:
@@ -201,11 +206,7 @@ protected:
       if (line.find("POINTS") != std::string::npos)
       {
         /**  Load the point coordinates into the itk::Mesh */
-        SizeValueType numberOfComponents = this->m_NumberOfPoints * this->m_PointDimension;
-        for (SizeValueType ii = 0; ii < numberOfComponents; ii++)
-        {
-          inputFile >> buffer[ii];
-        }
+        Self::ReadComponentsAsASCII(inputFile, buffer, this->m_NumberOfPoints * this->m_PointDimension);
       }
     }
   }
@@ -277,11 +278,8 @@ protected:
         }
 
         /** for VECTORS or NORMALS or TENSORS, we could read them directly */
-        SizeValueType numberOfComponents = this->m_NumberOfPointPixels * this->m_NumberOfPointPixelComponents;
-        for (SizeValueType ii = 0; ii < numberOfComponents; ii++)
-        {
-          inputFile >> buffer[ii];
-        }
+        Self::ReadComponentsAsASCII(
+          inputFile, buffer, this->m_NumberOfPointPixels * this->m_NumberOfPointPixelComponents);
       }
     }
   }
@@ -372,11 +370,8 @@ protected:
         }
 
         /** for VECTORS or NORMALS or TENSORS, we could read them directly */
-        SizeValueType numberOfComponents = this->m_NumberOfCellPixels * this->m_NumberOfCellPixelComponents;
-        for (SizeValueType ii = 0; ii < numberOfComponents; ii++)
-        {
-          inputFile >> buffer[ii];
-        }
+        Self::ReadComponentsAsASCII(
+          inputFile, buffer, this->m_NumberOfCellPixels * this->m_NumberOfCellPixelComponents);
       }
     }
   }
@@ -432,19 +427,18 @@ protected:
   void
   WritePointsBufferAsASCII(std::ofstream & outputFile, T * buffer, const StringType & pointComponentType)
   {
-    NumberToString<T> convert;
     /** 1. Write number of points */
     outputFile << "POINTS " << this->m_NumberOfPoints;
 
     outputFile << pointComponentType << '\n';
-    for (SizeValueType ii = 0; ii < this->m_NumberOfPoints; ii++)
+    for (SizeValueType ii = 0; ii < this->m_NumberOfPoints; ++ii)
     {
-      for (unsigned int jj = 0; jj < this->m_PointDimension - 1; jj++)
+      for (unsigned int jj = 0; jj < this->m_PointDimension - 1; ++jj)
       {
-        outputFile << convert(buffer[ii * this->m_PointDimension + jj]) << " ";
+        outputFile << ConvertNumberToString(buffer[ii * this->m_PointDimension + jj]) << " ";
       }
 
-      outputFile << convert(buffer[ii * this->m_PointDimension + this->m_PointDimension - 1]) << '\n';
+      outputFile << ConvertNumberToString(buffer[ii * this->m_PointDimension + this->m_PointDimension - 1]) << '\n';
     }
 
     return;
@@ -484,14 +478,14 @@ protected:
     {
       ExposeMetaData<unsigned int>(metaDic, "numberOfVertexIndices", numberOfVertexIndices);
       outputFile << "VERTICES " << numberOfVertices << " " << numberOfVertexIndices << '\n';
-      for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ii++)
+      for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ++ii)
       {
         auto cellType = static_cast<CellGeometryEnum>(static_cast<int>(buffer[index++]));
         auto nn = static_cast<unsigned int>(buffer[index++]);
         if (cellType == CellGeometryEnum::VERTEX_CELL)
         {
           outputFile << nn;
-          for (unsigned int jj = 0; jj < nn; jj++)
+          for (unsigned int jj = 0; jj < nn; ++jj)
           {
             outputFile << " " << buffer[index++];
           }
@@ -513,49 +507,29 @@ protected:
       SizeValueType             numberOfPolylines = 0;
       PolylinesContainerPointer polylines = PolylinesContainerType::New();
       PointIdVector             pointIds;
-      for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ii++)
+      for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ++ii)
       {
         auto cellType = static_cast<CellGeometryEnum>(static_cast<int>(buffer[index++]));
         auto nn = static_cast<unsigned int>(buffer[index++]);
+
+        pointIds.clear();
         if (cellType == CellGeometryEnum::LINE_CELL)
         {
-          if (pointIds.size() >= nn)
+          pointIds.push_back(static_cast<SizeValueType>(buffer[index]));
+          pointIds.push_back(static_cast<SizeValueType>(buffer[index + 1]));
+        }
+        else if (cellType == CellGeometryEnum::POLYLINE_CELL)
+        {
+          for (unsigned int jj = 0; jj < nn; ++jj)
           {
-            SizeValueType id = pointIds.back();
-            if (id == static_cast<SizeValueType>(buffer[index]))
-            {
-              pointIds.push_back(static_cast<SizeValueType>(buffer[index + 1]));
-            }
-            else if (id == static_cast<SizeValueType>(buffer[index + 1]))
-            {
-              pointIds.push_back(static_cast<SizeValueType>(buffer[index]));
-            }
-            else
-            {
-              polylines->InsertElement(numberOfPolylines++, pointIds);
-              numberOfLineIndices += pointIds.size();
-              pointIds.clear();
-
-              for (unsigned int jj = 0; jj < nn; jj++)
-              {
-                pointIds.push_back(static_cast<SizeValueType>(buffer[index + jj]));
-              }
-            }
-          }
-          else
-          {
-            for (unsigned int jj = 0; jj < nn; jj++)
-            {
-              pointIds.push_back(static_cast<SizeValueType>(buffer[index + jj]));
-            }
+            pointIds.push_back(static_cast<SizeValueType>(buffer[index + jj]));
           }
         }
 
+        polylines->InsertElement(numberOfPolylines++, pointIds);
+        numberOfLineIndices += pointIds.size();
         index += nn;
       }
-      polylines->InsertElement(numberOfPolylines++, pointIds);
-      numberOfLineIndices += pointIds.size();
-      pointIds.clear();
 
       numberOfLines = polylines->Size();
       numberOfLineIndices += numberOfLines;
@@ -581,7 +555,7 @@ protected:
     {
       ExposeMetaData<unsigned int>(metaDic, "numberOfPolygonIndices", numberOfPolygonIndices);
       outputFile << "POLYGONS " << numberOfPolygons << " " << numberOfPolygonIndices << '\n';
-      for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ii++)
+      for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ++ii)
       {
         auto cellType = static_cast<CellGeometryEnum>(static_cast<int>(buffer[index++]));
         auto nn = static_cast<unsigned int>(buffer[index++]);
@@ -589,7 +563,7 @@ protected:
             cellType == CellGeometryEnum::QUADRILATERAL_CELL)
         {
           outputFile << nn;
-          for (unsigned int jj = 0; jj < nn; jj++)
+          for (unsigned int jj = 0; jj < nn; ++jj)
           {
             outputFile << " " << buffer[index++];
           }
@@ -623,11 +597,11 @@ protected:
     {
       ExposeMetaData<unsigned int>(metaDic, "numberOfVertexIndices", numberOfVertexIndices);
       outputFile << "VERTICES " << numberOfVertices << " " << numberOfVertexIndices << '\n';
-      auto * data = new unsigned int[numberOfVertexIndices];
-      ReadCellsBuffer(buffer, data);
-      itk::ByteSwapper<unsigned int>::SwapWriteRangeFromSystemToBigEndian(data, numberOfVertexIndices, &outputFile);
+      const auto data = make_unique_for_overwrite<unsigned int[]>(numberOfVertexIndices);
+      ReadCellsBuffer(buffer, data.get());
+      itk::ByteSwapper<unsigned int>::SwapWriteRangeFromSystemToBigEndian(
+        data.get(), numberOfVertexIndices, &outputFile);
       outputFile << "\n";
-      delete[] data;
     }
 
     /** Write lines */
@@ -639,49 +613,28 @@ protected:
       SizeValueType             numberOfPolylines = 0;
       PolylinesContainerPointer polylines = PolylinesContainerType::New();
       PointIdVector             pointIds;
-      for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ii++)
+      for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ++ii)
       {
         auto cellType = static_cast<CellGeometryEnum>(static_cast<int>(buffer[index++]));
         auto nn = static_cast<unsigned int>(buffer[index++]);
+        pointIds.clear();
+
         if (cellType == CellGeometryEnum::LINE_CELL)
         {
-          if (pointIds.size() >= nn)
+          pointIds.push_back(static_cast<SizeValueType>(buffer[index]));
+          pointIds.push_back(static_cast<SizeValueType>(buffer[index + 1]));
+        }
+        else if (cellType == CellGeometryEnum::POLYLINE_CELL)
+        {
+          for (unsigned int jj = 0; jj < nn; ++jj)
           {
-            SizeValueType id = pointIds.back();
-            if (id == static_cast<SizeValueType>(buffer[index]))
-            {
-              pointIds.push_back(static_cast<SizeValueType>(buffer[index + 1]));
-            }
-            else if (id == static_cast<SizeValueType>(buffer[index + 1]))
-            {
-              pointIds.push_back(static_cast<SizeValueType>(buffer[index]));
-            }
-            else
-            {
-              polylines->InsertElement(numberOfPolylines++, pointIds);
-              numberOfLineIndices += pointIds.size();
-              pointIds.clear();
-
-              for (unsigned int jj = 0; jj < nn; jj++)
-              {
-                pointIds.push_back(static_cast<SizeValueType>(buffer[index + jj]));
-              }
-            }
-          }
-          else
-          {
-            for (unsigned int jj = 0; jj < nn; jj++)
-            {
-              pointIds.push_back(static_cast<SizeValueType>(buffer[index + jj]));
-            }
+            pointIds.push_back(static_cast<SizeValueType>(buffer[index + jj]));
           }
         }
-
+        polylines->InsertElement(numberOfPolylines++, pointIds);
+        numberOfLineIndices += pointIds.size();
         index += nn;
       }
-      polylines->InsertElement(numberOfPolylines++, pointIds);
-      numberOfLineIndices += pointIds.size();
-      pointIds.clear();
 
       numberOfLines = polylines->Size();
       numberOfLineIndices += numberOfLines;
@@ -689,7 +642,7 @@ protected:
       EncapsulateMetaData<unsigned int>(metaDic, "numberOfLineIndices", numberOfLineIndices);
 
       outputFile << "LINES " << numberOfLines << " " << numberOfLineIndices << '\n';
-      auto *        data = new unsigned int[numberOfLineIndices];
+      const auto    data = make_unique_for_overwrite<unsigned int[]>(numberOfLineIndices);
       unsigned long outputIndex = 0;
       for (SizeValueType ii = 0; ii < polylines->Size(); ++ii)
       {
@@ -701,9 +654,8 @@ protected:
         }
       }
 
-      itk::ByteSwapper<unsigned int>::SwapWriteRangeFromSystemToBigEndian(data, numberOfLineIndices, &outputFile);
+      itk::ByteSwapper<unsigned int>::SwapWriteRangeFromSystemToBigEndian(data.get(), numberOfLineIndices, &outputFile);
       outputFile << "\n";
-      delete[] data;
     }
 
     /** Write polygons */
@@ -713,11 +665,11 @@ protected:
     {
       ExposeMetaData<unsigned int>(metaDic, "numberOfPolygonIndices", numberOfPolygonIndices);
       outputFile << "POLYGONS " << numberOfPolygons << " " << numberOfPolygonIndices << '\n';
-      auto * data = new unsigned int[numberOfPolygonIndices];
-      ReadCellsBuffer(buffer, data);
-      itk::ByteSwapper<unsigned int>::SwapWriteRangeFromSystemToBigEndian(data, numberOfPolygonIndices, &outputFile);
+      const auto data = make_unique_for_overwrite<unsigned int[]>(numberOfPolygonIndices);
+      ReadCellsBuffer(buffer, data.get());
+      itk::ByteSwapper<unsigned int>::SwapWriteRangeFromSystemToBigEndian(
+        data.get(), numberOfPolygonIndices, &outputFile);
       outputFile << "\n";
-      delete[] data;
     }
   }
 
@@ -725,7 +677,6 @@ protected:
   void
   WritePointDataBufferAsASCII(std::ofstream & outputFile, T * buffer, const StringType & pointPixelComponentName)
   {
-    NumberToString<T>    convert;
     MetaDataDictionary & metaDic = this->GetMetaDataDictionary();
     StringType           dataName;
 
@@ -795,16 +746,17 @@ protected:
         while (i < num)
         {
           // row 1
-          outputFile << convert(*ptr++) << indent;
+          outputFile << ConvertNumberToString(*ptr++) << indent;
           e12 = *ptr++;
-          outputFile << convert(e12) << indent;
-          outputFile << convert(zero) << '\n';
+          outputFile << ConvertNumberToString(e12) << indent;
+          outputFile << ConvertNumberToString(zero) << '\n';
           // row 2
-          outputFile << convert(e12) << indent;
-          outputFile << convert(*ptr++) << indent;
-          outputFile << convert(zero) << '\n';
+          outputFile << ConvertNumberToString(e12) << indent;
+          outputFile << ConvertNumberToString(*ptr++) << indent;
+          outputFile << ConvertNumberToString(zero) << '\n';
           // row 3
-          outputFile << convert(zero) << indent << convert(zero) << indent << convert(zero) << "\n\n";
+          outputFile << ConvertNumberToString(zero) << indent << ConvertNumberToString(zero) << indent
+                     << ConvertNumberToString(zero) << "\n\n";
           i += 3;
         }
       }
@@ -816,26 +768,26 @@ protected:
         while (i < num)
         {
           // row 1
-          outputFile << convert(*ptr++) << indent;
+          outputFile << ConvertNumberToString(*ptr++) << indent;
           e12 = *ptr++;
-          outputFile << convert(e12) << indent;
+          outputFile << ConvertNumberToString(e12) << indent;
           e13 = *ptr++;
-          outputFile << convert(e13) << '\n';
+          outputFile << ConvertNumberToString(e13) << '\n';
           // row 2
-          outputFile << convert(e12) << indent;
-          outputFile << convert(*ptr++) << indent;
+          outputFile << ConvertNumberToString(e12) << indent;
+          outputFile << ConvertNumberToString(*ptr++) << indent;
           e23 = *ptr++;
-          outputFile << convert(e23) << '\n';
+          outputFile << ConvertNumberToString(e23) << '\n';
           // row 3
-          outputFile << convert(e13) << indent;
-          outputFile << convert(e23) << indent;
-          outputFile << convert(*ptr++) << "\n\n";
+          outputFile << ConvertNumberToString(e13) << indent;
+          outputFile << ConvertNumberToString(e23) << indent;
+          outputFile << ConvertNumberToString(*ptr++) << "\n\n";
           i += 6;
         }
       }
       else
       {
-        ::itk::ExceptionObject e_(
+        itk::ExceptionObject e_(
           __FILE__, __LINE__, "itk::ERROR: VTKImageIO2: Unsupported number of components in tensor.", ITK_LOCATION);
         throw e_;
       }
@@ -843,13 +795,13 @@ protected:
     else // not tensor
     {
       unsigned int jj;
-      for (SizeValueType ii = 0; ii < this->m_NumberOfPointPixels; ii++)
+      for (SizeValueType ii = 0; ii < this->m_NumberOfPointPixels; ++ii)
       {
-        for (jj = 0; jj < this->m_NumberOfPointPixelComponents - 1; jj++)
+        for (jj = 0; jj < this->m_NumberOfPointPixelComponents - 1; ++jj)
         {
-          outputFile << convert(buffer[ii * this->m_NumberOfPointPixelComponents + jj]) << indent;
+          outputFile << ConvertNumberToString(buffer[ii * this->m_NumberOfPointPixelComponents + jj]) << indent;
         }
-        outputFile << convert(buffer[ii * this->m_NumberOfPointPixelComponents + jj]);
+        outputFile << ConvertNumberToString(buffer[ii * this->m_NumberOfPointPixelComponents + jj]);
         outputFile << '\n';
       }
     }
@@ -1040,9 +992,9 @@ protected:
     else // not tensor
     {
       unsigned int jj;
-      for (SizeValueType ii = 0; ii < this->m_NumberOfCellPixels; ii++)
+      for (SizeValueType ii = 0; ii < this->m_NumberOfCellPixels; ++ii)
       {
-        for (jj = 0; jj < this->m_NumberOfCellPixelComponents - 1; jj++)
+        for (jj = 0; jj < this->m_NumberOfCellPixelComponents - 1; ++jj)
         {
           outputFile << buffer[ii * this->m_NumberOfCellPixelComponents + jj] << indent;
         }
@@ -1124,14 +1076,13 @@ protected:
                                 unsigned int    numberOfPixelComponents,
                                 SizeValueType   numberOfPixels)
   {
-    NumberToString<float> convert;
     outputFile << numberOfPixelComponents << "\n";
     Indent indent(2);
     for (SizeValueType ii = 0; ii < numberOfPixels; ++ii)
     {
       for (unsigned int jj = 0; jj < numberOfPixelComponents; ++jj)
       {
-        outputFile << convert(static_cast<float>(buffer[ii * numberOfPixelComponents + jj])) << indent;
+        outputFile << ConvertNumberToString(static_cast<float>(buffer[ii * numberOfPixelComponents + jj])) << indent;
       }
 
       outputFile << "\n";
@@ -1149,15 +1100,13 @@ protected:
   {
     outputFile << numberOfPixelComponents << "\n";
     SizeValueType numberOfElements = numberOfPixelComponents * numberOfPixels;
-    auto *        data = new unsigned char[numberOfElements];
+    const auto    data = make_unique_for_overwrite<unsigned char[]>(numberOfElements);
     for (SizeValueType ii = 0; ii < numberOfElements; ++ii)
     {
       data[ii] = static_cast<unsigned char>(buffer[ii]);
     }
 
-    outputFile.write(reinterpret_cast<char *>(data), numberOfElements);
-
-    delete[] data;
+    outputFile.write(reinterpret_cast<char *>(data.get()), numberOfElements);
     outputFile << "\n";
     return;
   }
@@ -1173,12 +1122,12 @@ protected:
 
     if (input && output)
     {
-      for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ii++)
+      for (SizeValueType ii = 0; ii < this->m_NumberOfCells; ++ii)
       {
-        inputIndex++;
+        ++inputIndex;
         auto nn = static_cast<unsigned int>(input[inputIndex++]);
         output[outputIndex++] = nn;
-        for (unsigned int jj = 0; jj < nn; jj++)
+        for (unsigned int jj = 0; jj < nn; ++jj)
         {
           output[outputIndex++] = static_cast<TOutput>(input[inputIndex++]);
         }
@@ -1188,7 +1137,31 @@ protected:
 
   /** Convenience method returns the IOComponentEnum corresponding to a string. */
   IOComponentEnum
-  GetComponentTypeFromString(const std::string & pixelType);
+  GetComponentTypeFromString(const std::string & pointType);
+
+private:
+  /** Reads the specified number of components from the specified input file into the specified buffer.
+   * \note This member function is overloaded for `float` and `double`, in order to support reading infinity and NaN
+   * values.
+   */
+  template <typename T>
+  static void
+  ReadComponentsAsASCII(std::ifstream & inputFile, T * const buffer, const SizeValueType numberOfComponents)
+  {
+    for (SizeValueType i = 0; i < numberOfComponents; ++i)
+    {
+      if (!(inputFile >> buffer[i]))
+      {
+        itkGenericExceptionMacro("Failed to read a component from the specified ASCII input file!");
+      }
+    }
+  }
+
+  static void
+  ReadComponentsAsASCII(std::ifstream & inputFile, float * const buffer, const SizeValueType numberOfComponents);
+
+  static void
+  ReadComponentsAsASCII(std::ifstream & inputFile, double * const buffer, const SizeValueType numberOfComponents);
 };
 } // end namespace itk
 

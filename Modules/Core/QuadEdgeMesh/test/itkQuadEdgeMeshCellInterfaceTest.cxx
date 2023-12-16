@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -84,10 +84,10 @@ TestCellInterface(std::string name, TCell * aCell)
   std::cout << "    NumberOfPoints: " << cell->GetNumberOfPoints() << std::endl;
   std::cout << "    NumberOfBoundaryFeatures:" << std::endl;
   // Note the <= is here to test the default case
-  for (unsigned int i = 0; i <= cell->GetDimension(); i++)
+  for (unsigned int i = 0; i <= cell->GetDimension(); ++i)
   {
     std::cout << "      " << i << ": " << cell->GetNumberOfBoundaryFeatures(i) << std::endl;
-    for (unsigned int j = 0; j < cell->GetNumberOfBoundaryFeatures(i); j++)
+    for (unsigned int j = 0; j < cell->GetNumberOfBoundaryFeatures(i); ++j)
     {
       CellAutoPointer feature;
       cell->GetBoundaryFeature(i, j, feature);
@@ -120,7 +120,7 @@ TestCellInterface(std::string name, TCell * aCell)
   using PointIdentifier = MeshType::PointIdentifier;
 
   auto * pointIds = new PointIdentifier[cell->GetNumberOfPoints() * 2];
-  for (unsigned int i = 0; i < cell->GetNumberOfPoints() * 2; i++)
+  for (unsigned int i = 0; i < cell->GetNumberOfPoints() * 2; ++i)
   {
     pointIds[i] = i;
   }
@@ -214,7 +214,7 @@ TestQECellInterface(std::string name, TCell * aCell)
   using PointIdentifier = typename TCell::PointIdentifier;
 
   auto * pointIds = new PointIdentifier[cell->GetNumberOfPoints() * 2];
-  for (unsigned int i = 0; i < cell->GetNumberOfPoints() * 2; i++)
+  for (unsigned int i = 0; i < cell->GetNumberOfPoints() * 2; ++i)
   {
     pointIds[i] = i;
   }
@@ -386,19 +386,19 @@ itkQuadEdgeMeshCellInterfaceTest(int, char *[])
   // test the visitor API
   using QELineVisitorInterfaceType =
     itk::CellInterfaceVisitorImplementation<PixelType, MeshType::CellTraits, QELineCellType, CustomQELineVisitor>;
-  QELineVisitorInterfaceType::Pointer QELineVisitor = QELineVisitorInterfaceType::New();
+  auto QELineVisitor = QELineVisitorInterfaceType::New();
 
   using QEPolyVisitorInterfaceType =
     itk::CellInterfaceVisitorImplementation<PixelType, MeshType::CellTraits, QEPolygonCellType, CustomQEPolyVisitor>;
-  QEPolyVisitorInterfaceType::Pointer QEPolyVisitor = QEPolyVisitorInterfaceType::New();
+  auto QEPolyVisitor = QEPolyVisitorInterfaceType::New();
 
 
   using CellMultiVisitorType = CellType::MultiVisitor;
-  CellMultiVisitorType::Pointer multiVisitor = CellMultiVisitorType::New();
+  auto multiVisitor = CellMultiVisitorType::New();
   multiVisitor->AddVisitor(QELineVisitor);
   multiVisitor->AddVisitor(QEPolyVisitor);
 
-  MeshType::Pointer   mesh = MeshType::New();
+  auto                mesh = MeshType::New();
   MeshType::PointType pts[3];
   pts[0][0] = 0;
   pts[0][1] = 0;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageRandomNonRepeatingConstIteratorWithIndex_hxx
 #define itkImageRandomNonRepeatingConstIteratorWithIndex_hxx
 
-#include "itkImageRandomNonRepeatingConstIteratorWithIndex.h"
 
 namespace itk
 {
@@ -87,8 +86,8 @@ ImageRandomNonRepeatingConstIteratorWithIndex<TImage>::SetNumberOfSamples(SizeVa
 
 /**  Set the number of samples to extract from the region */
 template <typename TImage>
-typename ImageRandomNonRepeatingConstIteratorWithIndex<TImage>::SizeValueType
-ImageRandomNonRepeatingConstIteratorWithIndex<TImage>::GetNumberOfSamples() const
+auto
+ImageRandomNonRepeatingConstIteratorWithIndex<TImage>::GetNumberOfSamples() const -> SizeValueType
 {
   return m_NumberOfSamplesRequested;
 }
@@ -119,11 +118,11 @@ ImageRandomNonRepeatingConstIteratorWithIndex<TImage>::SetPriorityImage(const Pr
   // image is the right size
   using PositionValueType = SizeValueType;
 
-  for (PositionValueType pixel = 0; pixel < m_NumberOfPixelsInRegion; pixel++)
+  for (PositionValueType pixel = 0; pixel < m_NumberOfPixelsInRegion; ++pixel)
   {
     PositionValueType position = pixel;
     IndexType         positionIndex;
-    for (unsigned int dim = 0; dim < TImage::ImageDimension; dim++)
+    for (unsigned int dim = 0; dim < TImage::ImageDimension; ++dim)
     {
       const SizeValueType     sizeInThisDimension = this->m_Region.GetSize()[dim];
       const PositionValueType residual = position % sizeInThisDimension;
@@ -146,7 +145,7 @@ ImageRandomNonRepeatingConstIteratorWithIndex<TImage>::UpdatePosition()
   using PositionValueType = IndexValueType;
 
   PositionValueType position = (*(this->m_Permutation))[m_NumberOfSamplesDone % m_NumberOfSamplesRequested];
-  for (unsigned int dim = 0; dim < TImage::ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < TImage::ImageDimension; ++dim)
   {
     const SizeValueType     sizeInThisDimension = this->m_Region.GetSize()[dim];
     const PositionValueType residual = position % sizeInThisDimension;

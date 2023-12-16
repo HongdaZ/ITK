@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,19 +29,23 @@
 int
 itkRawImageIOTest(int argc, char * argv[])
 {
+  if (argc < 3)
+  {
+    std::cerr << "Missing Parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " Output1 Output2" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  constexpr unsigned int Dimension = 2;
+
   using ImageType = itk::Image<unsigned short, 2>;
   using PixelType = ImageType::PixelType;
   using ImageIteratorType = itk::ImageRegionConstIterator<ImageType>;
-  if (argc < 3)
-  {
-    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " Output1 Output2\n";
-    return EXIT_FAILURE;
-  }
 
   // Create a source object (in this case a random image generator).
   // The source object is templated on the output type.
   //
-  ImageType::SizeValueType size[2];
+  ImageType::SizeValueType size[Dimension];
 
   size[0] = 128;
   size[1] = 64;
@@ -55,44 +59,55 @@ itkRawImageIOTest(int argc, char * argv[])
   // Create a mapper (in this case a writer). A mapper
   // is templated on the input type.
   //
-  itk::RawImageIO<unsigned short, 2>::Pointer io;
-  io = itk::RawImageIO<unsigned short, 2>::New();
+  itk::RawImageIO<unsigned short, Dimension>::Pointer io;
+  io = itk::RawImageIO<unsigned short, Dimension>::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(io, RawImageIO, ImageIOBase);
 
   //  io->SetFileTypeToASCII();
 
+  io->SetFileDimensionality(Dimension);
+  ITK_TEST_SET_GET_VALUE(Dimension, io->GetFileDimensionality());
+
+  ITK_TEST_EXPECT_TRUE(io->SupportsDimension(Dimension));
+
+  unsigned long dim = 3;
+  ITK_TEST_EXPECT_TRUE(!io->SupportsDimension(dim));
+
+  // Binary files have no image information to read
+  io->WriteImageInformation();
+
   // Write out the image
+  std::string filename = "";
+  ITK_TEST_EXPECT_TRUE(!io->CanWriteFile(filename.c_str()));
+
+  ITK_TRY_EXPECT_EXCEPTION(io->GetHeaderSize());
+
+  filename = argv[1];
+  ITK_TEST_EXPECT_TRUE(io->CanWriteFile(filename.c_str()));
+
   itk::ImageFileWriter<ImageType>::Pointer writer;
   writer = itk::ImageFileWriter<ImageType>::New();
   writer->SetInput(random->GetOutput());
-  writer->SetFileName(argv[1]);
+  writer->SetFileName(filename);
   writer->SetImageIO(io);
 
-  try
-  {
-    writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << "Error while writing the image " << argv[1] << std::endl;
-    std::cerr << excp << std::endl;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
+
 
   // Create a source object (in this case a reader)
   itk::ImageFileReader<ImageType>::Pointer reader;
   reader = itk::ImageFileReader<ImageType>::New();
   reader->SetImageIO(io);
-  reader->SetFileName(argv[1]);
+  reader->SetFileName(filename);
 
-  try
-  {
-    reader->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << "Error while reading the image " << argv[1] << std::endl;
-    std::cerr << excp << std::endl;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
 
+
+  io->CanReadFile(filename.c_str());
+
+  // Not used; empty method body; called for coverage purposes
+  io->ReadHeader();
 
   // Compare pixel by pixel in memory
 
@@ -123,17 +138,9 @@ itkRawImageIOTest(int argc, char * argv[])
   writer->SetFileName(argv[2]);
   writer->SetInput(reader->GetOutput());
 
-  try
-  {
-    writer->Update();
-  }
-  catch (const itk::ExceptionObject & excp)
-  {
-    std::cerr << "Error while writing the image " << argv[2] << std::endl;
-    std::cerr << excp << std::endl;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
 
 
-  std::cerr << "Test PASSED ! " << std::endl;
+  std::cout << "Test PASSED ! " << std::endl;
   return EXIT_SUCCESS;
 }

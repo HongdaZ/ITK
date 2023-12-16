@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,6 @@
  *=========================================================================*/
 #ifndef itkImageToImageFilter_hxx
 #define itkImageToImageFilter_hxx
-#include "itkImageToImageFilter.h"
 #include "itkInputDataObjectIterator.h"
 #include "itkInputDataObjectConstIterator.h"
 
@@ -64,16 +63,16 @@ ImageToImageFilter<TInputImage, TOutputImage>::SetInput(unsigned int index, cons
 
 
 template <typename TInputImage, typename TOutputImage>
-const typename ImageToImageFilter<TInputImage, TOutputImage>::InputImageType *
-ImageToImageFilter<TInputImage, TOutputImage>::GetInput() const
+auto
+ImageToImageFilter<TInputImage, TOutputImage>::GetInput() const -> const InputImageType *
 {
   return itkDynamicCastInDebugMode<const TInputImage *>(this->GetPrimaryInput());
 }
 
 
 template <typename TInputImage, typename TOutputImage>
-const typename ImageToImageFilter<TInputImage, TOutputImage>::InputImageType *
-ImageToImageFilter<TInputImage, TOutputImage>::GetInput(unsigned int idx) const
+auto
+ImageToImageFilter<TInputImage, TOutputImage>::GetInput(unsigned int idx) const -> const InputImageType *
 {
   const auto * in = dynamic_cast<const TInputImage *>(this->ProcessObject::GetInput(idx));
 
@@ -183,7 +182,7 @@ ImageToImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() ITKv5_CO
       // tolerance for origin and spacing depends on the size of pixel
       // tolerance for directions a fraction of the unit cube.
       const SpacePrecisionType coordinateTol =
-        std::abs(this->m_CoordinateTolerance * inputPtr1->GetSpacing()[0]); // use first dimension spacing
+        itk::Math::abs(this->m_CoordinateTolerance * inputPtr1->GetSpacing()[0]); // use first dimension spacing
 
       if (!inputPtr1->GetOrigin().GetVnlVector().is_equal(inputPtrN->GetOrigin().GetVnlVector(), coordinateTol) ||
           !inputPtr1->GetSpacing().GetVnlVector().is_equal(inputPtrN->GetSpacing().GetVnlVector(), coordinateTol) ||

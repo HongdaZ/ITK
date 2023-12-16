@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 #include "itkMath.h"
 
 // This test tests the basic functionality of
-// VectorImageToImageAdaptor, espeically the Set/GetPixel() methods.
+// VectorImageToImageAdaptor, especially the Set/GetPixel() methods.
 
 int
 itkVectorImageToImageAdaptorTest(int, char *[])
@@ -40,11 +40,11 @@ itkVectorImageToImageAdaptorTest(int, char *[])
   using VectorImageToImageAdaptorType = itk::VectorImageToImageAdaptor<PixelType, Dimension>;
 
   // initialize a vector image
-  VectorImageType::Pointer             vectorImage = VectorImageType::New();
+  auto                                 vectorImage = VectorImageType::New();
   VectorImageType::IndexType           start;
   itk::VariableLengthVector<PixelType> f(VectorLength);
   VectorImageType::SizeType            size;
-  for (unsigned int i = 0; i < VectorLength; i++)
+  for (unsigned int i = 0; i < VectorLength; ++i)
   {
     f[i] = PixelType(i);
   }
@@ -61,7 +61,11 @@ itkVectorImageToImageAdaptorTest(int, char *[])
 
 
   // run the adaptor
-  VectorImageToImageAdaptorType::Pointer vectorImageToImageAdaptor = VectorImageToImageAdaptorType::New();
+  auto vectorImageToImageAdaptor = VectorImageToImageAdaptorType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(vectorImageToImageAdaptor, VectorImageToImageAdaptor, ImageAdaptor);
+
+
   vectorImageToImageAdaptor->SetExtractComponentIndex(componentToExtract);
 
   vectorImageToImageAdaptor->SetImage(vectorImage);

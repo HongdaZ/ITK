@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -104,7 +104,7 @@ public:
     svd.zero_out_relative(m_SVDRelativeThreshold);
     CoordType oError = inner_product(iP.GetVnlVector(), svd.recompose() * iP.GetVnlVector());
 
-    return this->m_Coefficients[this->m_Coefficients.size() - 1] - oError;
+    return this->m_Coefficients.back() - oError;
     /*
     CoordType oError( 0. );
 
@@ -156,7 +156,7 @@ public:
     VNLVectorType displacement = svd.solve(y);
 
     PointType oP;
-    for (unsigned int dim = 0; dim < PointDimension; dim++)
+    for (unsigned int dim = 0; dim < PointDimension; ++dim)
     {
       oP[dim] = iP[dim] + displacement[dim];
     }
@@ -165,7 +165,7 @@ public:
 
   /// TODO to be implemented!!!
   PointType
-  ComputeOptimalLocation(const unsigned int &)
+  ComputeOptimalLocation(const unsigned int)
   {}
 
   void

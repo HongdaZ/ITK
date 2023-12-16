@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ namespace itk
 {
 
 /**
- *\class MetaConverterBase
+ * \class MetaConverterBase
  *  \brief Base class for MetaObject<->SpatialObject converters
  *
  *  SpatialObject scenes are written and read using the MetaIO
@@ -38,7 +38,7 @@ namespace itk
  *
  *  \ingroup ITKSpatialObjects
  */
-template <unsigned VDimension = 3>
+template <unsigned int VDimension = 3>
 class ITK_TEMPLATE_EXPORT MetaConverterBase : public Object
 {
 public:
@@ -76,6 +76,7 @@ public:
    */
   itkSetMacro(WriteImagesInSeparateFile, bool);
   itkGetConstMacro(WriteImagesInSeparateFile, bool);
+  itkBooleanMacro(WriteImagesInSeparateFile);
 
 protected:
   MetaConverterBase() = default;

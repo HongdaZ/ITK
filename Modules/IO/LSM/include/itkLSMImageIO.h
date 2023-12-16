@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@
 namespace itk
 {
 /**
- *\class LSMImageIO
+ * \class LSMImageIO
  *
  *  \brief ImageIO class for reading LSM (Zeiss) images
  * LSM is a line of confocal laser scanning microscopes produced by the Zeiss company
@@ -48,7 +48,7 @@ namespace itk
 class ITKIOLSM_EXPORT LSMImageIO : public TIFFImageIO
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LSMImageIO);
+  ITK_DISALLOW_COPY_AND_MOVE(LSMImageIO);
 
   /** Standard class type aliases. */
   using Self = LSMImageIO;
@@ -102,7 +102,7 @@ protected:
 
 private:
   void
-  FillZeissStruct(char * z);
+  FillZeissStruct(char * cz);
 };
 } // end namespace itk
 

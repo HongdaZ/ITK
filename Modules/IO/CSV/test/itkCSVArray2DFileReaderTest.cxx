@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 
 #include "itkCSVArray2DFileReader.h"
 #include "itkTestingMacros.h"
+#include "itkMath.h"
 
 const double epsilon = 1e-10;
 
@@ -48,11 +49,11 @@ testMatrix(const itk::Array2D<T> & m1, const itk::Array2D<T> & m2)
 {
   bool pass = true;
 
-  for (unsigned int i = 0; i < m1.rows(); i++)
+  for (unsigned int i = 0; i < m1.rows(); ++i)
   {
-    for (unsigned int j = 0; j < m1.cols(); j++)
+    for (unsigned int j = 0; j < m1.cols(); ++j)
     {
-      if (std::fabs(m1[i][j] - m2[i][j]) > epsilon)
+      if (itk::Math::abs(m1[i][j] - m2[i][j]) > epsilon)
       {
         pass = false;
       }
@@ -68,9 +69,9 @@ testVector(const std::vector<T> & v1, const std::vector<T> & v2)
 {
   bool pass = true;
 
-  for (unsigned int i = 0; i < v1.size(); i++)
+  for (unsigned int i = 0; i < v1.size(); ++i)
   {
-    if (std::fabs(v1[i] - v2[i]) > epsilon)
+    if (itk::Math::abs(v1[i] - v2[i]) > epsilon)
     {
       pass = false;
     }
@@ -84,7 +85,7 @@ testStringVector(const std::vector<std::string> & v1, const std::vector<std::str
 {
   bool pass = true;
 
-  for (unsigned int i = 0; i < v1.size(); i++)
+  for (unsigned int i = 0; i < v1.size(); ++i)
   {
     if (v1[i].compare(v2[i]) != 0)
     {
@@ -100,7 +101,7 @@ bool
 testValue(const T & test, const T & real)
 {
   bool pass = true;
-  if (std::fabs(test - real) > epsilon)
+  if (itk::Math::abs(test - real) > epsilon)
   {
     pass = false;
   }
@@ -121,7 +122,7 @@ itkCSVArray2DFileReaderTest(int argc, char * argv[])
 
   // Read and Parse the data
   using ReaderType = itk::CSVArray2DFileReader<double>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
 
   std::string filename = "nonexistentfilename.csv";
   reader->SetFileName(filename);
@@ -145,8 +146,7 @@ itkCSVArray2DFileReaderTest(int argc, char * argv[])
   }
   if (!caught)
   {
-    std::cerr << "An exception should have been caught here as the filename does"
-              << "not exist! Test fails." << std::endl;
+    std::cerr << "An exception should have been caught here as the filename does not exist! Test fails." << std::endl;
     return EXIT_FAILURE;
   }
 

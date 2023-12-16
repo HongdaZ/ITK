@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 project(ITKGPUCommon)
 
 if(NOT ITK_SOURCE_DIR)
@@ -24,9 +24,14 @@ if(ITK_USE_GPU AND APPLE AND NOT ITK_COMPILER_HAS_BLOCKS)
 endif()
 
 if(ITK_USE_GPU)
-  set(ITKGPUCommon_LIBRARIES ITKGPUCommon)
-  set(ITKGPUCommon_SYSTEM_INCLUDE_DIRS ${OPENCL_INCLUDE_DIRS})
-  set(ITKGPUCommon_SYSTEM_LIBRARY_DIRS ${OPENCL_LIBRARIES})
+  set(ITKGPUCommon_LIBRARIES ITKGPUCommon ${OpenCL_LIBRARIES})
+  if(APPLE)
+    list(APPEND ITKGPUCommon_LIBRARIES "-framework OpenCL")
+  elseif(WINDOWS)
+    list(APPEND ITKGPUCommon_LIBRARIES cfgmgr32 OneCoreUAP)
+  endif()
+
+  set(ITKGPUCommon_SYSTEM_INCLUDE_DIRS ${OpenCL_INCLUDE_DIRS})
 endif()
 
 if(NOT ITK_SOURCE_DIR)

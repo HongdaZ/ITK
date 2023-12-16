@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkWeightedCovarianceSampleFilter_hxx
 #define itkWeightedCovarianceSampleFilter_hxx
 
-#include "itkWeightedCovarianceSampleFilter.h"
 #include "itkWeightedMeanSampleFilter.h"
 
 namespace itk
@@ -91,7 +90,7 @@ WeightedCovarianceSampleFilter<TSample>::ComputeCovarianceMatrixWithWeightingFun
   const WeightingFunctionType * const weightingFunction = this->GetWeightingFunction();
 
   using WeightedMeanFilterType = WeightedMeanSampleFilter<SampleType>;
-  typename WeightedMeanFilterType::Pointer meanFilter = WeightedMeanFilterType::New();
+  auto meanFilter = WeightedMeanFilterType::New();
 
   meanFilter->SetInput(input);
   meanFilter->SetWeightingFunction(weightingFunction);
@@ -188,7 +187,7 @@ WeightedCovarianceSampleFilter<TSample>::ComputeCovarianceMatrixWithWeights()
   const WeightArrayType & weightsArray = this->GetWeights();
 
   using WeightedMeanFilterType = WeightedMeanSampleFilter<SampleType>;
-  typename WeightedMeanFilterType::Pointer meanFilter = WeightedMeanFilterType::New();
+  auto meanFilter = WeightedMeanFilterType::New();
 
   meanFilter->SetInput(input);
   meanFilter->SetWeights(weightsArray);

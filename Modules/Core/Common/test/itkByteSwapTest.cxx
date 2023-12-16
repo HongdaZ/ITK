@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -117,7 +117,7 @@ itkByteSwapTest(int, char *[])
   catch (const itk::ExceptionObject & err)
   {
     std::cout << "Caught unsigned long exception size is: " << sizeof(unsigned long) << std::endl;
-    (&err)->Print(std::cerr);
+    err.Print(std::cerr);
   }
 
 
@@ -142,7 +142,7 @@ itkByteSwapTest(int, char *[])
   catch (const itk::ExceptionObject & err)
   {
     std::cout << "Caught unsigned long long exception size is: " << sizeof(unsigned long long) << std::endl;
-    (&err)->Print(std::cerr);
+    err.Print(std::cerr);
   }
 
   try
@@ -166,7 +166,7 @@ itkByteSwapTest(int, char *[])
   catch (const itk::ExceptionObject & err)
   {
     std::cout << "Caught float exception size is: " << sizeof(float) << std::endl;
-    (&err)->Print(std::cerr);
+    err.Print(std::cerr);
     return EXIT_FAILURE;
   }
 
@@ -186,12 +186,12 @@ itkByteSwapTest(int, char *[])
     {
       return EXIT_FAILURE;
     }
-    std::cout << "Passed unsigned d: " << d << std::endl;
+    std::cout << "Passed unsigned int d: " << d << std::endl;
   }
   catch (const itk::ExceptionObject & err)
   {
     std::cout << "Good catch! Caught double exception size is: " << sizeof(double) << std::endl;
-    (&err)->Print(std::cerr);
+    err.Print(std::cerr);
     return EXIT_FAILURE;
   }
   // we failed to throw an exception for the double swap (once it's implemented, this should return 0

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -165,7 +165,7 @@ public:
 
   /** Initialize with a simple IntegerType */
   void
-  Initialize(const IntegerType oneSeed);
+  Initialize(const IntegerType seed);
 
   /* Initialize with clock time */
   void
@@ -177,7 +177,7 @@ public:
 
   /** Get a random variate in the range [0, n] */
   double
-  GetVariateWithClosedRange(const double & n);
+  GetVariateWithClosedRange(const double n);
 
   /** Get a range variate in the range [0, 1) */
   double
@@ -185,7 +185,7 @@ public:
 
   /** Get a range variate in the range [0, n) */
   double
-  GetVariateWithOpenUpperRange(const double & n);
+  GetVariateWithOpenUpperRange(const double n);
 
   /** Get a range variate in the range (0, 1) */
   double
@@ -193,7 +193,7 @@ public:
 
   /** Get a range variate in the range (0, n) */
   double
-  GetVariateWithOpenRange(const double & n);
+  GetVariateWithOpenRange(const double n);
 
   /** Get an integer variate in [0, 2^32-1] */
   IntegerType
@@ -211,12 +211,12 @@ public:
   /* Access to a normal random number distribution
    * TODO: Compare with vnl_sample_normal */
   double
-  GetNormalVariate(const double & mean = 0.0, const double & variance = 1.0);
+  GetNormalVariate(const double mean = 0.0, const double variance = 1.0);
 
   /* Access to a uniform random number distribution in the range [a, b)
    * TODO: Compare with vnl_sample_uniform */
   double
-  GetUniformVariate(const double & a, const double & b);
+  GetUniformVariate(const double a, const double b);
 
   /** Get a variate in the range [0, 1]
    * Do NOT use for CRYPTOGRAPHY without securely hashing several returned
@@ -351,7 +351,7 @@ MersenneTwisterRandomVariateGenerator::Initialize(const IntegerType seed)
   for (i = 1; i < MersenneTwisterRandomVariateGenerator::StateVectorLength; ++i)
   {
     *s++ = (1812433253UL * (*r ^ (*r >> 30)) + i) & 0xffffffffUL;
-    r++;
+    ++r;
   }
   reload();
 }
@@ -364,7 +364,7 @@ MersenneTwisterRandomVariateGenerator::reload()
   // matthew dot bellew at home dot com
 
   // get rid of VS warning
-  auto index = static_cast<int>(M - MersenneTwisterRandomVariateGenerator::StateVectorLength);
+  constexpr auto index = int{ M } - int{ MersenneTwisterRandomVariateGenerator::StateVectorLength };
 
   IntegerType * p = state;
   int           i;
@@ -430,12 +430,12 @@ MersenneTwisterRandomVariateGenerator::GetIntegerVariate()
 inline double
 MersenneTwisterRandomVariateGenerator::GetVariateWithClosedRange()
 {
-  return double(GetIntegerVariate()) * (1.0 / 4294967295.0);
+  return static_cast<double>(GetIntegerVariate()) * (1.0 / 4294967295.0);
 }
 
 /** Get a random variate in the range [0, n] */
 inline double
-MersenneTwisterRandomVariateGenerator::GetVariateWithClosedRange(const double & n)
+MersenneTwisterRandomVariateGenerator::GetVariateWithClosedRange(const double n)
 {
   return GetVariateWithClosedRange() * n;
 }
@@ -444,12 +444,12 @@ MersenneTwisterRandomVariateGenerator::GetVariateWithClosedRange(const double & 
 inline double
 MersenneTwisterRandomVariateGenerator::GetVariateWithOpenUpperRange()
 {
-  return double(GetIntegerVariate()) * (1.0 / 4294967296.0);
+  return static_cast<double>(GetIntegerVariate()) * (1.0 / 4294967296.0);
 }
 
 /** Get a range variate in the range [0, n) */
 inline double
-MersenneTwisterRandomVariateGenerator::GetVariateWithOpenUpperRange(const double & n)
+MersenneTwisterRandomVariateGenerator::GetVariateWithOpenUpperRange(const double n)
 {
   return GetVariateWithOpenUpperRange() * n;
 }
@@ -458,12 +458,12 @@ MersenneTwisterRandomVariateGenerator::GetVariateWithOpenUpperRange(const double
 inline double
 MersenneTwisterRandomVariateGenerator::GetVariateWithOpenRange()
 {
-  return (double(GetIntegerVariate()) + 0.5) * (1.0 / 4294967296.0);
+  return (static_cast<double>(GetIntegerVariate()) + 0.5) * (1.0 / 4294967296.0);
 }
 
 /** Get a range variate in the range (0, n) */
 inline double
-MersenneTwisterRandomVariateGenerator::GetVariateWithOpenRange(const double & n)
+MersenneTwisterRandomVariateGenerator::GetVariateWithOpenRange(const double n)
 {
   return GetVariateWithOpenRange() * n;
 }
@@ -504,7 +504,7 @@ MersenneTwisterRandomVariateGenerator::Get53BitVariate()
 /** Access to a normal random number distribution. */
 // TODO: Compare with vnl_sample_normal
 inline double
-MersenneTwisterRandomVariateGenerator::GetNormalVariate(const double & mean, const double & variance)
+MersenneTwisterRandomVariateGenerator::GetNormalVariate(const double mean, const double variance)
 {
   // Return a real number from a normal (Gaussian) distribution with given
   // mean and variance by Box-Muller method
@@ -517,7 +517,7 @@ MersenneTwisterRandomVariateGenerator::GetNormalVariate(const double & mean, con
 /** Access to a uniform random number distribution */
 // TODO: Compare with vnl_sample_uniform
 inline double
-MersenneTwisterRandomVariateGenerator::GetUniformVariate(const double & a, const double & b)
+MersenneTwisterRandomVariateGenerator::GetUniformVariate(const double a, const double b)
 {
   double u = GetVariateWithOpenUpperRange();
 

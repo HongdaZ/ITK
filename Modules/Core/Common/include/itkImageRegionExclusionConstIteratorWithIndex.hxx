@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageRegionExclusionConstIteratorWithIndex_hxx
 #define itkImageRegionExclusionConstIteratorWithIndex_hxx
 
-#include "itkImageRegionExclusionConstIteratorWithIndex.h"
 
 namespace itk
 {
@@ -103,7 +102,7 @@ ImageRegionExclusionConstIteratorWithIndex<TImage>::GoToBegin()
   this->Superclass::GoToBegin();
 
   // If inside the exclusion region to begin with, jump past it.
-  for (unsigned int in = 0; in < TImage::ImageDimension; in++)
+  for (unsigned int in = 0; in < TImage::ImageDimension; ++in)
   {
     if (m_ExclusionRegion.IsInside(this->m_PositionIndex))
     {
@@ -138,7 +137,7 @@ ImageRegionExclusionConstIteratorWithIndex<TImage>::GoToReverseBegin()
   this->Superclass::GoToReverseBegin();
 
   // If inside the exclusion region to begin with, jump past it.
-  for (unsigned int in = 0; in < TImage::ImageDimension; in++)
+  for (unsigned int in = 0; in < TImage::ImageDimension; ++in)
   {
     if (m_ExclusionRegion.IsInside(this->m_PositionIndex))
     {

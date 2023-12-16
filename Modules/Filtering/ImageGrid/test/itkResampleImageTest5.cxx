@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,10 +28,17 @@ int
 itkResampleImageTest5(int argc, char * argv[])
 {
 
-  // Resample an RGB image
-  constexpr unsigned int NDimensions = 2;
+  if (argc < 2)
+  {
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cout << " scaling outputFilename" << std::endl;
+    return EXIT_FAILURE;
+  }
 
-  using PixelType = unsigned char;
+  // Resample an RGB image
+  constexpr unsigned int VDimension = 2;
+
   using RGBPixelType = itk::RGBPixel<unsigned char>;
   using ImageType = itk::Image<RGBPixelType, 2>;
 
@@ -42,15 +49,9 @@ itkResampleImageTest5(int argc, char * argv[])
 
   using CoordRepType = double;
 
-  using AffineTransformType = itk::AffineTransform<CoordRepType, NDimensions>;
+  using AffineTransformType = itk::AffineTransform<CoordRepType, VDimension>;
   using InterpolatorType = itk::LinearInterpolateImageFunction<ImageType, CoordRepType>;
   using WriterType = itk::ImageFileWriter<ImageType>;
-
-  if (argc < 2)
-  {
-    std::cout << "Usage: " << argv[0] << " scaling outputFilename" << std::endl;
-    return EXIT_FAILURE;
-  }
 
   float scaling = std::stod(argv[1]);
 
@@ -74,20 +75,19 @@ itkResampleImageTest5(int argc, char * argv[])
 
   // Fill image with a ramp
   itk::ImageRegionIteratorWithIndex<ImageType> iter(image, region);
-  PixelType                                    value;
   for (iter.GoToBegin(); !iter.IsAtEnd(); ++iter)
   {
     index = iter.GetIndex();
-    value = index[0] + index[1];
-    iter.Set(value);
+    const auto rgbPixel = itk::MakeFilled<RGBPixelType>(index[0] + index[1]);
+    iter.Set(rgbPixel);
   }
 
   // Create an affine transformation
-  AffineTransformType::Pointer aff = AffineTransformType::New();
+  auto aff = AffineTransformType::New();
   aff->Scale(0.9);
 
   // Create a linear interpolation image function
-  InterpolatorType::Pointer interp = InterpolatorType::New();
+  auto interp = InterpolatorType::New();
   interp->SetInputImage(image);
 
   // Create and configure a resampling filter
@@ -128,7 +128,7 @@ itkResampleImageTest5(int argc, char * argv[])
 
   std::cout << "Resampling from " << size << " to " << osize << " took " << clock.GetMean() << " s" << std::endl;
 
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetInput(resample->GetOutput());
   writer->SetFileName(argv[2]);
   writer->Update();

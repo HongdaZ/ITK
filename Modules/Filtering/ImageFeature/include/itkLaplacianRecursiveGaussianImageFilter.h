@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class LaplacianRecursiveGaussianImageFilter
+ * \class LaplacianRecursiveGaussianImageFilter
  * \brief Computes the Laplacian of Gaussian (LoG) of an image.
  *
  * Computes the Laplacian of Gaussian (LoG) of an image by convolution
@@ -44,7 +44,7 @@ template <typename TInputImage, typename TOutputImage = TInputImage>
 class ITK_TEMPLATE_EXPORT LaplacianRecursiveGaussianImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LaplacianRecursiveGaussianImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(LaplacianRecursiveGaussianImageFilter);
 
   /** Standard class type aliases. */
   using Self = LaplacianRecursiveGaussianImageFilter;
@@ -109,7 +109,7 @@ public:
    *  \sa  RecursiveGaussianImageFilter::SetNormalizeAcrossScale
    */
   void
-  SetNormalizeAcrossScale(bool normalizeInScaleSpace);
+  SetNormalizeAcrossScale(bool normalize);
   itkGetConstMacro(NormalizeAcrossScale, bool);
 
 protected:

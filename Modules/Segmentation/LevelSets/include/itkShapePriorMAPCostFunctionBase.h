@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,7 +48,7 @@ template <typename TFeatureImage, typename TOutputPixel>
 class ITK_TEMPLATE_EXPORT ShapePriorMAPCostFunctionBase : public SingleValuedCostFunction
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ShapePriorMAPCostFunctionBase);
+  ITK_DISALLOW_COPY_AND_MOVE(ShapePriorMAPCostFunctionBase);
 
   /** Standard class type aliases. */
   using Self = ShapePriorMAPCostFunctionBase;
@@ -61,15 +61,15 @@ public:
 
   /**  MeasureType type alias.
    *  It defines a type used to return the cost function value. */
-  using MeasureType = typename Superclass::MeasureType;
+  using typename Superclass::MeasureType;
 
   /** DerivativeType type alias.
    *  It defines a type used to return the cost function derivative.  */
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeType;
 
   /**  ParametersType type alias.
    *  It defines a position in the optimization search space. */
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
 
   /** Type of the feature image representing the edge potential map. */
   using FeatureImageType = TFeatureImage;

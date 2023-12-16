@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,21 +42,14 @@ public:
     , m_Beta(0.0)
   {}
   ~WeightedAdd2() = default;
-  bool
-  operator!=(const WeightedAdd2 & other) const
-  {
-    if (Math::NotExactlyEquals(m_Alpha, other.m_Alpha))
-    {
-      return true;
-    }
-    return false;
-  }
 
   bool
   operator==(const WeightedAdd2 & other) const
   {
-    return !(*this != other);
+    return Math::ExactlyEquals(m_Alpha, other.m_Alpha);
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(WeightedAdd2);
 
   inline TOutput
   operator()(const TInput1 & A, const TInput2 & B) const
@@ -120,11 +113,12 @@ private:
  * \ingroup ITKImageIntensity
  */
 template <typename TInputImage1, typename TInputImage2, typename TOutputImage>
-class WeightedAddImageFilter : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
+class ITK_TEMPLATE_EXPORT WeightedAddImageFilter
+  : public BinaryGeneratorImageFilter<TInputImage1, TInputImage2, TOutputImage>
 
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(WeightedAddImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(WeightedAddImageFilter);
 
   /** Standard class type aliases. */
   using Self = WeightedAddImageFilter;

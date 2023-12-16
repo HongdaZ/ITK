@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ namespace itk
 namespace watershed
 {
 /**
- *\class SegmentTree
+ * \class SegmentTree
  * A data structure for storing segment merge information used in filters of
  * the watershed segmentation algorithm.  See itk::WatershedImageFilter for an
  * overview.
@@ -48,13 +48,15 @@ template <typename TScalar>
 class ITK_TEMPLATE_EXPORT SegmentTree : public DataObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_MOVE(SegmentTree);
+
   /** Define itk Smart Pointers for this object */
   using Self = SegmentTree;
   using Superclass = DataObject;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
   itkNewMacro(Self);
-  itkTypeMacro(WatershedSegmentTree, DataObject);
+  itkTypeMacro(SegmentTree, DataObject);
   using ScalarType = TScalar;
 
   /** Elements of the list (nodes of the tree).  A record of a merge
@@ -212,10 +214,7 @@ public:
 protected:
   SegmentTree() = default;
   ~SegmentTree() override = default;
-  SegmentTree(const Self &) {}
-  void
-  operator=(const Self &)
-  {}
+
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,10 +34,10 @@ PrintK(FEMSolverType * S)
   std::cout << std::endl
             << "k"
             << "=[";
-  for (unsigned int j = 0; j < lsw->GetSystemOrder(); j++)
+  for (unsigned int j = 0; j < lsw->GetSystemOrder(); ++j)
   {
     std::cout << " [";
-    for (unsigned int k = 0; k < lsw->GetSystemOrder(); k++)
+    for (unsigned int k = 0; k < lsw->GetSystemOrder(); ++k)
     {
       std::cout << lsw->GetMatrixValue(j, k);
       if ((k + 1) < lsw->GetSystemOrder())
@@ -66,7 +66,7 @@ PrintF(FEMSolverType * S)
   std::cout << std::endl
             << "f"
             << "=[";
-  for (unsigned int j = 0; j < lsw->GetSystemOrder(); j++)
+  for (unsigned int j = 0; j < lsw->GetSystemOrder(); ++j)
   {
     if (j > 0)
     {
@@ -87,7 +87,7 @@ PrintNodalCoordinates(FEMSolverType * S)
             << "=[";
 
   int numberOfNodes = S->GetInput()->GetNumberOfNodes();
-  for (int i = 0; i < numberOfNodes; i++)
+  for (int i = 0; i < numberOfNodes; ++i)
   {
     std::cout << " [";
     std::cout << S->GetInput()->GetNode(i)->GetCoordinates();
@@ -109,11 +109,11 @@ PrintElementCoordinates(FEMSolverType * S)
 
   int numberOfElements = S->GetInput()->GetNumberOfElements();
 
-  for (int i = 0; i < numberOfElements; i++)
+  for (int i = 0; i < numberOfElements; ++i)
   {
     std::cout << "e(" << ct << ",:,:)=[";
 
-    for (unsigned int n = 0; n < S->GetInput()->GetElement(i)->GetNumberOfNodes(); n++)
+    for (unsigned int n = 0; n < S->GetInput()->GetElement(i)->GetNumberOfNodes(); ++n)
     {
       itk::fem::Element::VectorType nc = S->GetInput()->GetElement(i)->GetNodeCoordinates(n);
 
@@ -139,10 +139,10 @@ PrintSolution(FEMSolverType * S)
   const unsigned int invalidID = itk::fem::Element::InvalidDegreeOfFreedomID;
   int                numberOfNodes = S->GetInput()->GetNumberOfNodes();
 
-  for (int i = 0; i < numberOfNodes; i++)
+  for (int i = 0; i < numberOfNodes; ++i)
   {
     std::cout << "Solution Node " << i << ":";
-    for (unsigned int d = 0, dof; (dof = S->GetInput()->GetNode(i)->GetDegreeOfFreedom(d)) != invalidID; d++)
+    for (unsigned int d = 0, dof; (dof = S->GetInput()->GetNode(i)->GetDegreeOfFreedom(d)) != invalidID; ++d)
     {
       std::cout << " " << S->GetSolution(dof);
     }
@@ -151,12 +151,12 @@ PrintSolution(FEMSolverType * S)
 }
 
 int
-itkFEMSolverHyperbolicTest(int ac, char * av[])
+itkFEMSolverHyperbolicTest(int argc, char * argv[])
 {
 
-  if (ac < 4)
+  if (argc < 4)
   {
-    std::cout << "Usage: " << av[0];
+    std::cout << "Usage: " << argv[0];
     std::cout << " input-file iterations lsw (0=VNL, 1=Dense VNL, 2=Itpack)";
     std::cout << std::endl;
     return EXIT_FAILURE;
@@ -164,29 +164,29 @@ itkFEMSolverHyperbolicTest(int ac, char * av[])
 
   itk::FEMFactoryBase::GetFactory()->RegisterDefaultTypes();
 
-  unsigned int        niter = std::stoi(av[2]);
-  unsigned int        w = std::stoi(av[3]);
+  unsigned int        niter = std::stoi(argv[2]);
+  unsigned int        w = std::stoi(argv[3]);
   std::vector<double> solution;
-  if (ac > 4)
+  if (argc > 4)
   {
-    solution.resize(ac - 4);
-    for (int i = 4; i < ac; i++)
+    solution.resize(argc - 4);
+    for (int i = 4; i < argc; ++i)
     {
-      solution[i - 4] = std::stod(av[i]);
+      solution[i - 4] = std::stod(argv[i]);
     }
   }
 
   using FEMSpatialObjectReaderType = itk::FEMSpatialObjectReader<2>;
   using FEMSpatialObjectReaderPointer = FEMSpatialObjectReaderType::Pointer;
   FEMSpatialObjectReaderPointer SpatialReader = FEMSpatialObjectReaderType::New();
-  SpatialReader->SetFileName(av[1]);
+  SpatialReader->SetFileName(argv[1]);
   try
   {
     SpatialReader->Update();
   }
-  catch (::itk::fem::FEMException & e)
+  catch (itk::fem::FEMException & e)
   {
-    std::cout << "Error reading FEM problem: " << av[1] << "!\n";
+    std::cout << "Error reading FEM problem: " << argv[1] << "!\n";
     e.Print(std::cout);
     return EXIT_FAILURE;
   }
@@ -208,7 +208,7 @@ itkFEMSolverHyperbolicTest(int ac, char * av[])
    * Third, create the FEM solver object and generate the solution
    */
 
-  FEMSolverType::Pointer SH = FEMSolverType::New();
+  auto SH = FEMSolverType::New();
   SH->SetInput(femSO->GetFEMObject());
   SH->SetTimeStep(.5);
   SH->SetNumberOfIterations(niter);
@@ -256,16 +256,16 @@ itkFEMSolverHyperbolicTest(int ac, char * av[])
   PrintNodalCoordinates(SH);
   PrintSolution(SH);
 
-  if (ac > 4)
+  if (argc > 4)
   {
     int                numberOfNodes = SH->GetInput()->GetNumberOfNodes();
     const unsigned int invalidID = itk::fem::Element::InvalidDegreeOfFreedomID;
-    for (int i = 0; i < numberOfNodes; i++)
+    for (int i = 0; i < numberOfNodes; ++i)
     {
-      for (unsigned int d = 0, dof; (dof = SH->GetInput()->GetNode(i)->GetDegreeOfFreedom(d)) != invalidID; d++)
+      for (unsigned int d = 0, dof; (dof = SH->GetInput()->GetNode(i)->GetDegreeOfFreedom(d)) != invalidID; ++d)
       {
         double result = SH->GetSolution(dof);
-        if (fabs(result - solution[dof]) > 1.0e-5)
+        if (itk::Math::abs(result - solution[dof]) > 1.0e-5)
         {
           std::cerr << "Error: Solution outside the expected range: " << result << ", " << dof << std::endl;
           return EXIT_FAILURE;

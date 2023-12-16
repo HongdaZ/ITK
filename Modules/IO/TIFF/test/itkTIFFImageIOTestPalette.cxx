@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,9 @@ itkTIFFImageIOTestPalette(int argc, char * argv[])
 
   if (argc != 5)
   {
-    std::cerr << "Usage: " << argv[0] << " input"
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " input"
               << " output"
               << " expandRGBPalette: request palette expanding"
               << " isPaletteImage: is image palette type" << std::endl;
@@ -60,12 +62,12 @@ itkTIFFImageIOTestPalette(int argc, char * argv[])
   using WriterType = itk::ImageFileWriter<ScalarImageType>;
   using IOType = itk::TIFFImageIO;
 
-  IOType::Pointer io = IOType::New();
+  auto io = IOType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(io, TIFFImageIO, ImageIOBase);
 
-  ReaderType::Pointer reader = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
+  auto reader = ReaderType::New();
+  auto writer = WriterType::New();
 
   ITK_TEST_SET_GET_BOOLEAN(io, ExpandRGBPalette, expandRGBPalette);
 

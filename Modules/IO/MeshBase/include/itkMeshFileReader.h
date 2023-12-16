@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@
 #include "itkMacro.h"
 #include "itkHexahedronCell.h"
 #include "itkLineCell.h"
+#include "itkPolyLineCell.h"
 #include "itkMeshIOBase.h"
 #include "itkMeshSource.h"
 #include "itkPolygonCell.h"
@@ -39,7 +40,7 @@ namespace itk
 {
 
 /**
- *\class MeshFileReader
+ * \class MeshFileReader
  * \brief Mesh source that reads mesh data from a single file.
  *
  * This source object is a general filter to read data from
@@ -70,18 +71,17 @@ namespace itk
  * \author Wanlin Zhu. Uviversity of New South Wales, Australia.
  *
  * \sphinx
- * \sphinxexample{IO/Mesh/WriteMesh,Write Mesh}
  * \sphinxexample{IO/Mesh/ReadMesh,Read Mesh}
  * \endsphinx
  */
 
 template <typename TOutputMesh,
           typename ConvertPointPixelTraits = MeshConvertPixelTraits<typename TOutputMesh::PixelType>,
-          class ConvertCellPixelTraits = MeshConvertPixelTraits<typename TOutputMesh::CellPixelType>>
+          typename ConvertCellPixelTraits = MeshConvertPixelTraits<typename TOutputMesh::CellPixelType>>
 class ITK_TEMPLATE_EXPORT MeshFileReader : public MeshSource<TOutputMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MeshFileReader);
+  ITK_DISALLOW_COPY_AND_MOVE(MeshFileReader);
 
   /** Standard class type aliases. */
   using Self = MeshFileReader;
@@ -109,6 +109,7 @@ public:
 
   using OutputVertexCellType = VertexCell<OutputCellType>;
   using OutputLineCellType = LineCell<OutputCellType>;
+  using OutputPolyLineCellType = PolyLineCell<OutputCellType>;
   using OutputTriangleCellType = TriangleCell<OutputCellType>;
   using OutputPolygonCellType = PolygonCell<OutputCellType>;
   using OutputTetrahedronCellType = TetrahedronCell<OutputCellType>;
@@ -186,15 +187,46 @@ protected:
   std::string m_FileName;                    // The file to be read
 
 private:
+  template <typename T>
+  void
+  ReadPointsUsingMeshIO();
+
+  template <typename T>
+  void
+  ReadCellsUsingMeshIO();
+
   std::string m_ExceptionMessage;
 };
+
+
+/** Convenience function for reading a mesh.
+ *
+ * `TOutputMesh` is the expected output mesh type, and the optional
+ * `ConvertPointPixelTraits`, ``ConvertCellPixelTraits` template parameters are used to do the conversion,
+ * as specified by MeshFileReader.
+ *
+ * The function reads the mesh from the specified file, and returns the
+ * mesh that it has read.
+ * */
+template <typename TOutputMesh,
+          typename ConvertPointPixelTraits = MeshConvertPixelTraits<typename TOutputMesh::PixelType>,
+          typename ConvertCellPixelTraits = MeshConvertPixelTraits<typename TOutputMesh::CellPixelType>>
+typename TOutputMesh::Pointer
+ReadMesh(const std::string & filename)
+{
+  const auto reader = MeshFileReader<TOutputMesh, ConvertPointPixelTraits, ConvertCellPixelTraits>::New();
+  reader->SetFileName(filename);
+  reader->Update();
+  return reader->GetOutput();
+}
+
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkMeshFileReader.hxx"
 #endif
 
-#ifdef ITK_IO_FACTORY_REGISTER_MANAGER
+#if defined ITK_MESHIO_FACTORY_REGISTER_MANAGER || defined ITK_IO_FACTORY_REGISTER_MANAGER
 #  include "itkMeshIOFactoryRegisterManager.h"
 #endif
 

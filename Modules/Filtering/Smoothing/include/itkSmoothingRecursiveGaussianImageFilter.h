@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ namespace itk
 {
 
 /**
- *\class SmoothingRecursiveGaussianImageFilter
+ * \class SmoothingRecursiveGaussianImageFilter
  * \brief Computes the smoothing of an image by convolution with the Gaussian kernels implemented as IIR filters.
  *
  * This filter is implemented using the recursive gaussian
@@ -50,7 +50,7 @@ template <typename TInputImage, typename TOutputImage = TInputImage>
 class ITK_TEMPLATE_EXPORT SmoothingRecursiveGaussianImageFilter : public InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SmoothingRecursiveGaussianImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SmoothingRecursiveGaussianImageFilter);
 
   /** Standard class type aliases. */
   using Self = SmoothingRecursiveGaussianImageFilter;
@@ -109,7 +109,7 @@ public:
    * SetSigma to set the same value across each axis or use the method
    * SetSigmaArray if you need different values along each axis. */
   void
-  SetSigmaArray(const SigmaArrayType & sigmas);
+  SetSigmaArray(const SigmaArrayType & sigma);
   void
   SetSigma(ScalarRealType sigma);
 
@@ -127,10 +127,11 @@ public:
    *
    * \sa RecursiveGaussianImageFilter::SetNormalizeAcrossScale */
   void
-  SetNormalizeAcrossScale(bool normalizeInScaleSpace);
+  SetNormalizeAcrossScale(bool normalize);
   itkGetConstMacro(NormalizeAcrossScale, bool);
   itkBooleanMacro(NormalizeAcrossScale);
 
+  /** Set the number of work units to create. */
   void
   SetNumberOfWorkUnits(ThreadIdType nb) override;
 

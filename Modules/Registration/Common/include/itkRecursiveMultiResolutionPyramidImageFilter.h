@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,7 +65,7 @@ class ITK_TEMPLATE_EXPORT RecursiveMultiResolutionPyramidImageFilter
   : public MultiResolutionPyramidImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RecursiveMultiResolutionPyramidImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(RecursiveMultiResolutionPyramidImageFilter);
 
   /** Standard class type aliases. */
   using Self = RecursiveMultiResolutionPyramidImageFilter;
@@ -83,11 +83,11 @@ public:
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;
 
   /** Inherit types from the superclass.. */
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using InputImagePointer = typename Superclass::InputImagePointer;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
+  using typename Superclass::InputImageType;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::InputImagePointer;
+  using typename Superclass::OutputImagePointer;
+  using typename Superclass::InputImageConstPointer;
 
   /** Given one output whose requested region has been set,
    * this method sets the requested region for the remaining
@@ -95,7 +95,7 @@ public:
    * The original documentation of this method is below.
    * \sa ProcessObject::GenerateOutputRequestedRegion(); */
   void
-  GenerateOutputRequestedRegion(DataObject * output) override;
+  GenerateOutputRequestedRegion(DataObject * ptr) override;
 
   /** RecursiveMultiResolutionPyramidImageFilter requires a larger input
    * requested region than the output requested regions to accommodate the

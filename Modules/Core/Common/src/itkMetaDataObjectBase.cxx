@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,28 +20,28 @@
 namespace itk
 {
 
-MetaDataObjectBase ::MetaDataObjectBase() = default;
+MetaDataObjectBase::MetaDataObjectBase() = default;
 
 
-MetaDataObjectBase ::~MetaDataObjectBase() = default;
+MetaDataObjectBase::~MetaDataObjectBase() = default;
 
 
 const char *
-MetaDataObjectBase ::GetMetaDataObjectTypeName() const
+MetaDataObjectBase::GetMetaDataObjectTypeName() const
 {
   return typeid(itk::MetaDataObjectBase).name();
 }
 
 
 const std::type_info &
-MetaDataObjectBase ::GetMetaDataObjectTypeInfo() const
+MetaDataObjectBase::GetMetaDataObjectTypeInfo() const
 {
   return typeid(itk::MetaDataObjectBase);
 }
 
 
 void
-MetaDataObjectBase ::Print(std::ostream & os) const
+MetaDataObjectBase::Print(std::ostream & os) const
 {
   os << "[UNKNOWN_PRINT_CHARACTERISTICS]" << std::endl;
 }

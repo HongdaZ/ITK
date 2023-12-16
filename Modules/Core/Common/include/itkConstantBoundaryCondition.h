@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,16 +73,16 @@ public:
   using Superclass = ImageBoundaryCondition<TInputImage, TOutputImage>;
 
   /** Extract information from the image type */
-  using PixelType = typename Superclass::PixelType;
-  using PixelPointerType = typename Superclass::PixelPointerType;
-  using OutputPixelType = typename Superclass::OutputPixelType;
-  using RegionType = typename Superclass::RegionType;
-  using IndexType = typename Superclass::IndexType;
-  using SizeType = typename Superclass::SizeType;
-  using OffsetType = typename Superclass::OffsetType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
+  using typename Superclass::PixelType;
+  using typename Superclass::PixelPointerType;
+  using typename Superclass::OutputPixelType;
+  using typename Superclass::RegionType;
+  using typename Superclass::IndexType;
+  using typename Superclass::SizeType;
+  using typename Superclass::OffsetType;
+  using typename Superclass::NeighborhoodType;
 
-  using NeighborhoodAccessorFunctorType = typename Superclass::NeighborhoodAccessorFunctorType;
+  using typename Superclass::NeighborhoodAccessorFunctorType;
 
   /** Save the image dimension. */
   static constexpr unsigned int ImageDimension = Superclass::ImageDimension;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,10 +33,11 @@
 #include "itkMetaDataDictionary.h"
 #include "itkSingletonMacro.h"
 
+#include <functional>
+#include <memory> // For unique_ptr.
+
 namespace itk
 {
-// Forward reference because of private implementation
-class SubjectImplementation;
 // Forward reference because of circular dependencies
 class ITK_FORWARD_EXPORT Command;
 
@@ -60,7 +61,7 @@ class ITK_FORWARD_EXPORT Command;
 class ITKCommon_EXPORT Object : public LightObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Object);
+  ITK_DISALLOW_COPY_AND_MOVE(Object);
 
   /** Smart pointer type alias support */
   using Self = Object;
@@ -127,7 +128,7 @@ public:
   /** This is a global flag that controls whether any debug, warning
    *  or error messages are displayed.  */
   static void
-  SetGlobalWarningDisplay(bool flag);
+  SetGlobalWarningDisplay(bool val);
 
   static bool
   GetGlobalWarningDisplay();
@@ -143,19 +144,43 @@ public:
     SetGlobalWarningDisplay(false);
   }
 
-  /** Allow people to add/remove/invoke observers (callbacks) to any ITK
-   * object. This is an implementation of the subject/observer design
+  /** \brief Add an observer/command to this object invoked for event
+   *
+   * This is an implementation of the subject/observer design
    * pattern. An observer is added by specifying an event to respond to
    * and an itk::Command to execute. It returns an unsigned long tag
    * which can be used later to remove the event or retrieve the
-   * command.  The memory for the Command becomes the responsibility of
-   * this object, so don't pass the same instance of a command to two
-   * different objects  */
+   * command.
+   *
+   * \note This member function is overloaded for const and non-const,
+   * just for backward compatibility. Removing the non-const overload
+   * appears to break the use of SWIG %pythonprepend in
+   * ITK/Wrapping/Generators/Python/PyBase/pyBase.i
+   */
   unsigned long
   AddObserver(const EventObject & event, Command *);
-
   unsigned long
   AddObserver(const EventObject & event, Command *) const;
+
+  /** \brief A convenient method to add an C++ lambda function as an observer.
+   *
+   * A FunctionCommand object in implicitly create to hold function, and
+   * passed to this object as a standard observer. The command will be invoked
+   * for the specified event.
+   *
+   * The function or lambda \b cannot captured this object as SmartPoint because
+   * a circular dependency is generated which causing memory leaks.
+   * Sample usage:
+   *  \code
+   *    auto &objRef = *o.GetPointer();
+   *    o->AddObserver(itk::AnyEvent(), [&objRef](const itk::EventObject &event)
+   *    { std::cout << "Object: " << objRef.GetNameOfClass() << " Event: " << event << std::endl; });
+   *  \endcode
+   *
+   *  \see FunctionCommand
+   */
+  unsigned long
+  AddObserver(const EventObject & event, std::function<void(const EventObject &)> function) const;
 
   /** Get the command associated with the given tag.  NOTE: This returns
    * a pointer to a Command, but it is safe to assign this to a
@@ -235,7 +260,7 @@ protected:
    * This method must be used very carefully !!!.
    * Most mortals will never need to call this method. */
   virtual void
-  SetTimeStamp(const TimeStamp & time);
+  SetTimeStamp(const TimeStamp & timeStamp);
 
 private:
   /** Only used to synchronize the global variable across static libraries.*/
@@ -250,9 +275,13 @@ private:
   /** Global object debug flag. */
   static bool * m_GlobalWarningDisplay;
 
+  // Forward reference because of private implementation
+  class SubjectImplementation;
+
   /** Implementation class for Subject/Observer Pattern.
    * This is only allocated if used. */
-  SubjectImplementation * m_SubjectImplementation{ nullptr };
+  mutable std::unique_ptr<SubjectImplementation> m_SubjectImplementation;
+
   /**
    * Implementation for holding Object MetaData
    * @see itk::MetaDataDictionary
@@ -260,7 +289,7 @@ private:
    * @see itk::MetaDataObject
    * This is only allocated if used.
    */
-  mutable MetaDataDictionary * m_MetaDataDictionary{ nullptr };
+  mutable std::unique_ptr<MetaDataDictionary> m_MetaDataDictionary{ nullptr };
 
   std::string m_ObjectName;
 };

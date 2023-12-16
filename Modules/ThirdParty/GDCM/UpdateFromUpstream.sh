@@ -7,10 +7,11 @@ shopt -s dotglob
 readonly name="GDCM"
 readonly ownership="GDCM Upstream <gdcm-developers@lists.sourceforge.net>"
 readonly subtree="Modules/ThirdParty/GDCM/src/gdcm"
-readonly repo="http://git.code.sf.net/p/gdcm/gdcm.git"
+readonly repo="https://github.com/malaterre/GDCM.git"
 readonly tag="release"
 readonly shortlog=false
 readonly paths="
+  .gitattributes
   CMake/UseCopyright.cmake
   CMake/InstallMacros.cmake
   CMake/COPYING-CMAKE-SCRIPTS
@@ -40,7 +41,6 @@ readonly paths="
 extract_source () {
     git_archive
     pushd "${extractdir}/${name}-reduced"
-    echo "* -whitespace" > .gitattributes
     popd
 }
 

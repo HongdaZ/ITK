@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class MeanSampleFilter
+ * \class MeanSampleFilter
  * \brief Given a sample, this filter computes the sample mean
  *
  * The sample is plugged in using SetSample method. Then invoke
@@ -49,7 +49,7 @@ template <typename TSample>
 class ITK_TEMPLATE_EXPORT MeanSampleFilter : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MeanSampleFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MeanSampleFilter);
 
   /**Standard class type aliases. */
   using Self = MeanSampleFilter;

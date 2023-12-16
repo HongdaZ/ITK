@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ template <typename TOutputImage>
 class ExampleImageSource : public GaussianImageSource<TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExampleImageSource);
+  ITK_DISALLOW_COPY_AND_MOVE(ExampleImageSource);
 
   /** Standard type alias. */
   using Self = ExampleImageSource;
@@ -51,9 +51,8 @@ public:
   using SizeType = typename OutputImageType::SizeType;
   using SizeValueType = typename OutputImageType::SizeValueType;
 
-  using ParametersValueType = typename Superclass::ParametersValueType;
-  using ParametersType = typename Superclass::ParametersType;
-  using EnabledArrayType = std::vector<bool>;
+  using typename Superclass::ParametersValueType;
+  using typename Superclass::ParametersType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -124,14 +123,14 @@ itkParametricBlindLeastSquaresDeconvolutionImageFilterTest(int argc, char * argv
   using ReaderType = itk::ImageFileReader<ImageType>;
   using WriterType = itk::ImageFileWriter<ImageType>;
 
-  ReaderType::Pointer inputReader = ReaderType::New();
+  auto inputReader = ReaderType::New();
   inputReader->SetFileName(argv[1]);
   inputReader->Update();
 
   // Create a masked parametric image source so that we can optimize
   // for the sigma parameters only.
   using KernelSourceType = itk::ExampleImageSource<ImageType>;
-  KernelSourceType::Pointer kernelSource = KernelSourceType::New();
+  auto kernelSource = KernelSourceType::New();
   kernelSource->SetScale(1.0);
 
   KernelSourceType::SizeType size = { { 32, 32 } };
@@ -161,7 +160,7 @@ itkParametricBlindLeastSquaresDeconvolutionImageFilterTest(int argc, char * argv
   // from a parametric image source. We'll try to recover those
   // parameters later.
   using ConvolutionFilterType = itk::FFTConvolutionImageFilter<ImageType>;
-  ConvolutionFilterType::Pointer convolutionFilter = ConvolutionFilterType::New();
+  auto convolutionFilter = ConvolutionFilterType::New();
   convolutionFilter->SetInput(inputReader->GetOutput());
   convolutionFilter->NormalizeOn();
   convolutionFilter->SetKernelImage(kernelSource->GetOutput());
@@ -172,8 +171,15 @@ itkParametricBlindLeastSquaresDeconvolutionImageFilterTest(int argc, char * argv
 
   // Create an instance of the deconvolution filter
   using DeconvolutionFilterType = itk::ParametricBlindLeastSquaresDeconvolutionImageFilter<ImageType, KernelSourceType>;
-  DeconvolutionFilterType::Pointer deconvolutionFilter = DeconvolutionFilterType::New();
+  auto deconvolutionFilter = DeconvolutionFilterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    deconvolutionFilter, ParametricBlindLeastSquaresDeconvolutionImageFilter, IterativeDeconvolutionImageFilter);
+
+
   deconvolutionFilter->SetKernelSource(kernelSource);
+  ITK_TEST_SET_GET_VALUE(kernelSource, deconvolutionFilter->GetKernelSource());
+
   deconvolutionFilter->SetSizeGreatestPrimeFactor(5);
 
   // Change the sigma settings here to something different
@@ -195,7 +201,7 @@ itkParametricBlindLeastSquaresDeconvolutionImageFilterTest(int argc, char * argv
   std::cout << "Kernel parameters: " << kernelSource->GetParameters() << std::endl;
   try
   {
-    WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
     writer->SetFileName(argv[2]);
     writer->SetInput(deconvolutionFilter->GetOutput());
     writer->Update();
@@ -207,7 +213,7 @@ itkParametricBlindLeastSquaresDeconvolutionImageFilterTest(int argc, char * argv
   }
 
   KernelSourceType::ParametersValueType expectedSigmaX = 2.90243;
-  if (std::abs(kernelSource->GetParameters()[0] - expectedSigmaX) > 1e-5)
+  if (itk::Math::abs(kernelSource->GetParameters()[0] - expectedSigmaX) > 1e-5)
   {
     std::cerr << "Kernel parameter[0] should have been " << expectedSigmaX << ", was "
               << kernelSource->GetParameters()[0] << "." << std::endl;
@@ -215,7 +221,7 @@ itkParametricBlindLeastSquaresDeconvolutionImageFilterTest(int argc, char * argv
   }
 
   KernelSourceType::ParametersValueType expectedSigmaY = 2.90597;
-  if (std::abs(kernelSource->GetParameters()[1] - expectedSigmaY) > 1e-5)
+  if (itk::Math::abs(kernelSource->GetParameters()[1] - expectedSigmaY) > 1e-5)
   {
     std::cerr << "Kernel parameter[1] should have been " << expectedSigmaY << ", was "
               << kernelSource->GetParameters()[0] << "." << std::endl;
@@ -228,7 +234,7 @@ itkParametricBlindLeastSquaresDeconvolutionImageFilterTest(int argc, char * argv
   {
     try
     {
-      WriterType::Pointer writer = WriterType::New();
+      auto writer = WriterType::New();
       writer->SetFileName(argv[6]);
       writer->SetInput(convolutionFilter->GetOutput());
       writer->Update();

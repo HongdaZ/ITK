@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,14 +18,13 @@
 #ifndef itkQuadEdgeMeshBoundaryEdgesMeshFunction_hxx
 #define itkQuadEdgeMeshBoundaryEdgesMeshFunction_hxx
 
-#include "itkQuadEdgeMeshBoundaryEdgesMeshFunction.h"
 #include "itkQuadEdgeMesh.h" // Just to mark the dependence towards this class.
 
 namespace itk
 {
 template <typename TMesh>
-typename QuadEdgeMeshBoundaryEdgesMeshFunction<TMesh>::OutputType
-QuadEdgeMeshBoundaryEdgesMeshFunction<TMesh>::Evaluate(const InputType & mesh) const
+auto
+QuadEdgeMeshBoundaryEdgesMeshFunction<TMesh>::Evaluate(const InputType & mesh) const -> OutputType
 {
   // Push on a list all the non internal edges:
   using CellsContainerConstIterator = typename MeshType::CellsContainerConstIterator;
@@ -51,7 +50,7 @@ QuadEdgeMeshBoundaryEdgesMeshFunction<TMesh>::Evaluate(const InputType & mesh) c
   while (!boundaryList.empty())
   {
     // Pop the first edge of list and make sure it has no face
-    // on it's left [because we want to follow the boundary with
+    // on its left [because we want to follow the boundary with
     // GeometricalQuadEdge::Lnext()]:
     auto       b = boundaryList.begin();
     QEPrimal * bdryEdge = *b;
@@ -67,7 +66,7 @@ QuadEdgeMeshBoundaryEdgesMeshFunction<TMesh>::Evaluate(const InputType & mesh) c
       return ((OutputType) nullptr);
     }
 
-    // Store this edge as representative of it's Lnext() ring i.e.
+    // Store this edge as representative of its Lnext() ring i.e.
     // representative of the boundary:
     ResultList->push_back(bdryEdge);
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,7 +48,7 @@ setConnectivity(TIterator * it, bool fullyConnected = false)
     // activate all neighbors that are face+edge+vertex
     // connected to the current pixel. do not include the center pixel
     unsigned int centerIndex = it->GetCenterNeighborhoodIndex();
-    for (unsigned int d = 0; d < centerIndex * 2 + 1; d++)
+    for (unsigned int d = 0; d < centerIndex * 2 + 1; ++d)
     {
       offset = it->GetOffset(d);
       it->ActivateOffset(offset);
@@ -83,7 +83,7 @@ setConnectivityPrevious(TIterator * it, bool fullyConnected = false)
     // activate all neighbors that are face+edge+vertex
     // connected to the current pixel. do not include the center pixel
     unsigned int centerIndex = it->GetCenterNeighborhoodIndex();
-    for (unsigned int d = 0; d < centerIndex; d++)
+    for (unsigned int d = 0; d < centerIndex; ++d)
     {
       offset = it->GetOffset(d);
       it->ActivateOffset(offset);
@@ -118,7 +118,7 @@ setConnectivityLater(TIterator * it, bool fullyConnected = false)
     // activate all neighbors that are face+edge+vertex
     // connected to the current pixel. do not include the center pixel
     unsigned int centerIndex = it->GetCenterNeighborhoodIndex();
-    for (unsigned int d = centerIndex + 1; d < 2 * centerIndex + 1; d++)
+    for (unsigned int d = centerIndex + 1; d < 2 * centerIndex + 1; ++d)
     {
       offset = it->GetOffset(d);
       it->ActivateOffset(offset);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,15 +19,15 @@
 
 namespace itk
 {
-KLMSegmentationRegion ::KLMSegmentationRegion()
+KLMSegmentationRegion::KLMSegmentationRegion()
 {
   m_MeanRegionIntensity = 0;
 }
 
-KLMSegmentationRegion ::~KLMSegmentationRegion() = default;
+KLMSegmentationRegion::~KLMSegmentationRegion() = default;
 
 void
-KLMSegmentationRegion ::PrintSelf(std::ostream & os, Indent indent) const
+KLMSegmentationRegion::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "Mean region intensity   : " << m_MeanRegionIntensity << std::endl;
@@ -35,9 +35,9 @@ KLMSegmentationRegion ::PrintSelf(std::ostream & os, Indent indent) const
 } // end PrintSelf
 
 void
-KLMSegmentationRegion ::SetRegionParameters(MeanRegionIntensityType meanRegionIntensity,
-                                            double                  regionArea,
-                                            RegionLabelType         label)
+KLMSegmentationRegion::SetRegionParameters(MeanRegionIntensityType meanRegionIntensity,
+                                           double                  regionArea,
+                                           RegionLabelType         label)
 {
   // Set the area, mean, and label associated with the region
   this->SetRegionArea(regionArea);
@@ -46,7 +46,7 @@ KLMSegmentationRegion ::SetRegionParameters(MeanRegionIntensityType meanRegionIn
 } // end SetRegionParameters
 
 void
-KLMSegmentationRegion ::CombineRegionParameters(const Self * region)
+KLMSegmentationRegion::CombineRegionParameters(const Self * region)
 {
   // Reset the area and mean associated with the merged region
 
@@ -69,7 +69,7 @@ KLMSegmentationRegion ::CombineRegionParameters(const Self * region)
 } // end CombineRegionParameters
 
 double
-KLMSegmentationRegion ::EnergyFunctional(const Self * region)
+KLMSegmentationRegion::EnergyFunctional(const Self * region)
 {
   MeanRegionIntensityType region1_2MeanDiff = this->m_MeanRegionIntensity - region->m_MeanRegionIntensity;
 
@@ -86,7 +86,7 @@ KLMSegmentationRegion ::EnergyFunctional(const Self * region)
 }
 
 void
-KLMSegmentationRegion ::DeleteRegionBorder(KLMSegmentationBorder * pBorderCandidate)
+KLMSegmentationRegion::DeleteRegionBorder(KLMSegmentationBorder * pBorderCandidate)
 {
   if (pBorderCandidate == nullptr)
   {
@@ -116,7 +116,7 @@ KLMSegmentationRegion ::DeleteRegionBorder(KLMSegmentationBorder * pBorderCandid
 } // end DeleteRegionBorder()
 
 void
-KLMSegmentationRegion ::PushBackRegionBorder(KLMSegmentationBorder * pBorderCandidate)
+KLMSegmentationRegion::PushBackRegionBorder(KLMSegmentationBorder * pBorderCandidate)
 {
   if (pBorderCandidate == nullptr)
   {
@@ -126,7 +126,7 @@ KLMSegmentationRegion ::PushBackRegionBorder(KLMSegmentationBorder * pBorderCand
 }
 
 void
-KLMSegmentationRegion ::PushFrontRegionBorder(KLMSegmentationBorder * pBorderCandidate)
+KLMSegmentationRegion::PushFrontRegionBorder(KLMSegmentationBorder * pBorderCandidate)
 {
   if (pBorderCandidate == nullptr)
   {
@@ -136,7 +136,7 @@ KLMSegmentationRegion ::PushFrontRegionBorder(KLMSegmentationBorder * pBorderCan
 }
 
 void
-KLMSegmentationRegion ::InsertRegionBorder(KLMSegmentationBorder * pBorderCandidate)
+KLMSegmentationRegion::InsertRegionBorder(KLMSegmentationBorder * pBorderCandidate)
 {
   // Ensure that the border candidate is not a null pointer
   if (pBorderCandidate == nullptr)
@@ -144,7 +144,7 @@ KLMSegmentationRegion ::InsertRegionBorder(KLMSegmentationBorder * pBorderCandid
     itkExceptionMacro(<< "Null pointer to segmentation region border");
   }
 
-  // The m_RegionBorderVec is a ordered vector of pointers to the borders.
+  // The m_RegionBorderVec is an ordered vector of pointers to the borders.
   // Ordering is based on regions labels.
 
   // The region border vector is empty, there is only one region border
@@ -187,8 +187,8 @@ KLMSegmentationRegion ::InsertRegionBorder(KLMSegmentationBorder * pBorderCandid
 } // end InsertRegionBorder
 
 void
-KLMSegmentationRegion ::InsertRegionBorder(RegionBorderVectorIterator RegionBorderVectorIt,
-                                           KLMSegmentationBorder *    pBorderCandidate)
+KLMSegmentationRegion::InsertRegionBorder(RegionBorderVectorIterator RegionBorderVectorIt,
+                                          KLMSegmentationBorder *    pBorderCandidate)
 {
   // Ensure that the border candidate is not a null pointer
   if (pBorderCandidate == nullptr)
@@ -196,7 +196,7 @@ KLMSegmentationRegion ::InsertRegionBorder(RegionBorderVectorIterator RegionBord
     itkExceptionMacro(<< "Null pointer to segmentation region border");
   }
 
-  // The m_RegionBorderVec is a ordered vector of pointers to the
+  // The m_RegionBorderVec is an ordered vector of pointers to the
   // borders. Insert a valid region border into the region border vector
   // assuming calling function has correctly identified the new
   // element position.
@@ -204,7 +204,7 @@ KLMSegmentationRegion ::InsertRegionBorder(RegionBorderVectorIterator RegionBord
 } // end InsertRegionBorder
 
 void
-KLMSegmentationRegion ::ResetRegionLabelAndUpdateBorders(Self * region)
+KLMSegmentationRegion::ResetRegionLabelAndUpdateBorders(Self * region)
 {
   // Assign new equivalence label to the old region
   this->SetRegionLabel(region->GetRegionLabel());
@@ -277,7 +277,7 @@ KLMSegmentationRegion ::ResetRegionLabelAndUpdateBorders(Self * region)
 } // end ResetRegionLabelAndUpdateBorders
 
 void
-KLMSegmentationRegion ::SpliceRegionBorders(Self * region)
+KLMSegmentationRegion::SpliceRegionBorders(Self * region)
 {
   // Do the actual union of the borders
 
@@ -343,8 +343,8 @@ KLMSegmentationRegion ::SpliceRegionBorders(Self * region)
       (*thatRegionBordersIt)->SetRegion2(nullptr);
       (*thatRegionBordersIt)->SetLambda(-1.0);
 
-      thisRegionBordersIt++;
-      thatRegionBordersIt++;
+      ++thisRegionBordersIt;
+      ++thatRegionBordersIt;
     } // end if loop for case when two borders point to same region
 
     // This neighbor region label is less then that neighbor region label
@@ -358,7 +358,7 @@ KLMSegmentationRegion ::SpliceRegionBorders(Self * region)
                (*thatRegionBordersIt)->GetRegion2()->GetRegionLabel())))
     {
       m_RegionBorderVector.push_back(*thisRegionBordersIt);
-      thisRegionBordersIt++;
+      ++thisRegionBordersIt;
     } // end else if
 
     // That neighbor region label is less then this neighbor region label
@@ -372,7 +372,7 @@ KLMSegmentationRegion ::SpliceRegionBorders(Self * region)
                (*thisRegionBordersIt)->GetRegion2()->GetRegionLabel())))
     {
       m_RegionBorderVector.push_back(*thatRegionBordersIt);
-      thatRegionBordersIt++;
+      ++thatRegionBordersIt;
     } // end else if
     else
     {
@@ -384,19 +384,19 @@ KLMSegmentationRegion ::SpliceRegionBorders(Self * region)
   while (thisRegionBordersIt != endOfThisRegionBorders)
   {
     m_RegionBorderVector.push_back(*thisRegionBordersIt);
-    thisRegionBordersIt++;
+    ++thisRegionBordersIt;
   }
 
   // If any borders remain in thatRegionBorders, put them to the back
   while (thatRegionBordersIt != endOfThatRegionBorders)
   {
     m_RegionBorderVector.push_back(*thatRegionBordersIt);
-    thatRegionBordersIt++;
+    ++thatRegionBordersIt;
   }
 } // end SpliceRegionBorders
 
 void
-KLMSegmentationRegion ::UpdateRegionBorderLambda()
+KLMSegmentationRegion::UpdateRegionBorderLambda()
 {
   // Check if the number of borders for this region is nullptr
   if (m_RegionBorderVector.empty())
@@ -417,43 +417,43 @@ KLMSegmentationRegion ::UpdateRegionBorderLambda()
 } // end UpdateRegionBorderLambda
 
 void
-KLMSegmentationRegion ::DeleteAllRegionBorders()
+KLMSegmentationRegion::DeleteAllRegionBorders()
 {
   m_RegionBorderVector.resize(0);
 } // end DeleteAllRegionBorders
 
 KLMSegmentationRegion::RegionBorderVectorIterator
-KLMSegmentationRegion ::GetRegionBorderItBegin()
+KLMSegmentationRegion::GetRegionBorderItBegin()
 {
   return m_RegionBorderVector.begin();
 } // end GetRegionBorderItBegin
 
 KLMSegmentationRegion::RegionBorderVectorConstIterator
-KLMSegmentationRegion ::GetRegionBorderConstItBegin()
+KLMSegmentationRegion::GetRegionBorderConstItBegin()
 {
   return m_RegionBorderVector.begin();
 } // end GetRegionBorderConstItBegin
 
 KLMSegmentationRegion::RegionBorderVectorIterator
-KLMSegmentationRegion ::GetRegionBorderItEnd()
+KLMSegmentationRegion::GetRegionBorderItEnd()
 {
   return m_RegionBorderVector.end();
 } // end GetRegionBorderItEnd
 
 KLMSegmentationRegion::RegionBorderVectorConstIterator
-KLMSegmentationRegion ::GetRegionBorderConstItEnd()
+KLMSegmentationRegion::GetRegionBorderConstItEnd()
 {
   return m_RegionBorderVector.end();
 } // end GetRegionBorderConstItEnd
 
 KLMSegmentationRegion::RegionBorderVectorSizeType
-KLMSegmentationRegion ::GetRegionBorderSize() const
+KLMSegmentationRegion::GetRegionBorderSize() const
 {
   return m_RegionBorderVector.size();
 } // end GetRegionBorderSize
 
 void
-KLMSegmentationRegion ::PrintRegionInfo()
+KLMSegmentationRegion::PrintRegionInfo()
 {
   int region1label;
   int region2label;
@@ -471,7 +471,7 @@ KLMSegmentationRegion ::PrintRegionInfo()
 
   // If there are border pointers print the results
   tempVectorIt = m_RegionBorderVector.begin();
-  for (unsigned int k = 0; k < m_RegionBorderVector.size(); k++)
+  for (unsigned int k = 0; k < m_RegionBorderVector.size(); ++k)
   {
     region1label = (*tempVectorIt)->GetRegion1()->GetRegionLabel();
     region2label = (*tempVectorIt)->GetRegion2()->GetRegionLabel();
@@ -479,7 +479,7 @@ KLMSegmentationRegion ::PrintRegionInfo()
     std::cout << "Border Ptr :" << (*tempVectorIt) << "( " << region1label << " - " << region2label << " )"
               << " Lambda = " << (*tempVectorIt)->GetLambda() << std::endl;
 
-    tempVectorIt++;
+    ++tempVectorIt;
   } // end for
 
   std::cout << "------------------------------" << std::endl;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -75,13 +75,13 @@ template <typename TInput, typename TOutput>
 class ITK_TEMPLATE_EXPORT FastMarchingImageFilterBase : public FastMarchingBase<TInput, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingImageFilterBase);
+  ITK_DISALLOW_COPY_AND_MOVE(FastMarchingImageFilterBase);
 
   using Self = FastMarchingImageFilterBase;
   using Superclass = FastMarchingBase<TInput, TOutput>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
-  using Traits = typename Superclass::Traits;
+  using typename Superclass::Traits;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -92,11 +92,11 @@ public:
 
   using InputImageType = typename Superclass::InputDomainType;
   using InputImagePointer = typename Superclass::InputDomainPointer;
-  using InputPixelType = typename Superclass::InputPixelType;
+  using typename Superclass::InputPixelType;
 
   using OutputImageType = typename Superclass::OutputDomainType;
   using OutputImagePointer = typename Superclass::OutputDomainPointer;
-  using OutputPixelType = typename Superclass::OutputPixelType;
+  using typename Superclass::OutputPixelType;
   using OutputSpacingType = typename OutputImageType::SpacingType;
   using OutputSizeType = typename OutputImageType::SizeType;
   using OutputRegionType = typename OutputImageType::RegionType;
@@ -109,7 +109,7 @@ public:
   using NodePairContainerPointer = typename Traits::NodePairContainerPointer;
   using NodePairContainerConstIterator = typename Traits::NodePairContainerConstIterator;
 
-  using LabelType = typename Superclass::LabelType;
+  using typename Superclass::LabelType;
 
   static constexpr unsigned int ImageDimension = Traits::ImageDimension;
 
@@ -191,7 +191,7 @@ protected:
   GetTotalNumberOfNodes() const override;
 
   void
-  SetOutputValue(OutputImageType * oDomain, const NodeType & iNode, const OutputPixelType & iValue) override;
+  SetOutputValue(OutputImageType * oImage, const NodeType & iNode, const OutputPixelType & iValue) override;
 
   /** Returns the output value for a given node */
   const OutputPixelType
@@ -211,7 +211,7 @@ protected:
 
   /** Update value for a given node */
   void
-  UpdateValue(OutputImageType * oImage, const NodeType & iValue) override;
+  UpdateValue(OutputImageType * oImage, const NodeType & iNode) override;
 
   /** Make sure the given node does not violate any topological constraint*/
   bool
@@ -225,7 +225,7 @@ protected:
 
   /** Solve the quadratic equation */
   double
-  Solve(OutputImageType * oImage, const NodeType & iNode, InternalNodeStructureArray & ioNeighbors) const;
+  Solve(OutputImageType * oImage, const NodeType & iNode, InternalNodeStructureArray & iNeighbors) const;
 
   //
   // Functions and variables to check for topology changes (2D/3D only).

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkLevelSetFunctionWithRefitTerm_hxx
 #define itkLevelSetFunctionWithRefitTerm_hxx
 
-#include "itkLevelSetFunctionWithRefitTerm.h"
 #include "itkVector.h"
 
 namespace itk
@@ -56,8 +55,9 @@ LevelSetFunctionWithRefitTerm<TImageType, TSparseImageType>::PrintSelf(std::ostr
 }
 
 template <typename TImageType, typename TSparseImageType>
-typename LevelSetFunctionWithRefitTerm<TImageType, TSparseImageType>::TimeStepType
+auto
 LevelSetFunctionWithRefitTerm<TImageType, TSparseImageType>::ComputeGlobalTimeStep(void * GlobalData) const
+  -> TimeStepType
 {
   TimeStepType dt = Superclass::ComputeGlobalTimeStep(GlobalData);
 
@@ -84,18 +84,18 @@ LevelSetFunctionWithRefitTerm<TImageType, TSparseImageType>::ComputeCurvature(
   NormalVectorType normalvector;
   ScalarValueType  curvature;
 
-  for (j = 0; j < TImageType::ImageDimension; j++)
+  for (j = 0; j < TImageType::ImageDimension; ++j)
   {
     stride[j] = neighborhood.GetStride(j);
     indicator[j] = one << j;
   }
   curvature = NumericTraits<ScalarValueType>::ZeroValue();
 
-  for (counterN = 0; counterN < m_NumVertex; counterN++)
+  for (counterN = 0; counterN < m_NumVertex; ++counterN)
   {
     // compute position of normal vector
     positionN = center;
-    for (k = 0; k < TImageType::ImageDimension; k++)
+    for (k = 0; k < TImageType::ImageDimension; ++k)
     {
       if (counterN & indicator[k])
       {
@@ -103,13 +103,13 @@ LevelSetFunctionWithRefitTerm<TImageType, TSparseImageType>::ComputeCurvature(
       }
     }
     // compute the normal vector
-    for (j = 0; j < TImageType::ImageDimension; j++) // derivative axis
+    for (j = 0; j < TImageType::ImageDimension; ++j) // derivative axis
     {
       normalvector[j] = NumericTraits<ScalarValueType>::ZeroValue();
-      for (counterP = 0; counterP < m_NumVertex; counterP++)
+      for (counterP = 0; counterP < m_NumVertex; ++counterP)
       {
         positionP = positionN;
-        for (k = 0; k < TImageType::ImageDimension; k++)
+        for (k = 0; k < TImageType::ImageDimension; ++k)
         {
           if (counterP & indicator[k])
           {
@@ -128,7 +128,7 @@ LevelSetFunctionWithRefitTerm<TImageType, TSparseImageType>::ComputeCurvature(
     }   // end derivative axis
     normalvector = normalvector / (m_MinVectorNorm + normalvector.GetNorm());
     // add normal to curvature computation
-    for (j = 0; j < TImageType::ImageDimension; j++) // derivative axis
+    for (j = 0; j < TImageType::ImageDimension; ++j) // derivative axis
     {
       if (counterN & indicator[j])
       {

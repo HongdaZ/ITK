@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,21 +50,21 @@ itkHessianToObjectnessMeasureImageFilterTest(int argc, char * argv[])
 
   using HessianImageType = GaussianImageFilterType::OutputImageType;
 
-  // Delcare the type of objectness measure image filter
+  // Declare the type of objectness measure image filter
 
   using ObjectnessFilterType = itk::HessianToObjectnessMeasureImageFilter<HessianImageType, ImageType>;
 
-  FileReaderType::Pointer imageReader = FileReaderType::New();
+  auto imageReader = FileReaderType::New();
   imageReader->SetFileName(argv[1]);
 
   ITK_TRY_EXPECT_NO_EXCEPTION(imageReader->Update());
 
 
   // Create a Gaussian filter
-  GaussianImageFilterType::Pointer gaussianFilter = GaussianImageFilterType::New();
+  auto gaussianFilter = GaussianImageFilterType::New();
 
   // Create an objectness filter
-  ObjectnessFilterType::Pointer objectnessFilter = ObjectnessFilterType::New();
+  auto objectnessFilter = ObjectnessFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(objectnessFilter, HessianToObjectnessMeasureImageFilter, ImageToImageFilter);
 
@@ -120,7 +120,7 @@ itkHessianToObjectnessMeasureImageFilterTest(int argc, char * argv[])
 
   // Write the output image
   using FileWriterType = itk::ImageFileWriter<ImageType>;
-  FileWriterType::Pointer writer = FileWriterType::New();
+  auto writer = FileWriterType::New();
   writer->SetFileName(argv[2]);
   writer->UseCompressionOn();
   writer->SetInput(objectnessFilter->GetOutput());

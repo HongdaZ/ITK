@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkLBFGSOptimizerBasev4_hxx
 #define itkLBFGSOptimizerBasev4_hxx
 
-#include "itkLBFGSOptimizerBasev4.h"
 
 extern "C"
 {
@@ -28,27 +27,6 @@ extern "C"
 
 namespace itk
 {
-
-template <typename TInternalVnlOptimizerType>
-class ITK_TEMPLATE_EXPORT LBFGSOptimizerBaseHelperv4 : public TInternalVnlOptimizerType
-{
-public:
-  using Self = LBFGSOptimizerBaseHelperv4;
-  using Superclass = TInternalVnlOptimizerType;
-
-  LBFGSOptimizerBaseHelperv4(vnl_cost_function & f, LBFGSOptimizerBasev4<TInternalVnlOptimizerType> * itkObj)
-    : TInternalVnlOptimizerType(f)
-    , m_ItkObj(itkObj)
-  {}
-
-protected:
-  LBFGSOptimizerBasev4<TInternalVnlOptimizerType> * m_ItkObj;
-
-  /** Handle new iteration event */
-  bool
-  report_iter() override;
-};
-
 
 template <typename TInternalVnlOptimizerType>
 bool
@@ -166,7 +144,7 @@ LBFGSOptimizerBasev4<TInternalVnlOptimizerType>::SetMetric(MetricType * metric)
 
   this->SetCostFunctionAdaptor(adaptor);
 
-  m_VnlOptimizer.reset(new InternalOptimizerType(*adaptor, this));
+  m_VnlOptimizer = std::make_unique<InternalOptimizerType>(*adaptor, this);
 }
 
 template <typename TInternalVnlOptimizerType>
@@ -187,8 +165,8 @@ LBFGSOptimizerBasev4<TInternalVnlOptimizerType>::StartOptimization(bool /* doOnl
 }
 
 template <typename TInternalVnlOptimizerType>
-typename LBFGSOptimizerBasev4<TInternalVnlOptimizerType>::InternalOptimizerType *
-LBFGSOptimizerBasev4<TInternalVnlOptimizerType>::GetOptimizer()
+auto
+LBFGSOptimizerBasev4<TInternalVnlOptimizerType>::GetOptimizer() -> InternalOptimizerType *
 {
   return m_VnlOptimizer.get();
 }

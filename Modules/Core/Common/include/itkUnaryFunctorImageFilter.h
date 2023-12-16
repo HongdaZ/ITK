@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,14 +43,14 @@ namespace itk
  * \ingroup ITKCommon
  *
  * \sphinx
- * \sphinxexample{ImageProcessing/UnaryFunctorImageFilter,Apply Custom Operation To Each Pixel In Image}
+ * \sphinxexample{Core/Common/CustomOperationToEachPixelInImage,Apply Custom Operation To Each Pixel In Image}
  * \endsphinx
  */
 template <typename TInputImage, typename TOutputImage, typename TFunction>
 class ITK_TEMPLATE_EXPORT UnaryFunctorImageFilter : public InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(UnaryFunctorImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(UnaryFunctorImageFilter);
 
   /** Standard class type aliases. */
   using Self = UnaryFunctorImageFilter;

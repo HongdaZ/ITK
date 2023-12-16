@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,16 +48,12 @@ public:
   ~SymmetricEigenAnalysisFunction() = default;
   using CalculatorType = SymmetricEigenAnalysis<TInput, TOutput>;
   bool
-  operator!=(const SymmetricEigenAnalysisFunction &) const
+  operator==(const SymmetricEigenAnalysisFunction &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const SymmetricEigenAnalysisFunction & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(SymmetricEigenAnalysisFunction);
 
   inline TOutput
   operator()(const TInput & x) const
@@ -106,6 +102,25 @@ public:
       m_Calculator.SetOrderEigenValues(false);
     }
   }
+  void
+  SetOrderEigenValuesBy(EigenValueOrderEnum order)
+  {
+    this->OrderEigenValuesBy(order);
+  }
+  EigenValueOrderEnum
+  GetOrderEigenValuesBy() const
+  {
+    if (m_Calculator.GetOrderEigenMagnitudes())
+    {
+      return EigenValueOrderEnum::OrderByMagnitude;
+    }
+    if (m_Calculator.GetOrderEigenValues())
+    {
+      return EigenValueOrderEnum::OrderByValue;
+    }
+    return EigenValueOrderEnum::DoNotOrder;
+  }
+
 
 private:
   CalculatorType m_Calculator;
@@ -120,16 +135,12 @@ public:
   ~SymmetricEigenAnalysisFixedDimensionFunction() = default;
   using CalculatorType = SymmetricEigenAnalysisFixedDimension<TMatrixDimension, TInput, TOutput>;
   bool
-  operator!=(const SymmetricEigenAnalysisFixedDimensionFunction &) const
+  operator==(const SymmetricEigenAnalysisFixedDimensionFunction &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const SymmetricEigenAnalysisFixedDimensionFunction & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(SymmetricEigenAnalysisFixedDimensionFunction);
 
   inline TOutput
   operator()(const TInput & x) const
@@ -185,7 +196,7 @@ extern ITKImageIntensity_EXPORT std::ostream &
 } // end namespace Functor
 
 /**
- *\class SymmetricEigenAnalysisImageFilter
+ * \class SymmetricEigenAnalysisImageFilter
  * \brief Computes the eigen-values of every input symmetric matrix pixel.
  *
  * SymmetricEigenAnalysisImageFilter applies pixel-wise the invocation for
@@ -197,9 +208,6 @@ extern ITKImageIntensity_EXPORT std::ostream &
  * OrderByValue:      lambda_1 < lambda_2 < ....
  * OrderByMagnitude:  |lambda_1| < |lambda_2| < .....
  * DoNotOrder:        Default order of eigen values obtained after QL method
- *
- * The user of this class is explicitly supposed to set the dimension of the
- * 2D matrix using the SetDimension() method.
  *
  * \ingroup IntensityImageFilters  MultiThreaded  TensorObjects
  *
@@ -213,7 +221,7 @@ class SymmetricEigenAnalysisImageFilter
       Functor::SymmetricEigenAnalysisFunction<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SymmetricEigenAnalysisImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SymmetricEigenAnalysisImageFilter);
 
   /** Standard class type aliases. */
   using Self = SymmetricEigenAnalysisImageFilter;
@@ -225,11 +233,11 @@ public:
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
-  using OutputImageType = typename Superclass::OutputImageType;
+  using typename Superclass::OutputImageType;
   using OutputPixelType = typename TOutputImage::PixelType;
   using InputPixelType = typename TInputImage::PixelType;
   using InputValueType = typename InputPixelType::ValueType;
-  using FunctorType = typename Superclass::FunctorType;
+  using typename Superclass::FunctorType;
 
 #if !defined(ITK_LEGACY_REMOVE)
   /** Enables reverse compatibility for enumeration values */
@@ -242,6 +250,16 @@ public:
   OrderEigenValuesBy(EigenValueOrderEnum order)
   {
     this->GetFunctor().OrderEigenValuesBy(order);
+  }
+  void
+  SetOrderEigenValuesBy(EigenValueOrderEnum order)
+  {
+    this->OrderEigenValuesBy(order);
+  }
+  EigenValueOrderEnum
+  GetOrderEigenValuesBy() const
+  {
+    return this->GetFunctor().GetOrderEigenValuesBy();
   }
 
   /** Run-time type information (and related methods).   */
@@ -277,15 +295,15 @@ public:
 #endif
 
 protected:
-  SymmetricEigenAnalysisImageFilter() = default;
+  SymmetricEigenAnalysisImageFilter() { this->SetDimension(TInputImage::ImageDimension); }
   ~SymmetricEigenAnalysisImageFilter() override = default;
 };
 
 /**
- *\class SymmetricEigenAnalysisFixedDimensionImageFilter
+ * \class SymmetricEigenAnalysisFixedDimensionImageFilter
  * \brief Computes the eigen-values of every input symmetric matrix pixel.
  *
- * SymmetricEigenAnalysisImageFilter applies pixel-wise the invokation for
+ * SymmetricEigenAnalysisImageFilter applies pixel-wise the invocation for
  * computing the eigen-values and eigen-vectors of the symmetric matrix
  * corresponding to every input pixel.
  *
@@ -309,7 +327,7 @@ class SymmetricEigenAnalysisFixedDimensionImageFilter
                                                             typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SymmetricEigenAnalysisFixedDimensionImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SymmetricEigenAnalysisFixedDimensionImageFilter);
 
   /** Standard class type aliases. */
   using Self = SymmetricEigenAnalysisFixedDimensionImageFilter;
@@ -323,11 +341,11 @@ public:
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
-  using OutputImageType = typename Superclass::OutputImageType;
+  using typename Superclass::OutputImageType;
   using OutputPixelType = typename TOutputImage::PixelType;
   using InputPixelType = typename TInputImage::PixelType;
   using InputValueType = typename InputPixelType::ValueType;
-  using FunctorType = typename Superclass::FunctorType;
+  using typename Superclass::FunctorType;
 
   /** expose public enumeration class as member  for backward compatibility */
   using EigenValueOrderEnum = itk::EigenValueOrderEnum;

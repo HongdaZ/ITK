@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkScalarToRGBPixelFunctor_hxx
 #define itkScalarToRGBPixelFunctor_hxx
 
-#include "itkScalarToRGBPixelFunctor.h"
 #include "itkByteSwapper.h"
 
 namespace itk
@@ -45,8 +44,8 @@ ScalarToRGBPixelFunctor<TScalar>::ScalarToRGBPixelFunctor()
 }
 
 template <typename TScalar>
-typename ScalarToRGBPixelFunctor<TScalar>::RGBPixelType
-ScalarToRGBPixelFunctor<TScalar>::operator()(const TScalar & v) const
+auto
+ScalarToRGBPixelFunctor<TScalar>::operator()(const TScalar & v) const -> RGBPixelType
 {
   TScalar      buf = v;
   const auto * bytes = reinterpret_cast<const unsigned char *>(&buf);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkNormalQuadEdgeMeshFilter_hxx
 #define itkNormalQuadEdgeMeshFilter_hxx
 
-#include "itkNormalQuadEdgeMeshFilter.h"
 #include "itkMath.h"
 
 namespace itk
@@ -30,8 +29,8 @@ NormalQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::NormalQuadEdgeMeshFilter()
 }
 
 template <typename TInputMesh, typename TOutputMesh>
-typename NormalQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::OutputFaceNormalType
-NormalQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::ComputeFaceNormal(OutputPolygonType * iPoly)
+auto
+NormalQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::ComputeFaceNormal(OutputPolygonType * iPoly) -> OutputFaceNormalType
 {
   OutputMeshPointer output = this->GetOutput();
 
@@ -151,7 +150,7 @@ NormalQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::Weight(const OutputPointIdent
           }
 
           temp = temp->GetLnext();
-          k++;
+          ++k;
         } while (temp != edge);
 
         switch (m_Weight)

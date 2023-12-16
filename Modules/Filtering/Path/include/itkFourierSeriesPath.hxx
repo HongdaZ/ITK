@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,14 +18,13 @@
 #ifndef itkFourierSeriesPath_hxx
 #define itkFourierSeriesPath_hxx
 
-#include "itkFourierSeriesPath.h"
 #include <cmath>
 
 namespace itk
 {
 template <unsigned int VDimension>
-typename FourierSeriesPath<VDimension>::OutputType
-FourierSeriesPath<VDimension>::Evaluate(const InputType & input) const
+auto
+FourierSeriesPath<VDimension>::Evaluate(const InputType & input) const -> OutputType
 {
   InputType  theta;
   OutputType output;
@@ -41,7 +40,7 @@ FourierSeriesPath<VDimension>::Evaluate(const InputType & input) const
     output += m_CosCoefficients->ElementAt(0);
   }
 
-  for (int n = 1; n < numHarmonics; n++)
+  for (int n = 1; n < numHarmonics; ++n)
   {
     // input defined over [0,1] maps to theta defined over [0,2pi * n]
     theta = PI * 2.0 * n * input;
@@ -53,8 +52,8 @@ FourierSeriesPath<VDimension>::Evaluate(const InputType & input) const
 }
 
 template <unsigned int VDimension>
-typename FourierSeriesPath<VDimension>::VectorType
-FourierSeriesPath<VDimension>::EvaluateDerivative(const InputType & input) const
+auto
+FourierSeriesPath<VDimension>::EvaluateDerivative(const InputType & input) const -> VectorType
 {
   InputType  theta;
   VectorType output;
@@ -65,7 +64,7 @@ FourierSeriesPath<VDimension>::EvaluateDerivative(const InputType & input) const
 
   const double PI = 4.0 * std::atan(1.0);
 
-  for (int n = 1; n < numHarmonics; n++)
+  for (int n = 1; n < numHarmonics; ++n)
   {
     // input defined over [0,1] maps to theta defined over [0,2pi * n]
     theta = PI * 2.0 * n * input;

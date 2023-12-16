@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,14 +31,8 @@
 #include "itkTestingMacros.h"
 
 int
-itkMultiLevelSetWhitakerImageSubset2DTest(int argc, char * argv[])
+itkMultiLevelSetWhitakerImageSubset2DTest(int, char *[])
 {
-  if (argc < 1)
-  {
-    std::cerr << "Missing Arguments: " << itkNameOfTestExecutableMacro(argv) << std::endl;
-    return EXIT_FAILURE;
-  }
-
   constexpr unsigned int Dimension = 2;
 
   using InputPixelType = unsigned short;
@@ -93,7 +87,7 @@ itkMultiLevelSetWhitakerImageSubset2DTest(int argc, char * argv[])
   region.SetSize(size);
 
   // Input initialization
-  InputImageType::Pointer input = InputImageType::New();
+  auto input = InputImageType::New();
   input->SetRegions(region);
   input->SetSpacing(spacing);
   input->SetOrigin(origin);
@@ -121,7 +115,7 @@ itkMultiLevelSetWhitakerImageSubset2DTest(int argc, char * argv[])
   region.SetSize(size);
 
   // Binary initialization
-  InputImageType::Pointer binary = InputImageType::New();
+  auto binary = InputImageType::New();
   binary->SetRegions(region);
   binary->SetSpacing(spacing);
   binary->SetOrigin(origin);
@@ -142,14 +136,14 @@ itkMultiLevelSetWhitakerImageSubset2DTest(int argc, char * argv[])
   }
 
   // Convert binary mask to dense level set
-  BinaryImageToLevelSetType::Pointer adaptor1 = BinaryImageToLevelSetType::New();
+  auto adaptor1 = BinaryImageToLevelSetType::New();
   adaptor1->SetInputImage(binary);
   adaptor1->Initialize();
   LevelSetType::Pointer levelSet1 = adaptor1->GetModifiableLevelSet();
 
-  input->TransformPhysicalPointToIndex(binary->GetOrigin(), index);
+  index = input->TransformPhysicalPointToIndex(binary->GetOrigin());
   InputImageType::OffsetType offset;
-  for (unsigned int i = 0; i < Dimension; i++)
+  for (unsigned int i = 0; i < Dimension; ++i)
   {
     offset[i] = index[i];
   }
@@ -163,7 +157,7 @@ itkMultiLevelSetWhitakerImageSubset2DTest(int argc, char * argv[])
   region.SetIndex(index);
   region.SetSize(size);
 
-  IdListImageType::Pointer idImage = IdListImageType::New();
+  auto idImage = IdListImageType::New();
   idImage->SetRegions(input->GetLargestPossibleRegion());
   idImage->Allocate();
   idImage->FillBuffer(listIds);
@@ -177,17 +171,17 @@ itkMultiLevelSetWhitakerImageSubset2DTest(int argc, char * argv[])
     ++it;
   }
 
-  DomainMapImageFilterType::Pointer domainMapFilter = DomainMapImageFilterType::New();
+  auto domainMapFilter = DomainMapImageFilterType::New();
   domainMapFilter->SetInput(idImage);
   domainMapFilter->Update();
   std::cout << "Domain map computed" << std::endl;
 
   // Define the Heaviside function
-  HeavisideFunctionBaseType::Pointer heaviside = HeavisideFunctionBaseType::New();
+  auto heaviside = HeavisideFunctionBaseType::New();
   heaviside->SetEpsilon(1.0);
 
   // Insert the levelsets in a levelset container
-  LevelSetContainerType::Pointer lscontainer = LevelSetContainerType::New();
+  auto lscontainer = LevelSetContainerType::New();
   lscontainer->SetHeaviside(heaviside);
   lscontainer->SetDomainMapFilter(domainMapFilter);
 
@@ -199,20 +193,20 @@ itkMultiLevelSetWhitakerImageSubset2DTest(int argc, char * argv[])
   std::cout << "Level set container created" << std::endl;
 
   // Create ChanAndVese internal term for phi_{1}
-  ChanAndVeseInternalTermType::Pointer cvInternalTerm0 = ChanAndVeseInternalTermType::New();
+  auto cvInternalTerm0 = ChanAndVeseInternalTermType::New();
   cvInternalTerm0->SetInput(input);
   cvInternalTerm0->SetCoefficient(1.0);
   std::cout << "LevelSet 0: CV internal term created" << std::endl;
 
   // Create ChanAndVese external term for phi_{1}
-  ChanAndVeseExternalTermType::Pointer cvExternalTerm0 = ChanAndVeseExternalTermType::New();
+  auto cvExternalTerm0 = ChanAndVeseExternalTermType::New();
   cvExternalTerm0->SetInput(input);
   cvExternalTerm0->SetCoefficient(1.0);
   std::cout << "LevelSet 0: CV external term created" << std::endl;
 
 
   // Create Term Container
-  TermContainerType::Pointer termContainer0 = TermContainerType::New();
+  auto termContainer0 = TermContainerType::New();
   termContainer0->SetInput(input);
   termContainer0->SetCurrentLevelSetId(0);
   termContainer0->SetLevelSetContainer(lscontainer);
@@ -222,17 +216,17 @@ itkMultiLevelSetWhitakerImageSubset2DTest(int argc, char * argv[])
   std::cout << "Term container 0 created" << std::endl;
 
 
-  EquationContainerType::Pointer equationContainer = EquationContainerType::New();
+  auto equationContainer = EquationContainerType::New();
   equationContainer->SetLevelSetContainer(lscontainer);
   equationContainer->AddEquation(0, termContainer0);
   std::cout << "Equation container created" << std::endl;
 
   using StoppingCriterionType = itk::LevelSetEvolutionNumberOfIterationsStoppingCriterion<LevelSetContainerType>;
-  StoppingCriterionType::Pointer criterion = StoppingCriterionType::New();
+  auto criterion = StoppingCriterionType::New();
   criterion->SetNumberOfIterations(500);
   std::cout << "Stopping criterion created" << std::endl;
 
-  LevelSetEvolutionType::Pointer evolution = LevelSetEvolutionType::New();
+  auto evolution = LevelSetEvolutionType::New();
   evolution->SetEquationContainer(equationContainer);
   evolution->SetStoppingCriterion(criterion);
   evolution->SetLevelSetContainer(lscontainer);

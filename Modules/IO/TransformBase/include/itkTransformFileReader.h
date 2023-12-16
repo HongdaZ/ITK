@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,10 +37,11 @@ template <typename TParametersValueType>
 class ITK_TEMPLATE_EXPORT TransformFileReaderTemplate : public LightProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TransformFileReaderTemplate);
+  ITK_DISALLOW_COPY_AND_MOVE(TransformFileReaderTemplate);
 
   /** SmartPointer type alias support */
   using Self = TransformFileReaderTemplate;
+  using Superclass = LightProcessObject;
   using Pointer = SmartPointer<Self>;
   using TransformType = TransformBaseTemplate<TParametersValueType>;
 
@@ -57,7 +58,6 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  using Superclass = Object;
   itkTypeMacro(TransformFileReaderTemplate, LightProcessObject);
 
   /** Set the filename  */
@@ -113,13 +113,13 @@ using TransformFileReader = itk::TransformFileReaderTemplate<double>;
 
 } // namespace itk
 
-#ifdef ITK_IO_FACTORY_REGISTER_MANAGER
+#if defined ITK_TRANSFORMIO_FACTORY_REGISTER_MANAGER || defined ITK_IO_FACTORY_REGISTER_MANAGER
 #  include "itkTransformIOFactoryRegisterManager.h"
 #endif
 
 // Note: Explicit instantiation is done in itkTransformFileReader.cxx
 
-#endif // itkTransformFileReade_h
+#endif // itkTransformFileReader_h
 
 /** Explicit instantiations */
 #ifndef ITK_TEMPLATE_EXPLICIT_TransformFileReader

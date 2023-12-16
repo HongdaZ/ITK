@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkKdTreeGenerator_hxx
 #define itkKdTreeGenerator_hxx
 
-#include "itkKdTreeGenerator.h"
 
 namespace itk
 {
@@ -103,7 +102,7 @@ KdTreeGenerator<TSample>::GenerateData()
   MeasurementVectorType upperBound;
   NumericTraits<MeasurementVectorType>::SetLength(upperBound, m_MeasurementVectorSize);
 
-  for (unsigned int d = 0; d < m_MeasurementVectorSize; d++)
+  for (unsigned int d = 0; d < m_MeasurementVectorSize; ++d)
   {
     lowerBound[d] = NumericTraits<MeasurementType>::NonpositiveMin();
     upperBound[d] = NumericTraits<MeasurementType>::max();
@@ -138,7 +137,7 @@ KdTreeGenerator<TSample>::GenerateNonterminalNode(unsigned int            beginI
     subsample, beginIndex, endIndex, m_TempLowerBound, m_TempUpperBound, m_TempMean);
 
   maxSpread = NumericTraits<MeasurementType>::NonpositiveMin();
-  for (i = 0; i < m_MeasurementVectorSize; i++)
+  for (i = 0; i < m_MeasurementVectorSize; ++i)
   {
     spread = m_TempUpperBound[i] - m_TempLowerBound[i];
     if (spread >= maxSpread)
@@ -204,7 +203,7 @@ KdTreeGenerator<TSample>::GenerateTreeLoop(unsigned int            beginIndex,
     {
       auto * ptr = new KdTreeTerminalNode<TSample>();
 
-      for (unsigned int j = beginIndex; j < endIndex; j++)
+      for (unsigned int j = beginIndex; j < endIndex; ++j)
       {
         ptr->AddInstanceIdentifier(this->GetSubsample()->GetInstanceIdentifier(j));
       }

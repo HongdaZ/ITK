@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -77,13 +77,13 @@ DoRegistration()
   using CommandIterationType = itk::CommandIterationUpdate<OptimizerType>;
 
 
-  typename MetricType::Pointer       metric = MetricType::New();
-  typename TransformType::Pointer    transform = TransformType::New();
-  typename OptimizerType::Pointer    optimizer = OptimizerType::New();
-  typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
-  typename RegistrationType::Pointer registration = RegistrationType::New();
+  auto metric = MetricType::New();
+  auto transform = TransformType::New();
+  auto optimizer = OptimizerType::New();
+  auto interpolator = InterpolatorType::New();
+  auto registration = RegistrationType::New();
 
-  typename ImageSourceType::Pointer imageSource = ImageSourceType::New();
+  auto imageSource = ImageSourceType::New();
 
   SizeType size;
   size[0] = 100;
@@ -110,7 +110,7 @@ DoRegistration()
   metric->SetFixedImageRegion(fixedImage->GetBufferedRegion());
 
   // Instantiate an Observer to report the progress of the Optimization
-  CommandIterationType::Pointer iterationCommand = CommandIterationType::New();
+  auto iterationCommand = CommandIterationType::New();
   iterationCommand->SetOptimizer(optimizer);
 
   // Scale the translation components of the Transform in the Optimizer
@@ -122,7 +122,7 @@ DoRegistration()
   double        translationScale = 1e-6;
   double        learningRate = 1e-8;
 
-  for (unsigned int i = 0; i < dimension; i++)
+  for (unsigned int i = 0; i < dimension; ++i)
   {
     scales[i + dimension * dimension] = translationScale;
   }
@@ -159,7 +159,7 @@ DoRegistration()
   const unsigned int offsetOrder = finalParameters.Size() - actualParameters.Size();
   constexpr double   tolerance = 1.0; // equivalent to 1 pixel.
 
-  for (unsigned int i = 0; i < numbeOfParameters; i++)
+  for (unsigned int i = 0; i < numbeOfParameters; ++i)
   {
     // the parameters are negated in order to get the inverse transformation.
     // this only works for comparing translation parameters....

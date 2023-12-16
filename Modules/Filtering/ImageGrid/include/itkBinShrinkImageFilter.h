@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ namespace itk
 {
 
 /**
- *\class BinShrinkImageFilter
+ * \class BinShrinkImageFilter
  * \brief Reduce the size of an image by an integer factor in each
  * dimension while performing averaging of an input neighborhood.
  *
@@ -48,8 +48,8 @@ namespace itk
  *
  * This code was contributed in the Insight Journal paper:
  * "BinShrink: A multi-resolution filter with cache efficient averaging"
- *  by Lowekamp B., Chen D.
- * https://hdl.handle.net/10380/3450
+ * by Lowekamp B., Chen D.
+ * https://www.insight-journal.org/browse/publication/912
  *
  * \ingroup ITKImageGrid
  * \ingroup Streamed
@@ -58,7 +58,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT BinShrinkImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinShrinkImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BinShrinkImageFilter);
 
   /** Standard class type aliases. */
   using Self = BinShrinkImageFilter;
@@ -136,7 +136,7 @@ private:
 
   /** Round different pixel types. */
   template <class TOutputType, class TInputType>
-  typename std::enable_if<std::numeric_limits<TOutputType>::is_integer, TOutputType>::type
+  std::enable_if_t<std::numeric_limits<TOutputType>::is_integer, TOutputType>
   RoundIfInteger(TInputType input)
   {
     return Math::Round<TOutputType>(input);
@@ -145,7 +145,7 @@ private:
   // For Non-fundamental types numeric_limits is not specialized, and
   // is_integer defaults to false.
   template <class TOutputType, class TInputType>
-  typename std::enable_if<!std::numeric_limits<TOutputType>::is_integer, TOutputType>::type
+  std::enable_if_t<!std::numeric_limits<TOutputType>::is_integer, TOutputType>
   RoundIfInteger(const TInputType & input, ...)
   {
     return static_cast<TOutputType>(input);

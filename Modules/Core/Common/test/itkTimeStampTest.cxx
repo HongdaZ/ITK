@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,15 +16,22 @@
  *
  *=========================================================================*/
 
-#include <iostream>
 #include "itkTimeStamp.h"
 #include "itkMultiThreaderBase.h"
 
+#include <iostream>
+#include <memory> // For make_unique.
+#include <type_traits>
+
+static_assert(std::is_nothrow_default_constructible<itk::TimeStamp>::value, "Check TimeStamp default-constructibility");
+static_assert(std::is_trivially_copy_constructible<itk::TimeStamp>::value, "Check TimeStamp copy-constructibility");
+static_assert(std::is_trivially_copy_assignable<itk::TimeStamp>::value, "Check TimeStamp copy-assignability");
+static_assert(std::is_trivially_destructible<itk::TimeStamp>::value, "Check TimeStamp destructibility");
 
 // A helper struct for the test, the idea is to have one timestamp per thread.
 // To ease the writing of the test, we use  MultiThreaderBase::SingleMethodExecute
 // with an array of timestamps in the shared data
-using TimeStampTestHelper = struct TimeStampTestHelperStruct
+struct TimeStampTestHelper
 {
   std::vector<itk::TimeStamp> timestamps;
   std::vector<unsigned long>  counters;
@@ -33,16 +40,16 @@ using TimeStampTestHelper = struct TimeStampTestHelperStruct
 ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
 modified_function(void * ptr)
 {
-  using ThreadInfoType = itk::MultiThreaderBase::WorkUnitInfo;
+  using WorkUnitInfoType = itk::MultiThreaderBase::WorkUnitInfo;
 
-  auto * infoStruct = static_cast<ThreadInfoType *>(ptr);
+  auto * infoStruct = static_cast<WorkUnitInfoType *>(ptr);
 
-  const itk::ThreadIdType threadId = infoStruct->WorkUnitID;
+  const itk::ThreadIdType workUnitID = infoStruct->WorkUnitID;
 
   auto * helper = static_cast<TimeStampTestHelper *>(infoStruct->UserData);
 
-  helper->timestamps[threadId].Modified();
-  helper->counters[threadId]++;
+  helper->timestamps[workUnitID].Modified();
+  helper->counters[workUnitID]++;
 
   return ITK_THREAD_RETURN_DEFAULT_VALUE;
 }
@@ -76,14 +83,14 @@ itkTimeStampTest(int, char *[])
     // Set up the helper class
     helper.counters.resize(numberOfWorkUnits);
     helper.timestamps.resize(numberOfWorkUnits);
-    for (itk::ThreadIdType k = 0; k < numberOfWorkUnits; k++)
+    for (itk::ThreadIdType k = 0; k < numberOfWorkUnits; ++k)
     {
       helper.counters[k] = 0;
     }
 
     // Declare an array to test whether the all modified times have
     // been used
-    std::vector<bool> istimestamped(numberOfWorkUnits);
+    const auto istimestamped = std::make_unique<bool[]>(numberOfWorkUnits);
 
     // Call Modified once  on any object to make it up-to-date
     multithreader->Modified();
@@ -95,13 +102,13 @@ itkTimeStampTest(int, char *[])
 
     constexpr unsigned int num_exp = 500;
 
-    for (unsigned int i = 0; i < num_exp; i++)
+    for (unsigned int i = 0; i < num_exp; ++i)
     {
       multithreader->SingleMethodExecute();
 
       itk::ModifiedTimeType min_mtime = helper.timestamps[0].GetMTime();
       itk::ModifiedTimeType max_mtime = helper.timestamps[0].GetMTime();
-      for (itk::ThreadIdType k = 0; k < numberOfWorkUnits; k++)
+      for (itk::ThreadIdType k = 0; k < numberOfWorkUnits; ++k)
       {
         const itk::ModifiedTimeType & mtime = helper.timestamps[k].GetMTime();
         if (mtime > max_mtime)
@@ -113,7 +120,7 @@ itkTimeStampTest(int, char *[])
           min_mtime = mtime;
         }
 
-        // initialiaze the array to false
+        // initialize the array to false
         istimestamped[k] = false;
       }
 
@@ -121,7 +128,7 @@ itkTimeStampTest(int, char *[])
 
       if (iter_success)
       {
-        for (itk::ThreadIdType k = 0; k < numberOfWorkUnits; k++)
+        for (itk::ThreadIdType k = 0; k < numberOfWorkUnits; ++k)
         {
           // Test whether the all modified times have
           // been used

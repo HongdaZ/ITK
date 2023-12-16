@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@
 namespace itk
 {
 void
-WatershedMiniPipelineProgressCommand ::Execute(Object * caller, const EventObject & event)
+WatershedMiniPipelineProgressCommand::Execute(Object * caller, const EventObject & event)
 {
   auto * po = dynamic_cast<ProcessObject *>(caller);
 
@@ -40,7 +40,7 @@ WatershedMiniPipelineProgressCommand ::Execute(Object * caller, const EventObjec
 }
 
 void
-WatershedMiniPipelineProgressCommand ::Execute(const Object * caller, const EventObject & event)
+WatershedMiniPipelineProgressCommand::Execute(const Object * caller, const EventObject & event)
 {
   auto * po = dynamic_cast<ProcessObject *>(const_cast<Object *>(caller));
 
@@ -60,7 +60,7 @@ WatershedMiniPipelineProgressCommand ::Execute(const Object * caller, const Even
 }
 
 void
-WatershedMiniPipelineProgressCommand ::PrintSelf(std::ostream & os, Indent indent) const
+WatershedMiniPipelineProgressCommand::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   os << indent << "NumberOfFilters: " << m_NumberOfFilters << std::endl;

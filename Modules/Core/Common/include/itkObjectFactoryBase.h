@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,6 +32,7 @@
 #include "itkSingletonMacro.h"
 #include "itkCommonEnums.h"
 #include <list>
+#include <memory> // For unique_ptr.
 #include <vector>
 
 namespace itk
@@ -41,7 +42,7 @@ namespace itk
  *
  * ObjectFactoryBase is used to create itk objects. The base class
  * ObjectFactoryBase contains a static method CreateInstance() that is
- * used to create itk objects from the list of registerd ObjectFactoryBase
+ * used to create itk objects from the list of registered ObjectFactoryBase
  * sub-classes.  The first time CreateInstance() is called, all dll's or
  * shared libraries in the environment variable ITK_AUTOLOAD_PATH are loaded
  * into the current process.  The C function itkLoad is called on each dll.
@@ -55,14 +56,10 @@ namespace itk
  * \ingroup ITKCommon
  */
 
-// Forward reference because of private implementation
-class OverRideMap;
-struct ObjectFactoryBasePrivate;
-
 class ITKCommon_EXPORT ObjectFactoryBase : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ObjectFactoryBase);
+  ITK_DISALLOW_COPY_AND_MOVE(ObjectFactoryBase);
 
   /** Standard class type aliases. */
   using Self = ObjectFactoryBase;
@@ -219,6 +216,29 @@ public:
     CreateObjectFunctionBase::Pointer m_CreateObject;
   };
 
+  /** Registers the specified internal factory only once, even when `RegisterInternalFactoryOnce<TFactory>()` is called
+   * multiple times (possibly even by multiple threads) for the very same factory. */
+  template <typename TFactory>
+  static void
+  RegisterInternalFactoryOnce()
+  {
+    struct FactoryRegistration
+    {};
+
+    // Factory registration, made thread-safe by "magic statics" (as introduced with C++11).
+    static const FactoryRegistration staticFactoryRegistration = [] {
+      RegisterFactoryInternal(TFactory::New());
+      return FactoryRegistration{};
+    }();
+
+    (void)staticFactoryRegistration;
+  }
+
+  /** Initialize the static members of ObjectFactoryBase.
+   *  RegisterInternal() and InitializeFactoryList() are called here. */
+  static void
+  Initialize();
+
 protected:
   void
   PrintSelf(std::ostream & os, Indent indent) const override;
@@ -226,7 +246,7 @@ protected:
   /** Register object creation information with the factory. */
   void
   RegisterOverride(const char *               classOverride,
-                   const char *               overrideClassName,
+                   const char *               subclass,
                    const char *               description,
                    bool                       enableFlag,
                    CreateObjectFunctionBase * createFunction);
@@ -247,22 +267,21 @@ protected:
   ~ObjectFactoryBase() override;
 
 private:
+  // Forward reference because of private implementation
+  class OverrideMap;
+  class ObjectFactoryBasePrivate;
+
   /** Set/Get the pointer to ObjectFactoryBasePrivate.
    * No concurrent thread safe. */
   static void
   SynchronizeObjectFactoryBase(void * objectFactoryBasePrivate);
   itkGetGlobalDeclarationMacro(ObjectFactoryBasePrivate, PimplGlobals);
 
-  OverRideMap * m_OverrideMap;
+  const std::unique_ptr<OverrideMap> m_OverrideMap;
 
   /** Initialize the static list of Factories. */
   static void
   InitializeFactoryList();
-
-  /** Initialize the static members of ObjectFactoryBase.
-   *  RegisterInternal() and InitializeFactoryList() are called here. */
-  static void
-  Initialize();
 
   /** Register default factories which are not loaded at run time. */
   static void

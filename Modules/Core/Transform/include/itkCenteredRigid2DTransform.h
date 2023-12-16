@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ template <typename TParametersValueType = double>
 class ITK_TEMPLATE_EXPORT CenteredRigid2DTransform : public Rigid2DTransform<TParametersValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CenteredRigid2DTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(CenteredRigid2DTransform);
 
   /** Standard class type aliases. */
   using Self = CenteredRigid2DTransform;
@@ -72,37 +72,37 @@ public:
   static constexpr unsigned int ParametersDimension = 5;
 
   /** Parameters type. */
-  using ScalarType = typename Superclass::ScalarType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
-  using FixedParametersValueType = typename Superclass::FixedParametersValueType;
-  using ParametersType = typename Superclass::ParametersType;
-  using ParametersValueType = typename Superclass::ParametersValueType;
+  using typename Superclass::ScalarType;
+  using typename Superclass::FixedParametersType;
+  using typename Superclass::FixedParametersValueType;
+  using typename Superclass::ParametersType;
+  using typename Superclass::ParametersValueType;
 
   /** Jacobian type. */
-  using JacobianType = typename Superclass::JacobianType;
-  using JacobianPositionType = typename Superclass::JacobianPositionType;
-  using InverseJacobianPositionType = typename Superclass::InverseJacobianPositionType;
+  using typename Superclass::JacobianType;
+  using typename Superclass::JacobianPositionType;
+  using typename Superclass::InverseJacobianPositionType;
 
   /** Offset type. */
-  using OffsetType = typename Superclass::OffsetType;
+  using typename Superclass::OffsetType;
 
   /** Point type. */
-  using InputPointType = typename Superclass::InputPointType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using InputPointValueType = typename Superclass::InputPointValueType;
+  using typename Superclass::InputPointType;
+  using typename Superclass::OutputPointType;
+  using typename Superclass::InputPointValueType;
 
   /** Vector type. */
-  using InputVectorType = typename Superclass::InputVectorType;
-  using OutputVectorType = typename Superclass::OutputVectorType;
-  using OutputVectorValueType = typename Superclass::OutputVectorValueType;
+  using typename Superclass::InputVectorType;
+  using typename Superclass::OutputVectorType;
+  using typename Superclass::OutputVectorValueType;
 
   /** CovariantVector type. */
-  using InputCovariantVectorType = typename Superclass::InputCovariantVectorType;
-  using OutputCovariantVectorType = typename Superclass::OutputCovariantVectorType;
+  using typename Superclass::InputCovariantVectorType;
+  using typename Superclass::OutputCovariantVectorType;
 
   /** VnlVector type. */
-  using InputVnlVectorType = typename Superclass::InputVnlVectorType;
-  using OutputVnlVectorType = typename Superclass::OutputVnlVectorType;
+  using typename Superclass::InputVnlVectorType;
+  using typename Superclass::OutputVnlVectorType;
 
   /** Base inverse transform type. This type should not be changed to the
    * concrete inverse transform type or inheritance would be lost. */
@@ -151,7 +151,7 @@ public:
    * This method creates and returns a new CenteredRigid2DTransform object
    * which is the inverse of self. */
   void
-  CloneInverseTo(Pointer & newinverse) const;
+  CloneInverseTo(Pointer & result) const;
 
   /** Get an inverse of this transform. */
   bool
@@ -165,13 +165,13 @@ public:
    * This method creates and returns a new CenteredRigid2DTransform object
    * which has the same parameters as self. */
   void
-  CloneTo(Pointer & clone) const;
+  CloneTo(Pointer & result) const;
 
 protected:
   CenteredRigid2DTransform();
   ~CenteredRigid2DTransform() override = default;
 
-  CenteredRigid2DTransform(unsigned int outputSpaceDimension, unsigned int parametersDimension);
+  CenteredRigid2DTransform(unsigned int spaceDimension, unsigned int parametersDimension);
 
   void
   PrintSelf(std::ostream & os, Indent indent) const override;

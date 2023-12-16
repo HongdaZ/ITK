@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkRigid3DPerspectiveTransform_hxx
 #define itkRigid3DPerspectiveTransform_hxx
 
-#include "itkRigid3DPerspectiveTransform.h"
 
 namespace itk
 {
@@ -76,7 +75,7 @@ Rigid3DPerspectiveTransform<TParametersValueType>::SetParameters(const Parameter
   axis[1] = parameters[1];
   norm += parameters[2] * parameters[2];
   axis[2] = parameters[2];
-  if (norm > NumericTraits<double>::ZeroValue())
+  if (norm > 0.0)
   {
     norm = std::sqrt(norm);
   }
@@ -93,7 +92,7 @@ Rigid3DPerspectiveTransform<TParametersValueType>::SetParameters(const Parameter
 
   // Transfer the translation part
   OffsetType offset;
-  for (unsigned int i = 0; i < SpaceDimension; i++)
+  for (unsigned int i = 0; i < SpaceDimension; ++i)
   {
     offset[i] = parameters[i + 3];
   }
@@ -109,8 +108,8 @@ Rigid3DPerspectiveTransform<TParametersValueType>::SetParameters(const Parameter
 
 // Set Parameters
 template <typename TParametersValueType>
-const typename Rigid3DPerspectiveTransform<TParametersValueType>::ParametersType &
-Rigid3DPerspectiveTransform<TParametersValueType>::GetParameters() const
+auto
+Rigid3DPerspectiveTransform<TParametersValueType>::GetParameters() const -> const ParametersType &
 {
   itkDebugMacro(<< "Getting parameters ");
 
@@ -164,13 +163,13 @@ Rigid3DPerspectiveTransform<TParametersValueType>::SetRotation(const Vector<TPar
 
 // Transform a point
 template <typename TParametersValueType>
-typename Rigid3DPerspectiveTransform<TParametersValueType>::OutputPointType
-Rigid3DPerspectiveTransform<TParametersValueType>::TransformPoint(const InputPointType & point) const
+auto
+Rigid3DPerspectiveTransform<TParametersValueType>::TransformPoint(const InputPointType & point) const -> OutputPointType
 {
   unsigned int   i;
   InputPointType centered;
 
-  for (i = 0; i < 3; i++)
+  for (i = 0; i < 3; ++i)
   {
     centered[i] = point[i] - m_CenterOfRotation[i];
   }
@@ -178,7 +177,7 @@ Rigid3DPerspectiveTransform<TParametersValueType>::TransformPoint(const InputPoi
   InputPointType rotated = m_RotationMatrix * centered;
 
   InputPointType rigided;
-  for (i = 0; i < 3; i++)
+  for (i = 0; i < 3; ++i)
   {
     rigided[i] = rotated[i] + m_Offset[i] + m_CenterOfRotation[i] + m_FixedOffset[i];
   }

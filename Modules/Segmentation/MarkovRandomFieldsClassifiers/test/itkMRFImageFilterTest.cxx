@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,7 +46,7 @@ itkMRFImageFilterTest(int, char *[])
   //------------------------------------------------------
   using VecImageType = itk::Image<itk::Vector<double, NUMBANDS>, NDIMENSION>;
 
-  VecImageType::Pointer vecImage = VecImageType::New();
+  auto vecImage = VecImageType::New();
 
   using VecImagePixelType = VecImageType::PixelType;
 
@@ -77,8 +77,8 @@ itkMRFImageFilterTest(int, char *[])
   DataVector dblVec;
 
   int i, k;
-  int halfWidth = (int)(vecImgSize[0]) / 2;
-  int halfHeight = (int)(vecImgSize[1]) / 2;
+  int halfWidth = static_cast<int>(vecImgSize[0]) / 2;
+  int halfHeight = static_cast<int>(vecImgSize[1]) / 2;
 
   //--------------------------------------------------------------------------
   // Manually create and store each vector
@@ -86,7 +86,7 @@ itkMRFImageFilterTest(int, char *[])
   // Slice 1
   //--------------------------------------------------------------------------
   // Row 1-3
-  for (k = 0; k < halfHeight; k++)
+  for (k = 0; k < halfHeight; ++k)
   {
     // Vector no. 1-3
     dblVec[0] = 21;
@@ -102,7 +102,7 @@ itkMRFImageFilterTest(int, char *[])
   }
 
   // Row 4-6
-  for (k = 0; k < halfHeight; k++)
+  for (k = 0; k < halfHeight; ++k)
   {
     // Vector no. 1-3
     dblVec[0] = 15;
@@ -121,7 +121,7 @@ itkMRFImageFilterTest(int, char *[])
   // Slice 2
   //--------------------------------------------------------------------------
   // Row 1-3
-  for (k = 0; k < halfHeight; k++)
+  for (k = 0; k < halfHeight; ++k)
   {
     // Vector no. 1-3 Row k
     dblVec[0] = 14;
@@ -137,7 +137,7 @@ itkMRFImageFilterTest(int, char *[])
   }
 
   // Row 4-6
-  for (k = 0; k < halfHeight; k++)
+  for (k = 0; k < halfHeight; ++k)
   {
     // Vector no. 1-3 Row k
     dblVec[0] = 15;
@@ -156,7 +156,7 @@ itkMRFImageFilterTest(int, char *[])
   // Slice 3
   //--------------------------------------------------------------------------
   // Row 1-3
-  for (k = 0; k < halfHeight; k++)
+  for (k = 0; k < halfHeight; ++k)
   {
     // Vector no. 1-3 Row k
     dblVec[0] = 19;
@@ -172,7 +172,7 @@ itkMRFImageFilterTest(int, char *[])
   }
 
   // Row 4-6
-  for (k = 0; k < halfHeight; k++)
+  for (k = 0; k < halfHeight; ++k)
   {
     // Vector no. 1-3 Row k
     dblVec[0] = 12;
@@ -191,7 +191,7 @@ itkMRFImageFilterTest(int, char *[])
   // Generate the training data
   //---------------------------------------------------------------
   using ClassImageType = itk::Image<unsigned short, NDIMENSION>;
-  ClassImageType::Pointer classImage = ClassImageType::New();
+  auto classImage = ClassImageType::New();
 
   ClassImageType::SizeType classImgSize = { { IMGWIDTH, IMGHEIGHT, NFRAMES } };
 
@@ -220,7 +220,7 @@ itkMRFImageFilterTest(int, char *[])
   //--------------------------------------------------------------------------
   // Row 1-3
 
-  for (k = 0; k < halfHeight; k++)
+  for (k = 0; k < halfHeight; ++k)
   {
     // Vector no. 1-3 Row k
     for (i = 0; i < (halfWidth * 2); ++i, ++classoutIt)
@@ -228,7 +228,7 @@ itkMRFImageFilterTest(int, char *[])
   }
 
   // Row 4-6
-  for (k = 0; k < halfHeight; k++)
+  for (k = 0; k < halfHeight; ++k)
   {
     for (i = 0; i < (halfWidth * 2); ++i, ++classoutIt)
       classoutIt.Set(1);
@@ -237,7 +237,7 @@ itkMRFImageFilterTest(int, char *[])
   // Slice 2
   //--------------------------------------------------------------------------
   // Row 1-6
-  for (k = 0; k < (halfHeight * 2); k++)
+  for (k = 0; k < (halfHeight * 2); ++k)
   {
     // Vector no. 1-3 Row k
     for (i = 0; i < (halfWidth * 2); ++i, ++classoutIt)
@@ -247,7 +247,7 @@ itkMRFImageFilterTest(int, char *[])
   //--------------------------------------------------------------------------
   // Slice 3
   //--------------------------------------------------------------------------
-  for (k = 0; k < halfHeight; k++)
+  for (k = 0; k < halfHeight; ++k)
   {
     // Vector no. 1-3 Row k
     for (i = 0; i < (halfWidth * 2); ++i, ++classoutIt)
@@ -255,7 +255,7 @@ itkMRFImageFilterTest(int, char *[])
   }
 
   // Row 4-6
-  for (k = 0; k < halfHeight; k++)
+  for (k = 0; k < halfHeight; ++k)
   {
     for (i = 0; i < (halfWidth * 2); ++i, ++classoutIt)
       classoutIt.Set(1);
@@ -286,7 +286,7 @@ itkMRFImageFilterTest(int, char *[])
   using ImageGaussianModelEstimatorType =
     itk::ImageGaussianModelEstimator<VecImageType, MembershipFunctionType, ClassImageType>;
 
-  ImageGaussianModelEstimatorType::Pointer applyEstimateModel = ImageGaussianModelEstimatorType::New();
+  auto applyEstimateModel = ImageGaussianModelEstimatorType::New();
 
   applyEstimateModel->SetNumberOfModels(NUM_CLASSES);
   applyEstimateModel->SetInputImage(vecImage);
@@ -302,7 +302,7 @@ itkMRFImageFilterTest(int, char *[])
   // Set the decision rule
   //----------------------------------------------------------------------
   using DecisionRuleType = itk::Statistics::MinimumDecisionRule;
-  DecisionRuleType::Pointer myDecisionRule = DecisionRuleType::New();
+  auto myDecisionRule = DecisionRuleType::New();
 
   //----------------------------------------------------------------------
   // Set the classifier to be used and assigne the parameters for the
@@ -321,7 +321,7 @@ itkMRFImageFilterTest(int, char *[])
   myClassifier->SetDecisionRule((itk::Statistics::DecisionRule *)myDecisionRule);
 
   // Add the membership functions
-  for (unsigned int ii = 0; ii < NUM_CLASSES; ii++)
+  for (unsigned int ii = 0; ii < NUM_CLASSES; ++ii)
   {
     myClassifier->AddMembershipFunction(membershipFunctions[ii]);
   }
@@ -332,7 +332,7 @@ itkMRFImageFilterTest(int, char *[])
 
   // Set the MRF labeller
   using MRFImageFilterType = itk::MRFImageFilter<VecImageType, ClassImageType>;
-  MRFImageFilterType::Pointer applyMRFImageFilter = MRFImageFilterType::New();
+  auto applyMRFImageFilter = MRFImageFilterType::New();
 
   // Set the MRF labeller parameters
   applyMRFImageFilter->SetNumberOfClasses(NUM_CLASSES);
@@ -417,7 +417,7 @@ itkMRFImageFilterTest(int, char *[])
   while (!nOutImageNeighborhoodIter.IsAtEnd())
   {
     outLabel = nOutImageNeighborhoodIter.GetCenterValue();
-    sum += (int)(*outLabel);
+    sum += static_cast<int>(*outLabel);
     ++nOutImageNeighborhoodIter;
   }
   // Loop through the data set

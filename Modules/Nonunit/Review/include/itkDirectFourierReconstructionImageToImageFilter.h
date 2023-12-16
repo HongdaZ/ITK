@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ class ITK_TEMPLATE_EXPORT DirectFourierReconstructionImageToImageFilter
   : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DirectFourierReconstructionImageToImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(DirectFourierReconstructionImageToImageFilter);
 
   /** Standard Self type alias */
   using Self = DirectFourierReconstructionImageToImageFilter;
@@ -91,11 +91,11 @@ public:
   /** OutputImagePointer */
   using OutputImagePointer = typename OutputImageType::Pointer;
 
-  itkSetMacro(ZeroPadding, unsigned short int);
-  itkGetConstMacro(ZeroPadding, unsigned short int);
+  itkSetMacro(ZeroPadding, unsigned short);
+  itkGetConstMacro(ZeroPadding, unsigned short);
 
-  itkSetMacro(OverSampling, unsigned short int);
-  itkGetConstMacro(OverSampling, unsigned short int);
+  itkSetMacro(OverSampling, unsigned short);
+  itkGetConstMacro(OverSampling, unsigned short);
 
   itkSetMacro(Cutoff, double);
   itkGetConstMacro(Cutoff, double);
@@ -103,17 +103,17 @@ public:
   itkSetMacro(AlphaRange, double);
   itkGetConstMacro(AlphaRange, double);
 
-  itkSetMacro(AlphaDirection, unsigned short int);
-  itkGetConstMacro(AlphaDirection, unsigned short int);
+  itkSetMacro(AlphaDirection, unsigned short);
+  itkGetConstMacro(AlphaDirection, unsigned short);
 
-  itkSetMacro(ZDirection, unsigned short int);
-  itkGetConstMacro(ZDirection, unsigned short int);
+  itkSetMacro(ZDirection, unsigned short);
+  itkGetConstMacro(ZDirection, unsigned short);
 
-  itkSetMacro(RDirection, unsigned short int);
-  itkGetConstMacro(RDirection, unsigned short int);
+  itkSetMacro(RDirection, unsigned short);
+  itkGetConstMacro(RDirection, unsigned short);
 
-  itkSetMacro(RadialSplineOrder, unsigned short int);
-  itkGetConstMacro(RadialSplineOrder, unsigned short int);
+  itkSetMacro(RadialSplineOrder, unsigned short);
+  itkGetConstMacro(RadialSplineOrder, unsigned short);
 
 protected:
   /** Constructor */
@@ -165,19 +165,19 @@ private:
   /** 2D output slice iterator */
   using OutputSliceIteratorType = ImageRegionIteratorWithIndex<OutputSliceType>;
 
-  unsigned short int m_ZeroPadding;  /**< n-fold zero-padding */
-  unsigned short int m_OverSampling; /**< n-fold oversampling */
+  unsigned short m_ZeroPadding;  /**< n-fold zero-padding */
+  unsigned short m_OverSampling; /**< n-fold oversampling */
 
   double m_Cutoff;     /**< Radial lowpass cut-off frequency
                         */
   double m_AlphaRange; /**< Covered angular range */
 
-  unsigned short int m_ZDirection;        /**< Axial index in the input image */
-  unsigned short int m_AlphaDirection;    /**< Angular index in the input image
-                                           */
-  unsigned short int m_RDirection;        /**< Radial index in the input image
-                                           */
-  unsigned short int m_RadialSplineOrder; /**< Spline order for the radial
+  unsigned short m_ZDirection;        /**< Axial index in the input image */
+  unsigned short m_AlphaDirection;    /**< Angular index in the input image
+                                       */
+  unsigned short m_RDirection;        /**< Radial index in the input image
+                                       */
+  unsigned short m_RadialSplineOrder; /**< Spline order for the radial
                                             BSpline interpolation  */
 
   double m_PI; /**< The constant pi....  */

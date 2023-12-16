@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #define itkMetaProgrammingLibrary_h
 
 #include "itkMacro.h"
+#include "itkSmartPointer.h"
 
 namespace itk
 {
@@ -209,6 +210,23 @@ struct Not : NotC<TF::Value>
 {
   using Type = typename NotC<TF::Value>::Type;
 };
+
+/** MPL type trait to check if type is a SmartPointer.
+ */
+template <typename T>
+struct IsSmartPointer : FalseType
+{};
+
+
+/// \cond SPECIALIZATION_IMPLEMENTATION
+template <typename T>
+struct IsSmartPointer<SmartPointer<T>> : TrueType
+{};
+
+template <typename T>
+struct IsSmartPointer<const SmartPointer<T>> : TrueType
+{};
+/// \endcond
 
 /** MPL relational type trait to check if a static_cast conversion
  * exists.

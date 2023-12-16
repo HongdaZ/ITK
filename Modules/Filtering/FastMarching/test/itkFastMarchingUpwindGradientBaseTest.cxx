@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@
 #include "itkTextOutput.h"
 #include "itkSimpleFilterWatcher.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 // namespace{
 //// The following class is used to support callbacks
@@ -45,17 +46,21 @@ itkFastMarchingUpwindGradientBaseTest(int, char *[])
 
   // create a fastmarching object
   using PixelType = float;
-  constexpr unsigned Dimension = 2;
+  constexpr unsigned int Dimension = 2;
 
   using FloatImageType = itk::Image<PixelType, Dimension>;
 
   using CriterionType = itk::FastMarchingReachedTargetNodesStoppingCriterion<FloatImageType, FloatImageType>;
 
-  CriterionType::Pointer criterion = CriterionType::New();
+  auto criterion = CriterionType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(
+    criterion, FastMarchingReachedTargetNodesStoppingCriterion, FastMarchingStoppingCriterionBase);
+
 
   using FloatFMType = itk::FastMarchingUpwindGradientImageFilterBase<FloatImageType, FloatImageType>;
 
-  FloatFMType::Pointer marcher = FloatFMType::New();
+  auto marcher = FloatFMType::New();
 
   //   ShowProgressObject progressWatch(marcher);
   //   itk::SimpleMemberCommand<ShowProgressObject>::Pointer command;
@@ -72,7 +77,7 @@ itkFastMarchingUpwindGradientBaseTest(int, char *[])
   using NodePairContainerType = FloatFMType::NodePairContainerType;
 
   // setup alive points
-  NodePairContainerType::Pointer AlivePoints = NodePairContainerType::New();
+  auto AlivePoints = NodePairContainerType::New();
 
   FloatImageType::OffsetType offset0 = { { 28, 35 } };
 
@@ -85,7 +90,7 @@ itkFastMarchingUpwindGradientBaseTest(int, char *[])
   marcher->SetAlivePoints(AlivePoints);
 
   // setup trial points
-  NodePairContainerType::Pointer TrialPoints = NodePairContainerType::New();
+  auto TrialPoints = NodePairContainerType::New();
 
   index.Fill(0);
   index += offset0;
@@ -115,7 +120,7 @@ itkFastMarchingUpwindGradientBaseTest(int, char *[])
   marcher->SetOutputSize(size);
 
   // setup a speed image of ones
-  FloatImageType::Pointer    speedImage = FloatImageType::New();
+  auto                       speedImage = FloatImageType::New();
   FloatImageType::RegionType region;
   region.SetSize(size);
   speedImage->SetLargestPossibleRegion(region);
@@ -150,7 +155,7 @@ itkFastMarchingUpwindGradientBaseTest(int, char *[])
     tempIndex = iterator.GetIndex();
     tempIndex -= offset0;
     distance = 0.0;
-    for (int j = 0; j < 2; j++)
+    for (int j = 0; j < 2; ++j)
     {
       distance += tempIndex[j] * tempIndex[j];
     }
@@ -158,7 +163,7 @@ itkFastMarchingUpwindGradientBaseTest(int, char *[])
 
     outputPixel = iterator.Get();
 
-    auto outputPixelNorm = (double)outputPixel.GetNorm();
+    double outputPixelNorm{ outputPixel.GetNorm() };
 
     if (itk::Math::AlmostEquals(distance, 0.0))
     {
@@ -170,7 +175,7 @@ itkFastMarchingUpwindGradientBaseTest(int, char *[])
     // and must be oriented radially from the seed point
 
     double dot = 0.0;
-    for (int j = 0; j < 2; j++)
+    for (int j = 0; j < 2; ++j)
     {
       dot += tempIndex[j] / distance * outputPixel[j];
     }
@@ -202,8 +207,17 @@ itkFastMarchingUpwindGradientBaseTest(int, char *[])
   }
   criterion->SetTargetNodes(TargetNodes);
 
+  auto targetOffset = itk::NumericTraits<typename CriterionType::OutputPixelType>::ZeroValue();
+  criterion->SetTargetOffset(targetOffset);
+  ITK_TEST_SET_GET_VALUE(targetOffset, criterion->GetTargetOffset());
+
   // Stop the algorithm when ONE of the targets has been reached.
-  criterion->SetTargetCondition(CriterionType::TargetConditionEnum::OneTarget);
+  auto targetCondition = CriterionType::TargetConditionEnum::OneTarget;
+  criterion->SetTargetCondition(targetCondition);
+  ITK_TEST_SET_GET_VALUE(targetCondition, criterion->GetTargetCondition());
+
+
+  std::cout << "Criterion description: " << criterion->GetDescription() << std::endl;
 
   marcher->SetStoppingCriterion(criterion);
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class SpatialObjectToImageStatisticsCalculator
+ * \class SpatialObjectToImageStatisticsCalculator
  * This calculator computes the mean and the covariance matrices of a certain
  *  region of an image specified by a spatial object.
  * \ingroup Operators
@@ -37,7 +37,7 @@ template <typename TInputImage, typename TInputSpatialObject, unsigned int TSamp
 class ITK_TEMPLATE_EXPORT SpatialObjectToImageStatisticsCalculator : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SpatialObjectToImageStatisticsCalculator);
+  ITK_DISALLOW_COPY_AND_MOVE(SpatialObjectToImageStatisticsCalculator);
 
   /** Standard class type aliases. */
   using Self = SpatialObjectToImageStatisticsCalculator;

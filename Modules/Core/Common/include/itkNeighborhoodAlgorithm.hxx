@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkNeighborhoodAlgorithm_hxx
 #define itkNeighborhoodAlgorithm_hxx
-#include "itkNeighborhoodAlgorithm.h"
 #include "itkImageRegionIterator.h"
 #include "itkImageRegion.h"
 #include "itkConstSliceIterator.h"
@@ -166,8 +165,9 @@ ImageBoundaryFacesCalculator<TImage>::Compute(const TImage & img, RegionType reg
 
 
 template <typename TImage>
-typename ImageBoundaryFacesCalculator<TImage>::FaceListType
+auto
 ImageBoundaryFacesCalculator<TImage>::operator()(const TImage * img, RegionType regionToProcess, RadiusType radius)
+  -> FaceListType
 {
   const auto result = Compute(*img, regionToProcess, radius);
 
@@ -185,8 +185,8 @@ ImageBoundaryFacesCalculator<TImage>::operator()(const TImage * img, RegionType 
 
 
 template <typename TImage>
-typename CalculateOutputWrapOffsetModifiers<TImage>::OffsetType
-CalculateOutputWrapOffsetModifiers<TImage>::operator()(TImage * input, TImage * output) const
+auto
+CalculateOutputWrapOffsetModifiers<TImage>::operator()(TImage * input, TImage * output) const -> OffsetType
 {
   OffsetType ans;
 

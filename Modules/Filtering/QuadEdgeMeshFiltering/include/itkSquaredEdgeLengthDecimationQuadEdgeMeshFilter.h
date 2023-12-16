@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ class ITK_TEMPLATE_EXPORT SquaredEdgeLengthDecimationQuadEdgeMeshFilter
   : public EdgeDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SquaredEdgeLengthDecimationQuadEdgeMeshFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SquaredEdgeLengthDecimationQuadEdgeMeshFilter);
 
   using Self = SquaredEdgeLengthDecimationQuadEdgeMeshFilter;
   using Pointer = SmartPointer<Self>;
@@ -59,16 +59,16 @@ public:
   using CriterionType = TCriterion;
   using MeasureType = typename CriterionType::MeasureType;
 
-  using PriorityType = typename Superclass::PriorityType;
-  using PriorityQueueItemType = typename Superclass::PriorityQueueItemType;
-  using PriorityQueueType = typename Superclass::PriorityQueueType;
-  using PriorityQueuePointer = typename Superclass::PriorityQueuePointer;
+  using typename Superclass::PriorityType;
+  using typename Superclass::PriorityQueueItemType;
+  using typename Superclass::PriorityQueueType;
+  using typename Superclass::PriorityQueuePointer;
 
-  using QueueMapType = typename Superclass::QueueMapType;
-  using QueueMapIterator = typename Superclass::QueueMapIterator;
+  using typename Superclass::QueueMapType;
+  using typename Superclass::QueueMapIterator;
 
-  using OperatorType = typename Superclass::OperatorType;
-  using OperatorPointer = typename Superclass::OperatorPointer;
+  using typename Superclass::OperatorType;
+  using typename Superclass::OperatorPointer;
 
 protected:
   SquaredEdgeLengthDecimationQuadEdgeMeshFilter();

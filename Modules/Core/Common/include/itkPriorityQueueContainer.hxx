@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,6 @@
 #include <utility>
 
 #include "itkNumericTraits.h"
-#include "itkPriorityQueueContainer.h"
 
 namespace itk
 {
@@ -40,7 +39,7 @@ typename ElementWrapperPointerInterface<TElementWrapperPointer, TElementIdentifi
 ElementWrapperPointerInterface<TElementWrapperPointer, TElementIdentifier>::GetLocation(
   const ElementWrapperPointerType & element) const
 {
-  return ((*element).GetLocation(*element));
+  return (element->GetLocation(*element));
 }
 // -----------------------------------------------------------------------------
 
@@ -51,7 +50,7 @@ ElementWrapperPointerInterface<TElementWrapperPointer, TElementIdentifier>::SetL
   ElementWrapperPointerType &   element,
   const ElementIdentifierType & identifier)
 {
-  (*element).SetLocation(*element, identifier);
+  element->SetLocation(*element, identifier);
 }
 // -----------------------------------------------------------------------------
 
@@ -62,7 +61,7 @@ ElementWrapperPointerInterface<TElementWrapperPointer, TElementIdentifier>::is_l
   const ElementWrapperPointerType & element1,
   const ElementWrapperPointerType & element2) const
 {
-  return ((*element1).is_less((*element1), (*element2)));
+  return (element1->is_less((*element1), (*element2)));
 }
 // -----------------------------------------------------------------------------
 
@@ -73,7 +72,7 @@ ElementWrapperPointerInterface<TElementWrapperPointer, TElementIdentifier>::is_g
   const ElementWrapperPointerType & element1,
   const ElementWrapperPointerType & element2) const
 {
-  return ((*element1).is_greater((*element1), (*element2)));
+  return (element1->is_greater((*element1), (*element2)));
 }
 // -----------------------------------------------------------------------------
 
@@ -91,9 +90,7 @@ const TElementIdentifier ElementWrapperPointerInterface<TElement, TElementIdenti
 // -----------------------------------------------------------------------------
 template <typename TElement, typename TElementPriority, typename TElementIdentifier>
 MinPriorityQueueElementWrapper<TElement, TElementPriority, TElementIdentifier>::MinPriorityQueueElementWrapper()
-  : m_Element(0)
-  , m_Priority(0)
-  , m_Location(Superclass::m_ElementNotFound)
+  : m_Location(Superclass::m_ElementNotFound)
 {}
 // -----------------------------------------------------------------------------
 

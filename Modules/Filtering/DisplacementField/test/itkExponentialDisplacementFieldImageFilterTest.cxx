@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,7 @@
  *=========================================================================*/
 
 #include "itkExponentialDisplacementFieldImageFilter.h"
-
+#include "itkTestingMacros.h"
 #include "vnl/vnl_random.h"
 
 
@@ -46,7 +46,7 @@ itkExponentialDisplacementFieldImageFilterTest(int, char *[])
   using RegionType = itk::ImageRegion<ImageDimension>;
 
   // Create two images
-  ImageType::Pointer inputImage = ImageType::New();
+  auto inputImage = ImageType::New();
 
   // Define their size, and start index
   SizeType size;
@@ -64,9 +64,7 @@ itkExponentialDisplacementFieldImageFilterTest(int, char *[])
   region.SetSize(size);
 
   // Initialize Image A
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetRegions(region);
   inputImage->Allocate();
 
   // Create one iterator for the Input Image (this is a light object)
@@ -89,13 +87,19 @@ itkExponentialDisplacementFieldImageFilterTest(int, char *[])
 
 
   // Create one filter
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, ExponentialDisplacementFieldImageFilter, ImageToImageFilter);
 
   // Connect the input images
   filter->SetInput(inputImage);
 
-  filter->SetMaximumNumberOfIterations(20);
+  auto automaticNumberOfIterations = true;
+  ITK_TEST_SET_GET_BOOLEAN(filter, AutomaticNumberOfIterations, automaticNumberOfIterations);
+
+  unsigned int maximumNumberOfIterations = 20;
+  filter->SetMaximumNumberOfIterations(maximumNumberOfIterations);
+  ITK_TEST_SET_GET_VALUE(maximumNumberOfIterations, filter->GetMaximumNumberOfIterations());
 
   // Execute the filter
   filter->Update();
@@ -129,7 +133,8 @@ itkExponentialDisplacementFieldImageFilterTest(int, char *[])
 
 
   // Ask for the inverse deformation
-  filter->ComputeInverseOn();
+  auto computeInverse = true;
+  ITK_TEST_SET_GET_BOOLEAN(filter, ComputeInverse, computeInverse);
 
   // Execute the filter
   filter->Update();
@@ -160,8 +165,10 @@ itkExponentialDisplacementFieldImageFilterTest(int, char *[])
 
 
   // Try with 0 iterations
-  filter->ComputeInverseOff();
-  filter->SetMaximumNumberOfIterations(0);
+  computeInverse = false;
+  filter->SetComputeInverse(computeInverse);
+  maximumNumberOfIterations = 0;
+  filter->SetMaximumNumberOfIterations(maximumNumberOfIterations);
 
   // Execute the filter
   filter->Update();
@@ -192,8 +199,9 @@ itkExponentialDisplacementFieldImageFilterTest(int, char *[])
 
 
   // Try inverse with 0 iterations
-  filter->ComputeInverseOn();
-  filter->SetMaximumNumberOfIterations(0);
+  computeInverse = true;
+  filter->SetComputeInverse(computeInverse);
+  filter->SetMaximumNumberOfIterations(maximumNumberOfIterations);
 
   // Execute the filter
   filter->Update();
@@ -234,8 +242,10 @@ itkExponentialDisplacementFieldImageFilterTest(int, char *[])
   }
 
   filter->SetInput(inputImage);
-  filter->SetMaximumNumberOfIterations(20);
-  filter->ComputeInverseOff();
+  maximumNumberOfIterations = 20;
+  filter->SetMaximumNumberOfIterations(maximumNumberOfIterations);
+  computeInverse = false;
+  filter->SetComputeInverse(computeInverse);
 
   // Random number generator
   vnl_random       rng;

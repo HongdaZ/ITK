@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,6 +44,7 @@ itkMetaGaussianConverterTest(int argc, char * argv[])
   // Check number of arguments
   if (argc != 2)
   {
+    std::cerr << "Missing parameters." << std::endl;
     std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " output" << std::endl;
     return EXIT_FAILURE;
   }
@@ -57,10 +58,13 @@ itkMetaGaussianConverterTest(int argc, char * argv[])
 
 
   // Instantiate new converter object
-  ConverterType::Pointer converter = ConverterType::New();
+  auto converter = ConverterType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(converter, MetaGaussianConverter, MetaConverterBase);
+
 
   // Set up a Gaussian spatial object
-  SpatialObjectType::Pointer GaussianSpatialObj = SpatialObjectType::New();
+  auto GaussianSpatialObj = SpatialObjectType::New();
 
   // Gaussian spatial object properties
   SpatialObjectType::ScalarType maximum = 2;
@@ -83,7 +87,7 @@ itkMetaGaussianConverterTest(int argc, char * argv[])
   GaussianSpatialObj->GetProperty().SetBlue(color[2]);
   GaussianSpatialObj->GetProperty().SetAlpha(color[3]);
 
-  SpatialObjectParentType::Pointer parentSpatialObj = SpatialObjectParentType::New();
+  auto parentSpatialObj = SpatialObjectParentType::New();
   parentSpatialObj->SetId(1);
   parentSpatialObj->AddChild(GaussianSpatialObj);
 
@@ -110,8 +114,8 @@ itkMetaGaussianConverterTest(int argc, char * argv[])
   // Check maximum
   double metaMaximum = newMetaGaussian->Maximum();
 
-  // if (metaMaximum != (float)maximum)
-  if (std::fabs(metaMaximum - maximum) > precisionLimit)
+  // if (metaMaximum != static_cast<float>(maximum))
+  if (itk::Math::abs(metaMaximum - maximum) > precisionLimit)
   {
     std::cout << "[FAILED] Conversion to MetaGaussian failed to convert maximum" << std::endl;
     return EXIT_FAILURE;
@@ -121,8 +125,8 @@ itkMetaGaussianConverterTest(int argc, char * argv[])
   // Check radius
   double metaRadius = newMetaGaussian->Radius();
 
-  // if (metaRadius != (float)radius)
-  if (std::fabs(metaRadius - radius) > precisionLimit)
+  // if (metaRadius != static_cast<float>(radius))
+  if (itk::Math::abs(metaRadius - radius) > precisionLimit)
   {
     std::cout << "[FAILED] Conversion to MetaGaussian failed to convert radius" << std::endl;
     return EXIT_FAILURE;
@@ -132,8 +136,8 @@ itkMetaGaussianConverterTest(int argc, char * argv[])
   // Check sigma
   double metaSigma = newMetaGaussian->Sigma();
 
-  // if (metaSigma != (float)sigma)
-  if (std::fabs(metaSigma - sigma) > precisionLimit)
+  // if (metaSigma != static_cast<float>(sigma))
+  if (itk::Math::abs(metaSigma - sigma) > precisionLimit)
   {
     std::cout << "[FAILED] Conversion to MetaGaussian failed to convert sigma" << std::endl;
     return EXIT_FAILURE;
@@ -177,7 +181,7 @@ itkMetaGaussianConverterTest(int argc, char * argv[])
 
 
   // Check maximum
-  if (std::fabs(newGaussianSpatialObj->GetMaximum() - metaGaussian->Maximum()) > precisionLimit)
+  if (itk::Math::abs(newGaussianSpatialObj->GetMaximum() - metaGaussian->Maximum()) > precisionLimit)
   {
     std::cout << "[FAILED] Conversion to SpatialObject failed to convert maximum" << std::endl;
     return EXIT_FAILURE;
@@ -185,7 +189,7 @@ itkMetaGaussianConverterTest(int argc, char * argv[])
   std::cout << "[PASSED] MetaObject -> SpatialObject: maximum: " << newGaussianSpatialObj->GetMaximum() << std::endl;
 
   // Check radius
-  if (std::fabs(newGaussianSpatialObj->GetRadiusInObjectSpace() - metaGaussian->Radius()) > precisionLimit)
+  if (itk::Math::abs(newGaussianSpatialObj->GetRadiusInObjectSpace() - metaGaussian->Radius()) > precisionLimit)
   {
     std::cout << "[FAILED] Conversion to SpatialObject failed to convert radius" << std::endl;
     return EXIT_FAILURE;
@@ -194,7 +198,7 @@ itkMetaGaussianConverterTest(int argc, char * argv[])
             << std::endl;
 
   // Check sigma
-  if (std::fabs(newGaussianSpatialObj->GetSigmaInObjectSpace() - metaGaussian->Sigma()) > precisionLimit)
+  if (itk::Math::abs(newGaussianSpatialObj->GetSigmaInObjectSpace() - metaGaussian->Sigma()) > precisionLimit)
   {
     std::cout << "[FAILED] Conversion to SpatialObject failed to convert sigma" << std::endl;
     return EXIT_FAILURE;
@@ -249,7 +253,7 @@ itkMetaGaussianConverterTest(int argc, char * argv[])
   SpatialObjectType::Pointer reLoad = dynamic_cast<SpatialObjectType *>(converter->ReadMeta(argv[1]).GetPointer());
 
   // Check maximum
-  if (std::fabs(reLoad->GetMaximum() - maximum) > precisionLimit)
+  if (itk::Math::abs(reLoad->GetMaximum() - maximum) > precisionLimit)
   {
     std::cout << "[FAILED] Didn't read maximum properly" << std::endl;
     return EXIT_FAILURE;
@@ -257,7 +261,7 @@ itkMetaGaussianConverterTest(int argc, char * argv[])
   std::cout << "[PASSED] Reading: maximum: " << reLoad->GetMaximum() << std::endl;
 
   // Check radius
-  if (std::fabs(reLoad->GetRadiusInObjectSpace() - radius) > precisionLimit)
+  if (itk::Math::abs(reLoad->GetRadiusInObjectSpace() - radius) > precisionLimit)
   {
     std::cout << "[FAILED] Didn't read radius properly" << std::endl;
     return EXIT_FAILURE;
@@ -265,7 +269,7 @@ itkMetaGaussianConverterTest(int argc, char * argv[])
   std::cout << "[PASSED] Reading: radius: " << reLoad->GetRadiusInObjectSpace() << std::endl;
 
   // Check sigma
-  if (std::fabs(reLoad->GetSigmaInObjectSpace() - sigma) > precisionLimit)
+  if (itk::Math::abs(reLoad->GetSigmaInObjectSpace() - sigma) > precisionLimit)
   {
     std::cout << "[FAILED] Didn't read sigma properly" << std::endl;
     return EXIT_FAILURE;
@@ -297,8 +301,6 @@ itkMetaGaussianConverterTest(int argc, char * argv[])
   std::cout << "[PASSED] Reading: parent id: " << reLoad->GetParentId() << std::endl;
 
 
-  // All tests executed successfully
-  std::cout << "Test succeeded." << std::endl;
-
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

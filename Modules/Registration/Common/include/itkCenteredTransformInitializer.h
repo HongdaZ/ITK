@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -61,7 +61,7 @@ template <typename TTransform, typename TFixedImage, typename TMovingImage>
 class ITK_TEMPLATE_EXPORT CenteredTransformInitializer : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CenteredTransformInitializer);
+  ITK_DISALLOW_COPY_AND_MOVE(CenteredTransformInitializer);
 
   /** Standard class type aliases. */
   using Self = CenteredTransformInitializer;
@@ -137,7 +137,7 @@ public:
   itkGetModifiableObjectMacro(MovingCalculator, MovingImageCalculatorType);
 
 protected:
-  CenteredTransformInitializer();
+  CenteredTransformInitializer() = default;
   ~CenteredTransformInitializer() override = default;
 
   void
@@ -152,10 +152,10 @@ private:
 
   MovingImagePointer m_MovingImage;
 
-  bool m_UseMoments;
+  bool m_UseMoments{ false };
 
-  FixedImageCalculatorPointer  m_FixedCalculator;
-  MovingImageCalculatorPointer m_MovingCalculator;
+  const FixedImageCalculatorPointer  m_FixedCalculator{ FixedImageCalculatorType::New() };
+  const MovingImageCalculatorPointer m_MovingCalculator{ MovingImageCalculatorType::New() };
 }; // class CenteredTransformInitializer
 } // namespace itk
 

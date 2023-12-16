@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class BinaryReconstructionLabelMapFilter
+ * \class BinaryReconstructionLabelMapFilter
  * \brief Mark the objects at least partially at the same position as the objects in a binary image
  *
  * The attribute is accessed through the accessor given with TAttributeAccessor.
@@ -36,8 +36,7 @@ namespace itk
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/584  or
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
@@ -49,7 +48,7 @@ template <typename TImage,
 class ITK_TEMPLATE_EXPORT BinaryReconstructionLabelMapFilter : public InPlaceLabelMapFilter<TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BinaryReconstructionLabelMapFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(BinaryReconstructionLabelMapFilter);
 
   /** Standard class type aliases. */
   using Self = BinaryReconstructionLabelMapFilter;
@@ -92,20 +91,9 @@ public:
   // End concept checking
 #endif
 
-  /** Set the marker image */
-  void
-  SetMarkerImage(TMarkerImage * input)
-  {
-    // Process object is not const-correct so the const casting is required.
-    this->SetNthInput(1, const_cast<TMarkerImage *>(input));
-  }
-
-  /** Get the marker image */
-  MarkerImageType *
-  GetMarkerImage()
-  {
-    return static_cast<MarkerImageType *>(const_cast<DataObject *>(this->ProcessObject::GetInput(1)));
-  }
+  /** Set/Get the marker image */
+  itkSetInputMacro(MarkerImage, MarkerImageType);
+  itkGetInputMacro(MarkerImage, MarkerImageType);
 
   /** Set the input image */
   void

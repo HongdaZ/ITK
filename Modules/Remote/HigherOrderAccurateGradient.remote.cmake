@@ -27,12 +27,12 @@
 #--   - [ ] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -45,11 +45,9 @@
 itk_fetch_module(HigherOrderAccurateGradient
   "This module contains a filter to compute higher order
   accurate numerical derivatives and gradients from an input scalar image.
-  field from a displacement field image.
   Higher Order Accurate Derivative and Gradient Calculation in ITK
-  http://www.insight-journal.org/browse/publication/775
-  https://hdl.handle.net/10380/3231"
+  https://www.insight-journal.org/browse/publication/775"
   MODULE_COMPLIANCE_LEVEL 2
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKHigherOrderAccurateGradient.git
-  GIT_TAG d3d205022f8c15f9de709c01b27949538f0ac411
+  GIT_TAG 0a40f5c99ca21ef4b9cbf2b47b1be149046905e6
   )

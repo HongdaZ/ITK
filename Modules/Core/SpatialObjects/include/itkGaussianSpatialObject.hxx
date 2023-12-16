@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkGaussianSpatialObject_hxx
 
 #include <cmath>
-#include "itkGaussianSpatialObject.h"
 
 namespace itk
 {
@@ -51,11 +50,11 @@ GaussianSpatialObject<TDimension>::Clear()
 /** The z-score is the root mean square of the z-scores along
  *  each principal axis. */
 template <unsigned int TDimension>
-typename GaussianSpatialObject<TDimension>::ScalarType
-GaussianSpatialObject<TDimension>::SquaredZScoreInObjectSpace(const PointType & point) const
+auto
+GaussianSpatialObject<TDimension>::SquaredZScoreInObjectSpace(const PointType & point) const -> ScalarType
 {
   ScalarType r = 0;
-  for (unsigned int i = 0; i < TDimension; i++)
+  for (unsigned int i = 0; i < TDimension; ++i)
   {
     r += point[i] * point[i];
   }
@@ -65,8 +64,8 @@ GaussianSpatialObject<TDimension>::SquaredZScoreInObjectSpace(const PointType & 
 /** The z-score is the root mean square of the z-scores along
  *  each principal axis. */
 template <unsigned int TDimension>
-typename GaussianSpatialObject<TDimension>::ScalarType
-GaussianSpatialObject<TDimension>::SquaredZScoreInWorldSpace(const PointType & point) const
+auto
+GaussianSpatialObject<TDimension>::SquaredZScoreInWorldSpace(const PointType & point) const -> ScalarType
 {
   PointType transformedPoint = this->GetObjectToWorldTransformInverse()->TransformPoint(point);
 
@@ -86,7 +85,7 @@ GaussianSpatialObject<TDimension>::IsInsideInObjectSpace(const PointType & point
     if (this->GetMyBoundingBoxInObjectSpace()->IsInside(point))
     {
       double r = 0;
-      for (unsigned int i = 0; i < TDimension; i++)
+      for (unsigned int i = 0; i < TDimension; ++i)
       {
         r += (point[i] - m_CenterInObjectSpace[i]) * (point[i] - m_CenterInObjectSpace[i]);
       }
@@ -109,11 +108,11 @@ template <unsigned int TDimension>
 void
 GaussianSpatialObject<TDimension>::ComputeMyBoundingBox()
 {
-  itkDebugMacro("Computing Guassian bounding box");
+  itkDebugMacro("Computing Gaussian bounding box");
 
   PointType pnt1;
   PointType pnt2;
-  for (unsigned int i = 0; i < TDimension; i++)
+  for (unsigned int i = 0; i < TDimension; ++i)
   {
     pnt1[i] = m_CenterInObjectSpace[i] - m_RadiusInObjectSpace;
     pnt2[i] = m_CenterInObjectSpace[i] + m_RadiusInObjectSpace;
@@ -163,7 +162,7 @@ typename EllipseSpatialObject<TDimension>::Pointer
 GaussianSpatialObject<TDimension>::GetEllipsoid() const
 {
   using EllipseType = itk::EllipseSpatialObject<TDimension>;
-  typename EllipseType::Pointer ellipse = EllipseType::New();
+  auto ellipse = EllipseType::New();
 
   ellipse->SetRadiusInObjectSpace(m_RadiusInObjectSpace);
   ellipse->SetCenterInObjectSpace(m_CenterInObjectSpace);

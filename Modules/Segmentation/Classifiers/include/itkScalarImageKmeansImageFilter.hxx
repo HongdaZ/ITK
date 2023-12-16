@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,12 +18,12 @@
 #ifndef itkScalarImageKmeansImageFilter_hxx
 #define itkScalarImageKmeansImageFilter_hxx
 
-#include "itkScalarImageKmeansImageFilter.h"
 #include "itkImageRegionExclusionIteratorWithIndex.h"
 
 #include "itkDistanceToCentroidMembershipFunction.h"
 
 #include "itkProgressReporter.h"
+#include "itkPrintHelper.h"
 
 namespace itk
 {
@@ -48,7 +48,7 @@ ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() I
 
   if (this->m_InitialMeans.empty())
   {
-    itkExceptionMacro("Atleast One InialMean is required.");
+    itkExceptionMacro("At least one InitialMean is required.");
   }
 }
 
@@ -56,14 +56,14 @@ template <typename TInputImage, typename TOutputImage>
 void
 ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
-  typename AdaptorType::Pointer adaptor = AdaptorType::New();
+  auto adaptor = AdaptorType::New();
 
   // Setup the regions here if a sub-region has been specified to restrict
   // classification on. Since this is not ThreadedGenenerateData, we are
   // safe...
   if (m_ImageRegionDefined)
   {
-    typename RegionOfInterestFilterType::Pointer regionOfInterestFilter = RegionOfInterestFilterType::New();
+    auto regionOfInterestFilter = RegionOfInterestFilterType::New();
     regionOfInterestFilter->SetRegionOfInterest(m_ImageRegion);
     regionOfInterestFilter->SetInput(this->GetInput());
     regionOfInterestFilter->Update();
@@ -74,18 +74,18 @@ ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::GenerateData()
     adaptor->SetImage(this->GetInput());
   }
 
-  typename TreeGeneratorType::Pointer treeGenerator = TreeGeneratorType::New();
+  auto treeGenerator = TreeGeneratorType::New();
 
   treeGenerator->SetSample(adaptor);
   treeGenerator->SetBucketSize(16);
   treeGenerator->Update();
 
-  typename EstimatorType::Pointer estimator = EstimatorType::New();
+  auto estimator = EstimatorType::New();
 
   const size_t numberOfClasses = this->m_InitialMeans.size();
 
   ParametersType initialMeans(numberOfClasses);
-  for (unsigned int cl = 0; cl < numberOfClasses; cl++)
+  for (unsigned int cl = 0; cl < numberOfClasses; ++cl)
   {
     initialMeans[cl] = this->m_InitialMeans[cl];
   }
@@ -102,8 +102,8 @@ ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::GenerateData()
   using RegionType = typename InputImageType::RegionType;
 
   // Now classify the samples
-  DecisionRuleType::Pointer        decisionRule = DecisionRuleType::New();
-  typename ClassifierType::Pointer classifier = ClassifierType::New();
+  auto decisionRule = DecisionRuleType::New();
+  auto classifier = ClassifierType::New();
 
   classifier->SetDecisionRule(decisionRule);
   classifier->SetInput(adaptor);
@@ -123,7 +123,7 @@ ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::GenerateData()
   unsigned int                 label = 0;
   MembershipFunctionVectorType membershipFunctions;
 
-  for (unsigned int k = 0; k < numberOfClasses; k++)
+  for (unsigned int k = 0; k < numberOfClasses; ++k)
   {
     classLabels[k] = label;
     label += labelInterval;
@@ -142,7 +142,7 @@ ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::GenerateData()
   classifier->SetMembershipFunctions(membershipFunctionsObject);
 
   using ClassLabelVectorObjectType = typename ClassifierType::ClassLabelVectorObjectType;
-  typename ClassLabelVectorObjectType::Pointer classLabelsObject = ClassLabelVectorObjectType::New();
+  auto classLabelsObject = ClassLabelVectorObjectType::New();
   classLabelsObject->Set(classLabels);
   classifier->SetClassLabels(classLabelsObject);
 
@@ -223,12 +223,15 @@ template <typename TInputImage, typename TOutputImage>
 void
 ScalarImageKmeansImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream & os, Indent indent) const
 {
+  using namespace print_helper;
+
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "Final Means " << m_FinalMeans << std::endl;
-  os << indent << "Use Contiguous Labels " << m_UseNonContiguousLabels << std::endl;
-  os << indent << "Image Region Defined: " << m_ImageRegionDefined << std::endl;
-  os << indent << "Image Region: " << m_ImageRegion << std::endl;
+  os << indent << "InitialMeans: " << m_InitialMeans << std::endl;
+  os << indent << "FinalMeans: " << m_FinalMeans << std::endl;
+  os << indent << "UseContiguousLabels: " << m_UseNonContiguousLabels << std::endl;
+  os << indent << "ImageRegion: " << m_ImageRegion << std::endl;
+  os << indent << "ImageRegionDefined: " << m_ImageRegionDefined << std::endl;
 }
 } // end namespace itk
 

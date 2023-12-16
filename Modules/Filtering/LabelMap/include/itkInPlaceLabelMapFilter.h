@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@
 namespace itk
 {
 /**
- *\class InPlaceLabelMapFilter
+ * \class InPlaceLabelMapFilter
  * \brief Base class for filters that takes an image as input and overwrites
  * that image as the output
  *
@@ -69,8 +69,7 @@ namespace itk
  * This code was contributed in the Insight Journal paper:
  * "Label object representation and manipulation with ITK"
  * by Lehmann G.
- * https://hdl.handle.net/1926/584
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  *
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction,
@@ -84,7 +83,7 @@ template <typename TInputImage>
 class ITK_TEMPLATE_EXPORT InPlaceLabelMapFilter : public LabelMapFilter<TInputImage, TInputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InPlaceLabelMapFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(InPlaceLabelMapFilter);
 
   /** Standard class type aliases. */
   using Self = InPlaceLabelMapFilter;
@@ -99,10 +98,10 @@ public:
   itkNewMacro(Self);
 
   /** Superclass type alias. */
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::OutputImagePointer;
+  using typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImagePixelType;
 
   /** Some convenient type alias. */
   using InputImageType = TInputImage;

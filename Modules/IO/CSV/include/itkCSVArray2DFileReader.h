@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ namespace itk
 {
 
 /**
- *\class CSVArray2DFileReader
+ * \class CSVArray2DFileReader
  * \brief Parses csv files and stores the data in a itkCSVArray2DDataObject.
  *
  * CSVArray2DFileReader is used for reading csv files. This reader should
@@ -61,7 +61,7 @@ namespace itk
  * from an input file:
  *
  * using ReaderType = itk::CSVArray2DFileReader<double>;
- * ReaderType::Pointer reader = ReaderType::New();
+ * auto reader = ReaderType::New();
  *
  * std::string filename = "NameOfFile.csv";
  * reader->SetFileName( filename );
@@ -79,7 +79,7 @@ template <typename TData>
 class ITK_TEMPLATE_EXPORT CSVArray2DFileReader : public CSVFileReaderBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CSVArray2DFileReader);
+  ITK_DISALLOW_COPY_AND_MOVE(CSVArray2DFileReader);
 
   /** Standard class type aliases */
   using Self = CSVArray2DFileReader;

@@ -14,11 +14,10 @@ readonly paths="
 CMakeLists.txt
 CTestConfig.cmake
 LICENSE
-README
+README.md
 cmake
 znzlib
 niftilib
-nifti2
 "
 
 extract_source () {

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,14 +22,6 @@
 #include "itkImage.h"
 #include "itkVectorImage.h"
 #include "itkLinearInterpolateImageFunction.h"
-
-/* VS 2015 has a bug when building release with the heavily nested for
- * loops iterating too many times.  This turns off optimization to
- * allow the tests to pass.
- */
-#if defined(_MSC_VER) && (_MSC_VER == 1900)
-#  pragma optimize("", off)
-#endif
 
 /* Allows testing up to TDimension=4 */
 template <unsigned int TDimension>
@@ -63,9 +55,9 @@ RunLinearInterpolateTest()
   using InterpolatedVectorType = typename VectorInterpolatorType::OutputType;
   using InterpolatedVariableVectorType = typename VariableVectorInterpolatorType::OutputType;
 
-  typename ImageType::Pointer               image = ImageType::New();
-  typename VectorImageType::Pointer         vectorimage = VectorImageType::New();
-  typename VariableVectorImageType::Pointer variablevectorimage = VariableVectorImageType::New();
+  auto image = ImageType::New();
+  auto vectorimage = VectorImageType::New();
+  auto variablevectorimage = VariableVectorImageType::New();
   variablevectorimage->SetVectorLength(VectorDimension);
 
   IndexType start;
@@ -107,7 +99,7 @@ RunLinearInterpolateTest()
 
   // Setup for testing up to Dimension=4
   unsigned int dimLengths[4] = { 1, 1, 1, 1 };
-  for (unsigned int ind = 0; ind < Dimensions; ind++)
+  for (unsigned int ind = 0; ind < Dimensions; ++ind)
   {
     dimLengths[ind] = dimMaxLength;
   }
@@ -132,7 +124,7 @@ RunLinearInterpolateTest()
         {
           PixelType value = 3 * dimIt[0];
           index[0] = dimIt[0];
-          for (unsigned int ind = 1; ind < Dimensions; ind++)
+          for (unsigned int ind = 1; ind < Dimensions; ++ind)
           {
             value += dimIt[ind];
             index[ind] = dimIt[ind];
@@ -152,13 +144,13 @@ RunLinearInterpolateTest()
     }
   }
 
-  typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
   interpolator->SetInputImage(image);
 
-  typename VectorInterpolatorType::Pointer vectorinterpolator = VectorInterpolatorType::New();
+  auto vectorinterpolator = VectorInterpolatorType::New();
   vectorinterpolator->SetInputImage(vectorimage);
 
-  typename VariableVectorInterpolatorType::Pointer variablevectorinterpolator = VariableVectorInterpolatorType::New();
+  auto variablevectorinterpolator = VariableVectorInterpolatorType::New();
   variablevectorinterpolator->SetInputImage(variablevectorimage);
 
   typename ImageType::SizeType radius;
@@ -176,7 +168,7 @@ RunLinearInterpolateTest()
 
   PointType       point;
   AccumulatorType testLengths[4] = { 1, 1, 1, 1 };
-  for (unsigned int ind = 0; ind < Dimensions; ind++)
+  for (unsigned int ind = 0; ind < Dimensions; ++ind)
   {
     testLengths[ind] = dimMaxLength - 1;
   }
@@ -200,7 +192,7 @@ RunLinearInterpolateTest()
                 {
                   AccumulatorType expectedValue = 3 * steps[0];
                   point[0] = steps[0];
-                  for (unsigned int ind = 1; ind < Dimensions; ind++)
+                  for (unsigned int ind = 1; ind < Dimensions; ++ind)
                   {
                     expectedValue += steps[ind];
                     point[ind] = steps[ind];
@@ -211,7 +203,7 @@ RunLinearInterpolateTest()
                     const AccumulatorType computedValue = interpolator->Evaluate(point);
                     const AccumulatorType difference = expectedValue - computedValue;
 
-                    if (std::fabs(difference) > tolerance)
+                    if (itk::Math::abs(difference) > tolerance)
                     {
                       std::cerr << "Error found while computing interpolation " << std::endl;
                       std::cerr << "Point = " << point << std::endl;
@@ -223,7 +215,7 @@ RunLinearInterpolateTest()
 
                     const InterpolatedVectorType & vectorpixel = vectorinterpolator->Evaluate(point);
 
-                    const InterpolatedVectorType expectedvector(expectedValue);
+                    const auto expectedvector = itk::MakeFilled<InterpolatedVectorType>(expectedValue);
 
                     const AccumulatorType & errornorm = (expectedvector - vectorpixel).GetNorm();
 

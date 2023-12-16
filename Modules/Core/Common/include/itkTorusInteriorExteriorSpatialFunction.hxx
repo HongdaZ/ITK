@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkTorusInteriorExteriorSpatialFunction_hxx
 #define itkTorusInteriorExteriorSpatialFunction_hxx
 
-#include "itkTorusInteriorExteriorSpatialFunction.h"
 
 namespace itk
 {
@@ -30,8 +29,8 @@ TorusInteriorExteriorSpatialFunction<VDimension, TInput>::TorusInteriorExteriorS
 }
 
 template <unsigned int VDimension, typename TInput>
-typename TorusInteriorExteriorSpatialFunction<VDimension, TInput>::OutputType
-TorusInteriorExteriorSpatialFunction<VDimension, TInput>::Evaluate(const InputType & position) const
+auto
+TorusInteriorExteriorSpatialFunction<VDimension, TInput>::Evaluate(const InputType & position) const -> OutputType
 {
   double x = position[0] - m_Origin[0];
   double y = position[1] - m_Origin[1];
@@ -58,7 +57,7 @@ TorusInteriorExteriorSpatialFunction<VDimension, TInput>::PrintSelf(std::ostream
   unsigned int i;
 
   os << indent << "Origin: [";
-  for (i = 0; i < VDimension - 1; i++)
+  for (i = 0; i < VDimension - 1; ++i)
   {
     os << m_Origin[i] << ", ";
   }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,11 +23,11 @@ namespace itk
 namespace fem
 {
 // Overload the CreateAnother() method.
-::itk::LightObject::Pointer
+itk::LightObject::Pointer
 Element2DC0QuadraticTriangularStress::CreateAnother() const
 {
-  ::itk::LightObject::Pointer smartPtr;
-  Pointer                     copyPtr = Self::New();
+  itk::LightObject::Pointer smartPtr;
+  Pointer                   copyPtr = Self::New();
 
   copyPtr->SetNode(0, this->GetNode(0));
   copyPtr->SetNode(1, this->GetNode(1));
@@ -43,17 +43,17 @@ Element2DC0QuadraticTriangularStress::CreateAnother() const
   return smartPtr;
 }
 
-Element2DC0QuadraticTriangularStress ::Element2DC0QuadraticTriangularStress()
+Element2DC0QuadraticTriangularStress::Element2DC0QuadraticTriangularStress()
   : Superclass()
 {}
 
-Element2DC0QuadraticTriangularStress ::Element2DC0QuadraticTriangularStress(NodeIDType             n1_,
-                                                                            NodeIDType             n2_,
-                                                                            NodeIDType             n3_,
-                                                                            NodeIDType             n4_,
-                                                                            NodeIDType             n5_,
-                                                                            NodeIDType             n6_,
-                                                                            Material::ConstPointer m_)
+Element2DC0QuadraticTriangularStress::Element2DC0QuadraticTriangularStress(NodeIDType             n1_,
+                                                                           NodeIDType             n2_,
+                                                                           NodeIDType             n3_,
+                                                                           NodeIDType             n4_,
+                                                                           NodeIDType             n5_,
+                                                                           NodeIDType             n6_,
+                                                                           Material::ConstPointer m_)
   : Superclass()
 {
   // Set the geometrical points

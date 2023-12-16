@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,12 +26,12 @@
 
 enum
 {
-  NDimensions = 3
+  VDimension = 3
 };
 
 using PixelType = float;
 using InputImageType = itk::PhasedArray3DSpecialCoordinatesImage<PixelType>;
-using ImageType = itk::Image<PixelType, NDimensions>;
+using ImageType = itk::Image<PixelType, VDimension>;
 using InputImagePointerType = InputImageType::Pointer;
 using ImagePointerType = ImageType::Pointer;
 using ImageRegionType = ImageType::RegionType;
@@ -69,10 +69,10 @@ itkResamplePhasedArray3DSpecialCoordinatesImageTest(int, char *[])
     value = index[2];
     iter.Set(value);
     // display one slice of the volume
-    if (index[0] == int(size[0] - 1) / 2)
+    if (index[0] == static_cast<int>(size[0] - 1) / 2)
     {
       std::cout << std::setw(14) << value;
-      if (int(index[1]) == int(size[1] - 1))
+      if (static_cast<int>(index[1]) == static_cast<int>(size[1] - 1))
       {
         std::cout << std::endl;
       }
@@ -115,15 +115,15 @@ itkResamplePhasedArray3DSpecialCoordinatesImageTest(int, char *[])
     index = iter2.GetIndex();
     value = iter2.Get();
     // display one slice of the volume
-    if (index[0] == int(cubeSize[0] - 1) / 2)
+    if (index[0] == static_cast<int>(cubeSize[0] - 1) / 2)
     {
       std::cout << std::setw(14) << value;
-      if (int(index[1]) == int(cubeSize[1] - 1))
+      if (static_cast<int>(index[1]) == static_cast<int>(cubeSize[1] - 1))
       {
         std::cout << std::endl;
       }
       // check the values down a portion of the z-axis
-      if (index[1] == int(cubeSize[1] - 1) / 2 && 2 <= index[2] && index[2] <= 5)
+      if (index[1] == static_cast<int>(cubeSize[1] - 1) / 2 && 2 <= index[2] && index[2] <= 5)
       {
         if (itk::Math::NotAlmostEquals(value, (index[2] - 1) * 2))
         {
@@ -164,15 +164,15 @@ itkResamplePhasedArray3DSpecialCoordinatesImageTest(int, char *[])
     index = iter3.GetIndex();
     value = iter3.Get();
     // display one slice of the volume
-    if (index[0] == int(size[0] - 1) / 2)
+    if (index[0] == static_cast<int>(size[0] - 1) / 2)
     {
       std::cout << std::setw(14) << value;
-      if (int(index[1]) == int(size[1] - 1))
+      if (static_cast<int>(index[1]) == static_cast<int>(size[1] - 1))
       {
         std::cout << std::endl;
       }
       // check the values down the z-axis
-      if (index[1] == int(size[1] - 1) / 2)
+      if (index[1] == static_cast<int>(size[1] - 1) / 2)
       {
         if (itk::Math::NotAlmostEquals(value, index[2]))
         {

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -117,7 +117,7 @@ main()
   using CasterType =
     itk::ComposeImageFilter<FloatImage2DType, ArrayImageType>;
 
-  CasterType::Pointer caster = CasterType::New();
+  auto caster = CasterType::New();
   caster->SetInput(random->GetOutput());
   caster->Update();
   // Software Guide : EndCodeSnippet
@@ -134,7 +134,7 @@ main()
   // Software Guide : BeginCodeSnippet
   using SampleType =
     itk::Statistics::ImageToListSampleAdaptor<ArrayImageType>;
-  SampleType::Pointer sample = SampleType::New();
+  auto sample = SampleType::New();
   // Software Guide : EndCodeSnippet
 
   // Software Guide : BeginLatex

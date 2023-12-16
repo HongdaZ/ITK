@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,21 +29,22 @@
 
 #include "itkImageSpatialObject.h"
 #include "itkLinearInterpolateImageFunction.h"
+#include "itkTestingMacros.h"
 
 
 int
 itkImageSpatialObjectTest(int, char *[])
 {
-#define NDimensions 3
+#define VDimension 3
 
   using ScalarType = double;
   using Pixel = unsigned short;
-  using ImageType = itk::Image<Pixel, NDimensions>;
-  using ImageSpatialObject = itk::ImageSpatialObject<NDimensions, Pixel>;
+  using ImageType = itk::Image<Pixel, VDimension>;
+  using ImageSpatialObject = itk::ImageSpatialObject<VDimension, Pixel>;
   using Iterator = itk::ImageRegionIterator<ImageType>;
-  using PointType = itk::Point<ScalarType, NDimensions>;
+  using PointType = itk::Point<ScalarType, VDimension>;
 
-  ImageType::Pointer    image = ImageType::New();
+  auto                  image = ImageType::New();
   ImageType::SizeType   size = { { 10, 10, 10 } };
   ImageType::IndexType  index = { { 0, 0, 0 } };
   ImageType::RegionType region;
@@ -53,9 +54,7 @@ itkImageSpatialObjectTest(int, char *[])
   region.SetSize(size);
   region.SetIndex(index);
   image->SetOrigin(origin);
-  image->SetLargestPossibleRegion(region);
-  image->SetBufferedRegion(region);
-  image->SetRequestedRegion(region);
+  image->SetRegions(region);
   image->Allocate();
 
   Iterator it(image, region);
@@ -67,8 +66,15 @@ itkImageSpatialObjectTest(int, char *[])
   }
   it.GoToBegin();
 
-  ImageSpatialObject::Pointer imageSO = ImageSpatialObject::New();
-  imageSO->Print(std::cout);
+  auto imageSO = ImageSpatialObject::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(imageSO, ImageSpatialObject, SpatialObject);
+
+
+  typename ImageSpatialObject::IndexType sliceNumber;
+  sliceNumber.Fill(0);
+  imageSO->SetSliceNumber(sliceNumber);
+  ITK_TEST_SET_GET_VALUE(sliceNumber, imageSO->GetSliceNumber());
 
   imageSO->SetImage(image);
   imageSO->Update();
@@ -106,7 +112,7 @@ itkImageSpatialObjectTest(int, char *[])
   {
     imageSO->ValueAtInWorldSpace(q, returnedValue);
   }
-  catch (itk::ExceptionObject &)
+  catch (const itk::ExceptionObject &)
   {
     throw;
   }
@@ -147,21 +153,17 @@ itkImageSpatialObjectTest(int, char *[])
 
   // Now testing the ValueAt() with an interpolator
   using InterpolatorType = itk::LinearInterpolateImageFunction<ImageType>;
-  InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
   imageSO->SetInterpolator(interpolator);
+  ITK_TEST_SET_GET_VALUE(interpolator, imageSO->GetInterpolator());
+
   expectedValue = 566.1;
 
-  try
-  {
-    imageSO->ValueAtInWorldSpace(q, returnedValue);
-  }
-  catch (itk::ExceptionObject &)
-  {
-    throw;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(imageSO->ValueAtInWorldSpace(q, returnedValue));
+
 
   std::cout << "ValueAt() with interpolator...";
-  if (std::fabs(returnedValue - expectedValue) > 0.001)
+  if (itk::Math::abs(returnedValue - expectedValue) > 0.001)
   {
     std::cout << "Expected: " << expectedValue << " returned: " << returnedValue << std::endl;
     return EXIT_FAILURE;
@@ -177,9 +179,9 @@ itkImageSpatialObjectTest(int, char *[])
   expectedDerivative[1] = 10;
   expectedDerivative[2] = 100;
   std::cout << "DerivativeAt() with interpolator ...";
-  if (std::fabs(derivative[0] - expectedDerivative[0]) > 0.00001 ||
-      std::fabs(derivative[1] - expectedDerivative[1]) > 0.00001 ||
-      std::fabs(derivative[2] - expectedDerivative[2]) > 0.00001)
+  if (itk::Math::abs(derivative[0] - expectedDerivative[0]) > 0.00001 ||
+      itk::Math::abs(derivative[1] - expectedDerivative[1]) > 0.00001 ||
+      itk::Math::abs(derivative[2] - expectedDerivative[2]) > 0.00001)
   {
     std::cout << "Expected: " << derivative << " returned: " << expectedDerivative << std::endl;
     std::cout << "[FAILED]" << std::endl;
@@ -190,7 +192,7 @@ itkImageSpatialObjectTest(int, char *[])
     std::cout << "[PASSED]" << std::endl;
   }
 
-  imageSO->Print(std::cout);
 
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

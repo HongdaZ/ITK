@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,16 +17,15 @@
  *=========================================================================*/
 #ifndef itkMetaConverterBase_hxx
 #define itkMetaConverterBase_hxx
-#include "itkMetaConverterBase.h"
 
 #include "metaObject.h"
 
 namespace itk
 {
 
-template <unsigned VDimension>
-typename MetaConverterBase<VDimension>::SpatialObjectPointer
-MetaConverterBase<VDimension>::ReadMeta(const char * name)
+template <unsigned int VDimension>
+auto
+MetaConverterBase<VDimension>::ReadMeta(const char * name) -> SpatialObjectPointer
 {
   SpatialObjectPointer rval;
   MetaObjectType *     mo = this->CreateMetaObject();
@@ -37,7 +36,7 @@ MetaConverterBase<VDimension>::ReadMeta(const char * name)
   return rval;
 }
 
-template <unsigned VDimension>
+template <unsigned int VDimension>
 bool
 MetaConverterBase<VDimension>::WriteMeta(const SpatialObjectType * spatialObject, const char * name)
 {

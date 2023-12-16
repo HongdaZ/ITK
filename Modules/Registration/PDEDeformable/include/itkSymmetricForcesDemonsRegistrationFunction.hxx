@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSymmetricForcesDemonsRegistrationFunction_hxx
 #define itkSymmetricForcesDemonsRegistrationFunction_hxx
 
-#include "itkSymmetricForcesDemonsRegistrationFunction.h"
 #include "itkMacro.h"
 #include "itkMath.h"
 
@@ -45,7 +44,7 @@ SymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplaceme
   m_Normalizer = 0.0;
   m_FixedImageGradientCalculator = GradientCalculatorType::New();
 
-  typename DefaultInterpolatorType::Pointer interp = DefaultInterpolatorType::New();
+  auto interp = DefaultInterpolatorType::New();
 
   m_MovingImageInterpolator = static_cast<InterpolatorType *>(interp.GetPointer());
 
@@ -126,7 +125,7 @@ SymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplaceme
 
   // compute the normalizer
   m_Normalizer = 0.0;
-  for (unsigned int k = 0; k < ImageDimension; k++)
+  for (unsigned int k = 0; k < ImageDimension; ++k)
   {
     m_Normalizer += m_FixedImageSpacing[k] * m_FixedImageSpacing[k];
   }
@@ -163,7 +162,7 @@ SymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplaceme
   // Get fixed image related information
   // Note: no need to check the index is within
   // fixed image buffer. This is done by the external filter.
-  const auto                fixedValue = (double)this->GetFixedImage()->GetPixel(index);
+  const auto                fixedValue = static_cast<double>(this->GetFixedImage()->GetPixel(index));
   const CovariantVectorType fixedGradient = m_FixedImageGradientCalculator->EvaluateAtIndex(index);
 
   // Get moving image related information
@@ -175,7 +174,7 @@ SymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplaceme
   using DisplacementPixelType = typename DisplacementFieldType::PixelType;
   PointType mappedCenterPoint;
   this->GetFixedImage()->TransformIndexToPhysicalPoint(index, mappedCenterPoint);
-  for (unsigned int dim = 0; dim < ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < ImageDimension; ++dim)
   {
     mappedCenterPoint[dim] += it.GetCenterPixel()[dim];
     // bounds checking
@@ -188,7 +187,7 @@ SymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplaceme
       tmpIndex[dim] += 1;
       DisplacementPixelType displacement = field->GetPixel(tmpIndex);
       this->GetFixedImage()->TransformIndexToPhysicalPoint(tmpIndex, mappedNeighPoint);
-      for (unsigned int j = 0; j < ImageDimension; j++)
+      for (unsigned int j = 0; j < ImageDimension; ++j)
       {
         mappedNeighPoint[j] += displacement[j];
       }
@@ -204,7 +203,7 @@ SymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplaceme
       tmpIndex[dim] -= 2;
       displacement = field->GetPixel(tmpIndex);
       this->GetFixedImage()->TransformIndexToPhysicalPoint(tmpIndex, mappedNeighPoint);
-      for (unsigned int j = 0; j < ImageDimension; j++)
+      for (unsigned int j = 0; j < ImageDimension; ++j)
       {
         mappedNeighPoint[j] += displacement[j];
       }
@@ -239,7 +238,7 @@ SymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplaceme
    * where K = mean square spacing to compensate for the mismatch in units.
    */
   double fixedPlusMovingGradientSquaredMagnitude = 0;
-  for (unsigned int dim = 0; dim < ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < ImageDimension; ++dim)
   {
     fixedPlusMovingGradientSquaredMagnitude += itk::Math::sqr(fixedGradient[dim] + movingGradient[dim]);
   }
@@ -254,7 +253,7 @@ SymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplaceme
   }
   else
   {
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       update[j] = 2 * speedValue * (fixedGradient[j] + movingGradient[j]) / denominator;
     }
@@ -263,7 +262,7 @@ SymmetricForcesDemonsRegistrationFunction<TFixedImage, TMovingImage, TDisplaceme
   // update the squared change value
   PointType newMappedCenterPoint;
   bool      IsOutsideRegion = false;
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     if (globalData)
     {

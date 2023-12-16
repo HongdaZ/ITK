@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,14 +46,14 @@ itkPCAShapeSignedDistanceFunctionTest(int, char *[])
 
   // define a pca shape function
   using ShapeFunction = itk::PCAShapeSignedDistanceFunction<CoordRep, Dimension>;
-  ShapeFunction::Pointer shape = ShapeFunction::New();
+  auto shape = ShapeFunction::New();
   //  shape->DebugOn();
   shape->SetNumberOfPrincipalComponents(NumberOfPCs);
 
 
   // set up the transform
   using transformType = itk::Euler2DTransform<double>;
-  transformType::Pointer transform = transformType::New();
+  auto transform = transformType::New();
   shape->SetTransform(transform);
 
 
@@ -76,7 +76,7 @@ itkPCAShapeSignedDistanceFunctionTest(int, char *[])
 
 
   // set up the mean image
-  ImageType::Pointer meanImage = ImageType::New();
+  auto meanImage = ImageType::New();
   meanImage->SetRegions(region);
   meanImage->Allocate();
 
@@ -97,7 +97,7 @@ itkPCAShapeSignedDistanceFunctionTest(int, char *[])
   using ImageIteratorVector = std::vector<ImageIterator>;
   ImageIteratorVector pcImageIts(NumberOfPCs);
 
-  for (i = 0; i < NumberOfPCs; i++)
+  for (i = 0; i < NumberOfPCs; ++i)
   {
     pcImages[i] = ImageType::New();
     pcImages[i]->SetRegions(region);
@@ -118,7 +118,7 @@ itkPCAShapeSignedDistanceFunctionTest(int, char *[])
   // set up the standard deviation for each principal component images
   ShapeFunction::ParametersType pcStandardDeviations(NumberOfPCs);
 
-  for (i = 0; i < NumberOfPCs; i++)
+  for (i = 0; i < NumberOfPCs; ++i)
   {
     pcStandardDeviations[i] = vnl_sample_normal(0, 1);
   }
@@ -132,7 +132,7 @@ itkPCAShapeSignedDistanceFunctionTest(int, char *[])
   unsigned int                  numberOfParameters = numberOfShapeParameters + numberOfPoseParameters;
   ShapeFunction::ParametersType parameters(numberOfParameters);
 
-  for (i = 0; i < numberOfParameters; i++)
+  for (i = 0; i < numberOfParameters; ++i)
   {
     parameters[i] = vnl_sample_normal(0, 1);
   }
@@ -175,7 +175,7 @@ itkPCAShapeSignedDistanceFunctionTest(int, char *[])
 
     // calculate expected function value
     expected = meanImage->GetPixel(index);
-    for (i = 0; i < NumberOfPCs; i++)
+    for (i = 0; i < NumberOfPCs; ++i)
     {
       expected += pcImages[i]->GetPixel(index) * pcStandardDeviations[i] * parameters[i];
     }
@@ -209,26 +209,27 @@ itkPCAShapeSignedDistanceFunctionTest(int, char *[])
   // Exercise error testing
   bool pass;
 
-#define TEST_INITIALIZATION_ERROR(ComponentName, badComponent, goodComponent)                                          \
-  shape->Set##ComponentName(badComponent);                                                                             \
-  try                                                                                                                  \
-  {                                                                                                                    \
-    pass = false;                                                                                                      \
-    shape->Initialize();                                                                                               \
-  }                                                                                                                    \
-  catch (const itk::ExceptionObject & err)                                                                             \
-  {                                                                                                                    \
-    std::cout << "Caught expected ExceptionObject" << std::endl;                                                       \
-    std::cout << err << std::endl;                                                                                     \
-    pass = true;                                                                                                       \
-  }                                                                                                                    \
-  shape->Set##ComponentName(goodComponent);                                                                            \
-                                                                                                                       \
-  if (!pass)                                                                                                           \
-  {                                                                                                                    \
-    std::cout << "Test failed." << std::endl;                                                                          \
-    return EXIT_FAILURE;                                                                                               \
-  }
+#define TEST_INITIALIZATION_ERROR(ComponentName, badComponent, goodComponent) \
+  shape->Set##ComponentName(badComponent);                                    \
+  try                                                                         \
+  {                                                                           \
+    pass = false;                                                             \
+    shape->Initialize();                                                      \
+  }                                                                           \
+  catch (const itk::ExceptionObject & err)                                    \
+  {                                                                           \
+    std::cout << "Caught expected ExceptionObject" << std::endl;              \
+    std::cout << err << std::endl;                                            \
+    pass = true;                                                              \
+  }                                                                           \
+  shape->Set##ComponentName(goodComponent);                                   \
+                                                                              \
+  if (!pass)                                                                  \
+  {                                                                           \
+    std::cout << "Test failed." << std::endl;                                 \
+    return EXIT_FAILURE;                                                      \
+  }                                                                           \
+  ITK_MACROEND_NOOP_STATEMENT
 
   // nullptr MeanImage
   TEST_INITIALIZATION_ERROR(MeanImage, nullptr, meanImage);

@@ -1,20 +1,13 @@
 # Set up wrapping options
 
 option(ITK_WRAP_PYTHON "Build Python support" OFF)
-option(ITK_WRAP_JAVA "Build Java support (Currently not supported)" OFF)
-option(ITK_WRAP_RUBY "Build Ruby support (Currently not supported)" OFF)
-option(ITK_WRAP_PERL "Build Perl support (Currently not supported)" OFF)
-option(ITK_WRAP_TCL "Build Tcl support (Currently not supported)" OFF)
-mark_as_advanced(ITK_WRAP_JAVA)
-mark_as_advanced(ITK_WRAP_RUBY)
-mark_as_advanced(ITK_WRAP_PERL)
-mark_as_advanced(ITK_WRAP_TCL)
 
-if(ITK_WRAP_PYTHON OR ITK_WRAP_JAVA OR ITK_WRAP_RUBY OR ITK_WRAP_PERL OR ITK_WRAP_TCL)
+if(ITK_WRAP_PYTHON)
   if(NOT ITK_DYNAMIC_LOADING)
     message(FATAL_ERROR "Wrapping requires ITK_DYNAMIC_LOADING to be ON")
   endif()
-  # ITK_WRAPPING is an internal variable
+  # ITK_WRAPPING is an internal variable that is always the same value as ITK_WRAP_PYTHON
+  # since python is the only valid wrapped language
   set(ITK_WRAPPING ON CACHE INTERNAL "Build external languages support" FORCE)
 else()
   set(ITK_WRAPPING OFF CACHE INTERNAL "Build external languages support" FORCE)
@@ -57,7 +50,7 @@ cmake_dependent_option(ITK_WRAP_complex_float "Wrap complex< float > type" ON "I
 cmake_dependent_option(ITK_WRAP_complex_double "Wrap complex< double > type" OFF "ITK_WRAPPING" OFF)
 
 if(ITK_WRAPPING)
-  # Check for type conditions that need to be fullfilled.
+  # Check for type conditions that need to be fulfilled.
   foreach(t float double)
     # Vectors
     if(ITK_WRAP_vector_${t} AND NOT ITK_WRAP_${t})

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkMeanImageFilter_hxx
 #define itkMeanImageFilter_hxx
-#include "itkMeanImageFilter.h"
 
 #include "itkBufferedImageNeighborhoodPixelAccessPolicy.h"
 #include "itkImageNeighborhoodOffsets.h"
@@ -50,7 +49,6 @@ MeanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   const auto calculatorResult =
     NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<InputImageType>::Compute(*input, outputRegionForThread, radius);
 
-  using namespace Experimental;
   const auto neighborhoodOffsets = GenerateRectangularImageNeighborhoodOffsets<InputImageDimension>(radius);
 
   // Process the non-boundary subregion, using a faster pixel access policy without boundary extrapolation.
@@ -83,7 +81,6 @@ MeanImageFilter<TInputImage, TOutputImage>::GenerateDataInSubregion(
 {
   const auto neighborhoodSize = static_cast<double>(neighborhoodOffsets.size());
 
-  using namespace Experimental;
   auto neighborhoodRange = ShapedImageNeighborhoodRange<const InputImageType, TPixelAccessPolicy>(
     inputImage, Index<InputImageDimension>(), neighborhoodOffsets);
   auto outputIterator = ImageRegionRange<OutputImageType>(outputImage, imageRegion).begin();
@@ -117,7 +114,6 @@ MeanImageFilter<TInputImage, TOutputImage>::GenerateDataInSubregion(
 {
   const auto neighborhoodSize = static_cast<double>(neighborhoodOffsets.size());
 
-  using namespace Experimental;
   auto neighborhoodRange = ShapedImageNeighborhoodRange<const InputImageType, TPixelAccessPolicy>(
     inputImage, Index<InputImageDimension>(), neighborhoodOffsets);
   auto outputIterator = ImageRegionRange<OutputImageType>(outputImage, imageRegion).begin();

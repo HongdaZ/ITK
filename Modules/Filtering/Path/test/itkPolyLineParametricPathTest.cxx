@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ itkPolyLineParametricPathTest(int, char *[])
   OffsetType offset;
   VertexType v;
 
-  PathType::Pointer path = PathType::New();
+  auto path = PathType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(path, PolyLineParametricPath, ParametricPath);
 
@@ -67,8 +67,8 @@ itkPolyLineParametricPathTest(int, char *[])
 
   std::cout << "Evaluating the derivative at 0, 0.5, and 1.0: " << path->EvaluateDerivative(0) << ", "
             << path->EvaluateDerivative(0.5) << ", " << path->EvaluateDerivative(1.0) << std::endl;
-  if (int(0.5 + 1000 * (path->EvaluateDerivative(0.5))[0]) != 1000 ||
-      int(0.5 + 1000 * (path->EvaluateDerivative(0.5))[1]) != 2000)
+  if (static_cast<int>(0.5 + 1000 * (path->EvaluateDerivative(0.5))[0]) != 1000 ||
+      static_cast<int>(0.5 + 1000 * (path->EvaluateDerivative(0.5))[1]) != 2000)
   {
     std::cout << "EvaluateDerivative() Failed" << std::endl;
     passed = false;
@@ -84,7 +84,7 @@ itkPolyLineParametricPathTest(int, char *[])
 
   // Test a degenerate path
   std::cout << "Generating degenerate path" << std::endl;
-  PathType::Pointer path2 = PathType::New();
+  auto path2 = PathType::New();
 
   // Add a bunch of points closely spaced together
   for (double k = 0; k < 10; k += 0.1)

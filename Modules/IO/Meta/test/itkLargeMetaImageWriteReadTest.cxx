@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 #include "itkImageFileReader.h"
 #include "itkTimeProbesCollectorBase.h"
 #include "itkMetaImageIO.h"
+#include "itkTestingMacros.h"
 
 
 // Specific ImageIO test
@@ -49,7 +50,7 @@ ActualTest(std::string filename, typename TImageType::SizeType size)
   itk::TimeProbesCollectorBase chronometer;
 
   { // begin write block
-    typename ImageType::Pointer image = ImageType::New();
+    auto image = ImageType::New();
     index.Fill(0);
     region.SetSize(size);
     region.SetIndex(index);
@@ -89,7 +90,7 @@ ActualTest(std::string filename, typename TImageType::SizeType size)
     std::cout << "Trying to write the image to disk" << std::endl;
     try
     {
-      typename WriterType::Pointer writer = WriterType::New();
+      auto writer = WriterType::New();
       writer->SetInput(image);
       writer->SetFileName(filename);
       chronometer.Start("Write");
@@ -104,7 +105,7 @@ ActualTest(std::string filename, typename TImageType::SizeType size)
   } // end write block to free the memory
 
   std::cout << "Trying to read the image back from disk" << std::endl;
-  typename ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(filename);
 
   itk::MetaImageIO::Pointer io = itk::MetaImageIO::New();
@@ -159,12 +160,13 @@ ActualTest(std::string filename, typename TImageType::SizeType size)
 } // namespace
 
 int
-itkLargeMetaImageWriteReadTest(int ac, char * argv[])
+itkLargeMetaImageWriteReadTest(int argc, char * argv[])
 {
 
-  if (ac < 3)
+  if (argc < 3)
   {
-    std::cout << "usage: itkIOTests itkLargeMetaImageWriteReadTest outputFileName numberOfPixelsInOneDimension "
+    std::cout << "Usage: " << itkNameOfTestExecutableMacro(argv)
+              << " outputFileName numberOfPixelsInOneDimension "
                  "[numberOfZslices]"
               << std::endl;
     return EXIT_FAILURE;
@@ -172,7 +174,7 @@ itkLargeMetaImageWriteReadTest(int ac, char * argv[])
 
   const std::string filename = argv[1];
 
-  if (ac == 3)
+  if (argc == 3)
   {
     constexpr unsigned int Dimension = 2;
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkTriangleThresholdCalculator_hxx
 #define itkTriangleThresholdCalculator_hxx
 
-#include "itkTriangleThresholdCalculator.h"
 #include "itkProgressReporter.h"
 #include "itkMath.h"
 
@@ -51,11 +50,11 @@ TriangleThresholdCalculator<THistogram, TOutput>::GenerateData()
 
   // Triangle method needs the maximum and minimum indexes
   // Minimum indexes for this purpose are poorly defined - can't just
-  // take a index with zero entries.
+  // take an index with zero entries.
   double         Mx = itk::NumericTraits<double>::min();
   IndexValueType MxIdx = 0;
 
-  for (SizeValueType j = 0; j < size; j++)
+  for (SizeValueType j = 0; j < size; ++j)
   {
     if (histogram->GetFrequency(j, 0) > Mx)
     {
@@ -66,7 +65,7 @@ TriangleThresholdCalculator<THistogram, TOutput>::GenerateData()
 
 
   cumSum[0] = histogram->GetFrequency(0, 0);
-  for (SizeValueType j = 1; j < size; j++)
+  for (SizeValueType j = 1; j < size; ++j)
   {
     cumSum[j] = histogram->GetFrequency(j, 0) + cumSum[j - 1];
   }
@@ -83,11 +82,12 @@ TriangleThresholdCalculator<THistogram, TOutput>::GenerateData()
   // Figure out which way we are looking - we want to construct our
   // line between the max index and the further of 1% and 99%
   IndexValueType ThreshIdx = 0;
-  if (fabs((float)MxIdx - (float)onePCIdx) > fabs((float)MxIdx - (float)nnPCIdx))
+  if (itk::Math::abs(static_cast<float>(MxIdx) - static_cast<float>(onePCIdx)) >
+      itk::Math::abs(static_cast<float>(MxIdx) - static_cast<float>(nnPCIdx)))
   {
     // line to 1 %
     double slope = Mx / (MxIdx - onePCIdx);
-    for (IndexValueType k = onePCIdx; k < MxIdx; k++)
+    for (IndexValueType k = onePCIdx; k < MxIdx; ++k)
     {
       float line = slope * (k - onePCIdx);
       triangle[k] = line - histogram->GetFrequency(k);
@@ -100,7 +100,7 @@ TriangleThresholdCalculator<THistogram, TOutput>::GenerateData()
   {
     // line to 99 %
     double slope = -Mx / (nnPCIdx - MxIdx);
-    for (IndexValueType k = MxIdx; k < nnPCIdx; k++)
+    for (IndexValueType k = MxIdx; k < nnPCIdx; ++k)
     {
       float line = slope * (k - MxIdx) + Mx;
       triangle[k] = line - histogram->GetFrequency(k);

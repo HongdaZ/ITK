@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkDiffeomorphicDemonsRegistrationFilter_hxx
 #define itkDiffeomorphicDemonsRegistrationFilter_hxx
 
-#include "itkDiffeomorphicDemonsRegistrationFilter.h"
 #include "itkSmoothingRecursiveGaussianImageFilter.h"
 
 namespace itk
@@ -183,8 +182,9 @@ DiffeomorphicDemonsRegistrationFilter<TFixedImage, TMovingImage, TDisplacementFi
  *
  */
 template <typename TFixedImage, typename TMovingImage, typename TDisplacementField>
-typename DiffeomorphicDemonsRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::GradientType
+auto
 DiffeomorphicDemonsRegistrationFilter<TFixedImage, TMovingImage, TDisplacementField>::GetUseGradientType() const
+  -> GradientType
 {
   const DemonsRegistrationFunctionType * drfp = this->DownCastDifferenceFunctionType();
 
@@ -241,7 +241,7 @@ DiffeomorphicDemonsRegistrationFilter<TFixedImage, TMovingImage, TDisplacementFi
 
   // Use time step if necessary. In many cases
   // the time step is one so this will be skipped
-  if (std::fabs(dt - 1.0) > 1.0e-4)
+  if (itk::Math::abs(dt - 1.0) > 1.0e-4)
   {
     itkDebugMacro("Using timestep: " << dt);
     m_Multiplier->SetInput2(dt);

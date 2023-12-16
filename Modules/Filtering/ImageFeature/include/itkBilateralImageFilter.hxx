@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkBilateralImageFilter_hxx
 #define itkBilateralImageFilter_hxx
 
-#include "itkBilateralImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkGaussianImageSource.h"
 #include "itkNeighborhoodAlgorithm.h"
@@ -75,7 +74,7 @@ BilateralImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 
   if (m_AutomaticKernelSize)
   {
-    for (i = 0; i < ImageDimension; i++)
+    for (i = 0; i < ImageDimension; ++i)
     {
       radius[i] = (typename TInputImage::SizeType::SizeValueType)std::ceil(m_DomainMu * m_DomainSigma[i] /
                                                                            this->GetInput()->GetSpacing()[i]);
@@ -83,7 +82,7 @@ BilateralImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
   }
   else
   {
-    for (i = 0; i < ImageDimension; i++)
+    for (i = 0; i < ImageDimension; ++i)
     {
       radius[i] = m_Radius[i];
     }
@@ -124,7 +123,7 @@ template <typename TInputImage, typename TOutputImage>
 void
 BilateralImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  // Build a small image of the N-dimensional Gaussian used for domain filter
+  // Build a small image of the n-dimensional Gaussian used for domain filter
   //
   // Gaussian image size will be (2*std::ceil(2.5*sigma)+1) x
   // (2*std::ceil(2.5*sigma)+1)
@@ -140,7 +139,7 @@ BilateralImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 
   if (m_AutomaticKernelSize)
   {
-    for (i = 0; i < ImageDimension; i++)
+    for (i = 0; i < ImageDimension; ++i)
     {
       radius[i] =
         (typename TInputImage::SizeType::SizeValueType)std::ceil(m_DomainMu * m_DomainSigma[i] / inputSpacing[i]);
@@ -149,7 +148,7 @@ BilateralImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
   }
   else
   {
-    for (i = 0; i < ImageDimension; i++)
+    for (i = 0; i < ImageDimension; ++i)
     {
       radius[i] = m_Radius[i];
       domainKernelSize[i] = 2 * radius[i] + 1;
@@ -167,7 +166,7 @@ BilateralImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
   gaussianImage->SetScale(1.0);
   gaussianImage->SetNormalized(true);
 
-  for (i = 0; i < ImageDimension; i++)
+  for (i = 0; i < ImageDimension; ++i)
   {
     mean[i] = inputSpacing[i] * radius[i] + inputOrigin[i]; // center pixel pos
     sigma[i] = m_DomainSigma[i];

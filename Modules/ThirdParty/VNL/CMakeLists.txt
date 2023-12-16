@@ -5,7 +5,10 @@ option(ITK_USE_SYSTEM_VXL "Use an outside build of VXL." OFF)
 mark_as_advanced(ITK_USE_SYSTEM_VXL)
 
 if(ITK_USE_SYSTEM_VXL)
-  find_package(VXL 2.0.2 REQUIRED)
+  find_package(VXL 3.0.0 REQUIRED)
+  # 3.0.0 is the first version of VXL that supports
+  # the requirement of front() and back() members
+  # in the vnl_vector and vnl_vector_fixed.
   set(ITKVNL_SYSTEM_INCLUDE_DIRS
     ${VXL_NETLIB_INCLUDE_DIR}
     ${VXL_VCL_INCLUDE_DIRS}
@@ -20,6 +23,11 @@ else()
 
   # ITKv5 no longer supports legacy method signatures for VNL
   set(VNL_CONFIG_LEGACY_METHODS     OFF CACHE BOOL "Whether backward-compatibility methods are provided by vnl." FORCE )
+  if(ITK_LEGACY_REMOVE OR ITK_FUTURE_LEGACY_REMOVE)
+    set(VXL_USE_HISTORICAL_IMPLICIT_CONVERSIONS OFF CACHE BOOL "Allow default deprecated implicit conversions." FORCE )
+  else()
+    set(VXL_USE_HISTORICAL_IMPLICIT_CONVERSIONS ON  CACHE BOOL "Allow default deprecated implicit conversions." FORCE )
+  endif()
   set(VXL_BUILD_CORE_NUMERICS       ON  CACHE BOOL "VXL configuration for ITK" FORCE )
   set(VXL_BUILD_CORE_NUMERICS_ONLY  ON  CACHE BOOL "VXL configuration for ITK" FORCE ) #This hides other VXL core options from CMake
   set(VXL_NO_EXPORT                 ON  CACHE BOOL "VXL configuration for ITK" FORCE )

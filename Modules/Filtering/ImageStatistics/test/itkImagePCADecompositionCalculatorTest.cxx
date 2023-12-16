@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkTextOutput.h"
 
 #include "itkImagePCADecompositionCalculator.h"
+#include "itkTestingMacros.h"
 
 // class to support progress feedback
 
@@ -58,21 +59,21 @@ itkImagePCADecompositionCalculatorTest(int, char *[])
   using InputImageIterator = itk::ImageRegionIterator<InputImageType>;
 
 
-  InputImageType::Pointer image1 = InputImageType::New();
+  auto image1 = InputImageType::New();
 
-  InputImageType::Pointer image2 = InputImageType::New();
+  auto image2 = InputImageType::New();
 
-  InputImageType::Pointer image3 = InputImageType::New();
+  auto image3 = InputImageType::New();
 
-  InputImageType::Pointer image4 = InputImageType::New();
+  auto image4 = InputImageType::New();
 
-  InputImageType::Pointer image5 = InputImageType::New();
+  auto image5 = InputImageType::New();
 
-  InputImageType::Pointer image6 = InputImageType::New();
+  auto image6 = InputImageType::New();
 
-  InputImageType::Pointer image7 = InputImageType::New();
+  auto image7 = InputImageType::New();
 
-  InputImageType::Pointer image8 = InputImageType::New();
+  auto image8 = InputImageType::New();
 
   InputImageType::SizeType inputImageSize = { { IMGWIDTH, IMGHEIGHT } };
 
@@ -264,7 +265,10 @@ itkImagePCADecompositionCalculatorTest(int, char *[])
   //----------------------------------------------------------------------
   using ImagePCAShapeModelEstimatorType = itk::ImagePCADecompositionCalculator<InputImageType>;
 
-  ImagePCAShapeModelEstimatorType::Pointer decomposer = ImagePCAShapeModelEstimatorType::New();
+  auto decomposer = ImagePCAShapeModelEstimatorType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(decomposer, ImagePCADecompositionCalculator, Object);
+
 
   //----------------------------------------------------------------------
   // Set the parameters of the clusterer
@@ -275,9 +279,19 @@ itkImagePCADecompositionCalculatorTest(int, char *[])
   basis.push_back(image2);
   decomposer->SetBasisImages(basis);
 
+  ImagePCAShapeModelEstimatorType::BasisImagePointerVector basisObtained = decomposer->GetBasisImages();
+
+  ITK_TEST_EXPECT_EQUAL(basis.size(), basisObtained.size());
+  for (size_t i = 0; i < basis.size(); ++i)
+  {
+    ITK_TEST_EXPECT_EQUAL(basis[i], basisObtained[i]);
+  }
+
   // compute some projections!
   ImagePCAShapeModelEstimatorType::BasisVectorType proj3, proj4;
   decomposer->SetImage(image3);
+  ITK_TEST_SET_GET_VALUE(image3, decomposer->GetImage());
+
   decomposer->Compute();
   proj3 = decomposer->GetProjection();
 
@@ -308,6 +322,7 @@ itkImagePCADecompositionCalculatorTest(int, char *[])
   ImagePCAShapeModelEstimatorType::BasisVectorType proj3_3, proj4_3;
   // now test it with a mean image set
   decomposer->SetMeanImage(image8);
+  ITK_TEST_SET_GET_VALUE(image8, decomposer->GetMeanImage());
 
   decomposer->SetImage(image3);
   decomposer->Compute();

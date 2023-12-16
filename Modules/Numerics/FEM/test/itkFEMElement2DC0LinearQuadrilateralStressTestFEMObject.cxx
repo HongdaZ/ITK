@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ itkFEMElement2DC0LinearQuadrilateralStressTestFEMObject(int argc, char * argv[])
   itk::FEMFactoryBase::GetFactory()->RegisterDefaultTypes();
 
   using FEMObjectType = itk::fem::FEMObject<2>;
-  FEMObjectType::Pointer femObject = FEMObjectType::New();
+  auto femObject = FEMObjectType::New();
 
   itk::fem::Node::Pointer n1;
 
@@ -134,7 +134,7 @@ itkFEMElement2DC0LinearQuadrilateralStressTestFEMObject(int argc, char * argv[])
   femObject->Solve();
 
   float soln[8];
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < 8; ++i)
   {
     soln[i] = femObject->GetSolution(i);
     std::cout << "Solution[" << i << "]:" << soln[i] << std::endl;

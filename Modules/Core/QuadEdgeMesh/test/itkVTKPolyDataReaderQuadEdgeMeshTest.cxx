@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 
 #include "itkQuadEdgeMesh.h"
 #include "itkVTKPolyDataReader.h"
+#include "itkTestingMacros.h"
 
 #include <iostream>
 
@@ -26,14 +27,14 @@ itkVTKPolyDataReaderQuadEdgeMeshTest(int argc, char * argv[])
 {
   if (argc != 2)
   {
-    std::cerr << "Usage: itkVTKPolyDataReaderTest inputFilename" << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv) << " inputFilename" << std::endl;
     return EXIT_FAILURE;
   }
 
   using MeshType = itk::QuadEdgeMesh<float, 3>;
   using ReaderType = itk::VTKPolyDataReader<MeshType>;
 
-  ReaderType::Pointer polyDataReader = ReaderType::New();
+  auto polyDataReader = ReaderType::New();
 
   using PointType = ReaderType::PointType;
 
@@ -79,7 +80,7 @@ itkVTKPolyDataReaderQuadEdgeMeshTest(int argc, char * argv[])
     return EXIT_FAILURE;
   }
 
-  for (unsigned int i = 0; i < numberOfPoints; i++)
+  for (unsigned int i = 0; i < numberOfPoints; ++i)
   {
     // mesh->GetPoint(i, &point);
     // std::cout << "Point[" << i << "]: " << point << std::endl;

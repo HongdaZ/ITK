@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class LevelSetDomainPartitionMesh
+ * \class LevelSetDomainPartitionMesh
  *
  * \brief Helper class used to partition domain and efficiently compute overlap.
  *  \ingroup ITKLevelSetsv4
@@ -33,7 +33,7 @@ template <typename TMesh>
 class ITK_TEMPLATE_EXPORT LevelSetDomainPartitionMesh : public LevelSetDomainPartitionBase<TMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetDomainPartitionMesh);
+  ITK_DISALLOW_COPY_AND_MOVE(LevelSetDomainPartitionMesh);
 
   using Self = LevelSetDomainPartitionMesh;
   using Superclass = LevelSetDomainPartitionBase<TMesh>;
@@ -53,7 +53,7 @@ public:
   using PointsContainerConstPointer = typename MeshType::PointsContainerConstPointer;
   using PointsContainerConstIterator = typename MeshType::PointsContainerConstIterator;
 
-  using IdentifierListType = typename Superclass::IdentifierListType;
+  using typename Superclass::IdentifierListType;
 
   using ListMeshType = std::map<PointIdentifierType, IdentifierListType>;
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkManifoldParzenWindowsPointSetFunction_hxx
 #define itkManifoldParzenWindowsPointSetFunction_hxx
 
-#include "itkManifoldParzenWindowsPointSetFunction.h"
 
 #include "itkMath.h"
 #include "itkCompensatedSummation.h"
@@ -90,10 +89,10 @@ ManifoldParzenWindowsPointSetFunction<TPointSet, TOutput, TCoordRep>::SetInputPo
         Cout.Fill(0);
 
         typename PointsLocatorType::NeighborsIdentifierType neighbors;
-        this->m_PointsLocator->Search(point, this->m_CovarianceKNeighborhood, neighbors);
+        this->m_PointsLocator->FindClosestNPoints(point, this->m_CovarianceKNeighborhood, neighbors);
 
         CompensatedSummation<RealType> denominator;
-        for (unsigned int j = 0; j < this->m_CovarianceKNeighborhood; j++)
+        for (unsigned int j = 0; j < this->m_CovarianceKNeighborhood; ++j)
         {
           if (neighbors[j] != index && neighbors[j] < this->GetInputPointSet()->GetNumberOfPoints())
           {
@@ -104,9 +103,9 @@ ManifoldParzenWindowsPointSetFunction<TPointSet, TOutput, TCoordRep>::SetInputPo
             denominator += kernelValue;
             if (kernelValue > 0.0)
             {
-              for (unsigned int m = 0; m < PointDimension; m++)
+              for (unsigned int m = 0; m < PointDimension; ++m)
               {
-                for (unsigned int n = m; n < PointDimension; n++)
+                for (unsigned int n = m; n < PointDimension; ++n)
                 {
                   RealType covariance = kernelValue * (neighbor[m] - point[m]) * (neighbor[n] - point[n]);
                   Cout(m, n) += covariance;
@@ -125,7 +124,7 @@ ManifoldParzenWindowsPointSetFunction<TPointSet, TOutput, TCoordRep>::SetInputPo
         {
           Cout /= static_cast<RealType>(this->m_CovarianceKNeighborhood);
         }
-        for (unsigned int m = 0; m < PointDimension; m++)
+        for (unsigned int m = 0; m < PointDimension; ++m)
         {
           Cout(m, m) += Math::sqr(this->m_RegularizationSigma);
         }
@@ -159,7 +158,7 @@ ManifoldParzenWindowsPointSetFunction<TPointSet, TOutput, TCoordRep>::Evaluate(c
 
   if (numberOfNeighbors == this->m_Gaussians.size())
   {
-    for (unsigned int j = 0; j < this->m_Gaussians.size(); j++)
+    for (unsigned int j = 0; j < this->m_Gaussians.size(); ++j)
     {
       sum += static_cast<OutputType>(this->m_Gaussians[j]->Evaluate(point));
     }
@@ -167,9 +166,9 @@ ManifoldParzenWindowsPointSetFunction<TPointSet, TOutput, TCoordRep>::Evaluate(c
   else
   {
     typename PointsLocatorType::NeighborsIdentifierType neighbors;
-    this->m_PointsLocator->Search(point, numberOfNeighbors, neighbors);
+    this->m_PointsLocator->FindClosestNPoints(point, numberOfNeighbors, neighbors);
 
-    for (unsigned int j = 0; j < numberOfNeighbors; j++)
+    for (unsigned int j = 0; j < numberOfNeighbors; ++j)
     {
       sum += static_cast<OutputType>(this->m_Gaussians[neighbors[j]]->Evaluate(point));
     }
@@ -178,8 +177,9 @@ ManifoldParzenWindowsPointSetFunction<TPointSet, TOutput, TCoordRep>::Evaluate(c
 }
 
 template <typename TPointSet, typename TOutput, typename TCoordRep>
-typename ManifoldParzenWindowsPointSetFunction<TPointSet, TOutput, TCoordRep>::GaussianConstPointer
+auto
 ManifoldParzenWindowsPointSetFunction<TPointSet, TOutput, TCoordRep>::GetGaussian(PointIdentifier i) const
+  -> GaussianConstPointer
 {
   if (i < this->m_Gaussians.size())
   {
@@ -198,6 +198,8 @@ template <typename TPointSet, typename TOutput, typename TCoordRep>
 void
 ManifoldParzenWindowsPointSetFunction<TPointSet, TOutput, TCoordRep>::PrintSelf(std::ostream & os, Indent indent) const
 {
+  Superclass::PrintSelf(os, indent);
+
   os << indent << "Covariance neighborhood: " << this->m_CovarianceKNeighborhood << std::endl;
   os << indent << "Evaluation neighborhood: " << this->m_EvaluationKNeighborhood << std::endl;
   os << indent << "Regularization sigma: " << this->m_RegularizationSigma << std::endl;

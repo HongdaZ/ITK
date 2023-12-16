@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +38,7 @@ class ITK_TEMPLATE_EXPORT QuadEdgeMeshBoundaryEdgesMeshFunction
   : public FunctionBase<TMesh, typename TMesh::EdgeListPointerType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshBoundaryEdgesMeshFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(QuadEdgeMeshBoundaryEdgesMeshFunction);
 
   // Standard types
   using Self = QuadEdgeMeshBoundaryEdgesMeshFunction;
@@ -47,8 +47,8 @@ public:
   using Superclass = FunctionBase<TMesh, typename TMesh::EdgeListPointerType>;
 
   // Types in superclass:
-  using InputType = typename Superclass::InputType;
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::InputType;
+  using typename Superclass::OutputType;
 
   // Local aliases
   using MeshType = InputType;

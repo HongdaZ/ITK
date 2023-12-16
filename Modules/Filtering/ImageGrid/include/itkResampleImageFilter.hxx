@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkResampleImageFilter_hxx
 #define itkResampleImageFilter_hxx
 
-#include "itkResampleImageFilter.h"
 #include "itkObjectFactory.h"
 #include "itkIdentityTransform.h"
 #include "itkTotalProgressReporter.h"
@@ -40,8 +39,8 @@ template <typename TInputImage,
 ResampleImageFilter<TInputImage, TOutputImage, TInterpolatorPrecisionType, TTransformPrecisionType>::
   ResampleImageFilter()
   : m_Extrapolator(nullptr)
-  , m_OutputSpacing(1.0)
-  , m_OutputOrigin(0.0)
+  , m_OutputSpacing(MakeFilled<SpacingType>(1.0))
+  , m_OutputOrigin()
 
 {
 
@@ -84,7 +83,7 @@ ResampleImageFilter<TInputImage, TOutputImage, TInterpolatorPrecisionType, TTran
   if (InputImageDimension == OutputImageDimension)
   {
     using DecoratorType = DataObjectDecorator<IdentityTransformType>;
-    typename DecoratorType::Pointer decoratedInput = DecoratorType::New();
+    auto decoratedInput = DecoratorType::New();
     decoratedInput->Set(defaultTransform);
     this->ProcessObject::SetInput(
       "Transform", const_cast<DataObjectDecorator<IdentityTransformType> *>(decoratedInput.GetPointer()));
@@ -108,8 +107,8 @@ ResampleImageFilter<TInputImage, TOutputImage, TInterpolatorPrecisionType, TTran
   const ReferenceImageBaseType * const referenceImage = this->GetReferenceImage();
   if (this->m_Size[0] == 0 && referenceImage && !m_UseReferenceImage)
   {
-    itkExceptionMacro("Output image size is zero in all dimensions.  Consider using SetUseReferenceImageOn()."
-                      "to define the resample output from the ReferenceImage.");
+    itkExceptionMacro("Output image size is zero in all dimensions.  Consider using UseReferenceImageOn()."
+                      "or SetUseReferenceImage(true) to define the resample output from the ReferenceImage.");
   }
 }
 
@@ -175,10 +174,11 @@ ResampleImageFilter<TInputImage, TOutputImage, TInterpolatorPrecisionType, TTran
 
   if (nComponents == 0)
   {
-    PixelComponentType zeroComponent = NumericTraits<PixelComponentType>::ZeroValue(zeroComponent);
+    PixelComponentType tempZeroComponents{ 0 };
+    PixelComponentType zeroComponent = NumericTraits<PixelComponentType>::ZeroValue(tempZeroComponents);
     nComponents = this->GetInput()->GetNumberOfComponentsPerPixel();
     NumericTraits<PixelType>::SetLength(m_DefaultPixelValue, nComponents);
-    for (unsigned int n = 0; n < nComponents; n++)
+    for (unsigned int n = 0; n < nComponents; ++n)
     {
       PixelConvertType::SetNthComponent(n, m_DefaultPixelValue, zeroComponent);
     }
@@ -258,7 +258,7 @@ ResampleImageFilter<TInputImage, TOutputImage, TInterpolatorPrecisionType, TTran
 
   NumericTraits<PixelType>::SetLength(outputValue, nComponents);
 
-  for (unsigned int n = 0; n < nComponents; n++)
+  for (unsigned int n = 0; n < nComponents; ++n)
   {
     ComponentType component = InterpolatorConvertType::GetNthComponent(n, value);
 
@@ -448,19 +448,13 @@ ResampleImageFilter<TInputImage, TOutputImage, TInterpolatorPrecisionType, TTran
 
   TotalProgressReporter progress(this, outputPtr->GetRequestedRegion().GetNumberOfPixels());
 
-  // Define a few indices that will be used to translate from an input pixel
-  // to an output pixel
-  OutputPointType outputPoint; // Coordinates of current output pixel
-  InputPointType  inputPoint;  // Coordinates of current input pixel
-
   const OutputImageRegionType & largestPossibleRegion = outputPtr->GetLargestPossibleRegion();
 
-  using OutputType = typename InterpolatorType::OutputType;
+  const auto firstIndexValueOfLargestPossibleRegion = largestPossibleRegion.GetIndex(0);
+  const auto firstSizeValueOfLargestPossibleRegion = static_cast<double>(largestPossibleRegion.GetSize(0));
 
   // Cache information from the superclass
   PixelType defaultValue = this->GetDefaultPixelValue();
-
-  using OutputType = typename InterpolatorType::OutputType;
 
   // As we walk across a scan line in the output image, we trace
   // an oriented/scaled/translated line in the input image. Each scan
@@ -475,24 +469,22 @@ ResampleImageFilter<TInputImage, TOutputImage, TInterpolatorPrecisionType, TTran
   // streaming, etc ).
   //
 
+  const auto transformIndex = [outputPtr, transformPtr, inputPtr](const IndexType & index) {
+    return inputPtr->template TransformPhysicalPointToContinuousIndex<TInterpolatorPrecisionType>(
+      transformPtr->TransformPoint(outputPtr->template TransformIndexToPhysicalPoint<double>(index)));
+  };
+
   while (!outIt.IsAtEnd())
   {
     // Determine the continuous index of the first and end pixel of output
     // scan line when mapped to the input coordinate frame.
 
     IndexType index = outIt.GetIndex();
-    index[0] = largestPossibleRegion.GetIndex(0);
+    index[0] = firstIndexValueOfLargestPossibleRegion;
 
-    ContinuousInputIndexType startIndex;
-    outputPtr->TransformIndexToPhysicalPoint(index, outputPoint);
-    inputPoint = transformPtr->TransformPoint(outputPoint);
-    inputPtr->TransformPhysicalPointToContinuousIndex(inputPoint, startIndex);
-
-    ContinuousInputIndexType endIndex;
-    index[0] += largestPossibleRegion.GetSize(0);
-    outputPtr->TransformIndexToPhysicalPoint(index, outputPoint);
-    inputPoint = transformPtr->TransformPoint(outputPoint);
-    inputPtr->TransformPhysicalPointToContinuousIndex(inputPoint, endIndex);
+    const ContinuousInputIndexType startIndex = transformIndex(index);
+    index[0] += firstSizeValueOfLargestPossibleRegion;
+    const auto vectorFromStartIndex = transformIndex(index) - startIndex;
 
     IndexValueType scanlineIndex = outIt.GetIndex()[0];
 
@@ -500,22 +492,20 @@ ResampleImageFilter<TInputImage, TOutputImage, TInterpolatorPrecisionType, TTran
     while (!outIt.IsAtEndOfLine())
     {
 
-      // Perform linear interpolation between startIndex and endIndex
+      // Perform linear interpolation from startIndex, along vectorFromStartIndex
       const double alpha =
-        (scanlineIndex - largestPossibleRegion.GetIndex(0)) / (double)(largestPossibleRegion.GetSize(0));
+        (scanlineIndex - firstIndexValueOfLargestPossibleRegion) / firstSizeValueOfLargestPossibleRegion;
 
       ContinuousInputIndexType inputIndex(startIndex);
       for (unsigned int i = 0; i < InputImageDimension; ++i)
       {
-        inputIndex[i] += alpha * (endIndex[i] - startIndex[i]);
+        inputIndex[i] += alpha * vectorFromStartIndex[i];
       }
 
-      OutputType value;
       // Evaluate input at right position and copy to the output
       if (m_Interpolator->IsInsideBuffer(inputIndex))
       {
-        value = m_Interpolator->EvaluateAtContinuousIndex(inputIndex);
-        outIt.Set(Self::CastPixelWithBoundsChecking(value));
+        outIt.Set(Self::CastPixelWithBoundsChecking(m_Interpolator->EvaluateAtContinuousIndex(inputIndex)));
       }
       else
       {
@@ -525,8 +515,7 @@ ResampleImageFilter<TInputImage, TOutputImage, TInterpolatorPrecisionType, TTran
         }
         else
         {
-          value = m_Extrapolator->EvaluateAtContinuousIndex(inputIndex);
-          outIt.Set(Self::CastPixelWithBoundsChecking(value));
+          outIt.Set(Self::CastPixelWithBoundsChecking(m_Extrapolator->EvaluateAtContinuousIndex(inputIndex)));
         }
       }
 
@@ -635,9 +624,7 @@ ResampleImageFilter<TInputImage, TOutputImage, TInterpolatorPrecisionType, TTran
   }
   else
   {
-    typename TOutputImage::RegionType outputLargestPossibleRegion;
-    outputLargestPossibleRegion.SetSize(m_Size);
-    outputLargestPossibleRegion.SetIndex(m_OutputStartIndex);
+    const typename TOutputImage::RegionType outputLargestPossibleRegion(m_OutputStartIndex, m_Size);
     outputPtr->SetLargestPossibleRegion(outputLargestPossibleRegion);
   }
 

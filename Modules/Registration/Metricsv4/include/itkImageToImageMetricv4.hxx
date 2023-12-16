@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageToImageMetricv4_hxx
 #define itkImageToImageMetricv4_hxx
 
-#include "itkImageToImageMetricv4.h"
 #include "itkPixelTraits.h"
 #include "itkDisplacementFieldTransform.h"
 #include "itkCompositeTransform.h"
@@ -109,16 +108,10 @@ ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputat
   }
 
   // If the image is provided by a source, update the source.
-  if (this->m_MovingImage->GetSource())
-  {
-    this->m_MovingImage->GetSource()->Update();
-  }
+  this->m_MovingImage->UpdateSource();
 
   // If the image is provided by a source, update the source.
-  if (this->m_FixedImage->GetSource())
-  {
-    this->m_FixedImage->GetSource()->Update();
-  }
+  this->m_FixedImage->UpdateSource();
 
   /* If a virtual image has not been set or created,
    * create one from fixed image settings */
@@ -488,7 +481,7 @@ ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputat
 {
   const typename FixedImageType::SpacingType & spacing = this->m_FixedImage->GetSpacing();
   double                                       maximumSpacing = 0.0;
-  for (ImageDimensionType i = 0; i < FixedImageDimension; i++)
+  for (ImageDimensionType i = 0; i < FixedImageDimension; ++i)
   {
     if (spacing[i] > maximumSpacing)
     {
@@ -512,7 +505,7 @@ ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputat
 {
   const typename MovingImageType::SpacingType & spacing = this->m_MovingImage->GetSpacing();
   double                                        maximumSpacing = 0.0;
-  for (ImageDimensionType i = 0; i < MovingImageDimension; i++)
+  for (ImageDimensionType i = 0; i < MovingImageDimension; ++i)
   {
     if (spacing[i] > maximumSpacing)
     {
@@ -537,11 +530,13 @@ ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputat
   if (number != this->m_SparseGetValueAndDerivativeThreader->GetMaximumNumberOfThreads())
   {
     this->m_SparseGetValueAndDerivativeThreader->SetMaximumNumberOfThreads(number);
+    this->m_SparseGetValueAndDerivativeThreader->SetNumberOfWorkUnits(number);
     this->Modified();
   }
   if (number != this->m_DenseGetValueAndDerivativeThreader->GetMaximumNumberOfThreads())
   {
     this->m_DenseGetValueAndDerivativeThreader->SetMaximumNumberOfThreads(number);
+    this->m_DenseGetValueAndDerivativeThreader->SetNumberOfWorkUnits(number);
     this->Modified();
   }
 }
@@ -620,7 +615,7 @@ ImageToImageMetricv4<TFixedImage, TMovingImage, TVirtualImage, TInternalComputat
     if (this->TransformPhysicalPointToVirtualIndex(point, tempIndex))
     {
       this->m_VirtualSampledPointSet->SetPoint(virtualIndex, point);
-      virtualIndex++;
+      ++virtualIndex;
     }
     else
     {

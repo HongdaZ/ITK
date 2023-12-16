@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,10 +24,10 @@
 namespace itk
 {
 void
-FreeSurferBinaryMeshIOFactory ::PrintSelf(std::ostream &, Indent) const
+FreeSurferBinaryMeshIOFactory::PrintSelf(std::ostream &, Indent) const
 {}
 
-FreeSurferBinaryMeshIOFactory ::FreeSurferBinaryMeshIOFactory()
+FreeSurferBinaryMeshIOFactory::FreeSurferBinaryMeshIOFactory()
 {
   this->RegisterOverride("itkMeshIOBase",
                          "itkFreeSurferBinaryMeshIO",
@@ -36,32 +36,26 @@ FreeSurferBinaryMeshIOFactory ::FreeSurferBinaryMeshIOFactory()
                          CreateObjectFunction<FreeSurferBinaryMeshIO>::New());
 }
 
-FreeSurferBinaryMeshIOFactory ::~FreeSurferBinaryMeshIOFactory() = default;
+FreeSurferBinaryMeshIOFactory::~FreeSurferBinaryMeshIOFactory() = default;
 
 const char *
-FreeSurferBinaryMeshIOFactory ::GetITKSourceVersion() const
+FreeSurferBinaryMeshIOFactory::GetITKSourceVersion() const
 {
   return ITK_SOURCE_VERSION;
 }
 
 const char *
-FreeSurferBinaryMeshIOFactory ::GetDescription() const
+FreeSurferBinaryMeshIOFactory::GetDescription() const
 {
   return "FreeSurfer BINARY Mesh IO Factory, allows the loading of FreeSurfer Binary mesh into insight";
 }
 
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
-static bool FreeSurferBinaryMeshIOFactoryHasBeenRegistered;
-
 void ITKIOMeshFreeSurfer_EXPORT
      FreeSurferBinaryMeshIOFactoryRegister__Private()
 {
-  if (!FreeSurferBinaryMeshIOFactoryHasBeenRegistered)
-  {
-    FreeSurferBinaryMeshIOFactoryHasBeenRegistered = true;
-    FreeSurferBinaryMeshIOFactory::RegisterOneFactory();
-  }
+  ObjectFactoryBase::RegisterInternalFactoryOnce<FreeSurferBinaryMeshIOFactory>();
 }
 
 } // end namespace itk

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,9 +36,9 @@ testArray(const itk::Array2D<T> & m1, const itk::Array2D<T> & m2)
     return pass;
   }
 
-  for (unsigned int i = 0; i < m1.rows(); i++)
+  for (unsigned int i = 0; i < m1.rows(); ++i)
   {
-    for (unsigned int j = 0; j < m1.cols(); j++)
+    for (unsigned int j = 0; j < m1.cols(); ++j)
     {
       // We need to test whether m1 is a NaN and/or m2 is a NaN.
       // If they are both NaN, then they are the same.
@@ -53,7 +53,7 @@ testArray(const itk::Array2D<T> & m1, const itk::Array2D<T> & m2)
         pass = false;
         return pass;
       }
-      if (std::fabs(m1[i][j] - m2[i][j]) > epsilon)
+      if (itk::Math::abs(m1[i][j] - m2[i][j]) > epsilon)
       {
         pass = false;
         return pass;
@@ -93,7 +93,7 @@ itkCSVFileReaderWriterTest_Func(int argc, char * argv[], bool headers)
 
   // write out the array2D object
   using WriterType = itk::CSVNumericObjectFileWriter<double, ARows, ACols>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   if (argc < 2)
   {
@@ -134,7 +134,7 @@ itkCSVFileReaderWriterTest_Func(int argc, char * argv[], bool headers)
   }
 
   using ReaderType = itk::CSVArray2DFileReader<double>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(filename);
   reader->SetFieldDelimiterCharacter(',');
   reader->SetStringDelimiterCharacter('"');

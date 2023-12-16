@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ namespace itk
 {
 
 /**
- *\class PeakSignalToNoiseRatioCalculator
+ * \class PeakSignalToNoiseRatioCalculator
  * \brief Compute the PSNR of a noisy image
  *
  * \todo This class needs to be refactored and made into a proper
@@ -37,7 +37,7 @@ template <class TInputImage>
 class ITK_TEMPLATE_EXPORT PeakSignalToNoiseRatioCalculator : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PeakSignalToNoiseRatioCalculator);
+  ITK_DISALLOW_COPY_AND_MOVE(PeakSignalToNoiseRatioCalculator);
 
   /** Standard class type aliases. */
   using Self = PeakSignalToNoiseRatioCalculator;

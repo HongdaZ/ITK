@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class CacheableScalarFunction
+ * \class CacheableScalarFunction
  * \brief function cache implementation
  *
  * This is the base class for continuous scalar functions which
@@ -125,7 +125,7 @@ public:
       throw ExceptionObject(__FILE__, __LINE__);
     }
     // access table
-    auto index = (int)((x - m_CacheLowerBound) / m_TableInc);
+    auto index = static_cast<int>((x - m_CacheLowerBound) / m_TableInc);
     return m_CacheTable[index];
   }
 

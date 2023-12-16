@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -127,7 +127,7 @@ ParticleSwarmOptimizerSAXWriter::WriteFile()
     // Note: The data-cast to unsigned int is required
     //       because itk::Array only supports 'unsigned int' number of
     //       elements.
-    for (unsigned int i = 0; i < ptols.GetSize(); i++)
+    for (unsigned int i = 0; i < ptols.GetSize(); ++i)
     {
       ofs << " " << ptols[i];
     }

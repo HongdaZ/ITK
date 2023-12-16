@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class KLMSegmentationRegion
+ * \class KLMSegmentationRegion
  * \brief Base class for KLMSegmentationRegion object
  *
  * itkKLMSegmentationRegion is the base class for the KLMSegmentationRegion
@@ -93,7 +93,7 @@ class ITK_FORWARD_EXPORT KLMSegmentationBorder;
 class ITKKLMRegionGrowing_EXPORT KLMSegmentationRegion : public SegmentationRegion
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(KLMSegmentationRegion);
+  ITK_DISALLOW_COPY_AND_MOVE(KLMSegmentationRegion);
 
   /** Standard class type aliases. */
   using Self = KLMSegmentationRegion;
@@ -147,8 +147,8 @@ public:
   GetRegionBorderSize() const;
 
   /** Set/Get the mean pixel intensity in the region. */
-  itkSetMacro(MeanRegionIntensity, MeanRegionIntensityType)
-    itkGetConstReferenceMacro(MeanRegionIntensity, MeanRegionIntensityType);
+  itkSetMacro(MeanRegionIntensity, MeanRegionIntensityType);
+  itkGetConstReferenceMacro(MeanRegionIntensity, MeanRegionIntensityType);
 
   /** Set the region with parameter values
    * defining the region. */
@@ -174,7 +174,7 @@ public:
 
   /** Insert a region border into the border list at a given location. */
   void
-  InsertRegionBorder(RegionBorderVectorIterator it, KLMSegmentationBorder * pBorderCandidate);
+  InsertRegionBorder(RegionBorderVectorIterator RegionBorderVectorIt, KLMSegmentationBorder * pBorderCandidate);
 
   /** Delete a region border from the border list. */
   void

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,7 @@ namespace itk
 namespace Functor
 {
 /**
- *\class SimilarVectorsFunctor
+ * \class SimilarVectorsFunctor
  *
  *  \brief A connected components filter that labels the
  *         objects in a vector image.  Two vectors are pointing
@@ -67,16 +67,12 @@ public:
   }
 
   bool
-  operator!=(const SimilarVectorsFunctor &) const
+  operator==(const SimilarVectorsFunctor &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const SimilarVectorsFunctor & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(SimilarVectorsFunctor);
 
   bool
   operator()(const TInput & a, const TInput & b) const
@@ -96,7 +92,7 @@ protected:
 } // end namespace Functor
 
 /**
- *\class VectorConnectedComponentImageFilter
+ * \class VectorConnectedComponentImageFilter
  *
  *  \brief A connected components filter that labels the
  *         objects in a vector image.  Two vectors are pointing
@@ -113,7 +109,7 @@ class VectorConnectedComponentImageFilter
                                                 TMaskImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VectorConnectedComponentImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(VectorConnectedComponentImageFilter);
 
   /** Standard class type aliases. */
   using Self = VectorConnectedComponentImageFilter;

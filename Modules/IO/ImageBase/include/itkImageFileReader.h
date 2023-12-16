@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,7 +45,7 @@ namespace itk
  * filter. If data stored in the file is stored in a different format
  * then specified by TOutputImage, than this filter converts data
  * between the file type and the external expected type.  The
- * ConvertTraits template argument is used to do the conversion.
+ * `ConvertPixelTraits` template parameter is used to do the conversion.
  *
  * A Pluggable factory pattern is used this allows different kinds of readers
  * to be registered (even at run time) without having to modify the
@@ -75,7 +75,7 @@ template <typename TOutputImage,
 class ITK_TEMPLATE_EXPORT ImageFileReader : public ImageSource<TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageFileReader);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageFileReader);
 
   /** Standard class type aliases. */
   using Self = ImageFileReader;
@@ -126,7 +126,7 @@ protected:
 
   /** Convert a block of pixels from one type to another. */
   void
-  DoConvertBuffer(void * buffer, size_t numberOfPixels);
+  DoConvertBuffer(void * inputData, size_t numberOfPixels);
 
   /** Test whether the given filename exist and it is readable, this
    * is intended to be called before attempting to use  ImageIO
@@ -167,13 +167,36 @@ private:
   // produce the requested region.
   ImageIORegion m_ActualIORegion;
 };
+
+
+/** Convenience function for reading an image.
+ *
+ * `TOutputImage` is the expected output image type, and the optional
+ * `ConvertPixelTraits` template parameter is used to do the conversion,
+ * as specified by ImageFileReader.
+ *
+ * The function reads the image from the specified file, and returns the
+ * image that it has read.
+ * */
+template <typename TOutputImage,
+          typename ConvertPixelTraits = DefaultConvertPixelTraits<typename TOutputImage::IOPixelType>>
+typename TOutputImage::Pointer
+ReadImage(const std::string & filename)
+{
+  const auto reader = ImageFileReader<TOutputImage, ConvertPixelTraits>::New();
+  reader->SetFileName(filename);
+  reader->Update();
+  return reader->GetOutput();
+}
+
+
 } // namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkImageFileReader.hxx"
 #endif
 
-#ifdef ITK_IO_FACTORY_REGISTER_MANAGER
+#if defined ITK_IMAGEIO_FACTORY_REGISTER_MANAGER || defined ITK_IO_FACTORY_REGISTER_MANAGER
 #  include "itkImageIOFactoryRegisterManager.h"
 #endif
 

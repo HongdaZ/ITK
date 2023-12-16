@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkHistogramImageToImageMetric_hxx
 
 #include "itkArray.h"
-#include "itkHistogramImageToImageMetric.h"
 #include "itkNumericTraits.h"
 #include "itkImageRegionConstIterator.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
@@ -29,8 +28,6 @@ namespace itk
 template <typename TFixedImage, typename TMovingImage>
 HistogramImageToImageMetric<TFixedImage, TMovingImage>::HistogramImageToImageMetric()
 {
-  itkDebugMacro("Constructor");
-
   m_HistogramSize.Fill(256);
   m_UsePaddingValue = false;
   m_DerivativeStepLength = 0.1;
@@ -53,8 +50,8 @@ HistogramImageToImageMetric<TFixedImage, TMovingImage>::SetUpperBound(const Meas
 }
 
 template <typename TFixedImage, typename TMovingImage>
-const typename HistogramImageToImageMetric<TFixedImage, TMovingImage>::MeasurementVectorType &
-HistogramImageToImageMetric<TFixedImage, TMovingImage>::GetUpperBound() const
+auto
+HistogramImageToImageMetric<TFixedImage, TMovingImage>::GetUpperBound() const -> const MeasurementVectorType &
 {
   return m_UpperBound;
 }
@@ -69,8 +66,8 @@ HistogramImageToImageMetric<TFixedImage, TMovingImage>::SetLowerBound(const Meas
 }
 
 template <typename TFixedImage, typename TMovingImage>
-const typename HistogramImageToImageMetric<TFixedImage, TMovingImage>::MeasurementVectorType &
-HistogramImageToImageMetric<TFixedImage, TMovingImage>::GetLowerBound() const
+auto
+HistogramImageToImageMetric<TFixedImage, TMovingImage>::GetLowerBound() const -> const MeasurementVectorType &
 {
   return m_LowerBound;
 }
@@ -167,8 +164,9 @@ HistogramImageToImageMetric<TFixedImage, TMovingImage>::SetTransform(TransformTy
 }
 
 template <typename TFixedImage, typename TMovingImage>
-typename HistogramImageToImageMetric<TFixedImage, TMovingImage>::MeasureType
+auto
 HistogramImageToImageMetric<TFixedImage, TMovingImage>::GetValue(const TransformParametersType & parameters) const
+  -> MeasureType
 {
   itkDebugMacro("GetValue( " << parameters << " ) ");
 
@@ -197,13 +195,13 @@ HistogramImageToImageMetric<TFixedImage, TMovingImage>::GetDerivative(const Tran
   derivative = DerivativeType(ParametersDimension);
   derivative.Fill(NumericTraits<typename DerivativeType::ValueType>::ZeroValue());
 
-  typename HistogramType::Pointer pHistogram = HistogramType::New();
+  auto pHistogram = HistogramType::New();
   pHistogram->SetMeasurementVectorSize(2);
   this->ComputeHistogram(parameters, *pHistogram);
 
-  for (unsigned int i = 0; i < ParametersDimension; i++)
+  for (unsigned int i = 0; i < ParametersDimension; ++i)
   {
-    typename HistogramType::Pointer pHistogram2 = HistogramType::New();
+    auto pHistogram2 = HistogramType::New();
     pHistogram2->SetMeasurementVectorSize(2);
     this->CopyHistogram(*pHistogram2, *pHistogram);
 
@@ -328,12 +326,12 @@ HistogramImageToImageMetric<TFixedImage, TMovingImage>::CopyHistogram(HistogramT
 
   typename HistogramType::SizeType size = source.GetSize();
 
-  for (unsigned int i = 0; i < min.Size(); i++)
+  for (unsigned int i = 0; i < min.Size(); ++i)
   {
     min[i] = source.GetBinMin(i, 0);
   }
 
-  for (unsigned int i = 0; i < max.Size(); i++)
+  for (unsigned int i = 0; i < max.Size(); ++i)
   {
     max[i] = source.GetBinMax(i, size[i] - 1);
   }

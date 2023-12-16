@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class ConjugateGradientLineSearchOptimizerv4Template
+ * \class ConjugateGradientLineSearchOptimizerv4Template
  *  \brief Conjugate gradient descent optimizer with a golden section line search for nonlinear optimization.
  *
  * ConjugateGradientLineSearchOptimizer implements a conjugate gradient descent optimizer
@@ -49,7 +49,7 @@ class ITK_TEMPLATE_EXPORT ConjugateGradientLineSearchOptimizerv4Template
   : public GradientDescentLineSearchOptimizerv4Template<TInternalComputationValueType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientLineSearchOptimizerv4Template);
+  ITK_DISALLOW_COPY_AND_MOVE(ConjugateGradientLineSearchOptimizerv4Template);
 
   /** Standard class type aliases. */
   using Self = ConjugateGradientLineSearchOptimizerv4Template;
@@ -67,10 +67,10 @@ public:
   using InternalComputationValueType = TInternalComputationValueType;
 
   /** Derivative type */
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeType;
 
   /** Metric type over which this class is templated */
-  using MeasureType = typename Superclass::MeasureType;
+  using typename Superclass::MeasureType;
 
   /** Type for the convergence checker */
   using ConvergenceMonitoringType = itk::Function::WindowConvergenceMonitoringFunction<TInternalComputationValueType>;

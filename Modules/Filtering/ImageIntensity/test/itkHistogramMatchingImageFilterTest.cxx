@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include <iomanip>
 #include "itkHistogramMatchingImageFilter.h"
 #include "itkCommand.h"
+#include "itkTestingMacros.h"
 
 /**
  * This file tests the functionality of the HistogramMatchingImageFilter.
@@ -73,7 +74,7 @@ srcPattern(unsigned long offset)
 namespace
 {
 
-// The following classe is used to support callbacks
+// The following class is used to support callbacks
 // on the filter in the pipeline that follows later
 class ShowProgressObject
 {
@@ -168,8 +169,8 @@ itkHistogramMatchingImageFilterTest()
   typename ImageType::RegionType region;
   region.SetSize(size);
 
-  typename ImageType::Pointer reference = ImageType::New();
-  typename ImageType::Pointer source = ImageType::New();
+  auto reference = ImageType::New();
+  auto source = ImageType::New();
 
   reference->SetLargestPossibleRegion(region);
   reference->SetBufferedRegion(region);
@@ -205,15 +206,32 @@ itkHistogramMatchingImageFilterTest()
   using FilterType = itk::HistogramMatchingImageFilter<ImageType, ImageType>;
   typename FilterType::HistogramType::ConstPointer refHistogram = nullptr;
 
+
   // Test with historical reference image input, and then capture the histogram as cached
   // value for other tests
   {
-    typename FilterType::Pointer filterWithReferenceImage = FilterType::New();
+    auto filterWithReferenceImage = FilterType::New();
+
+    ITK_EXERCISE_BASIC_OBJECT_METHODS(filterWithReferenceImage, HistogramMatchingImageFilter, ImageToImageFilter);
+
+
+    bool generateReferenceHistogramFromImage = true;
+    ITK_TEST_SET_GET_BOOLEAN(
+      filterWithReferenceImage, GenerateReferenceHistogramFromImage, generateReferenceHistogramFromImage);
 
     filterWithReferenceImage->SetReferenceImage(reference);
+    ITK_TEST_SET_GET_VALUE(reference, filterWithReferenceImage->GetReferenceImage());
+
     filterWithReferenceImage->SetSourceImage(source);
-    filterWithReferenceImage->SetNumberOfHistogramLevels(50);
-    filterWithReferenceImage->SetNumberOfMatchPoints(8);
+    ITK_TEST_SET_GET_VALUE(source, filterWithReferenceImage->GetSourceImage());
+
+    itk::SizeValueType numberOfHistogramLevels = 50;
+    filterWithReferenceImage->SetNumberOfHistogramLevels(numberOfHistogramLevels);
+    ITK_TEST_SET_GET_VALUE(numberOfHistogramLevels, filterWithReferenceImage->GetNumberOfHistogramLevels());
+
+    itk::SizeValueType numberOfMatchPoints = 8;
+    filterWithReferenceImage->SetNumberOfMatchPoints(numberOfMatchPoints);
+    ITK_TEST_SET_GET_VALUE(numberOfMatchPoints, filterWithReferenceImage->GetNumberOfMatchPoints());
 
     ShowProgressObject                                    progressWatch(filterWithReferenceImage);
     itk::SimpleMemberCommand<ShowProgressObject>::Pointer command;
@@ -223,28 +241,24 @@ itkHistogramMatchingImageFilterTest()
 
     {
       // Exercise and test with ThresholdAtMeanIntensityOff
-      filterWithReferenceImage->ThresholdAtMeanIntensityOff();
+      bool thresholdAtMeanIntensity = false;
+      ITK_TEST_SET_GET_BOOLEAN(filterWithReferenceImage, ThresholdAtMeanIntensity, thresholdAtMeanIntensity);
+
       filterWithReferenceImage->Update();
-      filterWithReferenceImage->Print(std::cout);
     }
     {
       // Exercise auxiliary functions
       std::cout << "Exercise auxiliary functions" << std::endl;
-      std::cout << filterWithReferenceImage->GetNumberOfHistogramLevels() << std::endl;
-      std::cout << filterWithReferenceImage->GetNumberOfMatchPoints() << std::endl;
 
       std::cout << "Source Histogram: " << filterWithReferenceImage->GetSourceHistogram() << std::endl;
-      std::cout << "Reference Histogram: " << filterWithReferenceImage->GetReferenceHistogram() << std::endl;
       std::cout << "Output Histogram: " << filterWithReferenceImage->GetOutputHistogram() << std::endl;
-
-      std::cout << "Threshold At Mean Intensity? ";
-      std::cout << filterWithReferenceImage->GetThresholdAtMeanIntensity() << std::endl;
     }
     {
       // Exercise and test with ThresholdAtMeanIntensityOn
-      filterWithReferenceImage->ThresholdAtMeanIntensityOn();
+      bool thresholdAtMeanIntensity = true;
+      ITK_TEST_SET_GET_BOOLEAN(filterWithReferenceImage, ThresholdAtMeanIntensity, thresholdAtMeanIntensity);
+
       filterWithReferenceImage->Update();
-      filterWithReferenceImage->Print(std::cout);
 
       // Walk the output and compare with reference
       Iterator outIter(filterWithReferenceImage->GetOutput(), region);
@@ -261,9 +275,11 @@ itkHistogramMatchingImageFilterTest()
   std::cout << "===================================================================================" << std::endl;
   {
     // Test SourceHistogram same size (50) as ReferenceHistogram
-    typename FilterType::Pointer filterWithSameSizeHistogram = FilterType::New();
+    auto filterWithSameSizeHistogram = FilterType::New();
 
     filterWithSameSizeHistogram->SetReferenceHistogram(refHistogram);
+    ITK_TEST_SET_GET_VALUE(refHistogram, filterWithSameSizeHistogram->GetReferenceHistogram());
+
     filterWithSameSizeHistogram->GenerateReferenceHistogramFromImageOff();
     filterWithSameSizeHistogram->SetSourceImage(source);
     filterWithSameSizeHistogram->SetNumberOfHistogramLevels(50);
@@ -278,7 +294,6 @@ itkHistogramMatchingImageFilterTest()
 
     filterWithSameSizeHistogram->ThresholdAtMeanIntensityOn();
     filterWithSameSizeHistogram->Update();
-    filterWithSameSizeHistogram->Print(std::cout);
 
     // Walk the output and compare with reference
     Iterator outIter(filterWithSameSizeHistogram->GetOutput(), region);
@@ -288,7 +303,7 @@ itkHistogramMatchingImageFilterTest()
   }
   // Test SourceHistogram smaller than (31) ReferenceHistogram
   {
-    typename FilterType::Pointer filterWithSmallerHistogram = FilterType::New();
+    auto filterWithSmallerHistogram = FilterType::New();
 
     filterWithSmallerHistogram->SetReferenceHistogram(refHistogram);
     filterWithSmallerHistogram->SetGenerateReferenceHistogramFromImage(false);
@@ -305,7 +320,6 @@ itkHistogramMatchingImageFilterTest()
 
     filterWithSmallerHistogram->ThresholdAtMeanIntensityOn();
     filterWithSmallerHistogram->Update();
-    filterWithSmallerHistogram->Print(std::cout);
 
     // Walk the output and compare with reference
     Iterator outIter(filterWithSmallerHistogram->GetOutput(), region);
@@ -316,7 +330,7 @@ itkHistogramMatchingImageFilterTest()
 
   // Test SourceHistogram larger than (93) ReferenceHistogram
   {
-    typename FilterType::Pointer filterWithLargerHistogram = FilterType::New();
+    auto filterWithLargerHistogram = FilterType::New();
 
     filterWithLargerHistogram->SetReferenceHistogram(refHistogram);
     filterWithLargerHistogram->SetGenerateReferenceHistogramFromImage(false);
@@ -333,7 +347,6 @@ itkHistogramMatchingImageFilterTest()
 
     filterWithLargerHistogram->ThresholdAtMeanIntensityOn();
     filterWithLargerHistogram->Update();
-    filterWithLargerHistogram->Print(std::cout);
 
     // Walk the output and compare with reference
     Iterator outIter(filterWithLargerHistogram->GetOutput(), region);
@@ -344,7 +357,7 @@ itkHistogramMatchingImageFilterTest()
 
   // Incorrect input setting failures for ReferenceHistogram
   {
-    typename FilterType::Pointer mismatchReferenceChoice = FilterType::New();
+    auto mismatchReferenceChoice = FilterType::New();
     try
     {
       mismatchReferenceChoice->SetReferenceHistogram(refHistogram);
@@ -358,14 +371,14 @@ itkHistogramMatchingImageFilterTest()
         << "ERROR: Reached code that should have aborted due to thrown exception of missing ReferenceHistogram\n"
         << __FILE__ << ":" << __LINE__ << std::endl;
     }
-    catch (itk::ExceptionObject &)
+    catch (const itk::ExceptionObject &)
     {
       std::cout << "Test caught known exception for SetReferenceHistogram correctly, NO FAILURE!" << std::endl;
     }
   }
   // Incorrect input setting failures for ReferenceImage
   {
-    typename FilterType::Pointer mismatchReferenceChoice = FilterType::New();
+    auto mismatchReferenceChoice = FilterType::New();
     try
     {
       mismatchReferenceChoice->SetReferenceImage(reference);
@@ -378,7 +391,7 @@ itkHistogramMatchingImageFilterTest()
       std::cout << "ERROR: Reached code that should have aborted due to thrown exception of missing ReferenceImage\n"
                 << __FILE__ << ":" << __LINE__ << std::endl;
     }
-    catch (itk::ExceptionObject &)
+    catch (const itk::ExceptionObject &)
     {
       std::cout << "Test caught known exception for SetReferenceImage correctly, NO FAILURE!" << std::endl;
     }

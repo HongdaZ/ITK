@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@
 namespace itk
 {
 /**
- *\class BSplineResampleImageFilterBase
+ * \class BSplineResampleImageFilterBase
  *  \brief Uses the "l2" spline pyramid implementation of B-Spline Filters to
  *        up/down sample an image by a factor of 2.
  *
@@ -83,7 +83,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT BSplineResampleImageFilterBase : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BSplineResampleImageFilterBase);
+  ITK_DISALLOW_COPY_AND_MOVE(BSplineResampleImageFilterBase);
 
   /** Standard class type aliases. */
   using Self = BSplineResampleImageFilterBase;
@@ -98,7 +98,7 @@ public:
   //  Must be instantiated through another class. itkNewMacro( Self );
 
   /** InputInputImage type alias support */
-  using InputImageType = typename Superclass::InputImageType;
+  using typename Superclass::InputImageType;
 
   /** Dimension underlying input image. */
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
@@ -113,7 +113,7 @@ public:
   using RegionType = typename TInputImage::RegionType;
 
   /** OutputImagePixelType type alias support */
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  using typename Superclass::OutputImagePixelType;
 
   /** Iterator type alias support */
   using ConstInputImageIterator = itk::ImageLinearConstIteratorWithIndex<TInputImage>;
@@ -127,7 +127,7 @@ public:
   /** Set the spline order for interpolation.  Value must be between 0 and 3 with a
    * default of 0. */
   void
-  SetSplineOrder(int SplineOrder);
+  SetSplineOrder(int splineOrder);
 
   /** Get the spline order */
   itkGetConstMacro(SplineOrder, int);
@@ -135,11 +135,11 @@ public:
 protected:
   /** Reduces an N-dimension image by a factor of 2 in each dimension. */
   void
-  ReduceNDImage(OutputImageIterator & OutItr);
+  ReduceNDImage(OutputImageIterator & outItr);
 
   /** Expands an N-dimension image by a factor of 2 in each dimension. */
   void
-  ExpandNDImage(OutputImageIterator & OutItr);
+  ExpandNDImage(OutputImageIterator & outItr);
 
   /** Initializes the pyramid spline coefficients.  Called when Spline order
    *   has been set. */
@@ -148,16 +148,16 @@ protected:
 
   /** The basic operator for reducing a line of data by a factor of 2 */
   virtual void
-  Reduce1DImage(const std::vector<double> & In,
-                OutputImageIterator &       Iter,
-                unsigned int                traverseSize,
+  Reduce1DImage(const std::vector<double> & in,
+                OutputImageIterator &       out,
+                unsigned int                inTraverseSize,
                 ProgressReporter &          progress);
 
   /** The basic operator for expanding a line of data by a factor of 2 */
   virtual void
-  Expand1DImage(const std::vector<double> & In,
-                OutputImageIterator &       Iter,
-                unsigned int                traverseSize,
+  Expand1DImage(const std::vector<double> & in,
+                OutputImageIterator &       out,
+                unsigned int                inTraverseSize,
                 ProgressReporter &          progress);
 
   BSplineResampleImageFilterBase();

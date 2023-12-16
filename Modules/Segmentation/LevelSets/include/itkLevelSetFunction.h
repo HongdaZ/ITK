@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,7 +66,7 @@ template <typename TImageType>
 class ITK_TEMPLATE_EXPORT LevelSetFunction : public FiniteDifferenceFunction<TImageType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(LevelSetFunction);
 
   /** Standard class type aliases. */
   using Self = LevelSetFunction;
@@ -85,14 +85,14 @@ public:
 
   /** Convenient type alias. */
   using TimeStepType = double;
-  using ImageType = typename Superclass::ImageType;
-  using PixelType = typename Superclass::PixelType;
+  using typename Superclass::ImageType;
+  using typename Superclass::PixelType;
   using ScalarValueType = PixelType;
-  using PixelRealType = typename Superclass::PixelRealType;
-  using RadiusType = typename Superclass::RadiusType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
-  using NeighborhoodScalesType = typename Superclass::NeighborhoodScalesType;
-  using FloatOffsetType = typename Superclass::FloatOffsetType;
+  using typename Superclass::PixelRealType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::NeighborhoodType;
+  using typename Superclass::NeighborhoodScalesType;
+  using typename Superclass::FloatOffsetType;
 
   /** The vector type that will be used in the calculations. */
   //  typedef
@@ -214,7 +214,7 @@ public:
 
   /** Compute the equation value. */
   PixelType
-  ComputeUpdate(const NeighborhoodType & neighborhood,
+  ComputeUpdate(const NeighborhoodType & it,
                 void *                   globalData,
                 const FloatOffsetType & = FloatOffsetType(0.0)) override;
 
@@ -342,7 +342,7 @@ protected:
 
   ~LevelSetFunction() override = default;
   void
-  PrintSelf(std::ostream & s, Indent indent) const override;
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
   /** Constants used in the time step calculation. */
   static double m_WaveDT;

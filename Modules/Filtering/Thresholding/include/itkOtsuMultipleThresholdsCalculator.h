@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class OtsuMultipleThresholdsCalculator
+ * \class OtsuMultipleThresholdsCalculator
  * \brief Computes Otsu's multiple thresholds for a histogram.
  *
  * You plug in the target histogram using SetInputHistogram method and
@@ -109,8 +109,8 @@ protected:
 
   /** Increment the thresholds of one position along the histogram. */
   bool
-  IncrementThresholds(InstanceIdentifierVectorType & thresholdIds,
-                      MeanType                       totalMean,
+  IncrementThresholds(InstanceIdentifierVectorType & thresholdIndexes,
+                      MeanType                       globalMean,
                       MeanVectorType &               classMean,
                       FrequencyVectorType &          classFrequency);
 

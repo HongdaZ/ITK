@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,17 +24,16 @@ namespace itk
 template <>
 std::ostream & operator<<<double>(std::ostream & os, const Array<double> & arr)
 {
-  NumberToString<double> convert;
   os << "[";
-  const std::size_t length = arr.size();
+  const size_t length = arr.size();
   if (length >= 1)
   {
-    const std::size_t last = length - 1;
-    for (std::size_t i = 0; i < last; ++i)
+    const size_t last = length - 1;
+    for (size_t i = 0; i < last; ++i)
     {
-      os << convert(arr[i]) << ", ";
+      os << ConvertNumberToString(arr[i]) << ", ";
     }
-    os << convert(arr[last]);
+    os << ConvertNumberToString(arr[last]);
   }
   os << "]";
   return os;
@@ -43,17 +42,16 @@ std::ostream & operator<<<double>(std::ostream & os, const Array<double> & arr)
 template <>
 std::ostream & operator<<<float>(std::ostream & os, const Array<float> & arr)
 {
-  NumberToString<float> convert;
   os << "[";
-  const std::size_t length = arr.size();
+  const size_t length = arr.size();
   if (length >= 1)
   {
-    const std::size_t last = length - 1;
-    for (std::size_t i = 0; i < last; ++i)
+    const size_t last = length - 1;
+    for (size_t i = 0; i < last; ++i)
     {
-      os << convert(static_cast<float>(arr[i])) << ", ";
+      os << ConvertNumberToString(arr[i]) << ", ";
     }
-    os << convert(static_cast<float>(arr[last]));
+    os << ConvertNumberToString(arr[last]);
   }
   os << "]";
   return os;
@@ -62,9 +60,8 @@ std::ostream & operator<<<float>(std::ostream & os, const Array<float> & arr)
 template <>
 std::ostream & operator<<<double>(std::ostream & os, const Array2D<double> & arr)
 {
-  NumberToString<double> convert;
-  const unsigned int     numberOfRows = arr.rows();
-  const unsigned int     numberOfColumns = arr.cols();
+  const unsigned int numberOfRows = arr.rows();
+  const unsigned int numberOfColumns = arr.cols();
 
   for (unsigned int r = 0; r < numberOfRows; ++r)
   {
@@ -74,9 +71,9 @@ std::ostream & operator<<<double>(std::ostream & os, const Array2D<double> & arr
       const unsigned int lastColumn = numberOfColumns - 1;
       for (unsigned int c = 0; c < lastColumn; ++c)
       {
-        os << convert(arr(r, c)) << ", ";
+        os << ConvertNumberToString(arr(r, c)) << ", ";
       }
-      os << convert(arr(r, lastColumn));
+      os << ConvertNumberToString(arr(r, lastColumn));
     }
     os << "]" << std::endl;
   }
@@ -87,9 +84,8 @@ std::ostream & operator<<<double>(std::ostream & os, const Array2D<double> & arr
 template <>
 std::ostream & operator<<<float>(std::ostream & os, const Array2D<float> & arr)
 {
-  NumberToString<float> convert;
-  const unsigned int    numberOfRows = arr.rows();
-  const unsigned int    numberOfColumns = arr.cols();
+  const unsigned int numberOfRows = arr.rows();
+  const unsigned int numberOfColumns = arr.cols();
 
   for (unsigned int r = 0; r < numberOfRows; ++r)
   {
@@ -99,9 +95,9 @@ std::ostream & operator<<<float>(std::ostream & os, const Array2D<float> & arr)
       const unsigned int lastColumn = numberOfColumns - 1;
       for (unsigned int c = 0; c < lastColumn; ++c)
       {
-        os << convert(arr(r, c)) << ", ";
+        os << ConvertNumberToString(arr(r, c)) << ", ";
       }
-      os << convert(arr(r, lastColumn));
+      os << ConvertNumberToString(arr(r, lastColumn));
     }
     os << "]" << std::endl;
   }

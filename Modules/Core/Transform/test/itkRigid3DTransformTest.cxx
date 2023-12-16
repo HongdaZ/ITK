@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -71,7 +71,7 @@ TestSettingTranslation()
 
   using TransformType = itk::Rigid3DTransformSurrogate<double>;
 
-  TransformType::Pointer r1 = TransformType::New();
+  auto r1 = TransformType::New();
   // r1->SetIdentity();
   r1->SetMatrix(R);
   r1->Translate(T);
@@ -80,13 +80,13 @@ TestSettingTranslation()
   p1.set_size(12);
   p1 = r1->GetParameters();
 
-  TransformType::Pointer        r2 = TransformType::New();
+  auto                          r2 = TransformType::New();
   TransformType::ParametersType p2;
 
   p2.set_size(12);
-  for (int r = 0; r < 3; r++)
+  for (int r = 0; r < 3; ++r)
   {
-    for (int c = 0; c < 3; c++)
+    for (int c = 0; c < 3; ++c)
     {
       p2[r * 3 + c] = R[r][c];
     }
@@ -95,7 +95,7 @@ TestSettingTranslation()
   p2[10] = T[1];
   p2[11] = T[2];
   r2->SetParameters(p2);
-  TransformType::Pointer r3 = TransformType::New();
+  auto r3 = TransformType::New();
   r3->SetFixedParameters(r1->GetFixedParameters());
   r3->SetParameters(r1->GetParameters());
 
@@ -133,14 +133,14 @@ itkRigid3DTransformTest(int, char *[])
 
   /* Create a 3D identity transformation and show its parameters */
   {
-    TransformType::Pointer    identityTransform = TransformType::New();
+    auto                      identityTransform = TransformType::New();
     TransformType::OffsetType offset = identityTransform->GetOffset();
     std::cout << "Vector from instantiating an identity transform:  ";
     std::cout << offset << std::endl;
 
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
-      if (std::fabs(offset[i] - 0.0) > epsilon)
+      if (itk::Math::abs(offset[i] - 0.0) > epsilon)
       {
         Ok = false;
         break;
@@ -155,7 +155,7 @@ itkRigid3DTransformTest(int, char *[])
 
   /* Create a Rigid 3D transform with translation */
   {
-    TransformType::Pointer               translation = TransformType::New();
+    auto                                 translation = TransformType::New();
     TransformType::OffsetType::ValueType ioffsetInit[3] = { 1, 4, 9 };
     TransformType::OffsetType            ioffset = ioffsetInit;
 
@@ -165,9 +165,9 @@ itkRigid3DTransformTest(int, char *[])
     std::cout << "pure Translation test:  ";
     std::cout << offset << std::endl;
 
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
-      if (std::fabs(offset[i] - ioffset[i]) > epsilon)
+      if (itk::Math::abs(offset[i] - ioffset[i]) > epsilon)
       {
         Ok = false;
         break;
@@ -187,9 +187,9 @@ itkRigid3DTransformTest(int, char *[])
       q = p + ioffset;
       TransformType::OutputPointType r;
       r = translation->TransformPoint(p);
-      for (unsigned int i = 0; i < N; i++)
+      for (unsigned int i = 0; i < N; ++i)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if (itk::Math::abs(q[i] - r[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -214,9 +214,9 @@ itkRigid3DTransformTest(int, char *[])
       TransformType::InputVectorType            p = pInit;
       TransformType::OutputVectorType           q;
       q = translation->TransformVector(p);
-      for (unsigned int i = 0; i < N; i++)
+      for (unsigned int i = 0; i < N; ++i)
       {
-        if (std::fabs(q[i] - p[i]) > epsilon)
+        if (itk::Math::abs(q[i] - p[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -240,9 +240,9 @@ itkRigid3DTransformTest(int, char *[])
       TransformType::InputCovariantVectorType            p = pInit;
       TransformType::OutputCovariantVectorType           q;
       q = translation->TransformCovariantVector(p);
-      for (unsigned int i = 0; i < N; i++)
+      for (unsigned int i = 0; i < N; ++i)
       {
-        if (std::fabs(q[i] - p[i]) > epsilon)
+        if (itk::Math::abs(q[i] - p[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -268,9 +268,9 @@ itkRigid3DTransformTest(int, char *[])
       p[2] = 15;
       TransformType::OutputVnlVectorType q;
       q = translation->TransformVector(p);
-      for (unsigned int i = 0; i < N; i++)
+      for (unsigned int i = 0; i < N; ++i)
       {
-        if (std::fabs(q[i] - p[i]) > epsilon)
+        if (itk::Math::abs(q[i] - p[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -291,7 +291,7 @@ itkRigid3DTransformTest(int, char *[])
 
   /* Create a Rigid 3D transform with a rotation given by a Matrix */
   {
-    TransformType::Pointer    rotation = TransformType::New();
+    auto                      rotation = TransformType::New();
     TransformType::MatrixType mrotation;
 
     mrotation.SetIdentity();
@@ -319,9 +319,9 @@ itkRigid3DTransformTest(int, char *[])
     std::cout << "pure Rotation test:  " << std::endl;
     std::cout << "Offset = " << offset << std::endl;
 
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
-      if (std::fabs(offset[i] - ioffset[i]) > epsilon)
+      if (itk::Math::abs(offset[i] - ioffset[i]) > epsilon)
       {
         Ok = false;
         break;
@@ -338,11 +338,11 @@ itkRigid3DTransformTest(int, char *[])
     std::cout << "Rotation matrix:  " << std::endl;
     std::cout << matrix0 << std::endl;
 
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
-      for (unsigned int j = 0; j < N; j++)
+      for (unsigned int j = 0; j < N; ++j)
       {
-        if (std::fabs(matrix0[i][j] - mrotation[i][j]) > epsilon)
+        if (itk::Math::abs(matrix0[i][j] - mrotation[i][j]) > epsilon)
         {
           Ok = false;
           break;
@@ -368,9 +368,9 @@ itkRigid3DTransformTest(int, char *[])
 
       TransformType::OutputPointType r;
       r = rotation->TransformPoint(p);
-      for (unsigned int i = 0; i < N; i++)
+      for (unsigned int i = 0; i < N; ++i)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if (itk::Math::abs(q[i] - r[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -401,9 +401,9 @@ itkRigid3DTransformTest(int, char *[])
 
       TransformType::OutputVectorType r;
       r = rotation->TransformVector(p);
-      for (unsigned int i = 0; i < N; i++)
+      for (unsigned int i = 0; i < N; ++i)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if (itk::Math::abs(q[i] - r[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -435,9 +435,9 @@ itkRigid3DTransformTest(int, char *[])
       TransformType::OutputCovariantVectorType r;
       r = rotation->TransformCovariantVector(p);
 
-      for (unsigned int i = 0; i < N; i++)
+      for (unsigned int i = 0; i < N; ++i)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if (itk::Math::abs(q[i] - r[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -471,9 +471,9 @@ itkRigid3DTransformTest(int, char *[])
 
       TransformType::OutputVnlVectorType r;
       r = rotation->TransformVector(p);
-      for (unsigned int i = 0; i < N; i++)
+      for (unsigned int i = 0; i < N; ++i)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if (itk::Math::abs(q[i] - r[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -497,11 +497,11 @@ itkRigid3DTransformTest(int, char *[])
       std::cout << "Testing SetParameters() ... ";
       unsigned int j;
 
-      TransformType::Pointer t = TransformType::New();
-      ParametersType         p(t->GetNumberOfParameters());
+      auto           t = TransformType::New();
+      ParametersType p(t->GetNumberOfParameters());
 
       // attempt to set an non-orthogonal matrix
-      for (j = 0; j < t->GetNumberOfParameters(); j++)
+      for (j = 0; j < t->GetNumberOfParameters(); ++j)
       {
         p[j] = static_cast<double>(j + 1);
         p[j] = itk::Math::sqr(p[j]);
@@ -541,9 +541,9 @@ itkRigid3DTransformTest(int, char *[])
       matrix[1][1] = std::cos(a);
 
       unsigned int par = 0;
-      for (unsigned int row = 0; row < 3; row++)
+      for (unsigned int row = 0; row < 3; ++row)
       {
-        for (unsigned int col = 0; col < 3; col++)
+        for (unsigned int col = 0; col < 3; ++col)
         {
           p[par] = matrix[row][col];
           ++par;
@@ -579,8 +579,8 @@ itkRigid3DTransformTest(int, char *[])
       // Testing SetIdentity()
       std::cout << "Testing SetIdentity() ... ";
 
-      TransformType::Pointer t = TransformType::New();
-      ParametersType         p(t->GetNumberOfParameters());
+      auto           t = TransformType::New();
+      ParametersType p(t->GetNumberOfParameters());
 
       t->SetIdentity();
       p = t->GetParameters();
@@ -593,7 +593,7 @@ itkRigid3DTransformTest(int, char *[])
       pIdeal[8] = 1.0;
 
       Ok = true;
-      for (unsigned int par = 0; par < t->GetNumberOfParameters(); par++)
+      for (unsigned int par = 0; par < t->GetNumberOfParameters(); ++par)
       {
         if (itk::Math::abs(p[par] - pIdeal[par]) > epsilon)
         {
@@ -621,13 +621,13 @@ itkRigid3DTransformTest(int, char *[])
       using MatrixType = TransformType::MatrixType;
       MatrixType matrix;
 
-      TransformType::Pointer t = TransformType::New();
+      auto t = TransformType::New();
 
       // attempt to set an non-orthogonal matrix
       par = 0;
-      for (unsigned int row = 0; row < 3; row++)
+      for (unsigned int row = 0; row < 3; ++row)
       {
-        for (unsigned int col = 0; col < 3; col++)
+        for (unsigned int col = 0; col < 3; ++col)
         {
           matrix[row][col] = static_cast<double>(par + 1);
           ++par;
@@ -711,7 +711,7 @@ itkRigid3DTransformTest(int, char *[])
       bool TranslationSettingOK = TestSettingTranslation();
       if (!TranslationSettingOK)
       {
-        std::cerr << "Error:  SetTranslation() did not result in consisent internal state for Rigid3DTransform."
+        std::cerr << "Error:  SetTranslation() did not result in consistent internal state for Rigid3DTransform."
                   << std::endl;
         return EXIT_FAILURE;
       }

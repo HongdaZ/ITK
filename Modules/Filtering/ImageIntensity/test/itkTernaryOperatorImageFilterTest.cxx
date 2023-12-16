@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,7 +73,7 @@ itkTernaryOperatorImageFilterTest(int, char *[])
   size.Fill(20);
   MaskImageType::RegionType region(origin, size);
 
-  MaskImageType::Pointer mask = MaskImageType::New();
+  auto mask = MaskImageType::New();
   mask->SetRegions(region);
   mask->Allocate();
   mask->FillBuffer(false);
@@ -87,29 +87,29 @@ itkTernaryOperatorImageFilterTest(int, char *[])
       maskIt.Set(true);
   }
 
-  constexpr short        val1 = 25;
-  GrayImageType::Pointer image1 = GrayImageType::New();
+  constexpr short val1 = 25;
+  auto            image1 = GrayImageType::New();
   image1->SetRegions(region);
   image1->Allocate();
   image1->FillBuffer(val1);
 
-  constexpr short        val2 = 123;
-  GrayImageType::Pointer image2 = GrayImageType::New();
+  constexpr short val2 = 123;
+  auto            image2 = GrayImageType::New();
   image2->SetRegions(region);
   image2->Allocate();
   image2->FillBuffer(val2);
 
   using TernaryType = itk::TernaryOperatorImageFilter<MaskImageType, GrayImageType>;
-  TernaryType::Pointer tern = TernaryType::New();
+  auto tern = TernaryType::New();
 
-  ITK_EXERCISE_BASIC_OBJECT_METHODS(tern, TernaryOperatorImageFilter, TernaryFunctorImageFilter);
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(tern, TernaryOperatorImageFilter, TernaryGeneratorImageFilter);
 
   tern->SetInput1(mask);
   tern->SetInput2(image1);
   tern->SetInput3(image2);
   tern->Update();
 
-  GrayImageType::Pointer output = GrayImageType::New();
+  auto output = GrayImageType::New();
   output->Graft(tern->GetOutput());
 
   // Even indices should be equal to val1 (the value of the second input)
@@ -126,6 +126,29 @@ itkTernaryOperatorImageFilterTest(int, char *[])
     if (outIt.GetIndex()[0] + outIt.GetIndex()[1] % 2 == 1 && outIt.Get() != val2)
     {
       std::cerr << "Error: Value should be " << val2 << " but was " << outIt.Get() << std::endl;
+      return EXIT_FAILURE;
+    }
+  }
+
+  tern->SetInput3(GrayImageType::Pointer(nullptr));
+  tern->SetConstant3(99);
+  tern->Update();
+
+  output = tern->GetOutput();
+
+  // Even indices should be equal to val1 (the value of the second input)
+  // Odd indices should be equal to 99
+  outIt = GrayItType(output, output->GetLargestPossibleRegion());
+  for (outIt.GoToBegin(); !outIt.IsAtEnd(); ++outIt)
+  {
+    if (outIt.GetIndex()[0] + outIt.GetIndex()[1] % 2 == 0 && outIt.Get() != val1)
+    {
+      std::cerr << "Error: Value should be " << val1 << " but was " << outIt.Get() << std::endl;
+      return EXIT_FAILURE;
+    }
+    if (outIt.GetIndex()[0] + outIt.GetIndex()[1] % 2 == 1 && outIt.Get() != 99)
+    {
+      std::cerr << "Error: Value should be " << 99 << " but was " << outIt.Get() << std::endl;
       return EXIT_FAILURE;
     }
   }

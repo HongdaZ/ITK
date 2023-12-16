@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,8 +40,8 @@ itkFilterImageAddTest(int, char *[])
   using myRegionType = itk::ImageRegion<myDimension>;
 
   // Create two images
-  myImageType1::Pointer inputImageA = myImageType1::New();
-  myImageType2::Pointer inputImageB = myImageType2::New();
+  auto inputImageA = myImageType1::New();
+  auto inputImageB = myImageType2::New();
 
   // Define their size, and start index
   mySizeType size;
@@ -59,15 +59,11 @@ itkFilterImageAddTest(int, char *[])
   region.SetSize(size);
 
   // Initialize Image A
-  inputImageA->SetLargestPossibleRegion(region);
-  inputImageA->SetBufferedRegion(region);
-  inputImageA->SetRequestedRegion(region);
+  inputImageA->SetRegions(region);
   inputImageA->Allocate();
 
   // Initialize Image B
-  inputImageB->SetLargestPossibleRegion(region);
-  inputImageB->SetBufferedRegion(region);
-  inputImageB->SetRequestedRegion(region);
+  inputImageB->SetRegions(region);
   inputImageB->Allocate();
 
 
@@ -105,7 +101,7 @@ itkFilterImageAddTest(int, char *[])
 
 
   // Create an ADD Filter
-  myFilterType::Pointer filter = myFilterType::New();
+  auto filter = myFilterType::New();
 
 
   // Connect the input images

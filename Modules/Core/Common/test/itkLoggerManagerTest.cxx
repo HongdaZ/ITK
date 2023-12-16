@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@
 #include "itkStdStreamLogOutput.h"
 #include "itkLoggerManager.h"
 #include "itkLogTester.h"
+#include "itkTestingMacros.h"
 
 
 int
@@ -43,6 +44,9 @@ itkLoggerManagerTest(int argc, char * argv[])
 
     // Create an ITK Loggers using itk::LoggerManager
     itk::LoggerManager::Pointer manager = itk::LoggerManager::New();
+
+    ITK_EXERCISE_BASIC_OBJECT_METHODS(manager, LoggerManager, Object);
+
 
     itk::Logger::Pointer logger = manager->CreateLogger("org.itk.logTester.logger",
                                                         itk::LoggerBase::PriorityLevelEnum::DEBUG,

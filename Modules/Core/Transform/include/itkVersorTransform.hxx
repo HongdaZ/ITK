@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkVersorTransform_hxx
 #define itkVersorTransform_hxx
 
-#include "itkVersorTransform.h"
 #include "itkMath.h"
 
 namespace itk
@@ -73,6 +72,7 @@ VersorTransform<TParametersValueType>::SetParameters(const ParametersType & para
   itkDebugMacro(<< "Versor is now " << m_Versor);
 
   this->ComputeMatrix();
+  this->ComputeOffset();
 
   // Modified is always called since we just have a pointer to the
   // parameters and cannot know if the parameters have changed.
@@ -83,8 +83,8 @@ VersorTransform<TParametersValueType>::SetParameters(const ParametersType & para
 
 /** Set Parameters */
 template <typename TParametersValueType>
-const typename VersorTransform<TParametersValueType>::ParametersType &
-VersorTransform<TParametersValueType>::GetParameters() const
+auto
+VersorTransform<TParametersValueType>::GetParameters() const -> const ParametersType &
 {
   this->m_Parameters[0] = this->m_Versor.GetRight()[0];
   this->m_Parameters[1] = this->m_Versor.GetRight()[1];

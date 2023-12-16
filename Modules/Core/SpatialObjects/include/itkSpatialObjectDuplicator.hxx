@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSpatialObjectDuplicator_hxx
 #define itkSpatialObjectDuplicator_hxx
 
-#include "itkSpatialObjectDuplicator.h"
 
 namespace itk
 {
@@ -47,7 +46,7 @@ SpatialObjectDuplicator<TInputSpatialObject>::CopyObject(const InternalSpatialOb
   while (it != children->end())
   {
     this->CopyObject(*it, newSO);
-    it++;
+    ++it;
   }
   delete children;
 }
@@ -59,7 +58,6 @@ SpatialObjectDuplicator<TInputSpatialObject>::Update()
   if (!m_Input)
   {
     itkExceptionMacro(<< "Input SpatialObject has not been connected");
-    return;
   }
 
   // Update only if the input SpatialObject has been modified
@@ -86,7 +84,7 @@ SpatialObjectDuplicator<TInputSpatialObject>::Update()
   while (it != children->end())
   {
     this->CopyObject(*it, m_DuplicateSpatialObject);
-    it++;
+    ++it;
   }
   delete children;
 }

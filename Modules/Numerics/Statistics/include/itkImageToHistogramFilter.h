@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class ImageToHistogramFilter
+ * \class ImageToHistogramFilter
  *  \brief This class generates a histogram from an image.
  *
  *  The concept of Histogram in ITK is quite generic. It has been designed to
@@ -50,7 +50,7 @@ template <typename TImage>
 class ITK_TEMPLATE_EXPORT ImageToHistogramFilter : public ImageSink<TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToHistogramFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageToHistogramFilter);
 
   /** Standard type alias */
   using Self = ImageToHistogramFilter;
@@ -124,7 +124,7 @@ public:
   /** Method that facilitates the use of this filter in the internal
    * pipeline of another filter. */
   virtual void
-  GraftOutput(DataObject * output);
+  GraftOutput(DataObject * graft);
 
 
   // Change the access from protected to public to expose streaming option, a using statement can not be used due to

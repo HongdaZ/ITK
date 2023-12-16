@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,8 +53,8 @@ itkNormalizedMutualInformationHistogramImageToImageMetricTest(int, char *[])
     FixedImageType::PointValueType  fixedImageOrigin[] = { 0.0f, 0.0f };
     MovingImageType::PointValueType movingImageOrigin[] = { 0.0f, 0.0f };
 
-    MovingImageSourceType::Pointer movingImageSource = MovingImageSourceType::New();
-    FixedImageSourceType::Pointer  fixedImageSource = FixedImageSourceType::New();
+    auto movingImageSource = MovingImageSourceType::New();
+    auto fixedImageSource = FixedImageSourceType::New();
 
     movingImageSource->SetSize(movingImageSize);
     movingImageSource->SetOrigin(movingImageOrigin);
@@ -80,7 +80,7 @@ itkNormalizedMutualInformationHistogramImageToImageMetricTest(int, char *[])
     using ScalesType = MetricType::ScalesType;
     using ParametersType = TransformBaseType::ParametersType;
 
-    MetricType::Pointer metric = MetricType::New();
+    auto metric = MetricType::New();
 
     unsigned int                        nBins = 256;
     MetricType::HistogramType::SizeType histSize;
@@ -96,13 +96,13 @@ itkNormalizedMutualInformationHistogramImageToImageMetricTest(int, char *[])
     // Set up a transform.
     using TransformType = itk::TranslationTransform<CoordinateRepresentationType, ImageDimension>;
 
-    TransformType::Pointer transform = TransformType::New();
+    auto transform = TransformType::New();
     metric->SetTransform(transform);
 
     // Set up an interpolator.
     using InterpolatorType = itk::LinearInterpolateImageFunction<MovingImageType, double>;
 
-    InterpolatorType::Pointer interpolator = InterpolatorType::New();
+    auto interpolator = InterpolatorType::New();
     interpolator->SetInputImage(movingImage);
     metric->SetInterpolator(interpolator);
 
@@ -114,7 +114,7 @@ itkNormalizedMutualInformationHistogramImageToImageMetricTest(int, char *[])
 
     ParametersType parameters(numberOfParameters);
 
-    for (unsigned int k = 0; k < numberOfParameters; k++)
+    for (unsigned int k = 0; k < numberOfParameters; ++k)
     {
       parameters[k] = 0.0f;
     }
@@ -122,7 +122,7 @@ itkNormalizedMutualInformationHistogramImageToImageMetricTest(int, char *[])
     // Set scales for derivative calculation.
     ScalesType scales(numberOfParameters);
 
-    for (unsigned int k = 0; k < numberOfParameters; k++)
+    for (unsigned int k = 0; k < numberOfParameters; ++k)
     {
       scales[k] = 1;
     }

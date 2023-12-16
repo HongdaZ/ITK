@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class ExpandImageFilter
+ * \class ExpandImageFilter
  * \brief Expand the size of an image by an integer factor in each
  * dimension.
  *
@@ -64,7 +64,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT ExpandImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ExpandImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ExpandImageFilter);
 
   /** Standard class type aliases. */
   using Self = ExpandImageFilter;
@@ -85,8 +85,8 @@ public:
   static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
 
   /** Inherit some types from superclass. */
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::OutputImageType;
   using OutputPixelType = typename OutputImageType::PixelType;
   using InputImagePointer = typename InputImageType::Pointer;
   using OutputImagePointer = typename OutputImageType::Pointer;

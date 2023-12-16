@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkImageToMeshFilter_hxx
 #define itkImageToMeshFilter_hxx
-#include "itkImageToMeshFilter.h"
 
 namespace itk
 {
@@ -36,7 +35,7 @@ ImageToMeshFilter<TInputImage, TOutputMesh>::ImageToMeshFilter()
 }
 
 /**
- *   Make Ouput
+ *   Make Output
  */
 template <typename TInputImage, typename TOutputMesh>
 DataObject::Pointer ImageToMeshFilter<TInputImage, TOutputMesh>::MakeOutput(DataObjectPointerArraySizeType)
@@ -62,8 +61,8 @@ ImageToMeshFilter<TInputImage, TOutputMesh>::SetInput(unsigned int idx, const In
  *
  */
 template <typename TInputImage, typename TOutputMesh>
-const typename ImageToMeshFilter<TInputImage, TOutputMesh>::InputImageType *
-ImageToMeshFilter<TInputImage, TOutputMesh>::GetInput(unsigned int idx)
+auto
+ImageToMeshFilter<TInputImage, TOutputMesh>::GetInput(unsigned int idx) -> const InputImageType *
 {
   return dynamic_cast<const InputImageType *>(this->ProcessObject::GetInput(idx));
 }
@@ -72,8 +71,8 @@ ImageToMeshFilter<TInputImage, TOutputMesh>::GetInput(unsigned int idx)
  *
  */
 template <typename TInputImage, typename TOutputMesh>
-typename ImageToMeshFilter<TInputImage, TOutputMesh>::OutputMeshType *
-ImageToMeshFilter<TInputImage, TOutputMesh>::GetOutput()
+auto
+ImageToMeshFilter<TInputImage, TOutputMesh>::GetOutput() -> OutputMeshType *
 {
   return dynamic_cast<OutputMeshType *>(this->ProcessObject::GetOutput(0));
 }

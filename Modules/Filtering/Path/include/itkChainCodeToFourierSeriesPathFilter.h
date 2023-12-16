@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class ChainCodeToFourierSeriesPathFilter
+ * \class ChainCodeToFourierSeriesPathFilter
  * \brief Filter that produces a Fourier series version of a chain code path
  *
  * ChainCodeToFourierSeriesPathFilter produces a Fourier series representation
@@ -43,7 +43,7 @@ class ITK_TEMPLATE_EXPORT ChainCodeToFourierSeriesPathFilter
   : public PathToPathFilter<TInputChainCodePath, TOutputFourierSeriesPath>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ChainCodeToFourierSeriesPathFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ChainCodeToFourierSeriesPathFilter);
 
   /** Standard class type aliases. */
   using Self = ChainCodeToFourierSeriesPathFilter;
@@ -76,9 +76,10 @@ public:
    * harmonics (due to the Nyquist criterion), then as many harmonics as are
    * possible (input->NumberOfSteps()/2) will be calculated, but at least 2
    * harmonics will always be calculated.*/
-  itkSetMacro(NumberOfHarmonics, unsigned int)
+  itkSetMacro(NumberOfHarmonics, unsigned int);
 
-    protected : ChainCodeToFourierSeriesPathFilter();
+protected:
+  ChainCodeToFourierSeriesPathFilter();
   ~ChainCodeToFourierSeriesPathFilter() override = default;
   void
   PrintSelf(std::ostream & os, Indent indent) const override;

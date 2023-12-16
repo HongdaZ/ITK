@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -89,7 +89,7 @@ class ITK_TEMPLATE_EXPORT JointDomainImageToListSampleAdaptor
   : public ListSample<typename ImageJointDomainTraits<TImage>::MeasurementVectorType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(JointDomainImageToListSampleAdaptor);
+  ITK_DISALLOW_COPY_AND_MOVE(JointDomainImageToListSampleAdaptor);
 
   /** Standard class type aliases */
   using Self = JointDomainImageToListSampleAdaptor;
@@ -116,13 +116,13 @@ public:
   /** the number of components in a measurement vector */
   static constexpr unsigned int MeasurementVectorSize = ImageJointDomainTraitsType::Dimension;
 
-  using MeasurementVectorSizeType = typename Superclass::MeasurementVectorSizeType;
+  using typename Superclass::MeasurementVectorSizeType;
 
   /** type alias for Measurement vector, measurement,
    * Instance Identifier, frequency, size, size element value */
-  using AbsoluteFrequencyType = typename Superclass::AbsoluteFrequencyType;
-  using TotalAbsoluteFrequencyType = typename Superclass::TotalAbsoluteFrequencyType;
-  using InstanceIdentifier = typename Superclass::InstanceIdentifier;
+  using typename Superclass::AbsoluteFrequencyType;
+  using typename Superclass::TotalAbsoluteFrequencyType;
+  using typename Superclass::InstanceIdentifier;
 
   /** Image type alias */
   using ImageType = TImage;
@@ -234,16 +234,12 @@ public:
     }
 
     bool
-    operator!=(const ConstIterator & it)
-    {
-      return (m_InstanceIdentifier != it.m_InstanceIdentifier);
-    }
-
-    bool
-    operator==(const ConstIterator & it)
+    operator==(const ConstIterator & it) const
     {
       return (m_InstanceIdentifier == it.m_InstanceIdentifier);
     }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstIterator);
 
   protected:
     // This method should only be available to the ListSample class

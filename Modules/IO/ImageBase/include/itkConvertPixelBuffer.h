@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@
 
 #include "itkObject.h"
 #include "itkNumericTraits.h"
-#include "itkEnableIf.h"
+#include <type_traits> // for enable_if
 
 namespace itk
 {
@@ -139,6 +139,13 @@ protected:
                               OutputPixelType * outputData,
                               size_t            size);
 
+  /** This is meant for many component vectors, e.g. converting 31-component float to 31-component double. */
+  static void
+  ConvertVectorToVector(InputPixelType *  inputData,
+                        int               inputNumberOfComponents,
+                        OutputPixelType * outputData,
+                        size_t            size);
+
   /** Convert tensor output. */
   /** Each input is made into a 6 component symmetric pixel */
   static void
@@ -149,7 +156,7 @@ protected:
 
   /** Convertions related to complex */
   static void
-  ConvertGrayToComplex(InputPixelType * inputData, OutputPixelType * OutputData, size_t size);
+  ConvertGrayToComplex(InputPixelType * inputData, OutputPixelType * outputData, size_t size);
 
   static void
   ConvertComplexToComplex(InputPixelType * inputData, OutputPixelType * outputData, size_t size);
@@ -167,11 +174,11 @@ protected:
    *  world of rgb<float> or rgb<double> alpha would have to be 1.0
    */
   template <typename UComponentType>
-  static typename DisableIfC<NumericTraits<UComponentType>::IsInteger, UComponentType>::Type
+  static std::enable_if_t<!std::is_integral<UComponentType>::value, UComponentType>
   DefaultAlphaValue();
 
   template <typename UComponentType>
-  static typename EnableIfC<NumericTraits<UComponentType>::IsInteger, UComponentType>::Type
+  static std::enable_if_t<std::is_integral<UComponentType>::value, UComponentType>
   DefaultAlphaValue();
 };
 } // namespace itk

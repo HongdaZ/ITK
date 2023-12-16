@@ -36,12 +36,26 @@
   #pragma warning disable 2196 279 1684 2259
 
 #elif defined __clang__
-  // -Wconstant-logical-operand - warning: use of logical && with constant operand; switch to bitwise & or remove constant
-  //     this is really a stupid warning as it warns on compile-time expressions involving enums
   #ifndef EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
     #pragma clang diagnostic push
   #endif
-  #pragma clang diagnostic ignored "-Wconstant-logical-operand"
+  #if defined(__has_warning)
+    // -Wconstant-logical-operand - warning: use of logical && with constant operand; switch to bitwise & or remove constant
+    //     this is really a stupid warning as it warns on compile-time expressions involving enums
+    #if __has_warning("-Wconstant-logical-operand")
+      #pragma clang diagnostic ignored "-Wconstant-logical-operand"
+    #endif
+    #if __has_warning("-Wimplicit-int-float-conversion")
+      #pragma clang diagnostic ignored "-Wimplicit-int-float-conversion"
+    #endif
+    #if ( defined(__ALTIVEC__) || defined(__VSX__) ) && __cplusplus < 201103L
+      // warning: generic selections are a C11-specific feature
+      // ignoring warnings thrown at vec_ctf in Altivec/PacketMath.h
+      #if __has_warning("-Wc11-extensions")
+        #pragma clang diagnostic ignored "-Wc11-extensions"
+      #endif
+    #endif
+  #endif
 
 #elif defined __GNUC__
 
@@ -64,6 +78,7 @@
 #endif
 
 #if defined __NVCC__
+  #pragma diag_suppress boolean_controlling_expr_is_constant
   // Disable the "statement is unreachable" message
   #pragma diag_suppress code_is_unreachable
   // Disable the "dynamic initialization in unreachable code" message
@@ -81,6 +96,14 @@
   #pragma diag_suppress 2671
   #pragma diag_suppress 2735
   #pragma diag_suppress 2737
+  #pragma diag_suppress 2739
+  #pragma diag_suppress 2976
+  #pragma diag_suppress 2979
+  // Disable the "// __device__ annotation is ignored on a function(...) that is
+  //              explicitly defaulted on its first declaration" message.
+  // The __device__ annotation seems to actually be needed in some cases,
+  // otherwise resulting in kernel runtime errors.
+  #pragma diag_suppress 2977
 #endif
 
 #else

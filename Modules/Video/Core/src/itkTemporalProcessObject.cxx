@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -212,8 +212,8 @@ TemporalProcessObject::GenerateInputRequestedTemporalRegion()
 
   // This should always be a whole number because of EnlargeOutputRequestedTemporalRegion
   // but do it safely in case the subclass overrides it
-  auto numInputRequests =
-    Math::Ceil<SizeValueType>((double)outReqTempRegion.GetFrameDuration() / (double)m_UnitOutputNumberOfFrames);
+  auto numInputRequests = Math::Ceil<SizeValueType>(static_cast<double>(outReqTempRegion.GetFrameDuration()) /
+                                                    static_cast<double>(m_UnitOutputNumberOfFrames));
 
   // The number of input requests indicates the number of times the process
   // will have to request a temporal region of size m_UnitInputNumberOfFrames.
@@ -287,12 +287,13 @@ TemporalProcessObject::UpdateOutputInformation()
   OffsetValueType scannableDuration = inputLargestRegion.GetFrameDuration() - m_UnitInputNumberOfFrames + 1;
   SizeValueType   outputDuration =
     m_UnitOutputNumberOfFrames *
-    Math::Round<SizeValueType>((double)(scannableDuration - 1) / (double)(m_FrameSkipPerOutput) + 1);
+    Math::Round<SizeValueType>(static_cast<double>(scannableDuration - 1) / static_cast<double>(m_FrameSkipPerOutput) +
+                               1);
 
   // Compute the start of the output region
-  OffsetValueType outputStart =
-    Math::Ceil<OffsetValueType>((double)inputLargestRegion.GetFrameStart() / (double)m_FrameSkipPerOutput) +
-    m_InputStencilCurrentFrameIndex;
+  OffsetValueType outputStart = Math::Ceil<OffsetValueType>(static_cast<double>(inputLargestRegion.GetFrameStart()) /
+                                                            static_cast<double>(m_FrameSkipPerOutput)) +
+                                m_InputStencilCurrentFrameIndex;
 
   // Set up output largest possible region
   TemporalRegion largestRegion = output->GetLargestPossibleTemporalRegion();
@@ -351,12 +352,12 @@ TemporalProcessObject::UpdateOutputData(DataObject * itkNotUsed(output))
     }
     this->GenerateData();
   }
-  catch (ProcessAborted & excp)
+  catch (const ProcessAborted &)
   {
     this->InvokeEvent(AbortEvent());
     this->ResetPipeline();
     this->RestoreInputReleaseDataFlags();
-    throw excp;
+    throw;
   }
   catch (...)
   {
@@ -521,8 +522,8 @@ TemporalProcessObject::SplitRequestedTemporalRegion()
   TemporalRegion unbufferedRegion = outputObject->GetUnbufferedRequestedTemporalRegion();
 
   // Calculate the number of input requests that will be needed
-  auto numRequests =
-    Math::Ceil<SizeValueType>((double)(unbufferedRegion.GetFrameDuration() / (double)(m_UnitOutputNumberOfFrames)));
+  auto numRequests = Math::Ceil<SizeValueType>(
+    static_cast<double>(unbufferedRegion.GetFrameDuration() / static_cast<double>(m_UnitOutputNumberOfFrames)));
 
   // Set up the requested input temporal region set (TODO: NOT PROPERLY HANDLING REAL TIME!!!!!!!!)
   std::vector<TemporalRegion> inputTemporalRegionRequests;

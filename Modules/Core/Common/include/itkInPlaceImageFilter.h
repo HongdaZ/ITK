@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@
 #define itkInPlaceImageFilter_h
 
 #include "itkImageToImageFilter.h"
-#include "itkIsSame.h"
+#include <type_traits>
 
 namespace itk
 {
@@ -77,7 +77,7 @@ template <typename TInputImage, typename TOutputImage = TInputImage>
 class ITK_TEMPLATE_EXPORT InPlaceImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(InPlaceImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(InPlaceImageFilter);
 
   /** Standard class type aliases. */
   using Self = InPlaceImageFilter;
@@ -89,10 +89,10 @@ public:
   itkTypeMacro(InPlaceImageFilter, ImageToImageFilter);
 
   /** Superclass type alias. */
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputImagePointer = typename Superclass::OutputImagePointer;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
-  using OutputImagePixelType = typename Superclass::OutputImagePixelType;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::OutputImagePointer;
+  using typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImagePixelType;
 
   /** Some convenient type alias. */
   using InputImageType = TInputImage;
@@ -147,7 +147,15 @@ protected:
   void
   AllocateOutputs() override
   {
-    this->InternalAllocateOutputs(IsSame<TInputImage, TOutputImage>());
+    if (std::is_same<TInputImage, TOutputImage>::value)
+    {
+      this->InternalAllocateOutputs();
+    }
+    else // the type are different we can't run in place
+    {
+      this->m_RunningInPlace = false;
+      this->Superclass::AllocateOutputs();
+    }
   }
 
   /** InPlaceImageFilter may transfer ownership of the input bulk data
@@ -169,16 +177,8 @@ protected:
   itkGetConstMacro(RunningInPlace, bool);
 
 private:
-  // the type are different we can't run in place
   void
-  InternalAllocateOutputs(const FalseType &)
-  {
-    this->m_RunningInPlace = false;
-    this->Superclass::AllocateOutputs();
-  }
-
-  void
-  InternalAllocateOutputs(const TrueType &);
+  InternalAllocateOutputs();
 
   bool m_InPlace{ true }; // enable the possibility of in-place
   bool m_RunningInPlace{ false };

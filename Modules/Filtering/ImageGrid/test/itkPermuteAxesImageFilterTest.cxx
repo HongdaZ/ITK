@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@
 #include "itkCommand.h"
 
 
-// The following classe is used to support callbacks
+// The following class is used to support callbacks
 // on the filter in the pipeline that follows later
 class ShowProgressObject
 {
@@ -60,7 +60,7 @@ itkPermuteAxesImageFilterTest(int, char *[])
   double spacing[ImageDimension] = { 1.1, 1.2, 1.3, 1.4 };
   double origin[ImageDimension] = { 0.5, 0.4, 0.3, 0.2 };
 
-  ImageType::Pointer inputImage = ImageType::New();
+  auto inputImage = ImageType::New();
   inputImage->SetLargestPossibleRegion(region);
   inputImage->SetBufferedRegion(region);
   inputImage->Allocate();
@@ -81,7 +81,7 @@ itkPermuteAxesImageFilterTest(int, char *[])
 
 
   // permute the image
-  PermuterType::Pointer permuter = PermuterType::New();
+  auto permuter = PermuterType::New();
 
   unsigned int order[ImageDimension] = { 2, 0, 3, 1 };
   permuter->SetOrder(order);
@@ -110,7 +110,7 @@ itkPermuteAxesImageFilterTest(int, char *[])
     ImageType::IndexType inputIndex = inputIter.GetIndex();
     ImageType::IndexType outputIndex;
 
-    for (int j = 0; j < ImageDimension; j++)
+    for (int j = 0; j < ImageDimension; ++j)
     {
       outputIndex[j] = inputIndex[order[j]];
     }

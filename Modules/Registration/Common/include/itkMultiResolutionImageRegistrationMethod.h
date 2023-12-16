@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,7 +72,7 @@ template <typename TFixedImage, typename TMovingImage>
 class ITK_TEMPLATE_EXPORT MultiResolutionImageRegistrationMethod : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiResolutionImageRegistrationMethod);
+  ITK_DISALLOW_COPY_AND_MOVE(MultiResolutionImageRegistrationMethod);
 
   /** Standard class type aliases. */
   using Self = MultiResolutionImageRegistrationMethod;
@@ -176,7 +176,7 @@ public:
 
   /** Set/Get the schedules . */
   void
-  SetSchedules(const ScheduleType & fixedSchedule, const ScheduleType & movingSchedule);
+  SetSchedules(const ScheduleType & fixedImagePyramidSchedule, const ScheduleType & movingImagePyramidSchedule);
 
   itkGetConstMacro(FixedImagePyramidSchedule, ScheduleType);
   itkGetConstMacro(MovingImagePyramidSchedule, ScheduleType);
@@ -213,7 +213,7 @@ public:
   using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
   DataObjectPointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  MakeOutput(DataObjectPointerArraySizeType output) override;
 
   /** Method to return the latest modified time of this object or
    * any of its cached ivars */

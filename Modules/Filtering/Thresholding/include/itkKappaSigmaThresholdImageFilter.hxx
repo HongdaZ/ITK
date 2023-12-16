@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkKappaSigmaThresholdImageFilter_hxx
 #define itkKappaSigmaThresholdImageFilter_hxx
 
-#include "itkKappaSigmaThresholdImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkProgressAccumulator.h"
 
@@ -36,11 +35,11 @@ template <typename TInputImage, typename TMaskImage, typename TOutputImage>
 void
 KappaSigmaThresholdImageFilter<TInputImage, TMaskImage, TOutputImage>::GenerateData()
 {
-  typename ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
 
   // Compute the Threshold for the input image
-  typename CalculatorType::Pointer thresholdImageCalculator = CalculatorType::New();
+  auto thresholdImageCalculator = CalculatorType::New();
   thresholdImageCalculator->SetImage(this->GetInput());
   thresholdImageCalculator->SetMask(this->GetMaskImage());
   thresholdImageCalculator->SetMaskValue(m_MaskValue);

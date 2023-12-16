@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkPowellOptimizerv4_hxx
 #define itkPowellOptimizerv4_hxx
 
-#include "itkPowellOptimizerv4.h"
 
 namespace itk
 {
@@ -63,7 +62,7 @@ template <typename TInternalComputationValueType>
 double
 PowellOptimizerv4<TInternalComputationValueType>::GetLineValue(double x, ParametersType & tempCoord) const
 {
-  for (unsigned int i = 0; i < m_SpaceDimension; i++)
+  for (unsigned int i = 0; i < m_SpaceDimension; ++i)
   {
     tempCoord[i] = this->m_LineOrigin[i] + x * this->m_LineDirection[i];
   }
@@ -93,7 +92,7 @@ template <typename TInternalComputationValueType>
 void
 PowellOptimizerv4<TInternalComputationValueType>::SetCurrentLinePoint(double x, double fx)
 {
-  for (unsigned int i = 0; i < m_SpaceDimension; i++)
+  for (unsigned int i = 0; i < m_SpaceDimension; ++i)
   {
     this->m_CurrentPosition[i] = this->m_LineOrigin[i] + x * this->m_LineDirection[i];
   }
@@ -126,7 +125,7 @@ PowellOptimizerv4<TInternalComputationValueType>::Shift(double * a, double * b, 
 // This code was implemented from the description of
 // the Golden section search available in the Wikipedia
 //
-// http://en.wikipedia.org/wiki/Golden_section_search
+// https://en.wikipedia.org/wiki/Golden_section_search
 //
 //
 // The inputs to this function are
@@ -261,7 +260,7 @@ PowellOptimizerv4<TInternalComputationValueType>::BracketedLineOptimize(double  
   functionValueOfX = functionValueOfV;
   functionValueOfW = functionValueOfV;
 
-  for (m_CurrentLineIteration = 0; m_CurrentLineIteration < m_MaximumLineIteration; m_CurrentLineIteration++)
+  for (m_CurrentLineIteration = 0; m_CurrentLineIteration < m_MaximumLineIteration; ++m_CurrentLineIteration)
   {
     double middle_range = (a + b) / 2;
 
@@ -270,10 +269,10 @@ PowellOptimizerv4<TInternalComputationValueType>::BracketedLineOptimize(double  
     double tolerance1;
     double tolerance2;
 
-    tolerance1 = m_StepTolerance * std::fabs(x) + POWELL_TINY;
+    tolerance1 = m_StepTolerance * itk::Math::abs(x) + POWELL_TINY;
     tolerance2 = 2.0 * tolerance1;
 
-    if (std::fabs(x - middle_range) <= (tolerance2 - 0.5 * (b - a)) || 0.5 * (b - a) < m_StepTolerance)
+    if (itk::Math::abs(x - middle_range) <= (tolerance2 - 0.5 * (b - a)) || 0.5 * (b - a) < m_StepTolerance)
     {
       *extX = x;
       *extVal = functionValueOfX;
@@ -288,7 +287,7 @@ PowellOptimizerv4<TInternalComputationValueType>::BracketedLineOptimize(double  
     new_step = goldenSectionRatio * (x < middle_range ? b - x : a - x);
 
     /* Decide if the interpolation can be tried  */
-    if (std::fabs(x - w) >= tolerance1) /* If x and w are distinct      */
+    if (itk::Math::abs(x - w) >= tolerance1) /* If x and w are distinct      */
     {
       double t;
       t = (x - w) * (functionValueOfX - functionValueOfV);
@@ -301,7 +300,7 @@ PowellOptimizerv4<TInternalComputationValueType>::BracketedLineOptimize(double  
 
       q = 2 * (q - t);
 
-      if (q > (double)0) /* q was calculated with the op-*/
+      if (q > 0.0) /* q was calculated with the op-*/
       {
         p = -p; /* posite sign; make q positive  */
       }
@@ -310,9 +309,9 @@ PowellOptimizerv4<TInternalComputationValueType>::BracketedLineOptimize(double  
         q = -q; /* p        */
       }
 
-      /* Chec if x+p/q falls in [a,b] and  not too close to a and b
+      /* Check if x+p/q falls in [a,b] and  not too close to a and b
            and isn't too large */
-      if (std::fabs(p) < std::fabs(new_step * q) && p > q * (a - x + 2 * tolerance1) &&
+      if (itk::Math::abs(p) < itk::Math::abs(new_step * q) && p > q * (a - x + 2 * tolerance1) &&
           p < q * (b - x - 2 * tolerance1))
       {
         new_step = p / q; /* it is accepted         */
@@ -323,7 +322,7 @@ PowellOptimizerv4<TInternalComputationValueType>::BracketedLineOptimize(double  
     }
 
     /* Adjust the step to be not less than tolerance*/
-    if (std::fabs(new_step) < tolerance1)
+    if (itk::Math::abs(new_step) < tolerance1)
     {
       if (new_step > 0.0)
       {
@@ -354,7 +353,7 @@ PowellOptimizerv4<TInternalComputationValueType>::BracketedLineOptimize(double  
         a = x;
       }
 
-      /* assing the best approximation to x */
+      /* assign the best approximation to x */
       v = w;
       w = x;
       x = t;
@@ -445,7 +444,7 @@ PowellOptimizerv4<TInternalComputationValueType>::StartOptimization(bool /* doOn
     ibig = 0;
     del = 0.0;
 
-    for (unsigned int i = 0; i < m_SpaceDimension; i++)
+    for (unsigned int i = 0; i < m_SpaceDimension; ++i)
     {
       for (unsigned int j = 0; j < m_SpaceDimension; ++j)
       {
@@ -463,14 +462,14 @@ PowellOptimizerv4<TInternalComputationValueType>::StartOptimization(bool /* doOn
       this->SetCurrentLinePoint(xx, fx);
       p = this->GetCurrentPosition();
 
-      if (std::fabs(fptt - fx) > del)
+      if (itk::Math::abs(fptt - fx) > del)
       {
-        del = std::fabs(fptt - fx);
+        del = itk::Math::abs(fptt - fx);
         ibig = i;
       }
     }
 
-    if (2.0 * std::fabs(fp - fx) <= m_ValueTolerance * (std::fabs(fp) + std::fabs(fx)))
+    if (2.0 * itk::Math::abs(fp - fx) <= m_ValueTolerance * (itk::Math::abs(fp) + itk::Math::abs(fx)))
     {
       m_StopConditionDescription << "Cost function values at the current parameter (" << fx
                                  << ") and at the local extrema (" << fp << ") are within Value Tolerance ("
@@ -513,7 +512,7 @@ PowellOptimizerv4<TInternalComputationValueType>::StartOptimization(bool /* doOn
         this->SetCurrentLinePoint(xx, fx);
         p = this->GetCurrentPosition();
 
-        for (unsigned int j = 0; j < m_SpaceDimension; j++)
+        for (unsigned int j = 0; j < m_SpaceDimension; ++j)
         {
           xi[j][ibig] = xx * xit[j];
         }

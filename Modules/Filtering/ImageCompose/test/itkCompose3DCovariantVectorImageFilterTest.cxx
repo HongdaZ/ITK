@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,11 +36,11 @@ itkCompose3DCovariantVectorImageFilterTest(int, char *[])
   using SizeType = InputImageType::SizeType;
   using IndexType = InputImageType::IndexType;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
-  InputImageType::Pointer zeroImage = InputImageType::New();
-  InputImageType::Pointer oneImage = InputImageType::New();
-  InputImageType::Pointer twoImage = InputImageType::New();
+  auto zeroImage = InputImageType::New();
+  auto oneImage = InputImageType::New();
+  auto twoImage = InputImageType::New();
 
   SizeType size;
   size[0] = 2;

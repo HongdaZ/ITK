@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkLandweberDeconvolutionImageFilter_hxx
 #define itkLandweberDeconvolutionImageFilter_hxx
 
-#include "itkLandweberDeconvolutionImageFilter.h"
 
 namespace itk
 {
@@ -51,11 +50,14 @@ LandweberDeconvolutionImageFilter<TInputImage, TKernelImage, TOutputImage, TInte
 
   // Set up minipipeline to compute estimate at each iteration
   m_LandweberFilter = LandweberFilterType::New();
+
+  LandweberFunctor functor;
+  functor.m_Alpha = m_Alpha;
+  m_LandweberFilter->SetFunctor(functor);
   m_LandweberFilter->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   // Transform of current estimate will be set as input 1 in Iteration()
   m_LandweberFilter->SetInput2(this->m_TransferFunction);
   m_LandweberFilter->SetInput3(m_TransformedInput);
-  m_LandweberFilter->GetFunctor().m_Alpha = m_Alpha;
   m_LandweberFilter->ReleaseDataFlagOn();
   progress->RegisterInternalFilter(m_LandweberFilter, 0.3f * iterationProgressWeight);
 

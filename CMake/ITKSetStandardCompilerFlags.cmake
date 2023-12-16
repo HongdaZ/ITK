@@ -21,16 +21,14 @@
 
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
-if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.14.0)
-  include(CheckPIESupported)
-  check_pie_supported()
-endif()
+include(CheckPIESupported)
+check_pie_supported()
 
 function(check_c_compiler_flags c_flag_var)
   set(local_c_flags "")
   set(flag_list "${ARGN}")
   foreach(flag IN LISTS flag_list)
-    string(REPLACE "=" "_" flag_var ${flag} )
+    string(REPLACE "=" "_" flag_var ${flag})
     check_c_compiler_flag(${flag} C_HAS_WARNING${flag_var})
     if(${C_HAS_WARNING${flag_var}})
       set(local_c_flags "${local_c_flags} ${flag}")
@@ -44,7 +42,7 @@ function(check_cxx_compiler_flags cxx_flag_var)
   set(local_cxx_flags "")
   set(flag_list "${ARGN}")
   foreach(flag IN LISTS flag_list)
-    string(REPLACE "=" "_" flag_var ${flag} )
+    string(REPLACE "=" "_" flag_var ${flag})
     check_cxx_compiler_flag(${flag} CXX_HAS_WARNING${flag_var})
     if(${CXX_HAS_WARNING${flag_var}})
       set(local_cxx_flags "${local_cxx_flags} ${flag}")
@@ -68,11 +66,11 @@ function(check_compiler_warning_flags c_warning_flags_var cxx_warning_flags_var)
   ## is reporting 1000's of wanings in windows
   ## header files, for now, limit the number of
   ## warnings to level 3
-  if( WIN32 )
-    set(VerboseWarningsFlag -W3 )
+  if(WIN32)
+    set(VerboseWarningsFlag -W3)
     ## A better solution would be to use -Wall,
     ## and then disable warnings one by one
-    ## set(VerboseWarningsFlag -Wall -wd4820 -wd4682 )
+    ## set(VerboseWarningsFlag -Wall -wd4820 -wd4682)
   else()
     ## with Intel compiler, the -Wall compiler options
     ## is reporting 1000's of remarks of trivial items
@@ -86,7 +84,7 @@ function(check_compiler_warning_flags c_warning_flags_var cxx_warning_flags_var)
     endif()
     if(USING_INTEL_ICC_COMPILER)
       # NOTE -w2 is close to gcc's -Wall warning level, -w5 is intels -Wall warning level, and it is too verbose.
-      set(VerboseWarningsFlag -w2 -wd1268 -wd981 -wd383 -wd1418 -wd1419 -wd2259 -wd1572 -wd424 )
+      set(VerboseWarningsFlag -w2 -wd1268 -wd981 -wd383 -wd1418 -wd1419 -wd2259 -wd1572 -wd424)
       #-wd424  #Needed for Intel compilers with remarki  #424: extra ";" ignored
       #-wd383  #Needed for Intel compilers with remark   #383: value copied to temporary, reference to temporary used
       #-wd981  #Needed for Intel compilers with remark   #981: operands are evaluated in unspecified order
@@ -94,9 +92,9 @@ function(check_compiler_warning_flags c_warning_flags_var cxx_warning_flags_var)
       #-wd1419 #Needed for Intel compilers with remark  #1419: external declaration in primary source file
       #-wd1572 #Needed for Intel compilers with remark  #1572: floating-point equality and inequality comparisons are unreliable
       #-wd2259 #Needed for Intel compilers with remark  #2259: non-pointer conversion from "itk::SizeValueType={unsigned long}" to "double" may lose significant bits
-      #-wd1268 #Needed for Intel compliers with warning #1268: support for exported templates is disabled
+      #-wd1268 #Needed for Intel compilers with warning #1268: support for exported templates is disabled
     else()
-      set(VerboseWarningsFlag -Wall )
+      set(VerboseWarningsFlag -Wall)
     endif ()
   endif()
 
@@ -147,7 +145,7 @@ function(check_avx_flags avx_flags_var)
   set(CMAKE_REQUIRED_FLAGS)
 
   # Check AVX
-  if(MSVC_VERSION GREATER_EQUAL 1600)
+  if(MSVC)
     set(CMAKE_REQUIRED_FLAGS "/arch:AVX") # set flags to be used in check_cxx_source_runs below
   endif()
   check_cxx_source_runs("
@@ -157,13 +155,13 @@ function(check_avx_flags avx_flags_var)
       __m256 a, b, c;
       const float src[8] = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f };
       float dst[8];
-      a = _mm256_loadu_ps( src );
-      b = _mm256_loadu_ps( src );
-      c = _mm256_add_ps( a, b );
-      _mm256_storeu_ps( dst, c );
+      a = _mm256_loadu_ps(src);
+      b = _mm256_loadu_ps(src);
+      c = _mm256_add_ps(a, b);
+      _mm256_storeu_ps(dst, c);
 
-      for( int i = 0; i < 8; i++ ){
-        if( ( src[i] + src[i] ) != dst[i] ){
+      for(int i = 0; i < 8; i++){
+        if(( src[i] + src[i]) != dst[i]){
           return -1;
         }
       }
@@ -173,7 +171,7 @@ function(check_avx_flags avx_flags_var)
     have_avx_extensions_var)
 
   # Check AVX2
-  if(MSVC_VERSION GREATER_EQUAL 1800)
+  if(MSVC)
     set(CMAKE_REQUIRED_FLAGS "/arch:AVX2") # set flags to be used in check_cxx_source_runs below
   endif()
   check_cxx_source_runs("
@@ -183,13 +181,13 @@ function(check_avx_flags avx_flags_var)
       __m256i a, b, c;
       const int src[8] = { 1, 2, 3, 4, 5, 6, 7, 8 };
       int dst[8];
-      a =  _mm256_loadu_si256( (__m256i*)src );
-      b =  _mm256_loadu_si256( (__m256i*)src );
-      c = _mm256_add_epi32( a, b );
-      _mm256_storeu_si256( (__m256i*)dst, c );
+      a =  _mm256_loadu_si256( (__m256i*)src);
+      b =  _mm256_loadu_si256( (__m256i*)src);
+      c = _mm256_add_epi32( a, b);
+      _mm256_storeu_si256( (__m256i*)dst, c);
 
-      for( int i = 0; i < 8; i++ ){
-        if( ( src[i] + src[i] ) != dst[i] ){
+      for(int i = 0; i < 8; i++){
+        if(( src[i] + src[i]) != dst[i]){
           return -1;
         }
       }
@@ -201,9 +199,9 @@ function(check_avx_flags avx_flags_var)
   set(CMAKE_REQUIRED_FLAGS "${_safe_cmake_required_flags}")
 
   # Set Flags
-  if(have_avx2_extensions_var AND MSVC_VERSION GREATER_EQUAL 1800)
+  if(have_avx2_extensions_var AND MSVC)
     set(avx_flags_var "${avx_flags_var} /arch:AVX2")
-  elseif(have_avx_extensions_var AND MSVC_VERSION GREATER_EQUAL 1600)
+  elseif(have_avx_extensions_var AND MSVC)
     set(avx_flags_var "${avx_flags_var} /arch:AVX")
   endif()
 endfunction()
@@ -212,42 +210,45 @@ function(check_compiler_optimization_flags c_optimization_flags_var cxx_optimiza
   set(${c_optimization_flags_var} "" PARENT_SCOPE)
   set(${cxx_optimization_flags_var} "" PARENT_SCOPE)
 
-  if(MSVC)
-    check_avx_flags(InstructionSetOptimizationFlags)
-    if("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
-       list(APPEND InstructionSetOptimizationFlags
-            /arch:SSE /arch:SSE2)
-    endif()
-  elseif(NOT EMSCRIPTEN)
-    if (${CMAKE_C_COMPILER} MATCHES "icc.*$")
-      set(USING_INTEL_ICC_COMPILER TRUE)
-    endif()
-    if (${CMAKE_CXX_COMPILER} MATCHES "icpc.*$")
-      set(USING_INTEL_ICC_COMPILER TRUE)
-    endif()
-    if(USING_INTEL_ICC_COMPILER)
-      set(InstructionSetOptimizationFlags "")
-    else()
-      set(InstructionSetOptimizationFlags "")
-    endif ()
+  if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "(x86_64|AMD64)")
+    if(MSVC)
+      check_avx_flags(InstructionSetOptimizationFlags)
+      if("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
+         list(APPEND InstructionSetOptimizationFlags
+              /arch:SSE /arch:SSE2)
+      endif()
+    elseif(NOT EMSCRIPTEN OR WASI)
+      if (${CMAKE_C_COMPILER} MATCHES "icc.*$")
+        set(USING_INTEL_ICC_COMPILER TRUE)
+      endif()
+      if (${CMAKE_CXX_COMPILER} MATCHES "icpc.*$")
+        set(USING_INTEL_ICC_COMPILER TRUE)
+      endif()
+      if(USING_INTEL_ICC_COMPILER)
+        set(InstructionSetOptimizationFlags "")
+      else()
+        set(InstructionSetOptimizationFlags "")
+      endif ()
 
-    # Check this list on C compiler only
-    set(c_flags "")
+      # Check this list on C compiler only
+      set(c_flags "")
 
-    # Check this list on C++ compiler only
-    set(cxx_flags "")
+      # Check this list on C++ compiler only
+      set(cxx_flags "")
 
-    # Check this list on both C and C++ compilers
-    set(InstructionSetOptimizationFlags
-       # https://gcc.gnu.org/onlinedocs/gcc-4.8.0/gcc/i386-and-x86_002d64-Options.html
-       # NOTE the corei7 release date was 2008
-       -mtune=native # Tune the code for the computer used compile ITK, but allow running on generic cpu archetectures
-       -march=corei7 # Use ABI settings to support corei7 (circa 2008 ABI feature sets, core-avx circa 2013)
-       )
+      # Check this list on both C and C++ compilers
+      set(InstructionSetOptimizationFlags
+         # https://gcc.gnu.org/onlinedocs/gcc-4.8.0/gcc/i386-and-x86_002d64-Options.html
+         # NOTE the corei7 release date was 2008
+         #-mtune=native # Tune the code for the computer used compile ITK, but allow running on generic cpu archetectures
+         -mtune=generic # for reproducible results https://github.com/InsightSoftwareConsortium/ITK/issues/1939
+         -march=corei7 # Use ABI settings to support corei7 (circa 2008 ABI feature sets, core-avx circa 2013)
+         )
+    endif()
+    set(c_and_cxx_flags ${InstructionSetOptimizationFlags})
   endif()
-  set(c_and_cxx_flags ${InstructionSetOptimizationFlags})
 
-  check_c_compiler_flags(    CMAKE_C_WARNING_FLAGS ${c_and_cxx_flags} ${c_flags})
+  check_c_compiler_flags(   CMAKE_C_WARNING_FLAGS ${c_and_cxx_flags} ${c_flags})
   check_cxx_compiler_flags(CMAKE_CXX_WARNING_FLAGS ${c_and_cxx_flags} ${cxx_flags})
 
   set(${c_optimization_flags_var} "${CMAKE_C_WARNING_FLAGS}" PARENT_SCOPE)
@@ -277,8 +278,8 @@ macro(check_compiler_platform_flags)
          # With MS compilers on Win64, we need the /bigobj switch, else generated
          # code results in objects with number of sections exceeding object file
          # format.
-         # see http://msdn.microsoft.com/en-us/library/ms173499.aspx
-         if(MSVC_VERSION GREATER 1310)
+         # see https://msdn.microsoft.com/en-us/library/ms173499.aspx
+         if(MSVC)
            set(ITK_REQUIRED_CXX_FLAGS "${ITK_REQUIRED_CXX_FLAGS} /bigobj")
          endif()
        endif()
@@ -320,36 +321,6 @@ macro(check_compiler_platform_flags)
   #-----------------------------------------------------------------------------
   #ITK requires special compiler flags on some platforms.
   if(CMAKE_COMPILER_IS_GNUCXX)
-    # GCC's -Warray-bounds has been shown to throw false positives with -O3 on 4.8.
-    if(UNIX AND (
-      ("${CMAKE_CXX_COMPILER_VERSION}" VERSION_EQUAL "4.8") OR
-      ("${CMAKE_CXX_COMPILER_VERSION}" VERSION_GREATER "4.8" AND "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.9") ))
-      set(ITK_REQUIRED_CXX_FLAGS "${ITK_REQUIRED_CXX_FLAGS} -Wno-array-bounds")
-    endif()
-
-    if("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
-      set(_safe_cmake_required_flags "${CMAKE_REQUIRED_FLAGS}")
-      set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fuse-ld=gold")
-      CHECK_CXX_SOURCE_COMPILES("int main() { return 0;}" have_gold)
-      set(CMAKE_REQUIRED_FLAGS "${_safe_cmake_required_flags}")
-      if(have_gold)
-        set(_use_gold_linker_default ON)
-        set(_gold_linker_failure_condition_0 "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.9.0")
-        set(_gold_linker_failure_condition_1  NOT BUILD_SHARED_LIBS AND "${CMAKE_CXX_COMPILER_VERSION}" VERSION_EQUAL "4.9.0")
-        if( (${_gold_linker_failure_condition_0}) OR (${_gold_linker_failure_condition_1}) )
-          set(_use_gold_linker_default OFF)
-        endif()
-        option(ITK_USE_GOLD_LINKER "Use the gold linker instead of ld." ${_use_gold_linker_default})
-        mark_as_advanced(ITK_USE_GOLD_LINKER)
-        # The gold linker is approximately 3X faster.
-        if(ITK_USE_GOLD_LINKER)
-          set(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=gold ${CMAKE_EXE_LINKER_FLAGS}")
-          set(CMAKE_MODULE_LINKER_FLAGS "-fuse-ld=gold ${CMAKE_MODULE_LINKER_FLAGS}")
-          set(CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=gold ${CMAKE_SHARED_LINKER_FLAGS}")
-        endif()
-      endif()
-    endif()
-
     if(APPLE)
       option(ITK_USE_64BITS_APPLE_TRUNCATION_WARNING "Turn on warnings on 64bits to 32bits truncations." OFF)
       mark_as_advanced(ITK_USE_64BITS_APPLE_TRUNCATION_WARNING)
@@ -368,9 +339,13 @@ macro(check_compiler_platform_flags)
         if("${${listname}}" MATCHES ".*-fopenmp.*")
           string(REPLACE "-fopenmp" "" tmpFlags "${${listname}}")
           set(${listname} "${tmpFlags}")
-          message("-fopenmp causes incorrect compliation of HDF, removing from ${listname}")
+          message("-fopenmp causes incorrect compilation of HDF, removing from ${listname}")
         endif()
       endforeach()
+    endif()
+
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "12")
+      set(ITK_REQUIRED_CXX_FLAGS "${ITK_REQUIRED_CXX_FLAGS} -fno-sized-deallocation")
     endif()
 
     # gcc must have -msse2 option to enable sse2 support
@@ -421,7 +396,7 @@ macro(check_compiler_platform_flags)
   endif()
 endmacro()#End the platform check function
 
-if(NOT ITK_C_WARNING_FLAGS OR NOT ITK_CXX_WARNING_FLAGS ) # Only check once if not explicitly set on command line
+if(NOT ITK_C_WARNING_FLAGS OR NOT ITK_CXX_WARNING_FLAGS) # Only check once if not explicitly set on command line
   #-----------------------------------------------------------------------------
   #Check the set of warning flags the compiler supports
   check_compiler_warning_flags(C_WARNING_FLAGS CXX_WARNING_FLAGS)
@@ -443,7 +418,7 @@ unset(C_WARNING_FLAGS)
 unset(CXX_WARNING_FLAGS)
 
 
-if(NOT ITK_C_OPTIMIZATION_FLAGS OR NOT ITK_CXX_OPTIMIZATION_FLAGS ) # Only check once if not explicitly set on command line
+if(NOT ITK_C_OPTIMIZATION_FLAGS OR NOT ITK_CXX_OPTIMIZATION_FLAGS) # Only check once if not explicitly set on command line
   #-----------------------------------------------------------------------------
   #Check the set of warning flags the compiler supports
   check_compiler_optimization_flags(C_OPTIMIZATION_FLAGS CXX_OPTIMIZATION_FLAGS)

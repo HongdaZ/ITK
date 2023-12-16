@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkImageRandomConstIteratorWithIndex_hxx
 #define itkImageRandomConstIteratorWithIndex_hxx
 
-#include "itkImageRandomConstIteratorWithIndex.h"
 
 namespace itk
 {
@@ -56,8 +55,8 @@ ImageRandomConstIteratorWithIndex<TImage>::SetNumberOfSamples(SizeValueType numb
 
 /**  Set the number of samples to extract from the region */
 template <typename TImage>
-typename ImageRandomConstIteratorWithIndex<TImage>::SizeValueType
-ImageRandomConstIteratorWithIndex<TImage>::GetNumberOfSamples() const
+auto
+ImageRandomConstIteratorWithIndex<TImage>::GetNumberOfSamples() const -> SizeValueType
 {
   return m_NumberOfSamplesRequested;
 }
@@ -95,7 +94,7 @@ ImageRandomConstIteratorWithIndex<TImage>::RandomJump()
   PositionValueType position = randomPosition;
   PositionValueType residual;
 
-  for (unsigned int dim = 0; dim < TImage::ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < TImage::ImageDimension; ++dim)
   {
     const SizeValueType sizeInThisDimension = this->m_Region.GetSize()[dim];
     residual = position % sizeInThisDimension;

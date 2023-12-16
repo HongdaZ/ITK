@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkEigenAnalysis2DImageFilter_hxx
 #define itkEigenAnalysis2DImageFilter_hxx
 
-#include "itkEigenAnalysis2DImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkProgressReporter.h"
 
@@ -35,6 +34,7 @@ EigenAnalysis2DImageFilter<TInputImage, TEigenValueImage, TEigenVectorImage>::Ei
   this->SetNthOutput(0, this->MakeOutput(0));
   this->SetNthOutput(1, this->MakeOutput(1));
   this->SetNthOutput(2, this->MakeOutput(2));
+  static_assert(EigenVectorType::Dimension == 2, "Error: PixelType of EigenVector Image must have exactly 2 elements!");
 }
 
 /**
@@ -73,8 +73,9 @@ EigenAnalysis2DImageFilter<TInputImage, TEigenValueImage, TEigenVectorImage>::Se
  * Get the largest eigenvalue considering the sign
  */
 template <typename TInputImage, typename TEigenValueImage, typename TEigenVectorImage>
-typename EigenAnalysis2DImageFilter<TInputImage, TEigenValueImage, TEigenVectorImage>::EigenValueImageType *
+auto
 EigenAnalysis2DImageFilter<TInputImage, TEigenValueImage, TEigenVectorImage>::GetMaxEigenValue()
+  -> EigenValueImageType *
 {
   return dynamic_cast<EigenValueImageType *>(this->ProcessObject::GetOutput(0));
 }
@@ -83,8 +84,9 @@ EigenAnalysis2DImageFilter<TInputImage, TEigenValueImage, TEigenVectorImage>::Ge
  * Get the smallest eigenvalue considering the sign
  */
 template <typename TInputImage, typename TEigenValueImage, typename TEigenVectorImage>
-typename EigenAnalysis2DImageFilter<TInputImage, TEigenValueImage, TEigenVectorImage>::EigenValueImageType *
+auto
 EigenAnalysis2DImageFilter<TInputImage, TEigenValueImage, TEigenVectorImage>::GetMinEigenValue()
+  -> EigenValueImageType *
 {
   return dynamic_cast<EigenValueImageType *>(this->ProcessObject::GetOutput(1));
 }
@@ -93,8 +95,9 @@ EigenAnalysis2DImageFilter<TInputImage, TEigenValueImage, TEigenVectorImage>::Ge
  * Get the eigenvector corresponding to the largest eigenvalue (considering the sign)
  */
 template <typename TInputImage, typename TEigenValueImage, typename TEigenVectorImage>
-typename EigenAnalysis2DImageFilter<TInputImage, TEigenValueImage, TEigenVectorImage>::EigenVectorImageType *
+auto
 EigenAnalysis2DImageFilter<TInputImage, TEigenValueImage, TEigenVectorImage>::GetMaxEigenVector()
+  -> EigenVectorImageType *
 {
   auto * eigenVector = dynamic_cast<EigenVectorImageType *>(this->ProcessObject::GetOutput(2));
 
@@ -115,8 +118,8 @@ EigenAnalysis2DImageFilter<TInputImage, TEigenValueImage, TEigenVectorImage>::Ge
 }
 
 /**
- *   Make Ouput
- * \todo Verify that MakeOutput is createing the right type of objects
+ *   Make Output
+ * \todo Verify that MakeOutput is creating the right type of objects
  *  this could be the cause of the reinterpret_cast bug in this class
  */
 template <typename TInputImage, typename TEigenValueImage, typename TEigenVectorImage>

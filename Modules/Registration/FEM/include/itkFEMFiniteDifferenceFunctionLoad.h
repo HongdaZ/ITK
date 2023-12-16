@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,6 @@
 #include "itkTranslationTransform.h"
 
 #include "itkImageRegionIteratorWithIndex.h"
-#include "itkNeighborhoodIterator.h"
 #include "itkNeighborhoodIterator.h"
 #include "itkNeighborhoodInnerProduct.h"
 #include "itkDerivativeOperator.h"
@@ -82,7 +81,7 @@ public:
 
   /** CreateAnother method will clone the existing instance of this type,
    *  including its internal member variables. */
-  ::itk::LightObject::Pointer
+  itk::LightObject::Pointer
   CreateAnother() const override;
 
   // Necessary type alias for dealing with images BEGIN

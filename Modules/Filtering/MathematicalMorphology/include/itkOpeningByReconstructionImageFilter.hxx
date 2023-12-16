@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #define itkOpeningByReconstructionImageFilter_hxx
 
 #include "itkImageRegionIterator.h"
-#include "itkOpeningByReconstructionImageFilter.h"
 #include "itkGrayscaleErodeImageFilter.h"
 #include "itkReconstructionByDilationImageFilter.h"
 #include "itkSubtractImageFilter.h"
@@ -62,7 +61,7 @@ void
 OpeningByReconstructionImageFilter<TInputImage, TOutputImage, TKernel>::GenerateData()
 {
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
 
   progress->SetMiniPipelineFilter(this);
 
@@ -90,7 +89,7 @@ OpeningByReconstructionImageFilter<TInputImage, TOutputImage, TKernel>::Generate
   if (m_PreserveIntensities)
   {
     dilate->Update();
-    typename TInputImage::Pointer tempImage = TInputImage::New();
+    auto tempImage = TInputImage::New();
     tempImage->SetRegions(erode->GetOutput()->GetBufferedRegion());
     tempImage->CopyInformation(this->GetInput());
 

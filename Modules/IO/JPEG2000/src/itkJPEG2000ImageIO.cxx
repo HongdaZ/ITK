@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -626,19 +626,19 @@ JPEG2000ImageIO::Read(void * buffer)
 
       // TODO: Read the void buffer within the tile ROI. How do we specify the
       // tile ROI iteration
-      for (unsigned int k = 0; k < numberOfComponents; k++)
+      for (unsigned int k = 0; k < numberOfComponents; ++k)
       {
         auto * charBuffer = (unsigned char *)buffer;
         charBuffer += k * sizePerComponentInBytes;
 
         charBuffer += initialStrideInBytes;
 
-        for (SizeValueType m = 0; m < tsizey; m++)
+        for (SizeValueType m = 0; m < tsizey; ++m)
         {
           charBuffer += priorStrideInBytes;
-          for (SizeValueType j = 0; j < sizePerStrideXInBytes; j++)
+          for (SizeValueType j = 0; j < sizePerStrideXInBytes; ++j)
           {
-            *charBuffer = (unsigned char)(*l_data_ptr++);
+            *charBuffer = static_cast<unsigned char>(*l_data_ptr++);
             charBuffer += numberOfComponents;
           }
           charBuffer += postStrideInBytes;
@@ -701,7 +701,7 @@ JPEG2000ImageIO::CanWriteFile(const char * filename)
 }
 
 void
-JPEG2000ImageIO ::WriteImageInformation()
+JPEG2000ImageIO::WriteImageInformation()
 {
   itkDebugMacro(<< "WriteImageInformation()");
 
@@ -735,7 +735,7 @@ JPEG2000ImageIO ::WriteImageInformation()
  *
  */
 void
-JPEG2000ImageIO ::Write(const void * buffer)
+JPEG2000ImageIO::Write(const void * buffer)
 {
   itkDebugMacro(<< "Write() " << this->GetNumberOfComponents());
 
@@ -774,7 +774,7 @@ JPEG2000ImageIO ::Write(const void * buffer)
                       << parameters.cp_ty0 << ") <= IMG_Y0( " << parameters.image_offset_y0 << ") ");
   }
 
-  for (int i = 0; i < parameters.numpocs; i++)
+  for (int i = 0; i < parameters.numpocs; ++i)
   {
     if (parameters.POC[i].prg == -1)
     {
@@ -794,11 +794,13 @@ JPEG2000ImageIO ::Write(const void * buffer)
 
     /* UniPG>> */
 #ifdef USE_JPWL
-    parameters.cp_comment = (char *)malloc(clen + strlen(version) + 11);
-    sprintf(parameters.cp_comment, "%s%s with JPWL", comment, version);
+    size_t commentLength = clen + strlen(version) + 11;
+    parameters.cp_comment = (char *)malloc(commentLength);
+    snprintf(parameters.cp_comment, commentLength, "%s%s with JPWL", comment, version);
 #else
-    parameters.cp_comment = (char *)malloc(clen + strlen(version) + 1);
-    sprintf(parameters.cp_comment, "%s%s", comment, version);
+    size_t commentLength = clen + strlen(version) + 11;
+    parameters.cp_comment = (char *)malloc(commentLength);
+    snprintf(parameters.cp_comment, commentLength, "%s%s", comment, version);
 #endif
     /* <<UniPG */
   }
@@ -827,7 +829,7 @@ JPEG2000ImageIO ::Write(const void * buffer)
 
   while (tw && th)
   {
-    numberOfResolutions++;
+    ++numberOfResolutions;
     tw >>= 1;
     th >>= 1;
   }
@@ -912,26 +914,26 @@ JPEG2000ImageIO ::Write(const void * buffer)
   if (this->GetComponentType() == IOComponentEnum::UCHAR)
   {
     const auto * charBuffer = (const unsigned char *)buffer;
-    for (SizeValueType j = 0; j < numberOfPixels; j++)
+    for (SizeValueType j = 0; j < numberOfPixels; ++j)
     {
-      for (unsigned int k = 0; k < this->GetNumberOfComponents(); k++)
+      for (unsigned int k = 0; k < this->GetNumberOfComponents(); ++k)
       {
         l_image->comps[k].data[index] = *charBuffer++;
       }
-      index++;
+      ++index;
     }
   }
 
   if (this->GetComponentType() == IOComponentEnum::USHORT)
   {
     const auto * shortBuffer = (const unsigned short *)buffer;
-    for (SizeValueType j = 0; j < numberOfPixels; j++)
+    for (SizeValueType j = 0; j < numberOfPixels; ++j)
     {
-      for (unsigned int k = 0; k < this->GetNumberOfComponents(); k++)
+      for (unsigned int k = 0; k < this->GetNumberOfComponents(); ++k)
       {
         l_image->comps[k].data[index] = *shortBuffer++;
       }
-      index++;
+      ++index;
     }
   }
   itkDebugMacro(<< " END COPY BUFFER");
@@ -1062,7 +1064,7 @@ JPEG2000ImageIO::GetHeaderSize() const
  * smaller than the LargestPossibleRegion and greater or equal to the
 RequestedRegion */
 ImageIORegion
-JPEG2000ImageIO ::GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegion & requestedRegion) const
+JPEG2000ImageIO::GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegion & requestedRegion) const
 {
   itkDebugMacro(<< "JPEG2000ImageIO::GenerateStreamableReadRegionFromRequestedRegion()");
   itkDebugMacro(<< "Requested region = " << requestedRegion);
@@ -1088,9 +1090,9 @@ JPEG2000ImageIO ::GenerateStreamableReadRegionFromRequestedRegion(const ImageIOR
 }
 
 void
-JPEG2000ImageIO ::ComputeRegionInTileBoundaries(unsigned int    dimension,
-                                                SizeValueType   tileSize,
-                                                ImageIORegion & streamableRegion) const
+JPEG2000ImageIO::ComputeRegionInTileBoundaries(unsigned int    dimension,
+                                               SizeValueType   tileSize,
+                                               ImageIORegion & streamableRegion) const
 {
   SizeValueType  requestedSize = streamableRegion.GetSize(dimension);
   IndexValueType requestedIndex = streamableRegion.GetIndex(dimension);
@@ -1119,7 +1121,7 @@ JPEG2000ImageIO ::ComputeRegionInTileBoundaries(unsigned int    dimension,
 }
 
 bool
-JPEG2000ImageIO ::CanStreamWrite()
+JPEG2000ImageIO::CanStreamWrite()
 {
   // we currently can't stream write for now...
   return false;

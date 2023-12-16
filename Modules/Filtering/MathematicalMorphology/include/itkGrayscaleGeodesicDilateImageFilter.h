@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /** \class GrayscaleGeodesicDilateImageFilter
- * \brief geodesic gray scale dilation of an image
+ * \brief Geodesic grayscale dilation of an image.
  *
  * Geodesic dilation operates on a "marker" image and a "mask"
  * image. The marker image is dilated using an elementary structuring
@@ -64,7 +64,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT GrayscaleGeodesicDilateImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GrayscaleGeodesicDilateImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(GrayscaleGeodesicDilateImageFilter);
 
   /** Standard class type aliases. */
   using Self = GrayscaleGeodesicDilateImageFilter;

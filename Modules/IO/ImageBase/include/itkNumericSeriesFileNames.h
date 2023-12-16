@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ namespace itk
  * contain a single unique, non-negative, integral value
  * (e.g. test.1.png, test2.png, foo.3, etc.).
  *
- * The file name is created from a sprintf-style series format which
+ * The file name is created from a snprintf-style series format which
  * should contain an integer format string like "%d". Bad formats will
  * cause the series reader to throw an exception.
  *
@@ -54,7 +54,7 @@ namespace itk
 class ITKIOImageBase_EXPORT NumericSeriesFileNames : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NumericSeriesFileNames);
+  ITK_DISALLOW_COPY_AND_MOVE(NumericSeriesFileNames);
 
   /** Standard class type aliases. */
   using Self = NumericSeriesFileNames;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ itkListSampleTest(int argc, char * argv[])
 
   unsigned int sampleSize = 25;
 
-  SampleType::Pointer sample = SampleType::New();
+  auto sample = SampleType::New();
 
   sample->SetMeasurementVectorSize(measurementVectorSize);
 
@@ -44,9 +44,9 @@ itkListSampleTest(int argc, char * argv[])
   std::cerr << "Sample length = " << sample->GetMeasurementVectorSize() << std::endl;
   std::cerr << "Vector length = " << itk::NumericTraits<MeasurementVectorType>::GetLength(mv) << std::endl;
 
-  for (unsigned int i = 0; i < sampleSize; i++)
+  for (unsigned int i = 0; i < sampleSize; ++i)
   {
-    for (unsigned int j = 0; j < measurementVectorSize; j++)
+    for (unsigned int j = 0; j < measurementVectorSize; ++j)
     {
       mv[j] = rand() / (RAND_MAX + 1.0);
     }
@@ -56,7 +56,7 @@ itkListSampleTest(int argc, char * argv[])
   // Try to push a measurement vector size different from what is set
   MeasurementVectorType mvLargerSize(measurementVectorSize + 1);
 
-  for (unsigned int j = 0; j <= measurementVectorSize; j++)
+  for (unsigned int j = 0; j <= measurementVectorSize; ++j)
   {
     mvLargerSize[j] = rand() / (RAND_MAX + 1.0);
   }
@@ -64,9 +64,9 @@ itkListSampleTest(int argc, char * argv[])
   try
   {
     sample->PushBack(mvLargerSize);
-    std::cerr << "Exception was expected since the vector that was\
-                  added to the list has size different from what is set"
-              << std::endl;
+    std::cerr
+      << "Exception was expected since the vector that was added to the list has size different from what is set"
+      << std::endl;
     return EXIT_FAILURE;
   }
   catch (const itk::ExceptionObject & excp)
@@ -393,7 +393,7 @@ itkListSampleTest(int argc, char * argv[])
 
   using VariableSizeListSampleType = itk::Statistics::ListSample<VariableSizeMeasurementVectorType>;
 
-  VariableSizeListSampleType::Pointer variableSizeSample = VariableSizeListSampleType::New();
+  auto variableSizeSample = VariableSizeListSampleType::New();
 
   constexpr unsigned int initialSize = 19;
   variableSizeSample->SetMeasurementVectorSize(initialSize);
@@ -406,13 +406,13 @@ itkListSampleTest(int argc, char * argv[])
     return EXIT_FAILURE;
   }
 
-  VariableSizeMeasurementVectorType variableLenghtVector;
+  VariableSizeMeasurementVectorType variableLengthVector;
   constexpr unsigned int            newsize = 42;
-  variableLenghtVector.SetSize(newsize);
+  variableLengthVector.SetSize(newsize);
 
   variableSizeSample->Clear();
   variableSizeSample->SetMeasurementVectorSize(newsize);
-  variableSizeSample->PushBack(variableLenghtVector);
+  variableSizeSample->PushBack(variableLengthVector);
 
   // Attempt to resize a non-empty ListSample should throw an exception.
   try
@@ -479,9 +479,9 @@ itkListSampleTest(int argc, char * argv[])
   //
   sample->Clear();
   MeasurementVectorType mvt(measurementVectorSize);
-  for (unsigned int i = 0; i < sampleSize; i++)
+  for (unsigned int i = 0; i < sampleSize; ++i)
   {
-    for (unsigned int j = 0; j < measurementVectorSize; j++)
+    for (unsigned int j = 0; j < measurementVectorSize; ++j)
     {
       mvt[j] = j + i * i;
     }
@@ -563,7 +563,7 @@ itkListSampleTest(int argc, char * argv[])
 
     std::cerr << "Trying Iterator Constructor with instance identifier 7...";
     IteratorType iter6(sample);
-    for (unsigned int kk = 0; kk < 7; kk++)
+    for (unsigned int kk = 0; kk < 7; ++kk)
     {
       ++iter6;
     }
@@ -659,14 +659,14 @@ itkListSampleTest(int argc, char * argv[])
 
     ConstIteratorType iter9(sample);
     std::cerr << "Trying Instance identifier = " << iter9.GetInstanceIdentifier() << "...";
-    for (unsigned int kk = 0; kk < 7; kk++)
+    for (unsigned int kk = 0; kk < 7; ++kk)
     {
       ++iter9;
     }
 
     MeasurementVectorType vector9a = iter9.GetMeasurementVector();
     MeasurementVectorType vector9b = sample->GetMeasurementVector(7);
-    for (unsigned int kitr = 0; kitr < measurementVectorSize; kitr++)
+    for (unsigned int kitr = 0; kitr < measurementVectorSize; ++kitr)
     {
       if (itk::Math::abs(vector9b[kitr] - vector9a[kitr]))
       {

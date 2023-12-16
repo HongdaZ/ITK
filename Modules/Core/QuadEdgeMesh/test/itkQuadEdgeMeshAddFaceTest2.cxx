@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -77,7 +77,7 @@ itkQuadEdgeMeshAddFaceTest2(int, char *[])
   pts[6][1] = 0.0;
   pts[6][2] = 0.0;
 
-  for (int i = 0; i < numPts; i++)
+  for (int i = 0; i < numPts; ++i)
   {
     mesh->SetPoint(i, pts[i]);
   }
@@ -88,7 +88,7 @@ itkQuadEdgeMeshAddFaceTest2(int, char *[])
   CellType::CellAutoPointer cellpointer;
   QEPolygonCellType *       poly;
 
-  for (int i = 0; i < numCells; i++)
+  for (int i = 0; i < numCells; ++i)
   {
     poly = new QEPolygonCellType(3);
     cellpointer.TakeOwnership(poly);
@@ -104,7 +104,7 @@ itkQuadEdgeMeshAddFaceTest2(int, char *[])
   std::cout << "Test whether the fourth face was rejected" << std::endl;
 
   using TopologyCheckerType = itk::QuadEdgeMeshTopologyChecker<MeshType>;
-  TopologyCheckerType::Pointer checker = TopologyCheckerType::New();
+  auto checker = TopologyCheckerType::New();
 
   checker->SetMesh(mesh);
   checker->SetExpectedNumberOfPoints(7);

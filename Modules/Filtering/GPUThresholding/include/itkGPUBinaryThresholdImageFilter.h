@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -103,7 +103,7 @@ class ITK_TEMPLATE_EXPORT GPUBinaryThresholdImageFilter
       BinaryThresholdImageFilter<TInputImage, TOutputImage>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUBinaryThresholdImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(GPUBinaryThresholdImageFilter);
 
   /** Standard class type aliases. */
   using Self = GPUBinaryThresholdImageFilter;
@@ -155,7 +155,7 @@ protected:
 class GPUBinaryThresholdImageFilterFactory : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUBinaryThresholdImageFilterFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(GPUBinaryThresholdImageFilterFactory);
 
   using Self = GPUBinaryThresholdImageFilterFactory;
   using Superclass = ObjectFactoryBase;
@@ -184,23 +184,24 @@ public:
   static void
   RegisterOneFactory()
   {
-    GPUBinaryThresholdImageFilterFactory::Pointer factory = GPUBinaryThresholdImageFilterFactory::New();
+    auto factory = GPUBinaryThresholdImageFilterFactory::New();
 
     itk::ObjectFactoryBase::RegisterFactory(factory);
   }
 
 private:
-#define OverrideThresholdFilterTypeMacro(ipt, opt, dm)                                                                 \
-  {                                                                                                                    \
-    using InputImageType = itk::Image<ipt, dm>;                                                                        \
-    using OutputImageType = itk::Image<opt, dm>;                                                                       \
-    this->RegisterOverride(                                                                                            \
-      typeid(itk::BinaryThresholdImageFilter<InputImageType, OutputImageType>).name(),                                 \
-      typeid(itk::GPUBinaryThresholdImageFilter<InputImageType, OutputImageType>).name(),                              \
-      "GPU Binary Threshold Image Filter Override",                                                                    \
-      true,                                                                                                            \
-      itk::CreateObjectFunction<GPUBinaryThresholdImageFilter<InputImageType, OutputImageType>>::New());               \
-  }
+#define OverrideThresholdFilterTypeMacro(ipt, opt, dm)                                                   \
+  {                                                                                                      \
+    using InputImageType = itk::Image<ipt, dm>;                                                          \
+    using OutputImageType = itk::Image<opt, dm>;                                                         \
+    this->RegisterOverride(                                                                              \
+      typeid(itk::BinaryThresholdImageFilter<InputImageType, OutputImageType>).name(),                   \
+      typeid(itk::GPUBinaryThresholdImageFilter<InputImageType, OutputImageType>).name(),                \
+      "GPU Binary Threshold Image Filter Override",                                                      \
+      true,                                                                                              \
+      itk::CreateObjectFunction<GPUBinaryThresholdImageFilter<InputImageType, OutputImageType>>::New()); \
+  }                                                                                                      \
+  ITK_MACROEND_NOOP_STATEMENT
 
   GPUBinaryThresholdImageFilterFactory()
   {

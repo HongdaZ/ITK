@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,19 +46,19 @@ namespace itk
  *  This code was taken from the Insight Journal paper:
  *
  *      "Cell Tracking using Coupled Active Surfaces for Nuclei and Membranes"
- *      http://www.insight-journal.org/browse/publication/642
+ *      https://www.insight-journal.org/browse/publication/642
  *      https://hdl.handle.net/10380/3055
  *
  *  That is based on the papers:
  *
  *      "Level Set Segmentation: Active Contours without edge"
- *      http://www.insight-journal.org/browse/publication/322
+ *      https://www.insight-journal.org/browse/publication/322
  *      https://hdl.handle.net/1926/1532
  *
  *      and
  *
  *      "Level set segmentation using coupled active surfaces"
- *      http://www.insight-journal.org/browse/publication/323
+ *      https://www.insight-journal.org/browse/publication/323
  *      https://hdl.handle.net/1926/1533
  *
  *
@@ -68,7 +68,7 @@ template <typename TInputImage, typename TFeatureImage>
 class ITK_TEMPLATE_EXPORT RegionBasedLevelSetFunctionData : public LightObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegionBasedLevelSetFunctionData);
+  ITK_DISALLOW_COPY_AND_MOVE(RegionBasedLevelSetFunctionData);
 
   using Self = RegionBasedLevelSetFunctionData;
   using Superclass = LightObject;
@@ -116,7 +116,7 @@ public:
   bool
   VerifyInsideRegion(const TIndex & featureIndex)
   {
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       if ((featureIndex[j] < static_cast<InputIndexValueType>(this->m_Start[j])) ||
           (featureIndex[j] > static_cast<InputIndexValueType>(this->m_End[j])))

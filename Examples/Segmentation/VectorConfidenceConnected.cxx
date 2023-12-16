@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -96,12 +96,11 @@ main(int argc, char * argv[])
   using ReaderType = itk::ImageFileReader<InputImageType>;
   using WriterType = itk::ImageFileWriter<OutputImageType>;
 
-  ReaderType::Pointer reader = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
+  auto reader = ReaderType::New();
+  auto writer = WriterType::New();
 
   reader->SetFileName(argv[1]);
   writer->SetFileName(argv[2]);
-
 
   //  Software Guide : BeginLatex
   //
@@ -124,8 +123,7 @@ main(int argc, char * argv[])
   //  Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  ConnectedFilterType::Pointer confidenceConnected =
-    ConnectedFilterType::New();
+  auto confidenceConnected = ConnectedFilterType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -274,8 +272,9 @@ main(int argc, char * argv[])
   //  \begin{center}
   //  \begin{tabular}{|l|c|c|c|c|}
   //  \hline
-  //  Structure & Seed Index & Multiplier & Iterations & Output Image \\
-  //  \hline Rectum & $(70,120)$ & 7 & 1 & Second from left in Figure
+  //  Structure & Seed Index & Multiplier & Iterations
+  //  & Output Image \\ \hline
+  //  Rectum & $(70,120)$ & 7 & 1 & Second from left in Figure
   //  \ref{fig:VectorConfidenceConnectedOutput} \\ \hline Rectum & $(23, 93)$
   //  & 7 & 1 & Third  from left in Figure
   //  \ref{fig:VectorConfidenceConnectedOutput} \\ \hline Vitreo & $(66, 66)$
@@ -283,20 +282,19 @@ main(int argc, char * argv[])
   //  \ref{fig:VectorConfidenceConnectedOutput} \\ \hline \end{tabular}
   //  \end{center}
   //
-  // \begin{figure} \center
-  // \includegraphics[width=0.24\textwidth]{VisibleWomanEyeSlice}
-  // \includegraphics[width=0.24\textwidth]{VectorConfidenceConnectedOutput1}
-  // \includegraphics[width=0.24\textwidth]{VectorConfidenceConnectedOutput2}
-  // \includegraphics[width=0.24\textwidth]{VectorConfidenceConnectedOutput3}
-  // \itkcaption[VectorConfidenceConnected segmentation results]{Segmentation
-  // results of the VectorConfidenceConnected filter for various seed points.}
-  // \label{fig:VectorConfidenceConnectedOutput}
-  // \end{figure}
+  //  \begin{figure} \center
+  //  \includegraphics[width=0.24\textwidth]{VisibleWomanEyeSlice}
+  //  \includegraphics[width=0.24\textwidth]{VectorConfidenceConnectedOutput1}
+  //  \includegraphics[width=0.24\textwidth]{VectorConfidenceConnectedOutput2}
+  //  \includegraphics[width=0.24\textwidth]{VectorConfidenceConnectedOutput3}
+  //  \itkcaption[VectorConfidenceConnected segmentation results]{Segmentation
+  //  results of the VectorConfidenceConnected filter for various seed
+  //  points.} \label{fig:VectorConfidenceConnectedOutput} \end{figure}
   //
-  // The coloration of muscular tissue makes it easy to distinguish them from
-  // the surrounding anatomical structures. The optic vitrea on the other hand
-  // has a coloration that is not very homogeneous inside the eyeball and
-  // does not facilitate a full segmentation based only on color.
+  //  The coloration of muscular tissue makes it easy to distinguish them from
+  //  the surrounding anatomical structures. The optic vitrea on the other
+  //  hand has a coloration that is not very homogeneous inside the eyeball
+  //  and does not facilitate a full segmentation based only on color.
   //
   //  Software Guide : EndLatex
 

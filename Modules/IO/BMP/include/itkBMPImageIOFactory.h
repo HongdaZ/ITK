@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,14 +25,14 @@
 namespace itk
 {
 /**
- *\class BMPImageIOFactory
+ * \class BMPImageIOFactory
  * \brief Create instances of BMPImageIO objects using an object factory.
  * \ingroup ITKIOBMP
  */
 class ITKIOBMP_EXPORT BMPImageIOFactory : public ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BMPImageIOFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(BMPImageIOFactory);
 
   /** Standard class type aliases. */
   using Self = BMPImageIOFactory;
@@ -57,7 +57,7 @@ public:
   static void
   RegisterOneFactory()
   {
-    BMPImageIOFactory::Pointer BMPFactory = BMPImageIOFactory::New();
+    auto BMPFactory = BMPImageIOFactory::New();
 
     ObjectFactoryBase::RegisterFactoryInternal(BMPFactory);
   }

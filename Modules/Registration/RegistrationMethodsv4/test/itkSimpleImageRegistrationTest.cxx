@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -118,11 +118,12 @@ PerformSimpleImageRegistration(int argc, char * argv[])
 {
   if (argc < 7)
   {
-    std::cout << itkNameOfTestExecutableMacro(argv)
-              << " pixelType imageDimension fixedImage movingImage outputImage numberOfAffineIterations "
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " pixelType imageDimension fixedImage movingImage outputImage numberOfAffineIterations "
                  "numberOfDeformableIterations"
               << std::endl;
-    exit(1);
+    return EXIT_FAILURE;
   }
 
   using PixelType = TPixel;
@@ -131,14 +132,14 @@ PerformSimpleImageRegistration(int argc, char * argv[])
 
   using ImageReaderType = itk::ImageFileReader<FixedImageType>;
 
-  typename ImageReaderType::Pointer fixedImageReader = ImageReaderType::New();
+  auto fixedImageReader = ImageReaderType::New();
   fixedImageReader->SetFileName(argv[3]);
   fixedImageReader->Update();
   typename FixedImageType::Pointer fixedImage = fixedImageReader->GetOutput();
   fixedImage->Update();
   fixedImage->DisconnectPipeline();
 
-  typename ImageReaderType::Pointer movingImageReader = ImageReaderType::New();
+  auto movingImageReader = ImageReaderType::New();
   movingImageReader->SetFileName(argv[4]);
   movingImageReader->Update();
   typename MovingImageType::Pointer movingImage = movingImageReader->GetOutput();
@@ -146,28 +147,38 @@ PerformSimpleImageRegistration(int argc, char * argv[])
   movingImage->DisconnectPipeline();
 
   using AffineTransformType = itk::AffineTransform<double, VImageDimension>;
-  typename AffineTransformType::Pointer affineTransform = AffineTransformType::New();
+  auto affineTransform = AffineTransformType::New();
 
   using AffineRegistrationType = itk::ImageRegistrationMethodv4<FixedImageType, MovingImageType>;
-  typename AffineRegistrationType::Pointer affineSimple = AffineRegistrationType::New();
+  auto affineSimple = AffineRegistrationType::New();
   affineSimple->SetObjectName("affineSimple");
+
+  // Test exceptions
+  itk::SizeValueType numberOfLevels = affineSimple->GetNumberOfLevels();
+  ITK_TRY_EXPECT_EXCEPTION(affineSimple->GetShrinkFactorsPerDimension(numberOfLevels + 1));
+
+
   affineSimple->SetFixedImage(fixedImage);
+  ITK_TEST_SET_GET_VALUE(fixedImage, affineSimple->GetFixedImage());
+
   affineSimple->SetMovingImage(movingImage);
+  ITK_TEST_SET_GET_VALUE(movingImage, affineSimple->GetMovingImage());
 
   affineSimple->SetInitialTransform(affineTransform);
-  affineSimple->InPlaceOn();
 
-  // Ensuring code coverage for boolean macros
-  affineSimple->SmoothingSigmasAreSpecifiedInPhysicalUnitsOff();
-  affineSimple->SetSmoothingSigmasAreSpecifiedInPhysicalUnits(false);
-  if (affineSimple->GetSmoothingSigmasAreSpecifiedInPhysicalUnits() != false)
-  {
-    std::cerr << "Returned unexpected value of TRUE." << std::endl;
-    return EXIT_FAILURE;
-  }
+  auto smoothingSigmasAreSpecifiedInPhysicalUnits = true;
+  ITK_TEST_SET_GET_BOOLEAN(
+    affineSimple, SmoothingSigmasAreSpecifiedInPhysicalUnits, smoothingSigmasAreSpecifiedInPhysicalUnits);
+
+  auto inPlace = true;
+  ITK_TEST_SET_GET_BOOLEAN(affineSimple, InPlace, inPlace);
+
+  auto initializeCenterOfLinearOutputTransform = true;
+  ITK_TEST_SET_GET_BOOLEAN(
+    affineSimple, InitializeCenterOfLinearOutputTransform, initializeCenterOfLinearOutputTransform);
 
   using MIMetricType = itk::JointHistogramMutualInformationImageToImageMetricv4<FixedImageType, MovingImageType>;
-  typename MIMetricType::Pointer mutualInformationMetric = MIMetricType::New();
+  auto mutualInformationMetric = MIMetricType::New();
   mutualInformationMetric->SetNumberOfHistogramBins(20);
   mutualInformationMetric->SetUseMovingImageGradientFilter(false);
   mutualInformationMetric->SetUseFixedImageGradientFilter(false);
@@ -176,17 +187,9 @@ PerformSimpleImageRegistration(int argc, char * argv[])
   affineSimple->SetMetric(mutualInformationMetric);
 
   using AffineScalesEstimatorType = itk::RegistrationParameterScalesFromPhysicalShift<MIMetricType>;
-  typename AffineScalesEstimatorType::Pointer scalesEstimator1 = AffineScalesEstimatorType::New();
+  auto scalesEstimator1 = AffineScalesEstimatorType::New();
   scalesEstimator1->SetMetric(mutualInformationMetric);
   scalesEstimator1->SetTransformForward(true);
-
-  affineSimple->SmoothingSigmasAreSpecifiedInPhysicalUnitsOn();
-  affineSimple->SetSmoothingSigmasAreSpecifiedInPhysicalUnits(true);
-  if (affineSimple->GetSmoothingSigmasAreSpecifiedInPhysicalUnits() != true)
-  {
-    std::cerr << "Returned unexpected value of FALSE." << std::endl;
-    return EXIT_FAILURE;
-  }
 
   // Smooth by specified gaussian sigmas for each level.  These values are specified in
   // physical units. Sigmas of zero cause inconsistency between some platforms.
@@ -197,6 +200,7 @@ PerformSimpleImageRegistration(int argc, char * argv[])
     smoothingSigmasPerLevel[1] = 1;
     smoothingSigmasPerLevel[2] = 1; // 0;
     affineSimple->SetSmoothingSigmasPerLevel(smoothingSigmasPerLevel);
+    ITK_TEST_SET_GET_VALUE(smoothingSigmasPerLevel, affineSimple->GetSmoothingSigmasPerLevel());
   }
 
   using GradientDescentOptimizerv4Type = itk::GradientDescentOptimizerv4;
@@ -216,7 +220,7 @@ PerformSimpleImageRegistration(int argc, char * argv[])
   affineOptimizer->SetScalesEstimator(scalesEstimator1);
 
   using AffineCommandType = CommandIterationUpdate<AffineRegistrationType>;
-  typename AffineCommandType::Pointer affineObserver = AffineCommandType::New();
+  auto affineObserver = AffineCommandType::New();
   affineSimple->AddObserver(itk::MultiResolutionIterationEvent(), affineObserver);
 
   {
@@ -236,9 +240,9 @@ PerformSimpleImageRegistration(int argc, char * argv[])
   using RealType = typename AffineRegistrationType::RealType;
 
   using VectorType = itk::Vector<RealType, VImageDimension>;
-  VectorType zeroVector(0.0);
+  constexpr VectorType zeroVector{};
   using DisplacementFieldType = itk::Image<VectorType, VImageDimension>;
-  typename DisplacementFieldType::Pointer displacementField = DisplacementFieldType::New();
+  auto displacementField = DisplacementFieldType::New();
   displacementField->CopyInformation(fixedImage);
   displacementField->SetRegions(fixedImage->GetBufferedRegion());
   displacementField->Allocate();
@@ -247,7 +251,7 @@ PerformSimpleImageRegistration(int argc, char * argv[])
   using DisplacementFieldTransformType =
     itk::GaussianSmoothingOnUpdateDisplacementFieldTransform<RealType, VImageDimension>;
 
-  typename DisplacementFieldTransformType::Pointer fieldTransform = DisplacementFieldTransformType::New();
+  auto fieldTransform = DisplacementFieldTransformType::New();
   fieldTransform->SetGaussianSmoothingVarianceForTheUpdateField(0);
   fieldTransform->SetGaussianSmoothingVarianceForTheTotalField(1.5);
   fieldTransform->SetDisplacementField(displacementField);
@@ -258,7 +262,7 @@ PerformSimpleImageRegistration(int argc, char * argv[])
   displacementFieldSimple->SetObjectName("displacementFieldSimple");
 
   using CorrelationMetricType = itk::ANTSNeighborhoodCorrelationImageToImageMetricv4<FixedImageType, MovingImageType>;
-  typename CorrelationMetricType::Pointer    correlationMetric = CorrelationMetricType::New();
+  auto                                       correlationMetric = CorrelationMetricType::New();
   typename CorrelationMetricType::RadiusType radius;
   radius.Fill(4);
   correlationMetric->SetRadius(radius);
@@ -269,11 +273,11 @@ PerformSimpleImageRegistration(int argc, char * argv[])
   // correlationMetric->SetFloatingPointCorrectionResolution(1e4);
 
   using ScalesEstimatorType = itk::RegistrationParameterScalesFromPhysicalShift<CorrelationMetricType>;
-  typename ScalesEstimatorType::Pointer scalesEstimator = ScalesEstimatorType::New();
+  auto scalesEstimator = ScalesEstimatorType::New();
   scalesEstimator->SetMetric(correlationMetric);
   scalesEstimator->SetTransformForward(true);
 
-  typename GradientDescentOptimizerv4Type::Pointer optimizer = GradientDescentOptimizerv4Type::New();
+  auto optimizer = GradientDescentOptimizerv4Type::New();
   optimizer->SetLearningRate(1.0);
 #ifdef NDEBUG
   optimizer->SetNumberOfIterations(std::stoi(argv[7]));
@@ -286,7 +290,11 @@ PerformSimpleImageRegistration(int argc, char * argv[])
 
   displacementFieldSimple->SetFixedImage(fixedImage);
   displacementFieldSimple->SetMovingImage(movingImage);
-  displacementFieldSimple->SetNumberOfLevels(3);
+
+  numberOfLevels = 3;
+  displacementFieldSimple->SetNumberOfLevels(numberOfLevels);
+  ITK_TEST_SET_GET_VALUE(numberOfLevels, displacementFieldSimple->GetNumberOfLevels());
+
   displacementFieldSimple->SetMovingInitialTransformInput(affineSimple->GetTransformOutput());
   displacementFieldSimple->SetMetric(correlationMetric);
   displacementFieldSimple->SetOptimizer(optimizer);
@@ -323,14 +331,14 @@ PerformSimpleImageRegistration(int argc, char * argv[])
 
   typename DisplacementFieldRegistrationType::TransformParametersAdaptorsContainerType adaptors;
 
-  for (unsigned int level = 0; level < shrinkFactorsPerLevel.Size(); level++)
+  for (unsigned int level = 0; level < shrinkFactorsPerLevel.Size(); ++level)
   {
     // We use the shrink image filter to calculate the fixed parameters of the virtual
     // domain at each level.  To speed up calculation and avoid unnecessary memory
     // usage, we could calculate these fixed parameters directly.
 
     using ShrinkFilterType = itk::ShrinkImageFilter<DisplacementFieldType, DisplacementFieldType>;
-    typename ShrinkFilterType::Pointer shrinkFilter = ShrinkFilterType::New();
+    auto shrinkFilter = ShrinkFilterType::New();
     shrinkFilter->SetShrinkFactors(shrinkFactorsPerLevel[level]);
     shrinkFilter->SetInput(displacementField);
     shrinkFilter->Update();
@@ -351,16 +359,13 @@ PerformSimpleImageRegistration(int argc, char * argv[])
     DisplacementFieldRegistrationCommandType::New();
   displacementFieldSimple->AddObserver(itk::IterationEvent(), displacementFieldObserver);
 
-  try
-  {
-    std::cout << "Displ. txf - gauss update" << std::endl;
-    displacementFieldSimple->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cerr << "Exception caught: " << e << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(displacementFieldSimple->Update());
+
+
+  std::cout << "CurrentIteration: " << displacementFieldSimple->GetCurrentIteration() << std::endl;
+  std::cout << "CurrentMetricValue: " << displacementFieldSimple->GetCurrentMetricValue() << std::endl;
+  std::cout << "CurrentConvergenceValue: " << displacementFieldSimple->GetCurrentConvergenceValue() << std::endl;
+  std::cout << "IsConverged: " << displacementFieldSimple->GetIsConverged() << std::endl;
 
   using ImageMetricType = itk::ImageToImageMetricv4<FixedImageType, MovingImageType>;
   typename ImageMetricType::ConstPointer imageMetric = dynamic_cast<const ImageMetricType *>(affineSimple->GetMetric());
@@ -369,7 +374,7 @@ PerformSimpleImageRegistration(int argc, char * argv[])
             << " Last LearningRate: " << affineOptimizer->GetLearningRate() << std::endl
             << " Use FltPtCorrex: " << imageMetric->GetUseFloatingPointCorrection() << std::endl
             << " FltPtCorrexRes: " << imageMetric->GetFloatingPointCorrectionResolution() << std::endl
-            << " Number of threads used:" << std::endl
+            << " Number of work units used:" << std::endl
             << "  metric: " << imageMetric->GetNumberOfWorkUnitsUsed() << std::endl
             << "  optimizer: " << affineOptimizer->GetNumberOfWorkUnits() << std::endl;
 
@@ -378,17 +383,17 @@ PerformSimpleImageRegistration(int argc, char * argv[])
             << "Last LearningRate: " << optimizer->GetLearningRate() << std::endl
             << "Use FltPtCorrex: " << correlationMetric->GetUseFloatingPointCorrection() << std::endl
             << "FltPtCorrexRes: " << correlationMetric->GetFloatingPointCorrectionResolution() << std::endl
-            << "Number of threads used:" << std::endl
+            << "Number of work units used:" << std::endl
             << "  metric: " << correlationMetric->GetNumberOfWorkUnitsUsed()
             << "  optimizer: " << displacementFieldSimple->GetOptimizer()->GetNumberOfWorkUnits() << std::endl;
 
   using CompositeTransformType = itk::CompositeTransform<RealType, VImageDimension>;
-  typename CompositeTransformType::Pointer compositeTransform = CompositeTransformType::New();
+  auto compositeTransform = CompositeTransformType::New();
   compositeTransform->AddTransform(affineSimple->GetModifiableTransform());
   compositeTransform->AddTransform(displacementFieldSimple->GetModifiableTransform());
 
   using ResampleFilterType = itk::ResampleImageFilter<MovingImageType, FixedImageType>;
-  typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
+  auto resampler = ResampleFilterType::New();
   resampler->SetTransform(compositeTransform);
   resampler->SetInput(movingImage);
   resampler->SetSize(fixedImage->GetLargestPossibleRegion().GetSize());
@@ -399,7 +404,7 @@ PerformSimpleImageRegistration(int argc, char * argv[])
   resampler->Update();
 
   using WriterType = itk::ImageFileWriter<FixedImageType>;
-  typename WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(argv[5]);
   writer->SetInput(resampler->GetOutput());
   writer->Update();
@@ -412,11 +417,12 @@ itkSimpleImageRegistrationTest(int argc, char * argv[])
 {
   if (argc < 7)
   {
-    std::cout << itkNameOfTestExecutableMacro(argv)
-              << " pixelType imageDimension fixedImage movingImage outputImage numberOfAffineIterations "
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " pixelType imageDimension fixedImage movingImage outputImage numberOfAffineIterations "
                  "numberOfDeformableIterations"
               << std::endl;
-    exit(1);
+    return EXIT_FAILURE;
   }
 
   itk::Statistics::MersenneTwisterRandomVariateGenerator::GetInstance()->SetSeed(121212);

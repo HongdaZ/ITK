@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,8 @@
  *=========================================================================*/
 
 #include "itkCumulativeGaussianOptimizer.h"
+#include "itkMath.h"
+#include "itkTestingMacros.h"
 
 #include <iostream>
 
@@ -42,11 +44,14 @@ itkCumulativeGaussianOptimizerTest(int, char *[])
 
   // Typedef and initialization for the Cumulative Gaussian Optimizer.
   using CumulativeGaussianOptimizerType = itk::CumulativeGaussianOptimizer;
-  CumulativeGaussianOptimizerType::Pointer optimizer = CumulativeGaussianOptimizerType::New();
+  auto optimizer = CumulativeGaussianOptimizerType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(optimizer, CumulativeGaussianOptimizer, MultipleValuedNonLinearOptimizer);
+
 
   // Typedef and initialization for the Cumulative Gaussian Cost Function.
   using CostFunctionType = itk::CumulativeGaussianCostFunction;
-  CostFunctionType::Pointer costFunction = CostFunctionType::New();
+  auto costFunction = CostFunctionType::New();
 
   // Declare and initialize the data array.
   // CostFunctionType::MeasureType * cumGaussianArray = new CostFunctionType::MeasureType();
@@ -74,9 +79,11 @@ itkCumulativeGaussianOptimizerTest(int, char *[])
 
   // Set the tolerance for the Gaussian iteration error.
   optimizer->SetDifferenceTolerance(differenceTolerance);
+  ITK_TEST_SET_GET_VALUE(differenceTolerance, optimizer->GetDifferenceTolerance());
 
   // Print results after each iteration.
-  optimizer->SetVerbose(true);
+  bool verbose = true;
+  ITK_TEST_SET_GET_BOOLEAN(optimizer, Verbose, verbose);
 
   // Set the data array.
   optimizer->SetDataArray(cumGaussianArray);
@@ -88,10 +95,10 @@ itkCumulativeGaussianOptimizerTest(int, char *[])
 
   // The test passes if the difference between the given parameters and estimated parameters
   // is less than or equal to 0.1.
-  if (std::fabs(optimizer->GetComputedMean() - mean) <= 0.1 &&
-      std::fabs(optimizer->GetComputedStandardDeviation() - standardDeviation) <= 0.1 &&
-      std::fabs(optimizer->GetUpperAsymptote() - upperAsymptote) <= 0.1 &&
-      std::fabs(optimizer->GetLowerAsymptote() - lowerAsymptote) <= 0.1)
+  if (itk::Math::abs(optimizer->GetComputedMean() - mean) <= 0.1 &&
+      itk::Math::abs(optimizer->GetComputedStandardDeviation() - standardDeviation) <= 0.1 &&
+      itk::Math::abs(optimizer->GetUpperAsymptote() - upperAsymptote) <= 0.1 &&
+      itk::Math::abs(optimizer->GetLowerAsymptote() - lowerAsymptote) <= 0.1)
   {
     std::cerr << std::endl << "Test Passed with a Fit Error of " << optimizer->GetFitError() << std::endl << std::endl;
 
@@ -100,6 +107,9 @@ itkCumulativeGaussianOptimizerTest(int, char *[])
     std::cerr << "Fitted standard deviation = " << optimizer->GetComputedStandardDeviation() << std::endl;
     std::cerr << "Fitted upper intensity = " << optimizer->GetUpperAsymptote() << std::endl;
     std::cerr << "Fitted lower intensity = " << optimizer->GetLowerAsymptote() << std::endl;
+
+    std::cerr << "FinalSampledArray: " << optimizer->GetFinalSampledArray() << std::endl;
+
     std::cout << "[TEST DONE]" << std::endl;
     return EXIT_SUCCESS;
   }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ public:
   using VectorLengthType = unsigned int;
   using OffsetType = typename ImageType::OffsetType;
 
-  using NeighborhoodType = Neighborhood<InternalPixelType *, TImage ::ImageDimension>;
+  using NeighborhoodType = Neighborhood<InternalPixelType *, TImage::ImageDimension>;
 
   template <typename TOutput = ImageType>
   using ImageBoundaryConditionType = ImageBoundaryCondition<ImageType, TOutput>;
@@ -96,7 +96,7 @@ public:
   {
     InternalPixelType * const truePixelPointer = pixelPointer + (pixelPointer - m_Begin) * m_OffsetMultiplier;
 
-    for (VectorLengthType i = 0; i < m_VectorLength; i++)
+    for (VectorLengthType i = 0; i < m_VectorLength; ++i)
     {
       truePixelPointer[i] = p[i];
     }

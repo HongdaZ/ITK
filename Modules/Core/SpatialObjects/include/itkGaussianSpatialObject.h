@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class GaussianSpatialObject
+ * \class GaussianSpatialObject
  *
  * \brief Represents a multivariate Gaussian function.
  *
@@ -44,7 +44,7 @@ template <unsigned int TDimension = 3>
 class ITK_TEMPLATE_EXPORT GaussianSpatialObject : public SpatialObject<TDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GaussianSpatialObject);
+  ITK_DISALLOW_COPY_AND_MOVE(GaussianSpatialObject);
 
   using Self = GaussianSpatialObject;
   using ScalarType = double;
@@ -52,9 +52,9 @@ public:
   using ConstPointer = SmartPointer<const Self>;
   using Superclass = SpatialObject<TDimension>;
   using SuperclassPointer = SmartPointer<Superclass>;
-  using PointType = typename Superclass::PointType;
-  using TransformType = typename Superclass::TransformType;
-  using BoundingBoxType = typename Superclass::BoundingBoxType;
+  using typename Superclass::PointType;
+  using typename Superclass::TransformType;
+  using typename Superclass::BoundingBoxType;
 
   static constexpr unsigned int ObjectDimensions = TDimension;
 

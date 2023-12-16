@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ itkFEMElement3DC0LinearTetrahedronMembraneTest(int argc, char * argv[])
   itk::FEMFactoryBase::GetFactory()->RegisterDefaultTypes();
 
   using Solver3DType = itk::fem::Solver<3>;
-  Solver3DType::Pointer solver = Solver3DType::New();
+  auto solver = Solver3DType::New();
 
   using FEMSpatialObjectReaderType = itk::FEMSpatialObjectReader<3>;
   using FEMSpatialObjectReaderPointer = FEMSpatialObjectReaderType::Pointer;
@@ -77,11 +77,11 @@ itkFEMElement3DC0LinearTetrahedronMembraneTest(int argc, char * argv[])
   float exectedResult[12] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.66667e-05f, 0.0f, 0.0f };
 
   bool foundError = false;
-  for (int i = 0; i < numDOF; i++)
+  for (int i = 0; i < numDOF; ++i)
   {
     soln[i] = solver->GetSolution(i);
     // std::cout << "Solution[" << i << "]:" << soln[i] << std::endl;
-    if (std::fabs(exectedResult[i] - soln[i]) > 0.000001)
+    if (itk::Math::abs(exectedResult[i] - soln[i]) > 0.000001)
     {
       std::cout << "ERROR: Index " << i << ". Expected " << exectedResult[i] << " Solution " << soln[i] << std::endl;
       foundError = true;
@@ -95,7 +95,7 @@ itkFEMElement3DC0LinearTetrahedronMembraneTest(int argc, char * argv[])
   }
 
   // to write the deformed mesh
-  FEMObjectSpatialObjectType::Pointer femSODef = FEMObjectSpatialObjectType::New();
+  auto femSODef = FEMObjectSpatialObjectType::New();
   femSODef->SetFEMObject(solver->GetOutput());
   using FEMSpatialObjectWriterType = itk::FEMSpatialObjectWriter<3>;
   using FEMSpatialObjectWriterPointer = FEMSpatialObjectWriterType::Pointer;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ class ScalarChanAndVeseLevelSetFunctionTestHelper
   : public ScalarChanAndVeseLevelSetFunction<TInput, TFeature, TSharedData>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ScalarChanAndVeseLevelSetFunctionTestHelper);
+  ITK_DISALLOW_COPY_AND_MOVE(ScalarChanAndVeseLevelSetFunctionTestHelper);
 
   /** Standard class type aliases. */
   using Self = ScalarChanAndVeseLevelSetFunctionTestHelper;
@@ -43,9 +43,9 @@ public:
   /** Run-time type information (and related methods) */
   itkTypeMacro(ScalarChanAndVeseLevelSetFunctionTestHelper, ScalarChanAndVeseLevelSetFunction);
 
-  using ScalarValueType = typename Superclass::ScalarValueType;
-  using FeaturePixelType = typename Superclass::FeaturePixelType;
-  using FeatureIndexType = typename Superclass::FeatureIndexType;
+  using typename Superclass::ScalarValueType;
+  using typename Superclass::FeaturePixelType;
+  using typename Superclass::FeatureIndexType;
 
 
   virtual ScalarValueType
@@ -73,7 +73,7 @@ protected:
   ~ScalarChanAndVeseLevelSetFunctionTestHelper() override = default;
 };
 
-template <unsigned int NDimension>
+template <unsigned int VDimension>
 class ScalarChanAndVeseLevelSetFunctionSharedDataHelper : public DataObject
 {
 public:
@@ -90,14 +90,14 @@ public:
 
   unsigned long m_FunctionCount;
 
-  using IndexType = Index<NDimension>;
+  using IndexType = Index<VDimension>;
   using ListPixelType = std::list<unsigned int>;
-  using ImageType = Image<ListPixelType, NDimension>;
+  using ImageType = Image<ListPixelType, VDimension>;
 
   typename ImageType::Pointer m_NearestNeighborListImage;
 
   using PixelType = double;
-  using InputImageType = Image<PixelType, NDimension>;
+  using InputImageType = Image<PixelType, VDimension>;
 
   struct SingleData
   {
@@ -144,7 +144,7 @@ itkScalarChanAndVeseLevelSetFunctionTest1(int, char *[])
   using ChanAndVeseLevelSetFunctionType =
     itk::ScalarChanAndVeseLevelSetFunctionTestHelper<ImageType, FeatureImageType, DataHelperType>;
 
-  ChanAndVeseLevelSetFunctionType::Pointer function = ChanAndVeseLevelSetFunctionType::New();
+  auto function = ChanAndVeseLevelSetFunctionType::New();
 
   std::cout << "GetNameOfClass() = " << function->GetNameOfClass() << std::endl;
   function->Print(std::cout);

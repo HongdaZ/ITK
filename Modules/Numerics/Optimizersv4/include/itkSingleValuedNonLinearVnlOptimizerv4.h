@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class SingleValuedNonLinearVnlOptimizerv4
+ * \class SingleValuedNonLinearVnlOptimizerv4
  * \brief This is a base for the ITKv4 Optimization methods using
  * the vnl library.
  *
@@ -38,7 +38,7 @@ namespace itk
 class ITKOptimizersv4_EXPORT SingleValuedNonLinearVnlOptimizerv4 : public ObjectToObjectOptimizerBaseTemplate<double>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SingleValuedNonLinearVnlOptimizerv4);
+  ITK_DISALLOW_COPY_AND_MOVE(SingleValuedNonLinearVnlOptimizerv4);
 
   /** Standard class type aliases. */
   using Self = SingleValuedNonLinearVnlOptimizerv4;
@@ -47,13 +47,13 @@ public:
   using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(SingleValuedNonLinearVnlOptimizerv4, ObjectToObjectOptimizerBase)
+  itkTypeMacro(SingleValuedNonLinearVnlOptimizerv4, ObjectToObjectOptimizerBase);
 
-    /** Command observer that will interact with the ITKVNL cost-function
-     * adaptor in order to generate iteration events. This will allow to overcome
-     * the limitation of VNL optimizers not offering callbacks for every
-     * iteration */
-    using CommandType = ReceptorMemberCommand<Self>;
+  /** Command observer that will interact with the ITKVNL cost-function
+   * adaptor in order to generate iteration events. This will allow to overcome
+   * the limitation of VNL optimizers not offering callbacks for every
+   * iteration */
+  using CommandType = ReceptorMemberCommand<Self>;
 
   using MetricType = Superclass::MetricType;
   using DerivativeType = Superclass::DerivativeType;

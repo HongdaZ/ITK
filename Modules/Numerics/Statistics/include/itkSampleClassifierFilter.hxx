@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkSampleClassifierFilter_hxx
 #define itkSampleClassifierFilter_hxx
 
-#include "itkSampleClassifierFilter.h"
 
 namespace itk
 {
@@ -143,8 +142,7 @@ SampleClassifierFilter<TSample>::GenerateData()
 
   if (membershipFunctionsWeightsArray.Size() != this->m_NumberOfClasses)
   {
-    itkExceptionMacro("Membership functions weight array size does not match the\
-                      number of classes ");
+    itkExceptionMacro("Membership functions weight array size does not match the number of classes ");
   }
 
   const auto * sample = static_cast<const SampleType *>(this->ProcessObject::GetInput(0));
@@ -164,7 +162,7 @@ SampleClassifierFilter<TSample>::GenerateData()
   {
     typename TSample::MeasurementVectorType measurements;
     measurements = iter.GetMeasurementVector();
-    for (unsigned int i = 0; i < this->m_NumberOfClasses; i++)
+    for (unsigned int i = 0; i < this->m_NumberOfClasses; ++i)
     {
       discriminantScores[i] = membershipFunctionsWeightsArray[i] * membershipFunctions[i]->Evaluate(measurements);
     }
@@ -177,8 +175,8 @@ SampleClassifierFilter<TSample>::GenerateData()
 }
 
 template <typename TSample>
-const typename SampleClassifierFilter<TSample>::MembershipSampleType *
-SampleClassifierFilter<TSample>::GetOutput() const
+auto
+SampleClassifierFilter<TSample>::GetOutput() const -> const MembershipSampleType *
 {
   return static_cast<const MembershipSampleType *>(this->ProcessObject::GetOutput(0));
 }

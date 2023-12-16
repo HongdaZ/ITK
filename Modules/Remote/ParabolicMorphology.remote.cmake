@@ -27,12 +27,12 @@
 #--   - [ ] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -45,9 +45,8 @@ itk_fetch_module(ParabolicMorphology
   "Classes performing morphology using parabolic functions.
   Fast distance transforms and binary erosions/dilations/openings/closings
   by spheres, sharpenings and grayscale operations.
-  http://www.insight-journal.org/browse/publication/228
-  https://hdl.handle.net/1926/1370"
+  https://www.insight-journal.org/browse/publication/228"
   MODULE_COMPLIANCE_LEVEL 2
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKParabolicMorphology.git
-  GIT_TAG 2637ba966afba69b9472bc8158fcd8e0a6aad2d2
+  GIT_TAG 2c6aa18ff5415b320bf9d85dae6b1cf68c099d55
   )

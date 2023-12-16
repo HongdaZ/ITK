@@ -27,12 +27,12 @@
 #--   - [ ] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -44,9 +44,8 @@
 # Contact: Matt McCormick <matt.mccormick@kitware.com>
 itk_fetch_module(IOTransformDCMTK
   "The modules contains classes for reading spatial transform from DICOM
-  files. See http://www.insight-journal.org/browse/publication/923
-             https://hdl.handle.net/10380/3468"
+  files. See https://www.insight-journal.org/browse/publication/923"
   MODULE_COMPLIANCE_LEVEL 2
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKIOTransformDCMTK.git
-  GIT_TAG e92b0eae34239443a39396e31cbddfc87cd79ad1
+  GIT_TAG e97e0e8c27809eea1834dd534a47fc06168e3e45
   )

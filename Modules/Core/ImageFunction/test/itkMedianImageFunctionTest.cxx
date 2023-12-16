@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 
 
 #include "itkMedianImageFunction.h"
+#include "itkTestingMacros.h"
 
 int
 itkMedianImageFunctionTest(int, char *[])
@@ -30,7 +31,7 @@ itkMedianImageFunctionTest(int, char *[])
   using FunctionType = itk::MedianImageFunction<ImageType>;
 
   // Create and allocate the image
-  ImageType::Pointer    image = ImageType::New();
+  auto                  image = ImageType::New();
   ImageType::SizeType   size;
   ImageType::IndexType  start;
   ImageType::RegionType region;
@@ -51,7 +52,10 @@ itkMedianImageFunctionTest(int, char *[])
 
   image->FillBuffer(initialValue);
 
-  FunctionType::Pointer function = FunctionType::New();
+  auto function = FunctionType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(function, MedianImageFunction, ImageFunction);
+
 
   function->SetInputImage(image);
 
@@ -96,7 +100,7 @@ itkMedianImageFunctionTest(int, char *[])
   }
 
   std::cout << "Test PASSED ! " << std::endl;
-  //
+
   std::cout << "Test setting the neighborhood radius" << std::endl;
 
   // first, put something in the neighborhood outside the current
@@ -136,9 +140,12 @@ itkMedianImageFunctionTest(int, char *[])
   }
 
   // now set the radius
-  function->SetNeighborhoodRadius(2);
+  unsigned int neighborhoodRadius = 2;
+  function->SetNeighborhoodRadius(neighborhoodRadius);
+  ITK_TEST_SET_GET_VALUE(neighborhoodRadius, function->GetNeighborhoodRadius());
+
   median = function->EvaluateAtIndex(index);
-  std::cout << "function->EvaluateAtIndex( index ), neighborhood radius 2: "
+  std::cout << "function->EvaluateAtIndex( index ), neighborhood radius " << neighborhoodRadius << ": "
             << static_cast<itk::NumericTraits<FunctionType::OutputType>::PrintType>(median) << std::endl;
   // Since we've changed the image outside the default neighborhood
   // for the MedianImageFunction, it would be an error for the median

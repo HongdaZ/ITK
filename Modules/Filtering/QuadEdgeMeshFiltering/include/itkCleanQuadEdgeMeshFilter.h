@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ template <typename TInputMesh, typename TOutputMesh = TInputMesh>
 class ITK_TEMPLATE_EXPORT CleanQuadEdgeMeshFilter : public QuadEdgeMeshToQuadEdgeMeshFilter<TInputMesh, TOutputMesh>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CleanQuadEdgeMeshFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(CleanQuadEdgeMeshFilter);
 
   using Self = CleanQuadEdgeMeshFilter;
   using Pointer = SmartPointer<Self>;
@@ -50,19 +50,19 @@ public:
   itkNewMacro(Self);
 
   using InputMeshType = TInputMesh;
-  using InputMeshPointer = typename Superclass::InputMeshPointer;
-  using InputCoordRepType = typename Superclass::InputCoordRepType;
-  using InputPointType = typename Superclass::InputPointType;
-  using InputPointIdentifier = typename Superclass::InputPointIdentifier;
-  using InputQEPrimal = typename Superclass::InputQEPrimal;
-  using InputVectorType = typename Superclass::InputVectorType;
+  using typename Superclass::InputMeshPointer;
+  using typename Superclass::InputCoordRepType;
+  using typename Superclass::InputPointType;
+  using typename Superclass::InputPointIdentifier;
+  using typename Superclass::InputQEPrimal;
+  using typename Superclass::InputVectorType;
 
-  using InputEdgeCellType = typename Superclass::InputEdgeCellType;
-  using InputPolygonCellType = typename Superclass::InputPolygonCellType;
-  using InputPointIdList = typename Superclass::InputPointIdList;
-  using InputCellTraits = typename Superclass::InputCellTraits;
-  using InputPointsIdInternalIterator = typename Superclass::InputPointsIdInternalIterator;
-  using InputQEIterator = typename Superclass::InputQEIterator;
+  using typename Superclass::InputEdgeCellType;
+  using typename Superclass::InputPolygonCellType;
+  using typename Superclass::InputPointIdList;
+  using typename Superclass::InputCellTraits;
+  using typename Superclass::InputPointsIdInternalIterator;
+  using typename Superclass::InputQEIterator;
 
   using InputPointsContainer = typename InputMeshType::PointsContainer;
   using InputPointsContainerPointer = typename InputMeshType::PointsContainerPointer;
@@ -73,12 +73,12 @@ public:
   static constexpr unsigned int PointDimension = InputMeshType::PointDimension;
 
   using OutputMeshType = TOutputMesh;
-  using OutputMeshPointer = typename Superclass::OutputMeshPointer;
-  using OutputCoordRepType = typename Superclass::OutputCoordRepType;
-  using OutputPointType = typename Superclass::OutputPointType;
-  using OutputPointIdentifier = typename Superclass::OutputPointIdentifier;
-  using OutputQEPrimal = typename Superclass::OutputQEPrimal;
-  using OutputVectorType = typename Superclass::OutputVectorType;
+  using typename Superclass::OutputMeshPointer;
+  using typename Superclass::OutputCoordRepType;
+  using typename Superclass::OutputPointType;
+  using typename Superclass::OutputPointIdentifier;
+  using typename Superclass::OutputQEPrimal;
+  using typename Superclass::OutputVectorType;
 
   using OutputQEType = typename OutputMeshType::QEType;
   using OutputPointsContainer = typename OutputMeshType::PointsContainer;

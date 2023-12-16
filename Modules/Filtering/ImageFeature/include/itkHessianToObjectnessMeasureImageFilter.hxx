@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkHessianToObjectnessMeasureImageFilter_hxx
 #define itkHessianToObjectnessMeasureImageFilter_hxx
 
-#include "itkHessianToObjectnessMeasureImageFilter.h"
 #include "itkImageRegionIterator.h"
 #include "itkSymmetricEigenAnalysis.h"
 #include "itkProgressReporter.h"
@@ -84,7 +83,7 @@ HessianToObjectnessMeasureImageFilter<TInputImage, TOutputImage>::DynamicThreade
 
     // Check whether eigenvalues have the right sign
     bool signConstraintsSatisfied = true;
-    for (unsigned int i = m_ObjectDimension; i < ImageDimension; i++)
+    for (unsigned int i = m_ObjectDimension; i < ImageDimension; ++i)
     {
       if ((m_BrightObject && sortedEigenValues[i] > 0.0) || (!m_BrightObject && sortedEigenValues[i] < 0.0))
       {
@@ -103,7 +102,7 @@ HessianToObjectnessMeasureImageFilter<TInputImage, TOutputImage>::DynamicThreade
     }
 
     EigenValueArrayType sortedAbsEigenValues;
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       sortedAbsEigenValues[i] = itk::Math::abs(sortedEigenValues[i]);
     }
@@ -116,13 +115,13 @@ HessianToObjectnessMeasureImageFilter<TInputImage, TOutputImage>::DynamicThreade
     {
       double rA = sortedAbsEigenValues[m_ObjectDimension];
       double rADenominatorBase = 1.0;
-      for (unsigned int j = m_ObjectDimension + 1; j < ImageDimension; j++)
+      for (unsigned int j = m_ObjectDimension + 1; j < ImageDimension; ++j)
       {
         rADenominatorBase *= sortedAbsEigenValues[j];
       }
-      if (std::fabs(rADenominatorBase) > 0.0)
+      if (itk::Math::abs(rADenominatorBase) > 0.0)
       {
-        if (std::fabs(m_Alpha) > 0.0)
+        if (itk::Math::abs(m_Alpha) > 0.0)
         {
           rA /= std::pow(rADenominatorBase, 1.0 / (ImageDimension - m_ObjectDimension - 1));
           objectnessMeasure *= 1.0 - std::exp(-0.5 * itk::Math::sqr(rA) / itk::Math::sqr(m_Alpha));
@@ -138,11 +137,11 @@ HessianToObjectnessMeasureImageFilter<TInputImage, TOutputImage>::DynamicThreade
     {
       double rB = sortedAbsEigenValues[m_ObjectDimension - 1];
       double rBDenominatorBase = 1.0;
-      for (unsigned int j = m_ObjectDimension; j < ImageDimension; j++)
+      for (unsigned int j = m_ObjectDimension; j < ImageDimension; ++j)
       {
         rBDenominatorBase *= sortedAbsEigenValues[j];
       }
-      if (std::fabs(rBDenominatorBase) > 0.0 && std::fabs(m_Beta) > 0.0)
+      if (itk::Math::abs(rBDenominatorBase) > 0.0 && itk::Math::abs(m_Beta) > 0.0)
       {
         rB /= std::pow(rBDenominatorBase, 1.0 / (ImageDimension - m_ObjectDimension));
 
@@ -154,10 +153,10 @@ HessianToObjectnessMeasureImageFilter<TInputImage, TOutputImage>::DynamicThreade
       }
     }
 
-    if (std::fabs(m_Gamma) > 0.0)
+    if (itk::Math::abs(m_Gamma) > 0.0)
     {
       double frobeniusNormSquared = 0.0;
-      for (unsigned int i = 0; i < ImageDimension; i++)
+      for (unsigned int i = 0; i < ImageDimension; ++i)
       {
         frobeniusNormSquared += itk::Math::sqr(sortedAbsEigenValues[i]);
       }

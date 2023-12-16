@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ itkSubsampleTest3(int, char *[])
   using MeasurementVectorType = itk::FixedArray<float, MeasurementVectorSize>;
   using SampleType = itk::Statistics::ListSample<MeasurementVectorType>;
 
-  SampleType::Pointer sample = SampleType::New();
+  auto sample = SampleType::New();
 
   sample->SetMeasurementVectorSize(MeasurementVectorSize);
 
@@ -43,7 +43,7 @@ itkSubsampleTest3(int, char *[])
 
   while (counter < numberOfMeasurementVectors)
   {
-    for (unsigned int i = 0; i < MeasurementVectorSize; i++)
+    for (unsigned int i = 0; i < MeasurementVectorSize; ++i)
     {
       measure[i] = counter;
     }
@@ -53,7 +53,7 @@ itkSubsampleTest3(int, char *[])
 
   using SubsampleType = itk::Statistics::Subsample<SampleType>;
 
-  SubsampleType::Pointer subsample = SubsampleType::New();
+  auto subsample = SubsampleType::New();
 
   subsample->SetSample(sample);
 
@@ -62,7 +62,7 @@ itkSubsampleTest3(int, char *[])
 
   using FilterType = itk::Statistics::MeanSampleFilter<SubsampleType>;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   filter->SetInput(subsample);
 
@@ -87,7 +87,7 @@ itkSubsampleTest3(int, char *[])
 
   FilterType::MeasurementVectorType::ValueType epsilon = 1e-6;
 
-  if ((std::abs(meanOutput[0] - mean[0]) > epsilon) || (std::abs(meanOutput[1] - mean[1]) > epsilon))
+  if ((itk::Math::abs(meanOutput[0] - mean[0]) > epsilon) || (itk::Math::abs(meanOutput[1] - mean[1]) > epsilon))
   {
     std::cerr << "The result is not what is expected" << std::endl;
     return EXIT_FAILURE;
@@ -122,7 +122,7 @@ itkSubsampleTest3(int, char *[])
 
   std::cout << meanOutput[0] << " " << mean[0] << " " << meanOutput[1] << " " << mean[1] << " " << std::endl;
 
-  if ((std::abs(meanOutput[0] - mean[0]) > epsilon) || (std::abs(meanOutput[1] - mean[1]) > epsilon))
+  if ((itk::Math::abs(meanOutput[0] - mean[0]) > epsilon) || (itk::Math::abs(meanOutput[1] - mean[1]) > epsilon))
   {
     std::cerr << "The result is not what is expected" << std::endl;
     return EXIT_FAILURE;

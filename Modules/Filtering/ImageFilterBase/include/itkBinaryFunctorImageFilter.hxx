@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkBinaryFunctorImageFilter_hxx
 #define itkBinaryFunctorImageFilter_hxx
 
-#include "itkBinaryFunctorImageFilter.h"
 #include "itkImageScanlineIterator.h"
 #include "itkTotalProgressReporter.h"
 
@@ -57,7 +56,7 @@ void
 BinaryFunctorImageFilter<TInputImage1, TInputImage2, TOutputImage, TFunction>::SetInput1(
   const Input1ImagePixelType & input1)
 {
-  typename DecoratedInput1ImagePixelType::Pointer newInput = DecoratedInput1ImagePixelType::New();
+  auto newInput = DecoratedInput1ImagePixelType::New();
   newInput->Set(input1);
   this->SetInput1(newInput);
 }
@@ -71,8 +70,9 @@ BinaryFunctorImageFilter<TInputImage1, TInputImage2, TOutputImage, TFunction>::S
 }
 
 template <typename TInputImage1, typename TInputImage2, typename TOutputImage, typename TFunction>
-const typename BinaryFunctorImageFilter<TInputImage1, TInputImage2, TOutputImage, TFunction>::Input1ImagePixelType &
+auto
 BinaryFunctorImageFilter<TInputImage1, TInputImage2, TOutputImage, TFunction>::GetConstant1() const
+  -> const Input1ImagePixelType &
 {
   const auto * input = dynamic_cast<const DecoratedInput1ImagePixelType *>(this->ProcessObject::GetInput(0));
   if (input == nullptr)
@@ -104,7 +104,7 @@ void
 BinaryFunctorImageFilter<TInputImage1, TInputImage2, TOutputImage, TFunction>::SetInput2(
   const Input2ImagePixelType & input2)
 {
-  typename DecoratedInput2ImagePixelType::Pointer newInput = DecoratedInput2ImagePixelType::New();
+  auto newInput = DecoratedInput2ImagePixelType::New();
   newInput->Set(input2);
   this->SetInput2(newInput);
 }
@@ -118,8 +118,9 @@ BinaryFunctorImageFilter<TInputImage1, TInputImage2, TOutputImage, TFunction>::S
 }
 
 template <typename TInputImage1, typename TInputImage2, typename TOutputImage, typename TFunction>
-const typename BinaryFunctorImageFilter<TInputImage1, TInputImage2, TOutputImage, TFunction>::Input2ImagePixelType &
+auto
 BinaryFunctorImageFilter<TInputImage1, TInputImage2, TOutputImage, TFunction>::GetConstant2() const
+  -> const Input2ImagePixelType &
 {
   const auto * input = dynamic_cast<const DecoratedInput2ImagePixelType *>(this->ProcessObject::GetInput(1));
   if (input == nullptr)

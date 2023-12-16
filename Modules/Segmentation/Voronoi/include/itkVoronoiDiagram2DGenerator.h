@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,7 +50,7 @@ template <typename TCoordType>
 class ITK_TEMPLATE_EXPORT VoronoiDiagram2DGenerator : public MeshSource<VoronoiDiagram2D<TCoordType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(VoronoiDiagram2DGenerator);
+  ITK_DISALLOW_COPY_AND_MOVE(VoronoiDiagram2DGenerator);
 
   using Self = VoronoiDiagram2DGenerator;
   using Superclass = MeshSource<VoronoiDiagram2D<TCoordType>>;
@@ -262,7 +262,7 @@ private:
   createHalfEdge(FortuneHalfEdge * task, FortuneEdge * e, bool pm);
 
   void
-  PQshowMin(PointType * task);
+  PQshowMin(PointType * answer);
 
   FortuneHalfEdge *
   findLeftHE(PointType * p);
@@ -290,7 +290,7 @@ private:
   insertEdgeList(FortuneHalfEdge * lbase, FortuneHalfEdge * lnew);
 
   void
-  intersect(FortuneSite * task, FortuneHalfEdge * el1, FortuneHalfEdge * el2);
+  intersect(FortuneSite * newV, FortuneHalfEdge * el1, FortuneHalfEdge * el2);
 
   void
   deletePQ(FortuneHalfEdge * task);

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,7 +59,7 @@ public:
   }
 
   void
-  Initialize() throw(itk::ExceptionObject) override
+  Initialize() override
   {}
 
   void
@@ -77,7 +77,7 @@ public:
 
     value = 0.0;
 
-    for (NumberOfParametersType i = 0; i < this->GetNumberOfParameters(); i++)
+    for (NumberOfParametersType i = 0; i < this->GetNumberOfParameters(); ++i)
     {
       derivative[i] = i;
     }
@@ -144,11 +144,11 @@ itkGradientDescentOptimizerv4Test2(int, char *[])
 
   using ScalesType = OptimizerType::ScalesType;
 
-  // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  // Declaration of an itkOptimizer
+  auto itkOptimizer = OptimizerType::New();
 
   // Declaration of the Metric
-  GradientDescentOptimizerv4Test2Metric::Pointer metric = GradientDescentOptimizerv4Test2Metric::New();
+  auto metric = GradientDescentOptimizerv4Test2Metric::New();
 
   itkOptimizer->SetMetric(metric);
 
@@ -163,7 +163,7 @@ itkGradientDescentOptimizerv4Test2(int, char *[])
   itkOptimizer->SetNumberOfIterations(1);
 
   ScalesType scales(metric->GetNumberOfLocalParameters());
-  for (NumberOfParametersType i = 0; i < metric->GetNumberOfLocalParameters(); i++)
+  for (NumberOfParametersType i = 0; i < metric->GetNumberOfLocalParameters(); ++i)
   {
     scales[i] = i + 2;
   }
@@ -172,9 +172,9 @@ itkGradientDescentOptimizerv4Test2(int, char *[])
   ParametersType         truth(metric->GetNumberOfParameters());
   NumberOfParametersType numLocal = metric->GetNumberOfLocalParameters();
   NumberOfParametersType numLoops = metric->GetNumberOfParameters() / numLocal;
-  for (NumberOfParametersType i = 0; i < numLoops; i++)
+  for (NumberOfParametersType i = 0; i < numLoops; ++i)
   {
-    for (NumberOfParametersType j = 0; j < numLocal; j++)
+    for (NumberOfParametersType j = 0; j < numLocal; ++j)
     {
       NumberOfParametersType ind = i * numLocal + j;
       truth[ind] = initialPosition[ind] + (ind) / scales[j];
@@ -201,7 +201,7 @@ itkGradientDescentOptimizerv4Test2(int, char *[])
   //
   // check results to see if it is within range
   //
-  for (NumberOfParametersType j = 0; j < metric->GetNumberOfParameters(); j++)
+  for (NumberOfParametersType j = 0; j < metric->GetNumberOfParameters(); ++j)
   {
     if (itk::Math::abs(finalPosition[j] - truth[j]) > 0.000001)
     {

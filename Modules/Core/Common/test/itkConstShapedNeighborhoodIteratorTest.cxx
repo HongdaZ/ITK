@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -128,7 +128,7 @@ itkConstShapedNeighborhoodIteratorTest(int, char *[])
   it.ActivateOffset(off);
   it.Print(std::cout);
 
-  for (unsigned int r = 0; r < 1; r++)
+  for (unsigned int r = 0; r < 1; ++r)
   {
     println("...turn on [1,0,0,0]");
     off[0] = 1;
@@ -425,7 +425,7 @@ itkConstShapedNeighborhoodIteratorTest(int, char *[])
 
     ChangeRegionTestImageType::RegionType imageRegion(imageCorner, imageSize);
 
-    ChangeRegionTestImageType::Pointer image = ChangeRegionTestImageType::New();
+    auto image = ChangeRegionTestImageType::New();
     image->SetRegions(imageRegion);
     image->Allocate();
 
@@ -541,10 +541,10 @@ class MyDerivedCSNI : public itk::ConstShapedNeighborhoodIterator<ImageType>
 {
 public:
   using Superclass = typename itk::ConstShapedNeighborhoodIterator<ImageType>;
-  using SizeType = typename Superclass::SizeType;
-  using IndexType = typename Superclass::IndexType;
-  using RadiusType = typename Superclass::RadiusType;
-  using RegionType = typename Superclass::RegionType;
+  using typename Superclass::SizeType;
+  using typename Superclass::IndexType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::RegionType;
 
   void
   TestNewExposedProtectedMembers();

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ namespace itk
 {
 /**
  * \class MovingHistogramErodeImageFilter
- * \brief gray scale erosion of an image
+ * \brief Grayscale erosion of an image.
  *
  * Erode an image using grayscale morphology. Erode takes the
  * minimum of all the pixels identified by the structuring element.
@@ -45,10 +45,10 @@ class MovingHistogramErodeImageFilter
       TOutputImage,
       TKernel,
       typename Function::MorphologyHistogram<typename TInputImage::PixelType,
-                                             typename std::less<typename TInputImage ::PixelType>>>
+                                             typename std::less<typename TInputImage::PixelType>>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MovingHistogramErodeImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(MovingHistogramErodeImageFilter);
 
   /** Standard class type aliases. */
   using Self = MovingHistogramErodeImageFilter;
@@ -57,7 +57,7 @@ public:
     TOutputImage,
     TKernel,
     typename Function::MorphologyHistogram<typename TInputImage::PixelType,
-                                           typename std::less<typename TInputImage ::PixelType>>>;
+                                           typename std::less<typename TInputImage::PixelType>>>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
@@ -75,7 +75,7 @@ public:
   using IndexType = typename TInputImage::IndexType;
   using PixelType = typename TInputImage::PixelType;
   using OffsetType = typename TInputImage::OffsetType;
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
   using OutputPixelType = typename TOutputImage::PixelType;
 
   /** Image related type alias. */

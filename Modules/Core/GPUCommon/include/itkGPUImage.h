@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,7 @@ template <typename TPixel, unsigned int VImageDimension = 2>
 class ITK_TEMPLATE_EXPORT GPUImage : public Image<TPixel, VImageDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUImage);
+  ITK_DISALLOW_COPY_AND_MOVE(GPUImage);
 
   using Self = GPUImage;
   using Superclass = Image<TPixel, VImageDimension>;
@@ -54,20 +54,20 @@ public:
 
   static constexpr unsigned int ImageDimension = VImageDimension;
 
-  using PixelType = typename Superclass::PixelType;
-  using ValueType = typename Superclass::ValueType;
-  using InternalPixelType = typename Superclass::InternalPixelType;
-  using IOPixelType = typename Superclass::IOPixelType;
-  using DirectionType = typename Superclass::DirectionType;
-  using SpacingType = typename Superclass::SpacingType;
-  using PixelContainer = typename Superclass::PixelContainer;
-  using SizeType = typename Superclass::SizeType;
-  using IndexType = typename Superclass::IndexType;
-  using OffsetType = typename Superclass::OffsetType;
-  using RegionType = typename Superclass::RegionType;
+  using typename Superclass::PixelType;
+  using typename Superclass::ValueType;
+  using typename Superclass::InternalPixelType;
+  using typename Superclass::IOPixelType;
+  using typename Superclass::DirectionType;
+  using typename Superclass::SpacingType;
+  using typename Superclass::PixelContainer;
+  using typename Superclass::SizeType;
+  using typename Superclass::IndexType;
+  using typename Superclass::OffsetType;
+  using typename Superclass::RegionType;
   using PixelContainerPointer = typename PixelContainer::Pointer;
   using PixelContainerConstPointer = typename PixelContainer::ConstPointer;
-  using AccessorType = typename Superclass::AccessorType;
+  using typename Superclass::AccessorType;
 
   using AccessorFunctorType = DefaultPixelAccessorFunctor<Self>;
 
@@ -215,7 +215,7 @@ private:
 class ITK_TEMPLATE_EXPORT GPUImageFactory : public itk::ObjectFactoryBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUImageFactory);
+  ITK_DISALLOW_COPY_AND_MOVE(GPUImageFactory);
 
   using Self = GPUImageFactory;
   using Superclass = itk::ObjectFactoryBase;
@@ -244,17 +244,17 @@ public:
   static void
   RegisterOneFactory()
   {
-    GPUImageFactory::Pointer factory = GPUImageFactory::New();
+    auto factory = GPUImageFactory::New();
 
     itk::ObjectFactoryBase::RegisterFactory(factory);
   }
 
 private:
-#define OverrideImageTypeMacro(pt, dm)                                                                                 \
-  this->RegisterOverride(typeid(itk::Image<pt, dm>).name(),                                                            \
-                         typeid(itk::GPUImage<pt, dm>).name(),                                                         \
-                         "GPU Image Override",                                                                         \
-                         true,                                                                                         \
+#define OverrideImageTypeMacro(pt, dm)                         \
+  this->RegisterOverride(typeid(itk::Image<pt, dm>).name(),    \
+                         typeid(itk::GPUImage<pt, dm>).name(), \
+                         "GPU Image Override",                 \
+                         true,                                 \
                          itk::CreateObjectFunction<GPUImage<pt, dm>>::New())
 
   GPUImageFactory()
@@ -293,11 +293,11 @@ public:
   using Type = T;
 };
 
-template <typename TPixelType, unsigned int NDimension>
-class ITK_TEMPLATE_EXPORT GPUTraits<Image<TPixelType, NDimension>>
+template <typename TPixelType, unsigned int VDimension>
+class ITK_TEMPLATE_EXPORT GPUTraits<Image<TPixelType, VDimension>>
 {
 public:
-  using Type = GPUImage<TPixelType, NDimension>;
+  using Type = GPUImage<TPixelType, VDimension>;
 };
 
 } // end namespace itk

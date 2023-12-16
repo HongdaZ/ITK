@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkFastMarchingUpwindGradientImageFilterBase_hxx
 #define itkFastMarchingUpwindGradientImageFilterBase_hxx
 
-#include "itkFastMarchingUpwindGradientImageFilterBase.h"
 #include "itkImageRegionIterator.h"
 #include "itkNumericTraits.h"
 #include "itkMath.h"
@@ -37,8 +36,8 @@ FastMarchingUpwindGradientImageFilterBase<TInput, TOutput>::FastMarchingUpwindGr
 }
 
 template <typename TInput, typename TOutput>
-typename FastMarchingUpwindGradientImageFilterBase<TInput, TOutput>::GradientImageType *
-FastMarchingUpwindGradientImageFilterBase<TInput, TOutput>::GetGradientImage()
+auto
+FastMarchingUpwindGradientImageFilterBase<TInput, TOutput>::GetGradientImage() -> GradientImageType *
 {
   return dynamic_cast<GradientImageType *>(this->ProcessObject::GetOutput(1));
 }
@@ -120,7 +119,7 @@ FastMarchingUpwindGradientImageFilterBase<TInput, TOutput>::ComputeGradient(Outp
 
   centerPixel = oImage->GetPixel(iNode);
 
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     neighIndex = iNode;
 

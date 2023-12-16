@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,8 +22,6 @@
 #include "itkMath.h"
 #include <cstring>
 #include <cstdlib>
-#include "itkIsBaseOf.h"
-#include "itkStaticAssert.h"
 #include "itkMath.h"
 
 namespace itk
@@ -292,11 +290,11 @@ template <typename TReallocatePolicy, typename TKeepValuesPolicy>
 void
 VariableLengthVector<TValue>::SetSize(unsigned int sz, TReallocatePolicy reallocatePolicy, TKeepValuesPolicy keepValues)
 {
-  itkStaticAssert(
-    (itk::mpl::IsBaseOf<AllocateRootPolicy, TReallocatePolicy>::Value),
+  static_assert(
+    std::is_base_of<AllocateRootPolicy, TReallocatePolicy>::value,
     "The allocation policy does not inherit from itk::VariableLengthVector::AllocateRootPolicy as expected");
-  itkStaticAssert(
-    (itk::mpl::IsBaseOf<KeepValuesRootPolicy, TKeepValuesPolicy>::Value),
+  static_assert(
+    std::is_base_of<KeepValuesRootPolicy, TKeepValuesPolicy>::value,
     "The old values keeping policy does not inherit from itk::VariableLengthVector::KeepValuesRootPolicy as expected");
 
   if (reallocatePolicy(sz, m_NumElements) || !m_LetArrayManageMemory)
@@ -316,7 +314,7 @@ VariableLengthVector<TValue>::SetSize(unsigned int sz, TReallocatePolicy realloc
   m_NumElements = sz;
 }
 
-/** Set the all the elements of the array to the specified value */
+/** Set all the elements of the array to the specified value */
 template <typename TValue>
 void
 VariableLengthVector<TValue>::Fill(TValue const & v)
@@ -384,7 +382,7 @@ template <typename TValue>
 VariableLengthVector<TValue> &
 VariableLengthVector<TValue>::operator-()
 {
-  for (ElementIdentifier i = 0; i < m_NumElements; i++)
+  for (ElementIdentifier i = 0; i < m_NumElements; ++i)
   {
     m_Data[i] = -m_Data[i];
   }
@@ -409,19 +407,12 @@ VariableLengthVector<TValue>::operator==(const Self & v) const
   return true;
 }
 
-template <typename TValue>
-bool
-VariableLengthVector<TValue>::operator!=(const Self & v) const
-{
-  return !operator==(v);
-}
-
 /**
  * Returns vector's Euclidean Norm
  */
 template <typename TValue>
-typename VariableLengthVector<TValue>::RealValueType
-VariableLengthVector<TValue>::GetNorm() const
+auto
+VariableLengthVector<TValue>::GetNorm() const -> RealValueType
 {
   using std::sqrt;
   return static_cast<RealValueType>(sqrt(this->GetSquaredNorm()));
@@ -431,8 +422,8 @@ VariableLengthVector<TValue>::GetNorm() const
  * Returns vector's Squared Euclidean Norm
  */
 template <typename TValue>
-typename VariableLengthVector<TValue>::RealValueType
-VariableLengthVector<TValue>::GetSquaredNorm() const
+auto
+VariableLengthVector<TValue>::GetSquaredNorm() const -> RealValueType
 {
   RealValueType sum = 0.0;
 
@@ -445,15 +436,15 @@ VariableLengthVector<TValue>::GetSquaredNorm() const
 }
 
 template <typename TExpr1, typename TExpr2, typename TBinaryOp>
-typename VariableLengthVectorExpression<TExpr1, TExpr2, TBinaryOp>::RealValueType
-VariableLengthVectorExpression<TExpr1, TExpr2, TBinaryOp>::GetNorm() const
+auto
+VariableLengthVectorExpression<TExpr1, TExpr2, TBinaryOp>::GetNorm() const -> RealValueType
 {
   return itk::GetNorm(*this);
 }
 
 template <typename TExpr1, typename TExpr2, typename TBinaryOp>
-typename VariableLengthVectorExpression<TExpr1, TExpr2, TBinaryOp>::RealValueType
-VariableLengthVectorExpression<TExpr1, TExpr2, TBinaryOp>::GetSquaredNorm() const
+auto
+VariableLengthVectorExpression<TExpr1, TExpr2, TBinaryOp>::GetSquaredNorm() const -> RealValueType
 {
   return itk::GetSquaredNorm(*this);
 }

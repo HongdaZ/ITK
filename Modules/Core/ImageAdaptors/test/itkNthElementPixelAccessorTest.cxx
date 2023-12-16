@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@
  *  NthElementPixelAccessor
  *
  *  The example shows how an Adaptor can be used to
- *  get acces only to the Nth component of a vector image
+ *  get access only to the Nth component of a vector image
  *  giving the appearance of being just a 'float' image
  *
  *  That will allow to pass the Nth component of this
@@ -67,11 +67,9 @@ itkNthElementPixelAccessorTest(int, char *[])
   region.SetIndex(index);
   region.SetSize(size);
 
-  myImageType::Pointer myImage = myImageType::New();
+  auto myImage = myImageType::New();
 
-  myImage->SetLargestPossibleRegion(region);
-  myImage->SetBufferedRegion(region);
-  myImage->SetRequestedRegion(region);
+  myImage->SetRegions(region);
   myImage->Allocate();
 
   myIteratorType it1(myImage, myImage->GetRequestedRegion());
@@ -99,7 +97,7 @@ itkNthElementPixelAccessorTest(int, char *[])
     ++it1;
   }
 
-  myNthAdaptorType::Pointer myAdaptor = myNthAdaptorType::New();
+  auto myAdaptor = myNthAdaptorType::New();
   myAdaptor->SetImage(myImage);
 
   myNthAccessorType myNthAccessor;

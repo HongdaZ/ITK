@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ itkScalarImageToRunLengthFeaturesFilterTest(int, char *[])
   using InputImageIterator = itk::ImageRegionIterator<InputImageType>;
 
 
-  InputImageType::Pointer image = InputImageType::New();
+  auto image = InputImageType::New();
 
   InputImageType::SizeType inputImageSize = { { IMGWIDTH, IMGHEIGHT } };
 
@@ -65,7 +65,7 @@ itkScalarImageToRunLengthFeaturesFilterTest(int, char *[])
   // setup the iterator
   InputImageIterator imageIt(image, image->GetBufferedRegion());
 
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 5; ++i)
     for (int j = 0; j < 5; j++, ++imageIt)
     {
       imageIt.Set(j % 2 + 1);
@@ -80,14 +80,14 @@ itkScalarImageToRunLengthFeaturesFilterTest(int, char *[])
   //  1 1 1 1 1
   //--------------------------------------------------------------------------
 
-  InputImageType::Pointer mask = InputImageType::New();
+  auto mask = InputImageType::New();
   mask->SetRegions(region);
   mask->Allocate();
 
   // setup the iterator
   InputImageIterator maskIt(mask, mask->GetBufferedRegion());
   maskIt.GoToBegin();
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 5; ++i)
     for (int j = 0; j < 5; j++, ++maskIt)
     {
       maskIt.Set(1);
@@ -104,7 +104,7 @@ itkScalarImageToRunLengthFeaturesFilterTest(int, char *[])
     using RunLengthFilterType = itk::Statistics::ScalarImageToRunLengthFeaturesFilter<InputImageType>;
 
     // First test: just use the defaults.
-    RunLengthFilterType::Pointer texFilter = RunLengthFilterType::New();
+    auto texFilter = RunLengthFilterType::New();
 
     // Invoke update before adding an input. An exception should be
     // thrown.

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,25 +16,23 @@
  *
  *=========================================================================*/
 
-/**
- * This is a test file for the itkEllipseSpatialObject class.
- */
-
 #include "itkEllipseSpatialObject.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 int
 itkEllipseSpatialObjectTest(int, char *[])
 {
   using EllipseType = itk::EllipseSpatialObject<4>;
 
-  EllipseType::Pointer myEllipse = EllipseType::New();
-  std::cout << "Testing Print after construction" << std::endl;
-  myEllipse->Print(std::cout);
+  auto myEllipse = EllipseType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(myEllipse, EllipseSpatialObject, SpatialObject);
+
 
   EllipseType::ArrayType radii;
 
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; ++i)
   {
     radii[i] = i;
   }
@@ -43,31 +41,14 @@ itkEllipseSpatialObjectTest(int, char *[])
 
   myEllipse->SetRadiusInObjectSpace(radii);
   myEllipse->Update();
-  EllipseType::ArrayType radii2 = myEllipse->GetRadiusInObjectSpace();
-  for (unsigned int i = 0; i < 4; i++)
-  {
-    if (itk::Math::NotExactlyEquals(radii2[i], i))
-    {
-      std::cout << "[FAILURE]" << std::endl;
-      return EXIT_FAILURE;
-    }
-  }
-  std::cout << "[PASSED]" << std::endl;
 
-  myEllipse->SetRadiusInObjectSpace(3);
+  ITK_TEST_SET_GET_VALUE(radii, myEllipse->GetRadiusInObjectSpace());
+
+  EllipseType::ArrayType objectSpaceRadius(3);
+  myEllipse->SetRadiusInObjectSpace(objectSpaceRadius);
   myEllipse->Update();
-  EllipseType::ArrayType radii3 = myEllipse->GetRadiusInObjectSpace();
-  std::cout << "Testing Global radii : ";
-  for (unsigned int i = 0; i < 4; i++)
-  {
-    if (itk::Math::NotExactlyEquals(radii3[i], 3))
-    {
-      std::cout << "[FAILURE]" << std::endl;
-      return EXIT_FAILURE;
-    }
-  }
 
-  std::cout << "[PASSED]" << std::endl;
+  ITK_TEST_SET_GET_VALUE(objectSpaceRadius, myEllipse->GetRadiusInObjectSpace());
 
   // Point consistency
   std::cout << "Is Inside: ";
@@ -100,7 +81,7 @@ itkEllipseSpatialObjectTest(int, char *[])
   std::cout << "ObjectToWorldTransform : ";
 
   // Create myEllipse2 as a child of myEllipse
-  EllipseType::Pointer myEllipse2 = EllipseType::New();
+  auto myEllipse2 = EllipseType::New();
   myEllipse2->SetRadiusInObjectSpace(1);
   myEllipse->AddChild(myEllipse2);
 
@@ -132,7 +113,7 @@ itkEllipseSpatialObjectTest(int, char *[])
   std::cout << "Bounds = " << boundingBox->GetBounds() << std::endl;
 
   std::cout << "Update(): ";
-  for (unsigned int i = 0; i < 3; i++)
+  for (unsigned int i = 0; i < 3; ++i)
   {
     const EllipseType::BoundingBoxType::BoundsArrayType bounds = boundingBox->GetBounds();
     if (itk::Math::NotAlmostEquals(bounds[2 * i], 7) ||
@@ -144,9 +125,8 @@ itkEllipseSpatialObjectTest(int, char *[])
       return EXIT_FAILURE;
     }
   }
-  std::cout << "Testing Print after use" << std::endl;
-  myEllipse->Print(std::cout);
 
-  std::cout << "[PASSED]" << std::endl;
+
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

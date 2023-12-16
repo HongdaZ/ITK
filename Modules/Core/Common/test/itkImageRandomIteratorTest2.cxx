@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@
 #include "itkImageFileWriter.h"
 #include "itkImageFileReader.h"
 #include "itkTestingComparisonImageFilter.h"
+#include "itkTestingMacros.h"
 
 
 int
@@ -29,9 +30,9 @@ itkImageRandomIteratorTest2(int argc, char * argv[])
 {
   if (argc < 2)
   {
-    std::cerr << "Missing arguments " << std::endl;
-    std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << "  outputImageFile" << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << "  outputImageFile" << std::endl;
     std::cerr << "[baselineImage  differenceImage]" << std::endl;
     return EXIT_FAILURE;
   }
@@ -41,11 +42,8 @@ itkImageRandomIteratorTest2(int argc, char * argv[])
   using PixelType = unsigned long;
 
   using ImageType = itk::Image<PixelType, ImageDimension>;
-  using WriterType = itk::ImageFileWriter<ImageType>;
 
-  ImageType::Pointer image = ImageType::New();
-
-  WriterType::Pointer writer = WriterType::New();
+  auto image = ImageType::New();
 
   ImageType::SizeType size;
 
@@ -84,45 +82,30 @@ itkImageRandomIteratorTest2(int argc, char * argv[])
     ++counter;
   }
 
-  writer->SetInput(image);
-  writer->SetFileName(argv[1]);
-  writer->Update();
+
+  itk::WriteImage(image, argv[1]);
 
   if (argc > 4)
   {
-
-    using ReaderType = itk::ImageFileReader<ImageType>;
-
-    ReaderType::Pointer reader = ReaderType::New();
-
-    reader->SetFileName(argv[2]);
-
-    using DifferencePixelType = signed long;
+    using DifferencePixelType = long;
     using DifferenceImageType = itk::Image<DifferencePixelType, ImageDimension>;
 
     using DifferenceFilterType = itk::Testing::ComparisonImageFilter<ImageType, DifferenceImageType>;
 
-    DifferenceFilterType::Pointer difference = DifferenceFilterType::New();
+    auto difference = DifferenceFilterType::New();
 
     difference->SetValidInput(image);
-    difference->SetTestInput(reader->GetOutput());
+    difference->SetTestInput(itk::ReadImage<ImageType>(argv[2]));
     difference->SetToleranceRadius(0);
     difference->SetDifferenceThreshold(0);
 
     using DifferenceWriterType = itk::ImageFileWriter<DifferenceImageType>;
-    DifferenceWriterType::Pointer writer2 = DifferenceWriterType::New();
+    auto writer2 = DifferenceWriterType::New();
 
     writer2->SetInput(difference->GetOutput());
 
-    try
-    {
-      writer2->Update();
-    }
-    catch (const itk::ExceptionObject & excp)
-    {
-      std::cerr << excp << std::endl;
-      return EXIT_FAILURE;
-    }
+    ITK_TRY_EXPECT_NO_EXCEPTION(writer2->Update());
+
 
     std::cout << "Number of pixels with differences = ";
     std::cout << difference->GetNumberOfPixelsWithDifferences() << std::endl;

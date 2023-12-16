@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ namespace itk
 namespace watershed
 {
 /**
- *\class SegmentTable
+ * \class SegmentTable
  * A table for storing segmentation information in various component filters of
  * the watershed segmentation algorithm.  See itk::WatershedImageFilter for an
  * overview.
@@ -56,7 +56,7 @@ public:
   using ScalarType = TScalar;
 
   itkNewMacro(Self);
-  itkTypeMacro(WatershedSegmentTable, DataObject);
+  itkTypeMacro(SegmentTable, DataObject);
 
   /** The value type for lists of adjacencies contained in each table
       entry */
@@ -127,7 +127,7 @@ public:
     }
     else
     {
-      return &((*result).second);
+      return &(result->second);
     }
   }
 
@@ -144,7 +144,7 @@ public:
     }
     else
     {
-      return &((*result).second);
+      return &(result->second);
     }
   }
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkPointSetToPointSetMetric_hxx
 #define itkPointSetToPointSetMetric_hxx
 
-#include "itkPointSetToPointSetMetric.h"
 
 namespace itk
 {
@@ -65,16 +64,10 @@ PointSetToPointSetMetric<TFixedPointSet, TMovingPointSet>::Initialize()
   }
 
   // If the PointSet is provided by a source, update the source.
-  if (m_MovingPointSet->GetSource())
-  {
-    m_MovingPointSet->GetSource()->Update();
-  }
+  m_MovingPointSet->UpdateSource();
 
   // If the point set is provided by a source, update the source.
-  if (m_FixedPointSet->GetSource())
-  {
-    m_FixedPointSet->GetSource()->Update();
-  }
+  m_FixedPointSet->UpdateSource();
 }
 
 /** PrintSelf */

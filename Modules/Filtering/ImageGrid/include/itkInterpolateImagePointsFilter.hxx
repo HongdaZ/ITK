@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@
 #ifndef itkInterpolateImagePointsFilter_hxx
 #define itkInterpolateImagePointsFilter_hxx
 
-#include "itkInterpolateImagePointsFilter.h"
 #include "itkTotalProgressReporter.h"
 
 namespace itk
@@ -84,7 +83,7 @@ InterpolateImagePointsFilter<TInputImage, TOutputImage, TCoordType, Interpolator
 
   // Setup an iterator for each of the coordinate inputs.
   CoordImageIterator coordIter[ImageDimension];
-  for (unsigned int j = 0; j < ImageDimension; j++)
+  for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     CoordImageIterator temp(this->GetInput(j + 1), coordRegion);
     coordIter[j] = temp;
@@ -96,7 +95,7 @@ InterpolateImagePointsFilter<TInputImage, TOutputImage, TCoordType, Interpolator
   ContinuousIndexType index;
   while (!outIter.IsAtEnd())
   {
-    for (unsigned int j = 0; j < ImageDimension; j++)
+    for (unsigned int j = 0; j < ImageDimension; ++j)
     {
       index[j] = (coordIter[j]).Value();
       ++(coordIter[j]);
@@ -165,9 +164,7 @@ InterpolateImagePointsFilter<TInputImage, TOutputImage, TCoordType, Interpolator
 
   outputPtr->SetSpacing(outputSpacing);
 
-  typename TOutputImage::RegionType outputLargestPossibleRegion;
-  outputLargestPossibleRegion.SetSize(outputSize);
-  outputLargestPossibleRegion.SetIndex(outputStartIndex);
+  const typename TOutputImage::RegionType outputLargestPossibleRegion(outputStartIndex, outputSize);
 
   outputPtr->SetLargestPossibleRegion(outputLargestPossibleRegion);
 }

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ namespace itk
 namespace Statistics
 {
 /**
- *\class CovarianceSampleFilter
+ * \class CovarianceSampleFilter
  * \brief Calculates the covariance matrix of the target sample data.
  *
  * The filter calculates first the sample mean and use it in the covariance
@@ -53,7 +53,7 @@ template <typename TSample>
 class ITK_TEMPLATE_EXPORT CovarianceSampleFilter : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CovarianceSampleFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(CovarianceSampleFilter);
 
   /** Standard class type aliases. */
   using Self = CovarianceSampleFilter;
@@ -133,7 +133,7 @@ protected:
   using DataObjectPointerArraySizeType = ProcessObject::DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
   DataObjectPointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  MakeOutput(DataObjectPointerArraySizeType index) override;
 
   void
   GenerateData() override;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkOctree_hxx
 #define itkOctree_hxx
 
-#include "itkOctree.h"
 
 namespace itk
 {
@@ -146,13 +145,13 @@ Octree<TPixel, ColorTableSize, MappingFunctionType>::GetValue(const unsigned int
 template <typename TPixel, unsigned int ColorTableSize, typename MappingFunctionType>
 OctreeNodeBranch *
 Octree<TPixel, ColorTableSize, MappingFunctionType>::maskToOctree(const TPixel * Mask,
-                                                                  unsigned       width,
-                                                                  unsigned       x,
-                                                                  unsigned       y,
-                                                                  unsigned       z,
-                                                                  unsigned       xsize,
-                                                                  unsigned       ysize,
-                                                                  unsigned       zsize)
+                                                                  unsigned int   width,
+                                                                  unsigned int   x,
+                                                                  unsigned int   y,
+                                                                  unsigned int   z,
+                                                                  unsigned int   xsize,
+                                                                  unsigned int   ysize,
+                                                                  unsigned int   zsize)
 {
   if ((x >= xsize) || (y >= ysize) || (z >= zsize))
   {
@@ -226,14 +225,14 @@ Octree<TPixel, ColorTableSize, MappingFunctionType>::BuildFromBuffer(const void 
                                                                      const unsigned int ysize,
                                                                      const unsigned int zsize)
 {
-  unsigned maxSize = xsize >= ysize ? (xsize >= zsize ? xsize : zsize) : (ysize >= zsize ? ysize : zsize);
-  unsigned width = 1;
-  unsigned depth = 0;
+  unsigned int maxSize = xsize >= ysize ? (xsize >= zsize ? xsize : zsize) : (ysize >= zsize ? ysize : zsize);
+  unsigned int width = 1;
+  unsigned int depth = 0;
 
   while (width < maxSize)
   {
     width *= 2;
-    depth++;
+    ++depth;
   }
   this->SetDepth(depth);
   this->SetWidth(width);
@@ -257,8 +256,8 @@ Octree<TPixel, ColorTableSize, MappingFunctionType>::BuildFromImage(ImageType * 
 }
 
 template <typename TPixel, unsigned int ColorTableSize, typename MappingFunctionType>
-typename Octree<TPixel, ColorTableSize, MappingFunctionType>::ImageTypePointer
-Octree<TPixel, ColorTableSize, MappingFunctionType>::GetImage()
+auto
+Octree<TPixel, ColorTableSize, MappingFunctionType>::GetImage() -> ImageTypePointer
 {
   typename ImageType::SizeType imageSize = { { 0, 0, 0 } };
   SizeValueType                sizes[3];
@@ -266,23 +265,19 @@ Octree<TPixel, ColorTableSize, MappingFunctionType>::GetImage()
   sizes[1] = m_TrueDims[1];
   sizes[2] = m_TrueDims[2];
   imageSize.SetSize(sizes);
-  const typename ImageType::IndexType imageIndex = { { 0, 0, 0 } };
-  typename ImageType::RegionType      region;
-  region.SetSize(imageSize);
-  region.SetIndex(imageIndex);
-  typename ImageType::Pointer img = ImageType::New();
-  img->SetLargestPossibleRegion(region);
-  img->SetBufferedRegion(region);
-  img->SetRequestedRegion(region);
+  const typename ImageType::IndexType  imageIndex = { { 0, 0, 0 } };
+  const typename ImageType::RegionType region(imageIndex, imageSize);
+  auto                                 img = ImageType::New();
+  img->SetRegions(region);
   img->Allocate();
   typename ImageType::IndexType setIndex;
-  for (unsigned int i = 0; i < m_TrueDims[0]; i++)
+  for (unsigned int i = 0; i < m_TrueDims[0]; ++i)
   {
     setIndex[0] = i;
-    for (unsigned int j = 0; j < m_TrueDims[0]; j++)
+    for (unsigned int j = 0; j < m_TrueDims[0]; ++j)
     {
       setIndex[1] = j;
-      for (unsigned int k = 0; k < m_TrueDims[0]; k++)
+      for (unsigned int k = 0; k < m_TrueDims[0]; ++k)
       {
         setIndex[2] = k;
         img->SetPixel(setIndex, (TPixel)this->GetValue(i, j, k));

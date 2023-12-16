@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ itkMeanSampleFilterTest3(int, char *[])
 
   using SampleType = HistogramType;
 
-  HistogramType::Pointer histogram = HistogramType::New();
+  auto histogram = HistogramType::New();
 
   HistogramType::SizeType              size(MeasurementVectorSize);
   HistogramType::MeasurementVectorType lowerBound(MeasurementVectorSize);
@@ -48,7 +48,7 @@ itkMeanSampleFilterTest3(int, char *[])
 
   using MembershipFunctionType = itk::Statistics::MahalanobisDistanceMetric<HistogramType::MeasurementVectorType>;
 
-  MembershipFunctionType::Pointer memberFunction = MembershipFunctionType::New();
+  auto memberFunction = MembershipFunctionType::New();
 
 
   using MeanVectorType = MembershipFunctionType::MeanVectorType;
@@ -67,9 +67,9 @@ itkMeanSampleFilterTest3(int, char *[])
   covariance[2][2] = 6000.0;
 
 
-  for (unsigned int i = 0; i < MeasurementVectorSize; i++)
+  for (unsigned int i = 0; i < MeasurementVectorSize; ++i)
   {
-    for (unsigned int j = i; j < MeasurementVectorSize; j++)
+    for (unsigned int j = i; j < MeasurementVectorSize; ++j)
     {
       covariance[j][i] = covariance[i][j];
     }
@@ -101,7 +101,7 @@ itkMeanSampleFilterTest3(int, char *[])
 
   using FilterType = itk::Statistics::MeanSampleFilter<SampleType>;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   filter->SetInput(histogram);
 
@@ -122,9 +122,9 @@ itkMeanSampleFilterTest3(int, char *[])
 
   double epsilon = 1;
 
-  for (unsigned int i = 0; i < MeasurementVectorSize; i++)
+  for (unsigned int i = 0; i < MeasurementVectorSize; ++i)
   {
-    if (std::fabs(meanOutput[i] - mean[i]) > epsilon)
+    if (itk::Math::abs(meanOutput[i] - mean[i]) > epsilon)
     {
       std::cerr << "The computed mean value is incorrect" << std::endl;
       std::cerr << "computed mean = " << meanOutput << std::endl;

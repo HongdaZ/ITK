@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,7 +56,7 @@ FileListVideoIO::SetFileName(const char * fileList)
 }
 
 std::vector<std::string>
-FileListVideoIO ::SplitFileNames(const std::string & fileList)
+FileListVideoIO::SplitFileNames(const std::string & fileList)
 {
   std::vector<std::string> out;
 
@@ -76,7 +76,7 @@ FileListVideoIO ::SplitFileNames(const std::string & fileList)
     // Move past the delimiter
     if (pos != std::string::npos)
     {
-      pos++;
+      ++pos;
     }
     len -= pos;
   }
@@ -220,7 +220,7 @@ FileListVideoIO::Read(void * buffer)
   // Move on to the next frame
   if (m_CurrentFrame < m_FrameTotal - 1)
   {
-    m_CurrentFrame++;
+    ++m_CurrentFrame;
   }
 }
 
@@ -356,7 +356,7 @@ FileListVideoIO::Write(const void * buffer)
   // Move to the next frame
   if (m_CurrentFrame < m_FrameTotal - 1)
   {
-    m_CurrentFrame++;
+    ++m_CurrentFrame;
   }
 }
 
@@ -464,7 +464,7 @@ FileListVideoIO::ResetMembers()
 }
 
 bool
-FileListVideoIO ::VerifyExtensions(const std::vector<std::string> & fileList) const
+FileListVideoIO::VerifyExtensions(const std::vector<std::string> & fileList) const
 {
   for (size_t i = 1; i < fileList.size(); ++i)
   {

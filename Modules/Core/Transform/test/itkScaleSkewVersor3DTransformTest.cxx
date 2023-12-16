@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,9 +66,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
   {
     std::cout << "Test default constructor... ";
 
-    TransformType::Pointer transform = TransformType::New();
+    auto transform = TransformType::New();
 
-    VectorType axis(1.5);
+    auto axis = itk::MakeFilled<VectorType>(1.5);
 
     ValueType angle = 120.0 * std::atan(1.0) / 45.0;
 
@@ -99,8 +99,8 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
 
   {
     std::cout << "Test initial rotation matrix " << std::endl;
-    TransformType::Pointer transform = TransformType::New();
-    MatrixType             matrix = transform->GetMatrix();
+    auto       transform = TransformType::New();
+    MatrixType matrix = transform->GetMatrix();
     std::cout << "Matrix = " << std::endl;
     std::cout << matrix << std::endl;
   }
@@ -110,9 +110,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
   {
     bool Ok = true;
 
-    TransformType::Pointer rotation = TransformType::New();
+    auto rotation = TransformType::New();
 
-    itk::Vector<double, 3> axis(1);
+    auto axis = itk::MakeFilled<itk::Vector<double, 3>>(1);
 
     const double angle = (std::atan(1.0) / 45.0) * 120.0; // turn 120 degrees
 
@@ -122,9 +122,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
     TransformType::OffsetType offset = rotation->GetOffset();
     std::cout << "pure Rotation test:  ";
     std::cout << offset << std::endl;
-    for (unsigned int i = 0; i < 3; i++)
+    for (unsigned int i = 0; i < 3; ++i)
     {
-      if (std::fabs(offset[i] - 0.0) > epsilon)
+      if (itk::Math::abs(offset[i] - 0.0) > epsilon)
       {
         Ok = false;
         break;
@@ -149,9 +149,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
 
       TransformType::OutputPointType r;
       r = rotation->TransformPoint(p);
-      for (unsigned int i = 0; i < 3; i++)
+      for (unsigned int i = 0; i < 3; ++i)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if (itk::Math::abs(q[i] - r[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -179,9 +179,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
 
       TransformType::OutputVectorType r;
       r = rotation->TransformVector(p);
-      for (unsigned int i = 0; i < 3; i++)
+      for (unsigned int i = 0; i < 3; ++i)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if (itk::Math::abs(q[i] - r[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -209,9 +209,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
 
       TransformType::OutputCovariantVectorType r;
       r = rotation->TransformCovariantVector(p);
-      for (unsigned int i = 0; i < 3; i++)
+      for (unsigned int i = 0; i < 3; ++i)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if (itk::Math::abs(q[i] - r[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -242,9 +242,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
 
       TransformType::OutputVnlVectorType r;
       r = rotation->TransformVector(p);
-      for (unsigned int i = 0; i < 3; i++)
+      for (unsigned int i = 0; i < 3; ++i)
       {
-        if (std::fabs(q[i] - r[i]) > epsilon)
+        if (itk::Math::abs(q[i] - r[i]) > epsilon)
         {
           Ok = false;
           break;
@@ -268,9 +268,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
   {
     bool Ok = true;
 
-    TransformType::Pointer transform = TransformType::New();
+    auto transform = TransformType::New();
 
-    itk::Vector<double, 3> axis(1);
+    auto axis = itk::MakeFilled<itk::Vector<double, 3>>(1);
 
     const double angle = (std::atan(1.0) / 45.0) * 30.0; // turn 30 degrees
 
@@ -285,9 +285,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
 
     TransformType::OutputPointType transformedPoint;
     transformedPoint = transform->TransformPoint(center);
-    for (unsigned int i = 0; i < 3; i++)
+    for (unsigned int i = 0; i < 3; ++i)
     {
-      if (std::fabs(center[i] - transformedPoint[i]) > epsilon)
+      if (itk::Math::abs(center[i] - transformedPoint[i]) > epsilon)
       {
         Ok = false;
         break;
@@ -328,9 +328,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
     ParametersType parameters2 = transform->GetParameters();
 
     const double tolerance = 1e-8;
-    for (unsigned int p = 0; p < np; p++)
+    for (unsigned int p = 0; p < np; ++p)
     {
-      if (std::fabs(parameters[p] - parameters2[p]) > tolerance)
+      if (itk::Math::abs(parameters[p] - parameters2[p]) > tolerance)
       {
         std::cerr << "Output parameter does not match input " << std::endl;
         return EXIT_FAILURE;
@@ -386,9 +386,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
     TheoreticalJacobian[0][8] = 0.0;
     TheoreticalJacobian[1][8] = 0.0;
     TheoreticalJacobian[2][8] = -103.0;
-    for (unsigned int ii = 0; ii < 3; ii++)
+    for (unsigned int ii = 0; ii < 3; ++ii)
     {
-      for (unsigned int jj = 0; jj < 15; jj++)
+      for (unsigned int jj = 0; jj < 15; ++jj)
       {
         if (itk::Math::abs(TheoreticalJacobian[ii][jj] - jacobian[ii][jj]) > 1e-5)
         {
@@ -407,9 +407,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
 
   {
     std::cout << " Exercise the SetIdentity() method " << std::endl;
-    TransformType::Pointer transform = TransformType::New();
+    auto transform = TransformType::New();
 
-    itk::Vector<double, 3> axis(1);
+    auto axis = itk::MakeFilled<itk::Vector<double, 3>>(1);
 
     const double angle = (std::atan(1.0) / 45.0) * 30.0; // turn 30 degrees
 
@@ -449,9 +449,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
     ParametersType parameters2 = transform->GetParameters();
 
     const double tolerance = 1e-8;
-    for (unsigned int p = 0; p < np; p++)
+    for (unsigned int p = 0; p < np; ++p)
     {
-      if (std::fabs(parameters[p] - parameters2[p]) > tolerance)
+      if (itk::Math::abs(parameters[p] - parameters2[p]) > tolerance)
       {
         std::cerr << "Output parameter does not match input " << std::endl;
         return EXIT_FAILURE;
@@ -462,9 +462,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
 
   {
     std::cout << " Exercise the Scaling methods " << std::endl;
-    TransformType::Pointer transform = TransformType::New();
+    auto transform = TransformType::New();
 
-    itk::Vector<double, 3> axis(1);
+    auto axis = itk::MakeFilled<itk::Vector<double, 3>>(1);
 
     const double angle = (std::atan(1.0) / 45.0) * 30.0; // turn 30 degrees
 
@@ -492,9 +492,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
     TransformType::ScaleVectorType rscale = transform->GetScale();
 
     const double tolerance = 1e-8;
-    for (unsigned int j = 0; j < 3; j++)
+    for (unsigned int j = 0; j < 3; ++j)
     {
-      if (std::fabs(rscale[j] - scale[j]) > tolerance)
+      if (itk::Math::abs(rscale[j] - scale[j]) > tolerance)
       {
         std::cerr << "Error in Set/Get Scale() " << std::endl;
         std::cerr << "Input scale: " << scale << std::endl;
@@ -522,9 +522,9 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
     parameters[8] = scale[2];
 
     ParametersType parameters2 = transform->GetParameters();
-    for (unsigned int p = 0; p < np; p++)
+    for (unsigned int p = 0; p < np; ++p)
     {
-      if (std::fabs(parameters[p] - parameters2[p]) > tolerance)
+      if (itk::Math::abs(parameters[p] - parameters2[p]) > tolerance)
       {
         std::cerr << "Output parameter does not match input " << std::endl;
         return EXIT_FAILURE;
@@ -533,7 +533,7 @@ itkScaleSkewVersor3DTransformTest(int, char *[])
     std::cout << "Input/Output parameter check Passed !" << std::endl;
 #if 0 // TODO: Need to instrument inverse of ScaleVersor3DTransform
       {
-      TransformType::Pointer tInverse = TransformType::New();
+      auto tInverse = TransformType::New();
       if(!transform->GetInverse(tInverse))
         {
         std::cout << "Cannot create inverse transform" << std::endl;

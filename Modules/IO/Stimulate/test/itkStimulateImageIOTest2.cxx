@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
  *=========================================================================*/
 #include "itkImageFileReader.h"
 #include "itkStimulateImageIO.h"
+#include "itkTestingMacros.h"
 
 #include <fstream>
 
@@ -30,7 +31,9 @@ itkStimulateImageIOTest2(int argc, char * argv[])
   // Insight/Testing/Data/Input/BigEndian.spr
   if (argc < 2)
   {
-    std::cerr << "Usage: " << argv[0] << " filename\n";
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " filename" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -45,16 +48,9 @@ itkStimulateImageIOTest2(int argc, char * argv[])
   std::cout << "Filename: " << argv[1] << std::endl;
   reader->SetFileName(argv[1]);
   reader->SetImageIO(io);
-  try
-  {
-    reader->Update();
-  }
-  catch (const itk::ExceptionObject & e)
-  {
-    std::cout << "Exception in file reader " << std::endl;
-    std::cout << e << std::endl;
-    return EXIT_FAILURE;
-  }
+
+  ITK_TRY_EXPECT_NO_EXCEPTION(reader->Update());
+
 
   myImage::Pointer image = reader->GetOutput();
   image->Print(std::cout);
@@ -63,7 +59,9 @@ itkStimulateImageIOTest2(int argc, char * argv[])
   std::cout << "region " << region;
 
   // This is where we call all of the Get Functions to increase coverage.
-  std::cout << "Display Range " << io->GetDisplayRange() << std::endl;
+  std::cout << "DisplayRange:" << io->GetDisplayRange() << std::endl;
+  std::cout << "HighDisplayValue:" << io->GetHighDisplayValue() << std::endl;
+  std::cout << "LowDisplayValue: " << io->GetLowDisplayValue() << std::endl;
 
 
   return EXIT_SUCCESS;

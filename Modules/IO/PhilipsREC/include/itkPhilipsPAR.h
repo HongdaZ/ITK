@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -102,7 +102,7 @@ struct par_parameter // par_parameter
   char patient_position[PAR_DEFAULT_STRING_LENGTH];       // Patient position
   char prep_direction[PAR_DEFAULT_STRING_LENGTH];         // Preparation
                                                           // direction
-  short int bit;                                          // Image pixel size [8
+  short bit;                                              // Image pixel size [8
                                                           // or 16 bits]
   char technique[PAR_DEFAULT_STRING_LENGTH];              // Technique
   char scan_mode[PAR_DEFAULT_STRING_LENGTH];              // Scan mode
@@ -212,7 +212,7 @@ struct par_parameter // par_parameter
 class ITKIOPhilipsREC_EXPORT PhilipsPAR : public LightProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PhilipsPAR);
+  ITK_DISALLOW_COPY_AND_MOVE(PhilipsPAR);
 
   /** Standard class type aliases. */
   using Self = PhilipsPAR;

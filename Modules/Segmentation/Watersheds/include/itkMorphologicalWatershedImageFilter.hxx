@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMorphologicalWatershedImageFilter_hxx
 #define itkMorphologicalWatershedImageFilter_hxx
 
-#include "itkMorphologicalWatershedImageFilter.h"
 #include "itkRegionalMinimaImageFilter.h"
 #include "itkHMinimaImageFilter.h"
 #include "itkConnectedComponentImageFilter.h"
@@ -65,7 +64,7 @@ void
 MorphologicalWatershedImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
   // Create a process accumulator for tracking the progress of this minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
 
   progress->SetMiniPipelineFilter(this);
 
@@ -80,7 +79,7 @@ MorphologicalWatershedImageFilter<TInputImage, TOutputImage>::GenerateData()
 
   // Delegate to a R-Min filter to find the regional minima
   using RMinType = RegionalMinimaImageFilter<TInputImage, TOutputImage>;
-  typename RMinType::Pointer rmin = RMinType::New();
+  auto rmin = RMinType::New();
   rmin->SetInput(input);
   rmin->SetFullyConnected(m_FullyConnected);
   rmin->SetBackgroundValue(NumericTraits<OutputImagePixelType>::ZeroValue());
@@ -88,13 +87,13 @@ MorphologicalWatershedImageFilter<TInputImage, TOutputImage>::GenerateData()
 
   // label the components
   using ConnectedCompType = ConnectedComponentImageFilter<TOutputImage, TOutputImage>;
-  typename ConnectedCompType::Pointer label = ConnectedCompType::New();
+  auto label = ConnectedCompType::New();
   label->SetFullyConnected(m_FullyConnected);
   label->SetInput(rmin->GetOutput());
 
   // the watershed
   using WatershedType = MorphologicalWatershedFromMarkersImageFilter<TInputImage, TOutputImage>;
-  typename WatershedType::Pointer wshed = WatershedType::New();
+  auto wshed = WatershedType::New();
   wshed->SetInput(input);
   wshed->SetMarkerImage(label->GetOutput());
   wshed->SetFullyConnected(m_FullyConnected);
@@ -118,7 +117,7 @@ MorphologicalWatershedImageFilter<TInputImage, TOutputImage>::GenerateData()
   }
   else
   {
-    // don't insert the h-minima to save some ressources
+    // don't insert the h-minima to save some resources
     progress->RegisterInternalFilter(rmin, 0.167f);
     progress->RegisterInternalFilter(label, .333f);
     progress->RegisterInternalFilter(wshed, .5f);

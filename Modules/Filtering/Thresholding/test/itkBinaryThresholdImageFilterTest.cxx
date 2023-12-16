@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,7 +43,7 @@ itkBinaryThresholdImageFilterTest(int, char *[])
 
   // Use a random image source as input
   using SourceType = itk::RandomImageSource<InputImageType>;
-  SourceType::Pointer source = SourceType::New();
+  auto source = SourceType::New();
 
   InputImageType::SizeValueType sizeArray[Dimension] = { 3, 3, 3 };
 
@@ -54,7 +54,7 @@ itkBinaryThresholdImageFilterTest(int, char *[])
   // Declare the type for the binary threshold filter
   using FilterType = itk::BinaryThresholdImageFilter<InputImageType, OutputImageType>;
 
-  FilterType::Pointer filter = FilterType::New();
+  auto filter = FilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, BinaryThresholdImageFilter, UnaryFunctorImageFilter);
 
@@ -127,6 +127,15 @@ itkBinaryThresholdImageFilterTest(int, char *[])
     return EXIT_FAILURE;
   }
 
+  // Exercise the const variants
+  FilterType::ConstPointer constFilter = (const FilterType *)(filter.GetPointer());
+
+  const typename FilterType::InputPixelObjectType * lowerThresholdInput = constFilter->GetLowerThresholdInput();
+  ITK_TEST_SET_GET_VALUE(lowerThresholdInput->Get(), lowerThreshold2->Get());
+
+  const typename FilterType::InputPixelObjectType * upperThresholdInput = constFilter->GetUpperThresholdInput();
+  ITK_TEST_SET_GET_VALUE(upperThresholdInput->Get(), upperThreshold2->Get());
+
 
   // Deliberately cause an exception by setting lower threshold to be
   // greater than the upper threshold
@@ -190,7 +199,7 @@ itkBinaryThresholdImageFilterTest(int, char *[])
     else if (itk::Math::NotExactlyEquals(output, outside))
     {
       std::cerr << "Test failed!" << std::endl;
-      std::cerr << "Error checkint the outside value:" << std::endl;
+      std::cerr << "Error checking the outside value:" << std::endl;
       std::cout << "Lower threshold: " << static_cast<itk::NumericTraits<InputPixelType>::PrintType>(lower)
                 << ", upper threshold: " << static_cast<itk::NumericTraits<InputPixelType>::PrintType>(upper)
                 << std::endl;

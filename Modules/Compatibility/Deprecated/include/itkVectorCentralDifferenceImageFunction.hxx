@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkVectorCentralDifferenceImageFunction_hxx
 #define itkVectorCentralDifferenceImageFunction_hxx
 
-#include "itkVectorCentralDifferenceImageFunction.h"
 
 namespace itk
 {
@@ -46,8 +45,9 @@ VectorCentralDifferenceImageFunction<TInputImage, TCoordRep>::PrintSelf(std::ost
  *
  */
 template <typename TInputImage, typename TCoordRep>
-typename VectorCentralDifferenceImageFunction<TInputImage, TCoordRep>::OutputType
+auto
 VectorCentralDifferenceImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(const IndexType & index) const
+  -> OutputType
 {
   OutputType derivative;
 
@@ -58,7 +58,7 @@ VectorCentralDifferenceImageFunction<TInputImage, TCoordRep>::EvaluateAtIndex(co
   const typename InputImageType::SizeType &  size = this->GetInputImage()->GetBufferedRegion().GetSize();
   const typename InputImageType::IndexType & start = this->GetInputImage()->GetBufferedRegion().GetIndex();
 
-  for (unsigned int dim = 0; dim < TInputImage::ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < TInputImage::ImageDimension; ++dim)
   {
     // bounds checking
     if (index[dim] < start[dim] + 1 || index[dim] > (start[dim] + static_cast<OffsetValueType>(size[dim]) - 2))

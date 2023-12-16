@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class ObjectMorphologyImageFilter
+ * \class ObjectMorphologyImageFilter
  * \brief Base class for the morphological operations
  * being applied to isolated objects in an image.
  *
@@ -74,7 +74,7 @@ template <typename TInputImage, typename TOutputImage, typename TKernel>
 class ITK_TEMPLATE_EXPORT ObjectMorphologyImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ObjectMorphologyImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(ObjectMorphologyImageFilter);
 
   /** Standard Self type alias */
   using Self = ObjectMorphologyImageFilter;
@@ -93,7 +93,7 @@ public:
   using IndexType = typename TInputImage::IndexType;
   using PixelType = typename TInputImage::PixelType;
 
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
 
   using ImageBoundaryConditionPointerType = ImageBoundaryCondition<InputImageType> *;
   using ImageBoundaryConditionConstPointerType = const ImageBoundaryCondition<InputImageType> *;
@@ -203,7 +203,7 @@ protected:
    * determine if one of its neighboring pixels (8-neigh in 2d, etc) is a
    * non-ObjectValue pixel. */
   bool
-  IsObjectPixelOnBoundary(const InputNeighborhoodIteratorType & nit);
+  IsObjectPixelOnBoundary(const InputNeighborhoodIteratorType & iNIter);
 
   /** Pointer to a persistent boundary condition object used
    * for the image iterator. */

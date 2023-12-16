@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,11 +18,11 @@
 #ifndef itkMultiLabelSTAPLEImageFilter_hxx
 #define itkMultiLabelSTAPLEImageFilter_hxx
 
-#include "itkMultiLabelSTAPLEImageFilter.h"
 
 #include "itkLabelVotingImageFilter.h"
 
 #include "itkMath.h"
+#include "itkMakeUniqueForOverwrite.h"
 
 namespace itk
 {
@@ -32,16 +32,16 @@ void
 MultiLabelSTAPLEImageFilter<TInputImage, TOutputImage, TWeights>::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
-  os << indent << "HasLabelForUndecidedPixels = " << this->m_HasLabelForUndecidedPixels << std::endl;
+  os << indent << "HasLabelForUndecidedPixels: " << this->m_HasLabelForUndecidedPixels << std::endl;
   using OutputPixelPrintType = typename NumericTraits<OutputPixelType>::PrintType;
-  os << indent << "LabelForUndecidedPixels = " << static_cast<OutputPixelPrintType>(this->m_LabelForUndecidedPixels)
+  os << indent << "LabelForUndecidedPixels: " << static_cast<OutputPixelPrintType>(this->m_LabelForUndecidedPixels)
      << std::endl;
-  os << indent << "HasPriorProbabilities = " << this->m_PriorProbabilities << std::endl;
-  os << indent << "PriorProbabilities = " << this->m_PriorProbabilities << std::endl;
-  os << indent << "HasMaximumNumberOfIterations = " << this->m_HasMaximumNumberOfIterations << std::endl;
-  os << indent << "MaximumNumberOfIterations = " << this->m_MaximumNumberOfIterations << std::endl;
-  os << indent << "m_ElapsedNumberOfIterations = " << m_ElapsedNumberOfIterations << std::endl;
-  os << indent << "TerminationUpdateThreshold = " << this->m_TerminationUpdateThreshold << std::endl;
+  os << indent << "HasPriorProbabilities: " << this->m_PriorProbabilities << std::endl;
+  os << indent << "PriorProbabilities: " << this->m_PriorProbabilities << std::endl;
+  os << indent << "HasMaximumNumberOfIterations: " << this->m_HasMaximumNumberOfIterations << std::endl;
+  os << indent << "MaximumNumberOfIterations: " << this->m_MaximumNumberOfIterations << std::endl;
+  os << indent << "ElapsedNumberOfIterations: " << m_ElapsedNumberOfIterations << std::endl;
+  os << indent << "TerminationUpdateThreshold: " << this->m_TerminationUpdateThreshold << std::endl;
 }
 
 template <typename TInputImage, typename TOutputImage, typename TWeights>
@@ -237,14 +237,14 @@ MultiLabelSTAPLEImageFilter<TInputImage, TOutputImage, TWeights>::GenerateData()
   const size_t numberOfInputs = this->GetNumberOfInputs();
 
   // create and initialize all input image iterators
-  auto * it = new InputConstIteratorType[numberOfInputs];
+  const auto it = make_unique_for_overwrite<InputConstIteratorType[]>(numberOfInputs);
   for (size_t k = 0; k < numberOfInputs; ++k)
   {
     it[k] = InputConstIteratorType(this->GetInput(k), output->GetRequestedRegion());
   }
 
   // allocate array for pixel class weights
-  auto * W = new WeightsType[this->m_TotalLabelCount];
+  const auto W = make_unique_for_overwrite<WeightsType[]>(this->m_TotalLabelCount);
 
   unsigned int iteration = 0;
   for (; (!this->m_HasMaximumNumberOfIterations) || (iteration < this->m_MaximumNumberOfIterations); ++iteration)
@@ -414,9 +414,6 @@ MultiLabelSTAPLEImageFilter<TInputImage, TOutputImage, TWeights>::GenerateData()
   }
 
   m_ElapsedNumberOfIterations = iteration;
-
-  delete[] W;
-  delete[] it;
 }
 
 } // end namespace itk

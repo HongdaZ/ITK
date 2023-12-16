@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkTriangleCell_hxx
 #define itkTriangleCell_hxx
-#include "itkTriangleCell.h"
 #include "vnl/algo/vnl_determinant.h"
 
 namespace itk
@@ -60,8 +59,8 @@ TriangleCell<TCellInterface>::GetNumberOfPoints() const
  * Get the number of boundary features of the given dimension.
  */
 template <typename TCellInterface>
-typename TriangleCell<TCellInterface>::CellFeatureCount
-TriangleCell<TCellInterface>::GetNumberOfBoundaryFeatures(int dimension) const
+auto
+TriangleCell<TCellInterface>::GetNumberOfBoundaryFeatures(int dimension) const -> CellFeatureCount
 {
   switch (dimension)
   {
@@ -169,8 +168,8 @@ TriangleCell<TCellInterface>::SetPointId(int localId, PointIdentifier ptId)
  * Get a begin iterator to the list of point identifiers used by the cell.
  */
 template <typename TCellInterface>
-typename TriangleCell<TCellInterface>::PointIdIterator
-TriangleCell<TCellInterface>::PointIdsBegin()
+auto
+TriangleCell<TCellInterface>::PointIdsBegin() -> PointIdIterator
 {
   return &m_PointIds[0];
 }
@@ -181,8 +180,8 @@ TriangleCell<TCellInterface>::PointIdsBegin()
  * by the cell.
  */
 template <typename TCellInterface>
-typename TriangleCell<TCellInterface>::PointIdConstIterator
-TriangleCell<TCellInterface>::PointIdsBegin() const
+auto
+TriangleCell<TCellInterface>::PointIdsBegin() const -> PointIdConstIterator
 {
   return &m_PointIds[0];
 }
@@ -192,8 +191,8 @@ TriangleCell<TCellInterface>::PointIdsBegin() const
  * Get an end iterator to the list of point identifiers used by the cell.
  */
 template <typename TCellInterface>
-typename TriangleCell<TCellInterface>::PointIdIterator
-TriangleCell<TCellInterface>::PointIdsEnd()
+auto
+TriangleCell<TCellInterface>::PointIdsEnd() -> PointIdIterator
 {
   return &m_PointIds[Self::NumberOfPoints - 1] + 1;
 }
@@ -204,8 +203,8 @@ TriangleCell<TCellInterface>::PointIdsEnd()
  * by the cell.
  */
 template <typename TCellInterface>
-typename TriangleCell<TCellInterface>::PointIdConstIterator
-TriangleCell<TCellInterface>::PointIdsEnd() const
+auto
+TriangleCell<TCellInterface>::PointIdsEnd() const -> PointIdConstIterator
 {
   return &m_PointIds[Self::NumberOfPoints - 1] + 1;
 }
@@ -215,8 +214,8 @@ TriangleCell<TCellInterface>::PointIdsEnd() const
  * Get the number of vertices defining the triangle.
  */
 template <typename TCellInterface>
-typename TriangleCell<TCellInterface>::CellFeatureCount
-TriangleCell<TCellInterface>::GetNumberOfVertices() const
+auto
+TriangleCell<TCellInterface>::GetNumberOfVertices() const -> CellFeatureCount
 {
   return Self::NumberOfVertices;
 }
@@ -226,8 +225,8 @@ TriangleCell<TCellInterface>::GetNumberOfVertices() const
  * Get the number of edges defined for the triangle.
  */
 template <typename TCellInterface>
-typename TriangleCell<TCellInterface>::CellFeatureCount
-TriangleCell<TCellInterface>::GetNumberOfEdges() const
+auto
+TriangleCell<TCellInterface>::GetNumberOfEdges() const -> CellFeatureCount
 {
   return Self::NumberOfEdges;
 }
@@ -279,7 +278,7 @@ TriangleCell<TCellInterface>::DistanceToLine(PointType      x,
 {
   // convert from CoordRepType * to PointType:
   PointType temp(closestPoint);
-  //   for (unsigned int i = 0; i < PointDimension; i++)
+  //   for (unsigned int i = 0; i < PointDimension; ++i)
   //     {
   //     temp[i] = closestPoint[i];
   //     }
@@ -288,7 +287,7 @@ TriangleCell<TCellInterface>::DistanceToLine(PointType      x,
   const double distance2 = this->DistanceToLine(x, p1, p2, t, temp);
 
   // convert from PointType to CoordRepType * :
-  for (unsigned int j = 0; j < PointDimension; j++)
+  for (unsigned int j = 0; j < PointDimension; ++j)
   {
     closestPoint[j] = temp[j];
   }
@@ -311,7 +310,7 @@ TriangleCell<TCellInterface>::DistanceToLine(PointType   x,
   double num(0);
   double denom(0);
 
-  for (unsigned int i = 0; i < PointDimension; i++)
+  for (unsigned int i = 0; i < PointDimension; ++i)
   {
     num += static_cast<double>(v21[i] * (x[i] - p1[i]));
     denom += static_cast<double>(v21[i] * v21[i]);
@@ -348,8 +347,8 @@ TriangleCell<TCellInterface>::DistanceToLine(PointType   x,
 }
 
 template <typename TCellInterface>
-typename TriangleCell<TCellInterface>::CoordRepType
-TriangleCell<TCellInterface>::ComputeArea(PointsContainer * iPoints)
+auto
+TriangleCell<TCellInterface>::ComputeArea(PointsContainer * iPoints) -> CoordRepType
 {
   PointType p[3];
 
@@ -367,14 +366,14 @@ TriangleCell<TCellInterface>::ComputeArea(PointsContainer * iPoints)
 }
 
 template <typename TCellInterface>
-typename TriangleCell<TCellInterface>::PointType
-TriangleCell<TCellInterface>::ComputeBarycenter(CoordRepType * iWeights, PointsContainer * iPoints)
+auto
+TriangleCell<TCellInterface>::ComputeBarycenter(CoordRepType * iWeights, PointsContainer * iPoints) -> PointType
 {
   PointType    p[3];
   CoordRepType sum_weights(0.);
   unsigned int i(0);
 
-  for (; i < 3; i++)
+  for (; i < 3; ++i)
   {
     sum_weights += iWeights[i];
     p[i] = iPoints->GetElement(m_PointIds[i]);
@@ -385,7 +384,7 @@ TriangleCell<TCellInterface>::ComputeBarycenter(CoordRepType * iWeights, PointsC
   if (sum_weights != 0.)
   {
     oP.Fill(0.);
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < 3; ++i)
     {
       oP += p[i].GetVectorFromOrigin() * iWeights[i] / sum_weights;
     }
@@ -398,23 +397,23 @@ TriangleCell<TCellInterface>::ComputeBarycenter(CoordRepType * iWeights, PointsC
 }
 
 template <typename TCellInterface>
-typename TriangleCell<TCellInterface>::PointType
-TriangleCell<TCellInterface>::ComputeCenterOfGravity(PointsContainer * iPoints)
+auto
+TriangleCell<TCellInterface>::ComputeCenterOfGravity(PointsContainer * iPoints) -> PointType
 {
   std::vector<CoordRepType> weights(3, 1. / 3.);
   return ComputeBarycenter(&weights[0], iPoints);
 }
 
 template <typename TCellInterface>
-typename TriangleCell<TCellInterface>::PointType
-TriangleCell<TCellInterface>::ComputeCircumCenter(PointsContainer * iPoints)
+auto
+TriangleCell<TCellInterface>::ComputeCircumCenter(PointsContainer * iPoints) -> PointType
 {
   std::vector<CoordRepType> weights(3, 0.);
 
   PointType    p[3];
   unsigned int i;
 
-  for (i = 0; i < 3; i++)
+  for (i = 0; i < 3; ++i)
   {
     p[i] = iPoints->GetElement(m_PointIds[i]);
   }
@@ -434,7 +433,7 @@ TriangleCell<TCellInterface>::ComputeCircumCenter(PointsContainer * iPoints)
     PointType oP;
     oP.Fill(0.);
 
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < 3; ++i)
     {
       oP += p[i].GetVectorFromOrigin() * weights[i] / sum_weights;
     }
@@ -547,7 +546,7 @@ TriangleCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
     if (closestPoint)
     { // Compute the Distance 2 Between Points
       *minDist2 = 0;
-      for (i = 0; i < PointDimension; i++)
+      for (i = 0; i < PointDimension; ++i)
       {
         const double val = cp[i] - x[i];
         *minDist2 += val * val;
@@ -579,7 +578,7 @@ TriangleCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
       if (b1 < 0.0 && b2 < 0.0)
       {
         dist2Point = 0;
-        for (i = 0; i < PointDimension; i++)
+        for (i = 0; i < PointDimension; ++i)
         {
           dist2Point += (x[i] - pt3[i]) * (x[i] - pt3[i]);
         }
@@ -600,11 +599,11 @@ TriangleCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
           *minDist2 = dist2Line2;
           closest = closestPoint2;
         }
-        for (i = 0; i < PointDimension; i++)
+        for (i = 0; i < PointDimension; ++i)
         {
           closestPoint[i] = closest[i];
         }
-        for (; i < 3; i++)
+        for (; i < 3; ++i)
         {
           closestPoint[i] = 0.;
         }
@@ -612,7 +611,7 @@ TriangleCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
       else if (b2 < 0.0 && b3 < 0.0)
       {
         dist2Point = 0;
-        for (i = 0; i < PointDimension; i++)
+        for (i = 0; i < PointDimension; ++i)
         {
           dist2Point += (x[i] - pt1[i]) * (x[i] - pt1[i]);
         }
@@ -633,11 +632,11 @@ TriangleCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
           *minDist2 = dist2Line2;
           closest = closestPoint2;
         }
-        for (i = 0; i < PointDimension; i++)
+        for (i = 0; i < PointDimension; ++i)
         {
           closestPoint[i] = closest[i];
         }
-        for (; i < 3; i++)
+        for (; i < 3; ++i)
         {
           closestPoint[i] = 0.;
         }
@@ -645,7 +644,7 @@ TriangleCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
       else if (b1 < 0.0 && b3 < 0.0)
       {
         dist2Point = 0;
-        for (i = 0; i < PointDimension; i++)
+        for (i = 0; i < PointDimension; ++i)
         {
           dist2Point += (x[i] - pt2[i]) * (x[i] - pt2[i]);
         }
@@ -666,11 +665,11 @@ TriangleCell<TCellInterface>::EvaluatePosition(CoordRepType *            x,
           *minDist2 = dist2Line2;
           closest = closestPoint2;
         }
-        for (i = 0; i < PointDimension; i++)
+        for (i = 0; i < PointDimension; ++i)
         {
           closestPoint[i] = closest[i];
         }
-        for (; i < 3; i++)
+        for (; i < 3; ++i)
         {
           closestPoint[i] = 0.;
         }

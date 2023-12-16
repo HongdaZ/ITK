@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@
  *=========================================================================*/
 #ifndef itkVotingBinaryIterativeHoleFillingImageFilter_hxx
 #define itkVotingBinaryIterativeHoleFillingImageFilter_hxx
-#include "itkVotingBinaryIterativeHoleFillingImageFilter.h"
 
 #include "itkConstNeighborhoodIterator.h"
 #include "itkNeighborhoodInnerProduct.h"
@@ -51,7 +50,7 @@ VotingBinaryIterativeHoleFillingImageFilter<TInputImage>::GenerateData()
 
   m_NumberOfPixelsChanged = 0;
 
-  typename VotingFilterType::Pointer filter = VotingFilterType::New();
+  auto filter = VotingFilterType::New();
 
   filter->SetRadius(this->GetRadius());
   filter->SetBackgroundValue(this->GetBackgroundValue());
@@ -69,7 +68,7 @@ VotingBinaryIterativeHoleFillingImageFilter<TInputImage>::GenerateData()
     filter->SetInput(input);
     filter->Update();
 
-    m_CurrentNumberOfIterations++;
+    ++m_CurrentNumberOfIterations;
     progress.CompletedPixel(); // not really a pixel but an iteration
     this->InvokeEvent(IterationEvent());
 

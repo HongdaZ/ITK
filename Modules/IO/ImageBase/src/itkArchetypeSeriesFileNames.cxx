@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,9 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkArchetypeSeriesFileNames_h
-#define _itkArchetypeSeriesFileNames_h
-
 
 #include "itkArchetypeSeriesFileNames.h"
 #include "itkRegularExpressionSeriesFileNames.h"
@@ -26,12 +23,12 @@
 
 namespace itk
 {
-ArchetypeSeriesFileNames ::ArchetypeSeriesFileNames()
+ArchetypeSeriesFileNames::ArchetypeSeriesFileNames()
   : m_Archetype("")
 {}
 
 void
-ArchetypeSeriesFileNames ::SetArchetype(const std::string & archetype)
+ArchetypeSeriesFileNames::SetArchetype(const std::string & archetype)
 {
   if (archetype != m_Archetype)
   {
@@ -42,7 +39,7 @@ ArchetypeSeriesFileNames ::SetArchetype(const std::string & archetype)
 }
 
 ArchetypeSeriesFileNames::VectorSizeType
-ArchetypeSeriesFileNames ::GetNumberOfGroupings()
+ArchetypeSeriesFileNames::GetNumberOfGroupings()
 {
   if (m_ScanTime < m_ArchetypeMTime)
   {
@@ -53,7 +50,7 @@ ArchetypeSeriesFileNames ::GetNumberOfGroupings()
 }
 
 const std::vector<std::string> &
-ArchetypeSeriesFileNames ::GetFileNames(VectorSizeType group)
+ArchetypeSeriesFileNames::GetFileNames(VectorSizeType group)
 {
   if (m_ScanTime < m_ArchetypeMTime)
   {
@@ -73,7 +70,7 @@ ArchetypeSeriesFileNames ::GetFileNames(VectorSizeType group)
 }
 
 void
-ArchetypeSeriesFileNames ::Scan()
+ArchetypeSeriesFileNames::Scan()
 {
   // For each group of contiguous numbers in m_Archetype, create a
   // regular expression that is identical to m_Archetype except that
@@ -212,7 +209,7 @@ ArchetypeSeriesFileNames ::Scan()
 }
 
 void
-ArchetypeSeriesFileNames ::PrintSelf(std::ostream & os, Indent indent) const
+ArchetypeSeriesFileNames::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
@@ -220,7 +217,7 @@ ArchetypeSeriesFileNames ::PrintSelf(std::ostream & os, Indent indent) const
   os << indent << "Number of groupings: " << const_cast<ArchetypeSeriesFileNames *>(this)->GetNumberOfGroupings()
      << std::endl;
 
-  for (unsigned int j = 0; j < const_cast<ArchetypeSeriesFileNames *>(this)->GetNumberOfGroupings(); j++)
+  for (unsigned int j = 0; j < const_cast<ArchetypeSeriesFileNames *>(this)->GetNumberOfGroupings(); ++j)
   {
     os << indent << "Grouping #" << j << std::endl;
     StringVectorType                 group = const_cast<ArchetypeSeriesFileNames *>(this)->GetFileNames(j);
@@ -235,5 +232,3 @@ ArchetypeSeriesFileNames ::PrintSelf(std::ostream & os, Indent indent) const
   }
 }
 } // namespace itk
-
-#endif

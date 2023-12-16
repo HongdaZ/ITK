@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,7 +49,7 @@ namespace Statistics
 {
 
 /**
- *\class SampleToHistogramFilter
+ * \class SampleToHistogramFilter
  *  \brief Computes the Histogram corresponding to a Sample.
  *
  * This filter produces as output the histogram corresponding to
@@ -68,7 +68,7 @@ template <typename TSample, typename THistogram>
 class ITK_TEMPLATE_EXPORT SampleToHistogramFilter : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SampleToHistogramFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(SampleToHistogramFilter);
 
   /** Standard class type aliases */
   using Self = SampleToHistogramFilter;
@@ -92,7 +92,7 @@ public:
   using HistogramMeasurementVectorType = typename HistogramType::MeasurementVectorType;
 
   /** Type for the data object output */
-  using DataObjectPointer = typename Superclass::DataObjectPointer;
+  using typename Superclass::DataObjectPointer;
 
   using Superclass::SetInput;
 
@@ -148,7 +148,7 @@ public:
   /** Method that facilitates the use of this filter in the internal
    * pipeline of another filter. */
   virtual void
-  GraftOutput(DataObject * output);
+  GraftOutput(DataObject * graft);
 
 protected:
   SampleToHistogramFilter();

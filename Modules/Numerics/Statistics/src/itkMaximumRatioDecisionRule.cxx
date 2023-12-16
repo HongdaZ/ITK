@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,10 +22,10 @@ namespace itk
 {
 namespace Statistics
 {
-MaximumRatioDecisionRule ::MaximumRatioDecisionRule() = default;
+MaximumRatioDecisionRule::MaximumRatioDecisionRule() = default;
 
 void
-MaximumRatioDecisionRule ::PrintSelf(std::ostream & os, Indent indent) const
+MaximumRatioDecisionRule::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
@@ -52,7 +52,7 @@ MaximumRatioDecisionRule ::PrintSelf(std::ostream & os, Indent indent) const
 }
 
 void
-MaximumRatioDecisionRule ::SetPriorProbabilities(const PriorProbabilityVectorType & p)
+MaximumRatioDecisionRule::SetPriorProbabilities(const PriorProbabilityVectorType & p)
 {
   if (p.size() != m_PriorProbabilities.size())
   {
@@ -65,7 +65,7 @@ MaximumRatioDecisionRule ::SetPriorProbabilities(const PriorProbabilityVectorTyp
 
     for (pit = p.begin(), it = m_PriorProbabilities.begin(); pit != p.end(); ++pit, ++it)
     {
-      if (fabs(*pit - *it) > itk::Math::eps)
+      if (itk::Math::abs(*pit - *it) > itk::Math::eps)
       {
         break;
       }
@@ -79,7 +79,7 @@ MaximumRatioDecisionRule ::SetPriorProbabilities(const PriorProbabilityVectorTyp
 }
 
 MaximumRatioDecisionRule::ClassIdentifierType
-MaximumRatioDecisionRule ::Evaluate(const MembershipVectorType & discriminantScores) const
+MaximumRatioDecisionRule::Evaluate(const MembershipVectorType & discriminantScores) const
 {
   bool uniformPrior = false;
   if (discriminantScores.size() != m_PriorProbabilities.size())

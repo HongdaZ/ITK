@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 namespace itk
 {
 /**
- *\class CheckerBoardImageFilter
+ * \class CheckerBoardImageFilter
  * \brief Combines two images in a checkerboard pattern.
  *
  * CheckerBoardImageFilter takes two input images that must have the same
@@ -46,7 +46,7 @@ template <typename TImage>
 class ITK_TEMPLATE_EXPORT CheckerBoardImageFilter : public ImageToImageFilter<TImage, TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(CheckerBoardImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(CheckerBoardImageFilter);
 
   /** Standard class type aliases. */
   using Self = CheckerBoardImageFilter;
@@ -70,7 +70,7 @@ public:
   static constexpr unsigned int ImageDimension = TImage::ImageDimension;
 
   /** Type to hold the number of checker boxes per dimension. */
-  using PatternArrayType = FixedArray<unsigned int, TImage ::ImageDimension>;
+  using PatternArrayType = FixedArray<unsigned int, TImage::ImageDimension>;
 
   /** Set the first operand for checker board. */
   void

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkMaskedImageToHistogramFilter_hxx
 #define itkMaskedImageToHistogramFilter_hxx
 
-#include "itkMaskedImageToHistogramFilter.h"
 #include "itkProgressReporter.h"
 #include "itkImageRegionConstIterator.h"
 
@@ -58,7 +57,7 @@ MaskedImageToHistogramFilter<TImage, TMaskImage>::ThreadedComputeMinimumAndMaxim
     {
       const PixelType & p = inputIt.Get();
       NumericTraits<PixelType>::AssignToArray(p, m);
-      for (unsigned int i = 0; i < nbOfComponents; i++)
+      for (unsigned int i = 0; i < nbOfComponents; ++i)
       {
         min[i] = std::min(m[i], min[i]);
         max[i] = std::max(m[i], max[i]);
@@ -68,7 +67,7 @@ MaskedImageToHistogramFilter<TImage, TMaskImage>::ThreadedComputeMinimumAndMaxim
     ++maskIt;
   }
   std::lock_guard<std::mutex> mutexHolder(this->m_Mutex);
-  for (unsigned int i = 0; i < nbOfComponents; i++)
+  for (unsigned int i = 0; i < nbOfComponents; ++i)
   {
     this->m_Minimum[i] = std::min(this->m_Minimum[i], min[i]);
     this->m_Maximum[i] = std::max(this->m_Maximum[i], max[i]);

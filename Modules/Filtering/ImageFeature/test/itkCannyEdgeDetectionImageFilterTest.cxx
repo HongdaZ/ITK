@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ itkCannyEdgeDetectionImageFilterTest(int argc, char * argv[])
   reader->SetFileName(argv[1]);
 
   // Set up the filter
-  CannyEdgeDetectionImageFilterType::Pointer filter = CannyEdgeDetectionImageFilterType::New();
+  auto filter = CannyEdgeDetectionImageFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(filter, CannyEdgeDetectionImageFilter, ImageToImageFilter);
 
@@ -63,11 +63,11 @@ itkCannyEdgeDetectionImageFilterTest(int argc, char * argv[])
   filter->SetLowerThreshold(lowerThreshold);
   ITK_TEST_SET_GET_VALUE(lowerThreshold, filter->GetLowerThreshold());
 
-  CannyEdgeDetectionImageFilterType::ArrayType variance = 1.0f;
+  CannyEdgeDetectionImageFilterType::ArrayType variance(1.0f);
   filter->SetVariance(variance);
   ITK_TEST_SET_GET_VALUE(variance, filter->GetVariance());
 
-  CannyEdgeDetectionImageFilterType::ArrayType maximumError = .01f;
+  CannyEdgeDetectionImageFilterType::ArrayType maximumError(.01f);
   filter->SetMaximumError(maximumError);
   ITK_TEST_SET_GET_VALUE(maximumError, filter->GetMaximumError());
 

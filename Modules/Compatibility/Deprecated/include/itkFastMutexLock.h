@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@
 namespace itk
 {
 /**
- *\class FastMutexLock
+ * \class FastMutexLock
  * \brief Critical section locking class.
  *
  * FastMutexLock allows the locking of variables which are accessed
@@ -60,7 +60,7 @@ namespace itk
 class ITKDeprecated_EXPORT FastMutexLock : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMutexLock);
+  ITK_DISALLOW_COPY_AND_MOVE(FastMutexLock);
 
   /** Standard class type aliases. */
   using Self = FastMutexLock;

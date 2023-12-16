@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkGPUImageDataManager_hxx
 #define itkGPUImageDataManager_hxx
 
-#include "itkGPUImageDataManager.h"
 #include "itkOpenCLUtil.h"
 
 namespace itk
@@ -37,7 +36,7 @@ GPUImageDataManager<ImageType>::SetImagePointer(ImageType * img)
   IndexType  index = region.GetIndex();
   SizeType   size = region.GetSize();
 
-  for (unsigned int d = 0; d < ImageDimension; d++)
+  for (unsigned int d = 0; d < ImageDimension; ++d)
   {
     m_BufferedRegionIndex[d] = index[d];
     m_BufferedRegionSize[d] = size[d];

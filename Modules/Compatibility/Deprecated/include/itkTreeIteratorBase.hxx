@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -74,8 +74,8 @@ TreeIteratorBase<TTreeType>::TreeIteratorBase(const TTreeType * tree, const Tree
 
 /** Return the current value of the node */
 template <typename TTreeType>
-const typename TreeIteratorBase<TTreeType>::ValueType &
-TreeIteratorBase<TTreeType>::Get() const
+auto
+TreeIteratorBase<TTreeType>::Get() const -> const ValueType &
 {
   return m_Position->Get();
 }
@@ -111,7 +111,7 @@ TreeIteratorBase<TTreeType>::Add(ValueType element)
     return false;
   }
 
-  typename TreeNodeType::Pointer node = TreeNodeType::New();
+  auto node = TreeNodeType::New();
   node->Set(element);
   m_Position->AddChild(node);
   m_Tree->Modified();
@@ -133,7 +133,7 @@ TreeIteratorBase<TTreeType>::Add(int itkNotUsed(childPosition), ValueType elemen
 {
   if (m_Position)
   {
-    typename TreeNodeType::Pointer node = TreeNodeType::New();
+    auto node = TreeNodeType::New();
     node->Set(element);
     m_Position->AddChild(node);
     m_Tree->Modified();
@@ -210,7 +210,7 @@ template <typename TTreeType>
 TTreeType *
 TreeIteratorBase<TTreeType>::GetSubTree() const
 {
-  typename TTreeType::Pointer tree = TTreeType::New();
+  auto tree = TTreeType::New();
   tree->SetRoot(m_Position);
   tree->SetSubtree(true);
   return tree;
@@ -335,15 +335,15 @@ TreeIteratorBase<TTreeType> *
 TreeIteratorBase<TTreeType>::Children()
 {
   itkGenericOutputMacro("Not implemented yet");
-  ::itk::ExceptionObject e_(__FILE__, __LINE__, "Not implemented yet", ITK_LOCATION);
+  itk::ExceptionObject e_(__FILE__, __LINE__, "Not implemented yet", ITK_LOCATION);
   throw e_; /* Explicit naming to work around Intel compiler bug.  */
   return nullptr;
 }
 
 /** Return the first parent found */
 template <typename TTreeType>
-const typename TreeIteratorBase<TTreeType>::TreeNodeType *
-TreeIteratorBase<TTreeType>::GetParent() const
+auto
+TreeIteratorBase<TTreeType>::GetParent() const -> const TreeNodeType *
 {
   if (m_Position == nullptr)
   {
@@ -359,7 +359,7 @@ TreeIteratorBase<TTreeType> *
 TreeIteratorBase<TTreeType>::Parents()
 {
   itkGenericOutputMacro("Not implemented yet");
-  ::itk::ExceptionObject e_(__FILE__, __LINE__, "Not implemented yet", ITK_LOCATION);
+  itk::ExceptionObject e_(__FILE__, __LINE__, "Not implemented yet", ITK_LOCATION);
   throw e_; /* Explicit naming to work around Intel compiler bug.  */
   return nullptr;
 }
@@ -438,39 +438,39 @@ TreeIteratorBase<TTreeType>::Count()
   }
   while (this->Next())
   {
-    size++;
+    ++size;
   }
   return size;
 }
 
 /** Get the node pointed by the iterator */
 template <typename TTreeType>
-typename TreeIteratorBase<TTreeType>::TreeNodeType *
-TreeIteratorBase<TTreeType>::GetNode()
+auto
+TreeIteratorBase<TTreeType>::GetNode() -> TreeNodeType *
 {
   return const_cast<TreeNodeType *>(m_Position);
 }
 
 /** Get the node pointed by the iterator */
 template <typename TTreeType>
-const typename TreeIteratorBase<TTreeType>::TreeNodeType *
-TreeIteratorBase<TTreeType>::GetNode() const
+auto
+TreeIteratorBase<TTreeType>::GetNode() const -> const TreeNodeType *
 {
   return m_Position;
 }
 
 /** Get the root */
 template <typename TTreeType>
-typename TreeIteratorBase<TTreeType>::TreeNodeType *
-TreeIteratorBase<TTreeType>::GetRoot()
+auto
+TreeIteratorBase<TTreeType>::GetRoot() -> TreeNodeType *
 {
   return const_cast<TreeNodeType *>(m_Root);
 }
 
 /** Get the root (const) */
 template <typename TTreeType>
-const typename TreeIteratorBase<TTreeType>::TreeNodeType *
-TreeIteratorBase<TTreeType>::GetRoot() const
+auto
+TreeIteratorBase<TTreeType>::GetRoot() const -> const TreeNodeType *
 {
   return m_Root;
 }

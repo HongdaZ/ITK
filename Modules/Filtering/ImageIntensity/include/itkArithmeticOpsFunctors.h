@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,16 +37,12 @@ public:
   Add2() = default;
   ~Add2() = default;
   bool
-  operator!=(const Add2 &) const
+  operator==(const Add2 &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const Add2 & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Add2);
 
   inline TOutput
   operator()(const TInput1 & A, const TInput2 & B) const
@@ -68,16 +64,12 @@ public:
   Add3() = default;
   ~Add3() = default;
   bool
-  operator!=(const Add3 &) const
+  operator==(const Add3 &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const Add3 & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Add3);
 
   inline TOutput
   operator()(const TInput1 & A, const TInput2 & B, const TInput3 & C) const
@@ -99,16 +91,12 @@ public:
   Sub2() = default;
   ~Sub2() = default;
   bool
-  operator!=(const Sub2 &) const
+  operator==(const Sub2 &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const Sub2 & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Sub2);
 
   inline TOutput
   operator()(const TInput1 & A, const TInput2 & B) const
@@ -130,16 +118,12 @@ public:
   Mult() = default;
   ~Mult() = default;
   bool
-  operator!=(const Mult &) const
+  operator==(const Mult &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const Mult & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Mult);
 
   inline TOutput
   operator()(const TInput1 & A, const TInput2 & B) const
@@ -161,16 +145,12 @@ public:
   Div() = default;
   ~Div() = default;
   bool
-  operator!=(const Div &) const
+  operator==(const Div &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const Div & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Div);
 
   inline TOutput
   operator()(const TInput1 & A, const TInput2 & B) const
@@ -205,18 +185,14 @@ public:
   ~DivideOrZeroOut() = default;
 
   bool
-  operator!=(const DivideOrZeroOut & other) const
-  {
-    return !(*this == other);
-  }
-
-  bool
   operator==(const DivideOrZeroOut & itkNotUsed(other)) const
   {
     // Always return true for now.  Do a comparison to m_Threshold if it is
     // every made set-able.
     return true;
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(DivideOrZeroOut);
 
   inline TOutput
   operator()(const TNumerator & n, const TDenominator & d) const
@@ -233,7 +209,7 @@ public:
 
 
 /**
- *\class Modulus
+ * \class Modulus
  *
  * \ingroup ITKImageIntensity
  */
@@ -245,16 +221,12 @@ public:
   ~Modulus() = default;
 
   bool
-  operator!=(const Modulus &) const
+  operator==(const Modulus &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const Modulus & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Modulus);
 
   inline TOutput
   operator()(const TInput1 & A, const TInput2 & B) const
@@ -273,7 +245,7 @@ public:
 #if !defined(ITK_FUTURE_LEGACY_REMOVE)
 
 /**
- *\class ModulusTransform
+ * \class ModulusTransform
  *
  * \deprecated The two template parametered ModulusTransform functor
  * is deprecated. Please use the version with 3 template parameters.
@@ -293,20 +265,12 @@ public:
   }
 
   bool
-  operator!=(const ModulusTransform & other) const
-  {
-    if (m_Dividend != other.m_Dividend)
-    {
-      return true;
-    }
-    return false;
-  }
-
-  bool
   operator==(const ModulusTransform & other) const
   {
-    return !(*this != other);
+    return m_Dividend == other.m_Dividend;
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ModulusTransform);
 
   inline TOutput
   operator()(const TInput & x) const
@@ -336,22 +300,18 @@ class DivFloor
 {
 public:
   bool
-  operator!=(const DivFloor &) const
+  operator==(const DivFloor &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const DivFloor & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(DivFloor);
 
   inline TOutput
   operator()(const TInput1 & A, const TInput2 & B) const
   {
-    const double temp = std::floor(double(A) / double(B));
-    if (NumericTraits<TOutput>::IsInteger && Math::isinf(temp))
+    const double temp = std::floor(static_cast<double>(A) / static_cast<double>(B));
+    if (std::is_integral<TOutput>::value && Math::isinf(temp))
     {
       if (temp > 0)
       {
@@ -383,16 +343,12 @@ class DivReal
 public:
   // Use default copy, assigned and destructor
   bool
-  operator!=(const DivReal &) const
+  operator==(const DivReal &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const DivReal & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(DivReal);
 
   inline TOutput
   operator()(const TInput1 & A, const TInput2 & B) const
@@ -415,16 +371,12 @@ public:
   UnaryMinus() = default;
   ~UnaryMinus() = default;
   bool
-  operator!=(const UnaryMinus &) const
+  operator==(const UnaryMinus &) const
   {
-    return false;
+    return true;
   }
 
-  bool
-  operator==(const UnaryMinus & other) const
-  {
-    return !(*this != other);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(UnaryMinus);
 
   inline TOutput
   operator()(const TInput1 & A) const

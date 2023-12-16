@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #define itkFixedArray_h
 
 #include "itkMacro.h"
+#include "itkMakeFilled.h"
 #include <algorithm>
 #include <array>
 
@@ -104,16 +105,14 @@ public:
     }
     Iterator    operator->() const { return (m_Iterator - 1); }
     ValueType & operator*() const { return *(m_Iterator - 1); }
-    bool
-    operator!=(const ReverseIterator & rit) const
-    {
-      return m_Iterator != rit.m_Iterator;
-    }
+
     bool
     operator==(const ReverseIterator & rit) const
     {
       return m_Iterator == rit.m_Iterator;
     }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ReverseIterator);
 
   private:
     Iterator m_Iterator;
@@ -153,16 +152,14 @@ public:
     }
     ConstIterator     operator->() const { return (m_Iterator - 1); }
     const ValueType & operator*() const { return *(m_Iterator - 1); }
-    bool
-    operator!=(const ConstReverseIterator & rit) const
-    {
-      return m_Iterator != rit.m_Iterator;
-    }
+
     bool
     operator==(const ConstReverseIterator & rit) const
     {
       return m_Iterator == rit.m_Iterator;
     }
+
+    ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(ConstReverseIterator);
 
   private:
     ConstIterator m_Iterator;
@@ -193,15 +190,9 @@ public:
   using SizeType = unsigned int;
 
 public:
-  /** Constructors */
+  /** Default-constructor.
+   * \note The other five "special member functions" are defaulted implicitly, following the C++ "Rule of Zero". */
   FixedArray() = default;
-  FixedArray(const FixedArray &) = default;
-  FixedArray &
-  operator=(const FixedArray &) = default;
-  FixedArray(FixedArray &&) = default;
-  FixedArray &
-  operator=(FixedArray &&) = default;
-  ~FixedArray() = default;
 
   /** Conversion constructors */
   FixedArray(const ValueType r[VLength]);
@@ -254,43 +245,25 @@ public:
   bool
   operator==(const FixedArray & r) const;
 
-  bool
-  operator!=(const FixedArray & r) const
-  {
-    return !operator==(r);
-  }
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(FixedArray);
+
 
   /** Allow the FixedArray to be indexed normally.  No bounds checking is done.
-   * The separate versions are a work-around for an integer conversion bug in
-   * Visual C++. */
-  reference       operator[](short index) { return m_InternalArray[index]; }
-  const_reference operator[](short index) const { return m_InternalArray[index]; }
-  reference       operator[](unsigned short index) { return m_InternalArray[index]; }
-  const_reference operator[](unsigned short index) const { return m_InternalArray[index]; }
-  reference       operator[](int index) { return m_InternalArray[index]; }
-  const_reference operator[](int index) const { return m_InternalArray[index]; }
+   */
 // false positive warnings with GCC
 #if defined(__GNUC__)
-#  if (__GNUC__ == 4) && (__GNUC_MINOR__ == 9) || (__GNUC__ >= 7)
+#  if (__GNUC__ >= 7)
 #    pragma GCC diagnostic push
 #    pragma GCC diagnostic ignored "-Warray-bounds"
 #  endif
 #endif
-  reference       operator[](unsigned int index) { return m_InternalArray[index]; }
-  const_reference operator[](unsigned int index) const { return m_InternalArray[index]; }
+  constexpr reference       operator[](unsigned int index) { return m_InternalArray[index]; }
+  constexpr const_reference operator[](unsigned int index) const { return m_InternalArray[index]; }
 #if defined(__GNUC__)
-#  if (__GNUC__ == 4) && (__GNUC_MINOR__ == 9) || (__GNUC__ >= 7)
+#  if (__GNUC__ >= 7)
 #    pragma GCC diagnostic pop
 #  endif
 #endif
-  reference       operator[](long index) { return m_InternalArray[index]; }
-  const_reference operator[](long index) const { return m_InternalArray[index]; }
-  reference       operator[](unsigned long index) { return m_InternalArray[index]; }
-  const_reference operator[](unsigned long index) const { return m_InternalArray[index]; }
-  reference       operator[](long long index) { return m_InternalArray[index]; }
-  const_reference operator[](long long index) const { return m_InternalArray[index]; }
-  reference       operator[](unsigned long long index) { return m_InternalArray[index]; }
-  const_reference operator[](unsigned long long index) const { return m_InternalArray[index]; }
 
   /** Set/Get element methods are more convenient in wrapping languages */
   void
@@ -317,6 +290,18 @@ public:
     return m_InternalArray;
   }
 
+  ValueType *
+  data()
+  {
+    return m_InternalArray;
+  }
+
+  const ValueType *
+  data() const
+  {
+    return m_InternalArray;
+  }
+
   /** Get various iterators to the array. */
   Iterator
   Begin();
@@ -338,37 +323,37 @@ public:
 
   itkLegacyMacro(ConstReverseIterator rEnd() const);
 
-  const_iterator
+  constexpr const_iterator
   cbegin() const noexcept
   {
     return m_InternalArray;
   }
 
-  iterator
+  constexpr iterator
   begin() noexcept
   {
     return m_InternalArray;
   }
 
-  const_iterator
+  constexpr const_iterator
   begin() const noexcept
   {
     return this->cbegin();
   }
 
-  const_iterator
+  constexpr const_iterator
   cend() const noexcept
   {
     return m_InternalArray + VLength;
   }
 
-  iterator
+  constexpr iterator
   end() noexcept
   {
     return m_InternalArray + VLength;
   }
 
-  const_iterator
+  constexpr const_iterator
   end() const noexcept
   {
     return this->cend();
@@ -410,9 +395,17 @@ public:
     return this->crend();
   }
 
+  /** Size of the container */
   SizeType
   Size() const;
 
+  constexpr SizeType
+  size() const
+  {
+    return VLength;
+  }
+
+  /** Set all the elements of the container to the input value. */
   void
   Fill(const ValueType &);
 
@@ -427,8 +420,12 @@ private:
   CArray m_InternalArray;
 
 public:
-  static FixedArray
-  Filled(const ValueType &);
+  /** Return an FixedArray with the given value assigned to all elements. */
+  static constexpr FixedArray
+  Filled(const ValueType & value)
+  {
+    return MakeFilled<FixedArray>(value);
+  }
 };
 
 template <typename TValue, unsigned int VLength>

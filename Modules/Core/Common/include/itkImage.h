@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,6 +26,8 @@
 #include "itkFixedArray.h"
 #include "itkWeakPointer.h"
 #include "itkNeighborhoodAccessorFunctor.h"
+
+#include <type_traits> // For is_same
 
 namespace itk
 {
@@ -86,7 +88,7 @@ template <typename TPixel, unsigned int VImageDimension = 2>
 class ITK_TEMPLATE_EXPORT Image : public ImageBase<VImageDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Image);
+  ITK_DISALLOW_COPY_AND_MOVE(Image);
 
   /** Standard class type aliases */
   using Self = Image;
@@ -126,44 +128,44 @@ public:
   using NeighborhoodAccessorFunctorType = NeighborhoodAccessorFunctor<Self>;
 
   /** Type of image dimension */
-  using ImageDimensionType = typename Superclass::ImageDimensionType;
+  using typename Superclass::ImageDimensionType;
 
   /** Index type alias support. An index is used to access pixel values. */
-  using IndexType = typename Superclass::IndexType;
-  using IndexValueType = typename Superclass::IndexValueType;
+  using typename Superclass::IndexType;
+  using typename Superclass::IndexValueType;
 
   /** Offset type alias support. An offset is used to access pixel values. */
-  using OffsetType = typename Superclass::OffsetType;
+  using typename Superclass::OffsetType;
 
   /** Size type alias support. A size is used to define region bounds. */
-  using SizeType = typename Superclass::SizeType;
-  using SizeValueType = typename Superclass::SizeValueType;
+  using typename Superclass::SizeType;
+  using typename Superclass::SizeValueType;
 
   /** Container used to store pixels in the image. */
   using PixelContainer = ImportImageContainer<SizeValueType, PixelType>;
 
   /** Direction type alias support. A matrix of direction cosines. */
-  using DirectionType = typename Superclass::DirectionType;
+  using typename Superclass::DirectionType;
 
   /** Region type alias support. A region is used to specify a subset of an image.
    */
-  using RegionType = typename Superclass::RegionType;
+  using typename Superclass::RegionType;
 
   /** Spacing type alias support.  Spacing holds the size of a pixel.  The
    * spacing is the geometric distance between image samples. */
-  using SpacingType = typename Superclass::SpacingType;
-  using SpacingValueType = typename Superclass::SpacingValueType;
+  using typename Superclass::SpacingType;
+  using typename Superclass::SpacingValueType;
 
   /** Origin type alias support.  The origin is the geometric coordinates
    * of the index (0,0). */
-  using PointType = typename Superclass::PointType;
+  using typename Superclass::PointType;
 
   /** A pointer to the pixel container. */
   using PixelContainerPointer = typename PixelContainer::Pointer;
   using PixelContainerConstPointer = typename PixelContainer::ConstPointer;
 
   /** Offset type alias (relative position between indices) */
-  using OffsetValueType = typename Superclass::OffsetValueType;
+  using typename Superclass::OffsetValueType;
 
   /**
    * example usage:
@@ -171,15 +173,15 @@ public:
    *
    * \deprecated Use RebindImageType instead
    */
-  template <typename UPixelType, unsigned int NUImageDimension = VImageDimension>
+  template <typename UPixelType, unsigned int VUImageDimension = VImageDimension>
   struct Rebind
   {
-    using Type = itk::Image<UPixelType, NUImageDimension>;
+    using Type = itk::Image<UPixelType, VUImageDimension>;
   };
 
 
-  template <typename UPixelType, unsigned int NUImageDimension = VImageDimension>
-  using RebindImageType = itk::Image<UPixelType, NUImageDimension>;
+  template <typename UPixelType, unsigned int VUImageDimension = VImageDimension>
+  using RebindImageType = itk::Image<UPixelType, VUImageDimension>;
 
 
   /** Allocate the image memory. The size of the image must
@@ -285,7 +287,7 @@ public:
    * The implementation here refers to the superclass' implementation
    * and then copies over the pixel container. */
   virtual void
-  Graft(const Self * data);
+  Graft(const Self * image);
 
   /** Return the Pixel Accessor object */
   AccessorType
@@ -317,6 +319,59 @@ public:
 
   unsigned int
   GetNumberOfComponentsPerPixel() const override;
+
+  /** Returns (image1 == image2).
+   * \note `operator==` and `operator!=` are defined as function templates
+   * (rather than as non-templates), just to allow template instantiation of
+   * `itk::Image` for non-EqualityComparable pixel types.
+   */
+  template <typename TEqualityComparable>
+  friend std::enable_if_t<std::is_same<TEqualityComparable, TPixel>::value, bool>
+  operator==(const Image<TEqualityComparable, VImageDimension> & lhs,
+             const Image<TEqualityComparable, VImageDimension> & rhs)
+  {
+    if ((lhs.GetBufferedRegion() != rhs.GetBufferedRegion()) || (lhs.m_Spacing != rhs.m_Spacing) ||
+        (lhs.m_Origin != rhs.m_Origin) || (lhs.m_Direction != rhs.m_Direction) ||
+        (lhs.m_InverseDirection != rhs.m_InverseDirection))
+    {
+      return false;
+    }
+
+    if (lhs.m_Buffer == rhs.m_Buffer)
+    {
+      return true;
+    }
+
+    if ((lhs.m_Buffer == nullptr) || (rhs.m_Buffer == nullptr))
+    {
+      return false;
+    }
+
+    auto & lhsBuffer = *(lhs.m_Buffer);
+    auto & rhsBuffer = *(rhs.m_Buffer);
+
+    const auto bufferSize = lhsBuffer.Size();
+
+    if (bufferSize != rhsBuffer.Size())
+    {
+      return false;
+    }
+
+    const TEqualityComparable * const lhsBufferPointer = lhsBuffer.GetBufferPointer();
+    const TEqualityComparable * const rhsBufferPointer = rhsBuffer.GetBufferPointer();
+
+    return ((lhsBufferPointer == rhsBufferPointer) ||
+            std::equal(lhsBufferPointer, lhsBufferPointer + bufferSize, rhsBufferPointer));
+  }
+
+  /** Returns (image1 != image2). */
+  template <typename TEqualityComparable>
+  friend std::enable_if_t<std::is_same<TEqualityComparable, TPixel>::value, bool>
+  operator!=(const Image<TEqualityComparable, VImageDimension> & lhs,
+             const Image<TEqualityComparable, VImageDimension> & rhs)
+  {
+    return !(lhs == rhs);
+  }
 
 protected:
   Image();

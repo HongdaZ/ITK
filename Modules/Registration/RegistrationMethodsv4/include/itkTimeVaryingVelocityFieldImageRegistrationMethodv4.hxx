@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkTimeVaryingVelocityFieldImageRegistrationMethodv4_hxx
 #define itkTimeVaryingVelocityFieldImageRegistrationMethodv4_hxx
 
-#include "itkTimeVaryingVelocityFieldImageRegistrationMethodv4.h"
 
 #include "itkConstNeighborhoodIterator.h"
 #include "itkDisplacementFieldTransform.h"
@@ -78,14 +77,14 @@ TimeVaryingVelocityFieldImageRegistrationMethodv4<TFixedImage,
 
   // This transform is used for the fixed image
   using IdentityTransformType = itk::IdentityTransform<RealType, ImageDimension>;
-  typename IdentityTransformType::Pointer identityTransform = IdentityTransformType::New();
+  auto identityTransform = IdentityTransformType::New();
   identityTransform->SetIdentity();
 
   typename DisplacementFieldTransformType::Pointer identityDisplacementFieldTransform =
     DisplacementFieldTransformType::New();
 
   // This transform gets used for the moving image
-  typename DisplacementFieldDuplicatorType::Pointer fieldDuplicatorIdentity = DisplacementFieldDuplicatorType::New();
+  auto fieldDuplicatorIdentity = DisplacementFieldDuplicatorType::New();
 
   TimeVaryingVelocityFieldPointer velocityField = this->m_OutputTransform->GetModifiableVelocityField();
   IndexValueType numberOfTimePoints = velocityField->GetLargestPossibleRegion().GetSize()[ImageDimension];
@@ -141,7 +140,7 @@ TimeVaryingVelocityFieldImageRegistrationMethodv4<TFixedImage,
 
   // Monitor the convergence
   using ConvergenceMonitoringType = itk::Function::WindowConvergenceMonitoringFunction<RealType>;
-  typename ConvergenceMonitoringType::Pointer convergenceMonitoring = ConvergenceMonitoringType::New();
+  auto convergenceMonitoring = ConvergenceMonitoringType::New();
   convergenceMonitoring->SetWindowSize(this->m_ConvergenceWindowSize);
 
   // m_OutputTransform is the velocity field
@@ -155,7 +154,7 @@ TimeVaryingVelocityFieldImageRegistrationMethodv4<TFixedImage,
     this->m_CurrentMetricValue = NumericTraits<MeasureType>::ZeroValue();
 
     // Time index zero brings the moving image closest to the fixed image
-    for (IndexValueType timePoint = 0; timePoint < numberOfTimePoints; timePoint++)
+    for (IndexValueType timePoint = 0; timePoint < numberOfTimePoints; ++timePoint)
     {
       RealType t = NumericTraits<RealType>::ZeroValue();
       if (numberOfTimePoints > 1)
@@ -178,7 +177,7 @@ TimeVaryingVelocityFieldImageRegistrationMethodv4<TFixedImage,
         this->m_OutputTransform->IntegrateVelocityField();
       }
 
-      typename DisplacementFieldDuplicatorType::Pointer fieldDuplicator = DisplacementFieldDuplicatorType::New();
+      auto fieldDuplicator = DisplacementFieldDuplicatorType::New();
       fieldDuplicator->SetInputImage(this->m_OutputTransform->GetDisplacementField());
       fieldDuplicator->Update();
 
@@ -213,10 +212,10 @@ TimeVaryingVelocityFieldImageRegistrationMethodv4<TFixedImage,
         identityDisplacementFieldTransform->SetDisplacementField(fieldDuplicatorIdentity->GetOutput());
       }
 
-      for (unsigned int n = 0; n < this->m_MovingSmoothImages.size(); n++)
+      for (unsigned int n = 0; n < this->m_MovingSmoothImages.size(); ++n)
       {
         using MovingResamplerType = ResampleImageFilter<MovingImageType, VirtualImageType, RealType>;
-        typename MovingResamplerType::Pointer movingResampler = MovingResamplerType::New();
+        auto movingResampler = MovingResamplerType::New();
         movingResampler->SetTransform(this->m_CompositeTransform);
         movingResampler->SetInput(this->m_MovingSmoothImages[n]);
         movingResampler->SetSize(virtualDomainImage->GetRequestedRegion().GetSize());
@@ -227,7 +226,7 @@ TimeVaryingVelocityFieldImageRegistrationMethodv4<TFixedImage,
         movingResampler->Update();
 
         using FixedResamplerType = ResampleImageFilter<FixedImageType, VirtualImageType, RealType>;
-        typename FixedResamplerType::Pointer fixedResampler = FixedResamplerType::New();
+        auto fixedResampler = FixedResamplerType::New();
         fixedResampler->SetTransform(fixedDisplacementFieldTransform);
         fixedResampler->SetInput(this->m_FixedSmoothImages[n]);
         fixedResampler->SetSize(virtualDomainImage->GetRequestedRegion().GetSize());
@@ -281,7 +280,7 @@ TimeVaryingVelocityFieldImageRegistrationMethodv4<TFixedImage,
         typename MetricDerivativeType::iterator it;
         for (it = metricDerivative.begin(); it != metricDerivative.end(); it += ImageDimension)
         {
-          for (unsigned int d = 0; d < ImageDimension; d++)
+          for (unsigned int d = 0; d < ImageDimension; ++d)
           {
             *(it + d) *= this->m_OptimizerWeights[d];
           }
@@ -305,7 +304,7 @@ TimeVaryingVelocityFieldImageRegistrationMethodv4<TFixedImage,
       auto * metricDerivativeFieldPointer = reinterpret_cast<DisplacementVectorType *>(metricDerivative.data_block());
 
       using ImporterType = ImportImageFilter<DisplacementVectorType, ImageDimension>;
-      typename ImporterType::Pointer importer = ImporterType::New();
+      auto importer = ImporterType::New();
       importer->SetImportPointer(
         metricDerivativeFieldPointer, numberOfPixelsPerTimePoint, importFilterWillReleaseMemory);
       importer->SetRegion(virtualDomainImage->GetBufferedRegion());
@@ -317,12 +316,12 @@ TimeVaryingVelocityFieldImageRegistrationMethodv4<TFixedImage,
       using MagnitudeImageType = Image<RealType, ImageDimension>;
 
       using MagnituderType = VectorMagnitudeImageFilter<DisplacementFieldType, MagnitudeImageType>;
-      typename MagnituderType::Pointer magnituder = MagnituderType::New();
+      auto magnituder = MagnituderType::New();
       magnituder->SetInput(importer->GetOutput());
       magnituder->Update();
 
       using StatisticsImageFilterType = StatisticsImageFilter<MagnitudeImageType>;
-      typename StatisticsImageFilterType::Pointer stats = StatisticsImageFilterType::New();
+      auto stats = StatisticsImageFilterType::New();
       stats->SetInput(magnituder->GetOutput());
       stats->Update();
 
@@ -386,7 +385,7 @@ TimeVaryingVelocityFieldImageRegistrationMethodv4<TFixedImage,
         {
           RealType localSpatialNorm = NumericTraits<RealType>::ZeroValue();
           RealType localSpatioTemporalNorm = NumericTraits<RealType>::ZeroValue();
-          for (unsigned int d = 0; d < ImageDimension + 1; d++)
+          for (unsigned int d = 0; d < ImageDimension + 1; ++d)
           {
             DisplacementVectorType vector = (ItV.GetNext(d) - ItV.GetPrevious(d)) * 0.5 * velocityFieldSpacing[d];
             RealType               vectorNorm = vector.GetNorm();

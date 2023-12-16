@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkLevelSetEvolutionComputeIterationThreader_hxx
 #define itkLevelSetEvolutionComputeIterationThreader_hxx
 
-#include "itkLevelSetEvolutionComputeIterationThreader.h"
 
 #include "itkImageRegionConstIteratorWithIndex.h"
 
@@ -38,11 +37,9 @@ LevelSetEvolutionComputeIterationThreader<LevelSetDenseImage<TImage>,
   typename LevelSetImageType::ConstPointer levelSetImage = levelSet->GetImage();
 
   // Identify the level-set region
-  OffsetType offset = levelSet->GetDomainOffset();
-  IndexType  index = imageSubRegion.GetIndex() - offset;
-  RegionType subRegion;
-  subRegion.SetSize(imageSubRegion.GetSize());
-  subRegion.SetIndex(index);
+  OffsetType       offset = levelSet->GetDomainOffset();
+  IndexType        index = imageSubRegion.GetIndex() - offset;
+  const RegionType subRegion(index, imageSubRegion.GetSize());
 
   ImageRegionConstIteratorWithIndex<LevelSetImageType> imageIt(levelSetImage, subRegion);
   imageIt.GoToBegin();
@@ -158,10 +155,10 @@ LevelSetEvolutionComputeIterationThreader<
   ThreadedIteratorRangePartitioner<typename WhitakerSparseLevelSetImage<TOutput, VDimension>::LayerConstIterator>,
   TLevelSetEvolution>::BeforeThreadedExecution()
 {
-  const ThreadIdType numberOfThreads = this->GetNumberOfWorkUnitsUsed();
-  this->m_NodePairsPerThread.resize(numberOfThreads);
+  const ThreadIdType numberOfWorkUnits = this->GetNumberOfWorkUnitsUsed();
+  this->m_NodePairsPerThread.resize(numberOfWorkUnits);
 
-  for (ThreadIdType ii = 0; ii < numberOfThreads; ++ii)
+  for (ThreadIdType ii = 0; ii < numberOfWorkUnits; ++ii)
   {
     this->m_NodePairsPerThread[ii].clear();
   }
@@ -213,8 +210,8 @@ LevelSetEvolutionComputeIterationThreader<
   typename LevelSetEvolutionType::LevelSetLayerType * levelSetLayerUpdateBuffer =
     this->m_Associate->m_UpdateBuffer[levelSetId];
 
-  const ThreadIdType numberOfThreads = this->GetNumberOfWorkUnitsUsed();
-  for (ThreadIdType ii = 0; ii < numberOfThreads; ++ii)
+  const ThreadIdType numberOfWorkUnits = this->GetNumberOfWorkUnitsUsed();
+  for (ThreadIdType ii = 0; ii < numberOfWorkUnits; ++ii)
   {
     typename std::vector<NodePairType>::const_iterator pairIt = this->m_NodePairsPerThread[ii].begin();
     while (pairIt != this->m_NodePairsPerThread[ii].end())

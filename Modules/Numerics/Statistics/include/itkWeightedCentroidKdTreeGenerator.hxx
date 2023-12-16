@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkWeightedCentroidKdTreeGenerator_hxx
 #define itkWeightedCentroidKdTreeGenerator_hxx
 
-#include "itkWeightedCentroidKdTreeGenerator.h"
 
 namespace itk
 {
@@ -66,10 +65,10 @@ WeightedCentroidKdTreeGenerator<TSample>::GenerateNonterminalNode(unsigned int  
   MeasurementVectorType tempVector;
   weightedCentroid.Fill(NumericTraits<MeasurementType>::ZeroValue());
 
-  for (i = beginIndex; i < endIndex; i++)
+  for (i = beginIndex; i < endIndex; ++i)
   {
     tempVector = subsample->GetMeasurementVectorByIndex(i);
-    for (j = 0; j < this->GetMeasurementVectorSize(); j++)
+    for (j = 0; j < this->GetMeasurementVectorSize(); ++j)
     {
       weightedCentroid[j] += tempVector[j];
     }
@@ -80,7 +79,7 @@ WeightedCentroidKdTreeGenerator<TSample>::GenerateNonterminalNode(unsigned int  
     this->GetSubsample(), beginIndex, endIndex, m_TempLowerBound, m_TempUpperBound, m_TempMean);
 
   maxSpread = NumericTraits<MeasurementType>::NonpositiveMin();
-  for (i = 0; i < this->GetMeasurementVectorSize(); i++)
+  for (i = 0; i < this->GetMeasurementVectorSize(); ++i)
   {
     spread = m_TempUpperBound[i] - m_TempLowerBound[i];
     if (spread >= maxSpread)

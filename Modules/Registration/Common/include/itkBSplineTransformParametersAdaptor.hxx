@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkBSplineTransformParametersAdaptor_hxx
 #define itkBSplineTransformParametersAdaptor_hxx
 
-#include "itkBSplineTransformParametersAdaptor.h"
 
 #include "itkBSplineDecompositionImageFilter.h"
 #include "itkBSplineResampleImageFunction.h"
@@ -104,9 +103,9 @@ BSplineTransformParametersAdaptor<TTransform>::SetRequiredFixedParameters(const 
   Superclass::SetRequiredFixedParameters(fixedParameters);
 
   // Set the direction parameters
-  for (SizeValueType di = 0; di < SpaceDimension; di++)
+  for (SizeValueType di = 0; di < SpaceDimension; ++di)
   {
-    for (SizeValueType dj = 0; dj < SpaceDimension; dj++)
+    for (SizeValueType dj = 0; dj < SpaceDimension; ++dj)
     {
       this->m_RequiredTransformDomainDirection[di][dj] =
         this->m_RequiredFixedParameters[3 * SpaceDimension + (di * SpaceDimension + dj)];
@@ -114,14 +113,14 @@ BSplineTransformParametersAdaptor<TTransform>::SetRequiredFixedParameters(const 
   }
 
   // set the mesh size parameters
-  for (SizeValueType i = 0; i < SpaceDimension; i++)
+  for (SizeValueType i = 0; i < SpaceDimension; ++i)
   {
     this->m_RequiredTransformDomainMeshSize[i] =
       static_cast<SizeValueType>(this->m_RequiredFixedParameters[i]) - TransformType::SplineOrder;
   }
 
   // Set the physical dimensions parameters
-  for (SizeValueType i = 0; i < SpaceDimension; i++)
+  for (SizeValueType i = 0; i < SpaceDimension; ++i)
   {
     FixedParametersValueType gridSpacing = this->m_RequiredFixedParameters[2 * SpaceDimension + i];
     this->m_RequiredTransformDomainPhysicalDimensions[i] =
@@ -130,13 +129,13 @@ BSplineTransformParametersAdaptor<TTransform>::SetRequiredFixedParameters(const 
 
   // Set the origin parameters
   OriginType origin;
-  for (SizeValueType i = 0; i < SpaceDimension; i++)
+  for (SizeValueType i = 0; i < SpaceDimension; ++i)
   {
     FixedParametersValueType gridSpacing = this->m_RequiredFixedParameters[2 * SpaceDimension + i];
     origin[i] = 0.5 * gridSpacing * (TransformType::SplineOrder - 1);
   }
   origin = this->m_RequiredTransformDomainDirection * origin;
-  for (SizeValueType i = 0; i < SpaceDimension; i++)
+  for (SizeValueType i = 0; i < SpaceDimension; ++i)
   {
     this->m_RequiredTransformDomainOrigin[i] = origin[i] + this->m_RequiredFixedParameters[SpaceDimension + i];
   }
@@ -155,14 +154,14 @@ BSplineTransformParametersAdaptor<TTransform>::UpdateRequiredFixedParameters()
   //  The size of these is equal to the SpaceDimension
 
   // set the grid size parameters
-  for (SizeValueType i = 0; i < SpaceDimension; i++)
+  for (SizeValueType i = 0; i < SpaceDimension; ++i)
   {
     this->m_RequiredFixedParameters[i] = this->m_RequiredTransformDomainMeshSize[i] + TransformType::SplineOrder;
   }
 
   // Set the origin parameters
   OriginType origin;
-  for (SizeValueType i = 0; i < SpaceDimension; i++)
+  for (SizeValueType i = 0; i < SpaceDimension; ++i)
   {
     FixedParametersValueType gridSpacing =
       this->m_RequiredTransformDomainPhysicalDimensions[i] /
@@ -170,14 +169,14 @@ BSplineTransformParametersAdaptor<TTransform>::UpdateRequiredFixedParameters()
     origin[i] = -0.5 * gridSpacing * (TransformType::SplineOrder - 1);
   }
   origin = this->m_RequiredTransformDomainDirection * origin;
-  for (SizeValueType i = 0; i < SpaceDimension; i++)
+  for (SizeValueType i = 0; i < SpaceDimension; ++i)
   {
     this->m_RequiredFixedParameters[SpaceDimension + i] =
       static_cast<FixedParametersValueType>(origin[i] + this->m_RequiredTransformDomainOrigin[i]);
   }
 
   // Set the spacing parameters
-  for (SizeValueType i = 0; i < SpaceDimension; i++)
+  for (SizeValueType i = 0; i < SpaceDimension; ++i)
   {
     FixedParametersValueType gridSpacing =
       this->m_RequiredTransformDomainPhysicalDimensions[i] /
@@ -186,9 +185,9 @@ BSplineTransformParametersAdaptor<TTransform>::UpdateRequiredFixedParameters()
   }
 
   // Set the direction parameters
-  for (SizeValueType di = 0; di < SpaceDimension; di++)
+  for (SizeValueType di = 0; di < SpaceDimension; ++di)
   {
-    for (SizeValueType dj = 0; dj < SpaceDimension; dj++)
+    for (SizeValueType dj = 0; dj < SpaceDimension; ++dj)
     {
       this->m_RequiredFixedParameters[3 * SpaceDimension + (di * SpaceDimension + dj)] =
         static_cast<FixedParametersValueType>(this->m_RequiredTransformDomainDirection[di][dj]);
@@ -203,7 +202,6 @@ BSplineTransformParametersAdaptor<TTransform>::AdaptTransformParameters()
   if (!this->m_Transform)
   {
     itkExceptionMacro("Transform has not been set.");
-    return;
   }
 
   if (this->m_RequiredFixedParameters == this->m_Transform->GetFixedParameters())
@@ -215,12 +213,12 @@ BSplineTransformParametersAdaptor<TTransform>::AdaptTransformParameters()
   OriginType    newGridOrigin;
   SpacingType   newGridSpacing;
   DirectionType newGridDirection;
-  for (SizeValueType i = 0; i < SpaceDimension; i++)
+  for (SizeValueType i = 0; i < SpaceDimension; ++i)
   {
     newGridSize[i] = static_cast<SizeValueType>(this->m_RequiredFixedParameters[i]);
     newGridOrigin[i] = this->m_RequiredFixedParameters[SpaceDimension + i];
     newGridSpacing[i] = this->m_RequiredFixedParameters[2 * SpaceDimension + i];
-    for (SizeValueType j = 0; j < SpaceDimension; j++)
+    for (SizeValueType j = 0; j < SpaceDimension; ++j)
     {
       newGridDirection[i][j] = this->m_RequiredFixedParameters[3 * SpaceDimension + (i * SpaceDimension + j)];
     }
@@ -237,7 +235,7 @@ BSplineTransformParametersAdaptor<TTransform>::AdaptTransformParameters()
   CoefficientImageArray newCoefficientImages;
 
   // Loop over dimension: each direction is upsampled separately.
-  for (SizeValueType j = 0; j < SpaceDimension; j++)
+  for (SizeValueType j = 0; j < SpaceDimension; ++j)
   {
     /* Set the coefficient image as the input of the upsampler filter.
      * The upsampler samples the deformation field at the locations
@@ -250,8 +248,8 @@ BSplineTransformParametersAdaptor<TTransform>::AdaptTransformParameters()
      * This code is copied from the itk-example
      * DeformableRegistration6.cxx .
      */
-    typename UpsampleFilterType::Pointer              upsampler = UpsampleFilterType::New();
-    typename CoefficientUpsampleFunctionType::Pointer coeffUpsampleFunction = CoefficientUpsampleFunctionType::New();
+    auto upsampler = UpsampleFilterType::New();
+    auto coeffUpsampleFunction = CoefficientUpsampleFunctionType::New();
 
     upsampler->SetInterpolator(coeffUpsampleFunction);
     upsampler->SetSize(newGridSize);
@@ -261,7 +259,7 @@ BSplineTransformParametersAdaptor<TTransform>::AdaptTransformParameters()
     upsampler->SetOutputDirection(newGridDirection);
     upsampler->SetInput(this->m_Transform->GetCoefficientImages()[j]);
 
-    typename DecompositionFilterType::Pointer decompositionFilter = DecompositionFilterType::New();
+    auto decompositionFilter = DecompositionFilterType::New();
     decompositionFilter->SetSplineOrder(TransformType::SplineOrder);
     decompositionFilter->SetInput(upsampler->GetOutput());
 

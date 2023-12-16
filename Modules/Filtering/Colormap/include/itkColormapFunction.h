@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,8 +37,7 @@ namespace Function
  * This code was contributed in the Insight Journal paper:
  *
  * "Meeting Andy Warhol Somewhere Over the Rainbow: RGB Colormapping and ITK"
- * http://www.insight-journal.org/browse/publication/285
- * https://hdl.handle.net/1926/1452
+ * https://www.insight-journal.org/browse/publication/285
  *
  * \ingroup ITKColormap
  */
@@ -46,7 +45,7 @@ template <typename TScalar, typename TRGBPixel>
 class ColormapFunction : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ColormapFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(ColormapFunction);
 
   using Self = ColormapFunction;
   using Superclass = Object;
@@ -72,18 +71,6 @@ public:
 
   itkSetMacro(MaximumInputValue, ScalarType);
   itkGetConstMacro(MaximumInputValue, ScalarType);
-
-  virtual bool
-  operator!=(const ColormapFunction &) const
-  {
-    return false;
-  }
-
-  virtual bool
-  operator==(const ColormapFunction & other) const
-  {
-    return !(*this != other);
-  }
 
   virtual RGBPixelType
   operator()(const ScalarType &) const = 0;

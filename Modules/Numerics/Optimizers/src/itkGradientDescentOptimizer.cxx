@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef _itkGradientDescentOptimizer_hxx
-#define _itkGradientDescentOptimizer_hxx
 
 #include "itkGradientDescentOptimizer.h"
 
@@ -25,22 +23,20 @@ namespace itk
 /**
  * Constructor
  */
-GradientDescentOptimizer ::GradientDescentOptimizer()
+GradientDescentOptimizer::GradientDescentOptimizer()
 
 {
-  itkDebugMacro("Constructor");
-
   m_StopConditionDescription << this->GetNameOfClass() << ": ";
 }
 
 const std::string
-GradientDescentOptimizer ::GetStopConditionDescription() const
+GradientDescentOptimizer::GetStopConditionDescription() const
 {
   return m_StopConditionDescription.str();
 }
 
 void
-GradientDescentOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
+GradientDescentOptimizer::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
@@ -63,7 +59,7 @@ GradientDescentOptimizer ::PrintSelf(std::ostream & os, Indent indent) const
  * Start the optimization
  */
 void
-GradientDescentOptimizer ::StartOptimization()
+GradientDescentOptimizer::StartOptimization()
 {
   itkDebugMacro("StartOptimization");
 
@@ -77,7 +73,7 @@ GradientDescentOptimizer ::StartOptimization()
  * Resume the optimization
  */
 void
-GradientDescentOptimizer ::ResumeOptimization()
+GradientDescentOptimizer::ResumeOptimization()
 {
   itkDebugMacro("ResumeOptimization");
 
@@ -92,7 +88,7 @@ GradientDescentOptimizer ::ResumeOptimization()
     {
       m_CostFunction->GetValueAndDerivative(this->GetCurrentPosition(), m_Value, m_Gradient);
     }
-    catch (ExceptionObject & err)
+    catch (const ExceptionObject &)
     {
       // An exception has occurred.
       // Terminate immediately.
@@ -101,7 +97,7 @@ GradientDescentOptimizer ::ResumeOptimization()
       StopOptimization();
 
       // Pass exception to caller
-      throw err;
+      throw;
     }
 
     if (m_Stop)
@@ -112,7 +108,7 @@ GradientDescentOptimizer ::ResumeOptimization()
 
     AdvanceOneStep();
 
-    m_CurrentIteration++;
+    ++m_CurrentIteration;
 
     if (m_CurrentIteration >= m_NumberOfIterations)
     {
@@ -128,7 +124,7 @@ GradientDescentOptimizer ::ResumeOptimization()
  * Stop optimization
  */
 void
-GradientDescentOptimizer ::StopOptimization()
+GradientDescentOptimizer::StopOptimization()
 {
   itkDebugMacro("StopOptimization");
 
@@ -140,7 +136,7 @@ GradientDescentOptimizer ::StopOptimization()
  * Advance one Step following the gradient direction
  */
 void
-GradientDescentOptimizer ::AdvanceOneStep()
+GradientDescentOptimizer::AdvanceOneStep()
 {
   itkDebugMacro("AdvanceOneStep");
 
@@ -169,13 +165,13 @@ GradientDescentOptimizer ::AdvanceOneStep()
 
   DerivativeType transformedGradient(spaceDimension);
 
-  for (unsigned int j = 0; j < spaceDimension; j++)
+  for (unsigned int j = 0; j < spaceDimension; ++j)
   {
     transformedGradient[j] = m_Gradient[j] / scales[j];
   }
 
   ParametersType newPosition(spaceDimension);
-  for (unsigned int j = 0; j < spaceDimension; j++)
+  for (unsigned int j = 0; j < spaceDimension; ++j)
   {
     newPosition[j] = currentPosition[j] + direction * m_LearningRate * transformedGradient[j];
   }
@@ -202,5 +198,3 @@ operator<<(std::ostream & out, const GradientDescentOptimizerEnums::StopConditio
   }();
 }
 } // end namespace itk
-
-#endif

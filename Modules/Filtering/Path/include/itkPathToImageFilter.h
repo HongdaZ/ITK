@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class PathToImageFilter
+ * \class PathToImageFilter
  * \brief Base class for filters that take a Path as input and produce an image as output.
  * Base class for filters that take a Path as input and produce an image as
  * output. By default, if the user does not specify the size of the output
@@ -37,7 +37,7 @@ template <typename TInputPath, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT PathToImageFilter : public ImageSource<TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(PathToImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(PathToImageFilter);
 
   /** Standard class type aliases. */
   using Self = PathToImageFilter;
@@ -52,7 +52,7 @@ public:
   itkTypeMacro(PathToImageFilter, ImageSource);
 
   /** Some convenient type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
   using InputPathType = TInputPath;
   using InputPathPointer = typename InputPathType::Pointer;
   using InputPathConstPointer = typename InputPathType::ConstPointer;
@@ -67,7 +67,7 @@ public:
   /** Set/Get the path input of this process object.  */
   using Superclass::SetInput;
   virtual void
-  SetInput(const InputPathType * path);
+  SetInput(const InputPathType * input);
 
   virtual void
   SetInput(unsigned int, const TInputPath * path);

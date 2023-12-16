@@ -27,12 +27,12 @@
 #--   - [ ] Some tests exist and pass on at least some platform
 #--   - [X] All requirements of Levels 2,1
 #--
-#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/exectution environment dependance )
+#-- ## Compliance Level 2 star (Alpha code feature API development or niche community/execution environment dependance )
 #--   - [X] Compiles for at least 1 niche set of execution envirionments, and perhaps others
 #--         (may depend on specific external tools like a java environment, or specific external libraries to work )
 #--   - [X] All requirements of Levels 1
 #--
-#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unkown quality)
+#-- ## Compliance Level 1 star (Pre-alpha features under development and code of unknown quality)
 #--   - [X] Code complies on at least 1 platform
 #--
 #-- ## Compliance Level 0 star ( Code/Feature of known poor-quality or deprecated status )
@@ -43,9 +43,9 @@
 
 #Contact: I. Vidal-Migallon <irina.vidal-migallon@inria.fr>
 itk_fetch_module(SmoothingRecursiveYvvGaussianFilter
-  "GPU and CPU Young & Van Vliet Recursive Gaussian Smoothing Filter: https://hdl.handle.net/10380/3425"
+  "GPU and CPU Young & Van Vliet Recursive Gaussian Smoothing Filter: https://www.insight-journal.org/browse/publication/896"
   MODULE_COMPLIANCE_LEVEL 2
   #UPSTREAM_REPO GIT_REPOSITORY ${git_protocol}://github.com/Inria-Asclepios/SmoothingRecursiveYvvGaussianFilter
   GIT_REPOSITORY ${git_protocol}://github.com/InsightSoftwareConsortium/ITKSmoothingRecursiveYvvGaussianFilter.git
-  GIT_TAG 93fcef7831eae91bde1ce9f3173c19f369993cc8
+  GIT_TAG f6bd553266aa1c1c3cdebc9033fd3b21f1f734c4
   )

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,7 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#include <itkCommonEnums.h>
+#include "itkCommonEnums.h"
 #include "itkLogicOpsFunctors.h"
 #include "itkBinaryFunctorImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
@@ -37,7 +37,7 @@ public:
   float
   operator()(double d, double)
   {
-    return (float)d;
+    return static_cast<float>(d);
   }
   void
   Visit(int, Bogus *)
@@ -114,15 +114,11 @@ itkEqualTest(int, char *[])
   region.SetSize(size);
 
   // Initialize Image A
-  inputImageA->SetLargestPossibleRegion(region);
-  inputImageA->SetBufferedRegion(region);
-  inputImageA->SetRequestedRegion(region);
+  inputImageA->SetRegions(region);
   inputImageA->Allocate();
 
   // Initialize Image B
-  inputImageB->SetLargestPossibleRegion(region);
-  inputImageB->SetBufferedRegion(region);
-  inputImageB->SetRequestedRegion(region);
+  inputImageB->SetRegions(region);
   inputImageB->Allocate();
 
 
@@ -252,7 +248,7 @@ itkEqualTest(int, char *[])
   {
     // BinaryImageFilter
     using iFIB = itk::BinaryFunctorImageFilter<itk::Image<double>, itk::Image<double>, itk::Image<double>, Bogus>;
-    iFIB::Pointer FIB = iFIB::New();
+    auto FIB = iFIB::New();
     if (FIB.IsNull())
     {
       return EXIT_FAILURE;

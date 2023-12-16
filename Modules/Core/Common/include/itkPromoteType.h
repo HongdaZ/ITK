@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,17 +37,17 @@ namespace Details
  * \ingroup MetaProgrammingLibrary
  * \ingroup ITKCommon
  */
-template <int N, typename TA, typename TB>
+template <int VTypeEnum, typename TA, typename TB>
 struct SizeToType;
 
 /** Helper class to implement \c itk::PromoteType<>.
  * \ingroup MetaProgrammingLibrary
  * \ingroup ITKCommon
  */
-template <int N>
+template <int VCharacters>
 struct Identity
 {
-  using Type = char[N];
+  using Type = char[VCharacters];
 };
 
 /** Helper macro to implement \c itk::PromoteType<>.
@@ -55,11 +55,11 @@ struct Identity
  * \ingroup MetaProgrammingLibrary
  * \ingroup ITKCommon
  */
-#define ITK_ASSOCIATE(N, Typed)                                                                                        \
-  template <typename TA, typename TB>                                                                                  \
-  struct SizeToType<N, TA, TB>                                                                                         \
-  {                                                                                                                    \
-    using Type = Typed;                                                                                                \
+#define ITK_ASSOCIATE(VTypeEnum, Typed) \
+  template <typename TA, typename TB>   \
+  struct SizeToType<VTypeEnum, TA, TB>  \
+  {                                     \
+    using Type = Typed;                 \
   };
 
 ITK_ASSOCIATE(1, TA);

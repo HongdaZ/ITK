@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,11 +23,11 @@ itkOtsuMultipleThresholdsCalculatorTest2(int, char *[])
 {
   using MeasurementType = float;
   using HistogramType = itk::Statistics::Histogram<MeasurementType>;
-  HistogramType::Pointer histogram = HistogramType::New();
+  auto histogram = HistogramType::New();
 
-  bool               passed = true;
-  constexpr unsigned pixelCount = 4;
-  for (unsigned thresholdCount = 1; thresholdCount < pixelCount; ++thresholdCount)
+  bool                   passed = true;
+  constexpr unsigned int pixelCount = 4;
+  for (unsigned int thresholdCount = 1; thresholdCount < pixelCount; ++thresholdCount)
   {
     // initialize histogram
     HistogramType::SizeType              size;
@@ -55,7 +55,7 @@ itkOtsuMultipleThresholdsCalculatorTest2(int, char *[])
     }
 
     using OtsuMultipleThresholdCalculatorType = itk::OtsuMultipleThresholdsCalculator<HistogramType>;
-    OtsuMultipleThresholdCalculatorType::Pointer otsuThresholdCalculator = OtsuMultipleThresholdCalculatorType::New();
+    auto otsuThresholdCalculator = OtsuMultipleThresholdCalculatorType::New();
 
     otsuThresholdCalculator->SetInputHistogram(histogram);
     otsuThresholdCalculator->SetNumberOfThresholds(thresholdCount);

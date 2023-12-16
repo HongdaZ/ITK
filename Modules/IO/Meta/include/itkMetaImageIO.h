@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@
 namespace itk
 {
 /**
- *\class MetaImageIO
+ * \class MetaImageIO
  *
  *  \brief Read MetaImage file format.
  *
@@ -43,7 +43,7 @@ namespace itk
 class ITKIOMeta_EXPORT MetaImageIO : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MetaImageIO);
+  ITK_DISALLOW_COPY_AND_MOVE(MetaImageIO);
 
   /** Standard class type aliases. */
   using Self = MetaImageIO;
@@ -120,7 +120,7 @@ public:
    * streamable region, which will be smaller than the LargestPossibleRegion and
    * greater or equal to the RequestedRegion */
   ImageIORegion
-  GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegion & requested) const override;
+  GenerateStreamableReadRegionFromRequestedRegion(const ImageIORegion & requestedRegion) const override;
 
   unsigned int
   GetActualNumberOfSplitsForWriting(unsigned int          numberOfRequestedSplits,

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,25 +31,17 @@ public:
   TanHelper() = default;
   ~TanHelper() = default;
   bool
-  operator!=(const TanHelper & rhs) const
+  operator==(const TanHelper & rhs) const
   {
-    return this != &rhs;
+    return this == &rhs;
   }
 
-  bool
-  operator==(const TanHelper & other) const = delete;
-  /* NOTE: operator== NOT defined. It is not required
-   * as part of the defined specification for a Function.
-  bool operator==(const TanHelper & other) const
-  {
-    return !( *this != other );
-  }
-  */
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(TanHelper);
 
   inline TOutput
   operator()(const TInput & A) const
   {
-    return (TOutput)std::tan((double)A);
+    return (TOutput)std::tan(static_cast<double>(A));
   }
 };
 } // namespace Function
@@ -62,7 +54,7 @@ class TanHelperImageFilter
       Function::TanHelper<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TanHelperImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(TanHelperImageFilter);
 
   /** Standard class type aliases. */
   using Self = TanHelperImageFilter;
@@ -100,8 +92,8 @@ itkSimpleFilterWatcherTest(int, char *[])
   using WatcherType = itk::SimpleFilterWatcher;
   using ImageType = itk::Image<char, 3>;
   using FilterType = itk::TanHelperImageFilter<ImageType, ImageType>;
-  FilterType::Pointer filter = FilterType::New();
-  const char *        comment = "comment";
+  auto         filter = FilterType::New();
+  const char * comment = "comment";
 
   // Test constructor that takes a ProcessObject.
   WatcherType watcher1(filter, comment);

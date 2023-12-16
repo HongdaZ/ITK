@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@
 #include <set>
 #include "itkGradientDescentOptimizer.h"
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 
 /**
@@ -116,12 +117,14 @@ itkGradientDescentOptimizerTest(int, char *[])
   using OptimizerType = itk::GradientDescentOptimizer;
 
 
-  // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  // Declaration of an itkOptimizer
+  auto itkOptimizer = OptimizerType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(itkOptimizer, GradientDescentOptimizer, SingleValuedNonLinearOptimizer);
 
 
   // Declaration of the CostFunction
-  gradientCostFunction::Pointer costFunction = gradientCostFunction::New();
+  auto costFunction = gradientCostFunction::New();
 
 
   itkOptimizer->SetCostFunction(costFunction);
@@ -137,11 +140,23 @@ itkGradientDescentOptimizerTest(int, char *[])
   initialPosition[0] = 100;
   initialPosition[1] = -100;
 
-  itkOptimizer->MinimizeOn();
-  itkOptimizer->SetLearningRate(0.1);
-  itkOptimizer->SetNumberOfIterations(50);
+
+  bool maximize = false;
+  ITK_TEST_SET_GET_BOOLEAN(itkOptimizer, Maximize, maximize);
+
+  bool minimize = !maximize;
+  ITK_TEST_SET_GET_BOOLEAN(itkOptimizer, Minimize, minimize);
+
+  double learningRate = 0.1;
+  itkOptimizer->SetLearningRate(learningRate);
+  ITK_TEST_SET_GET_VALUE(learningRate, itkOptimizer->GetLearningRate());
+
+  itk::SizeValueType numberOfIterations = 50;
+  itkOptimizer->SetNumberOfIterations(numberOfIterations);
+  ITK_TEST_SET_GET_VALUE(numberOfIterations, itkOptimizer->GetNumberOfIterations());
 
   itkOptimizer->SetInitialPosition(initialPosition);
+  ITK_TEST_SET_GET_VALUE(initialPosition, itkOptimizer->GetInitialPosition());
 
   try
   {
@@ -166,21 +181,16 @@ itkGradientDescentOptimizerTest(int, char *[])
   //
   bool   pass = true;
   double trueParameters[2] = { 2, -2 };
-  for (unsigned int j = 0; j < 2; j++)
+  for (unsigned int j = 0; j < 2; ++j)
   {
     if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > 0.01)
       pass = false;
   }
 
-  // Exercise various member functions.
-  std::cout << "Maximize: " << itkOptimizer->GetMaximize() << std::endl;
-  std::cout << "LearningRate: " << itkOptimizer->GetLearningRate();
-  std::cout << std::endl;
-  std::cout << "NumberOfIterations: " << itkOptimizer->GetNumberOfIterations();
-  std::cout << std::endl;
-
-  itkOptimizer->Print(std::cout);
   std::cout << "Stop description   = " << itkOptimizer->GetStopConditionDescription() << std::endl;
+  std::cout << "StopCondition: " << itkOptimizer->GetStopCondition() << std::endl;
+  std::cout << "Value: " << itkOptimizer->GetValue() << std::endl;
+  std::cout << "Gradient: " << itkOptimizer->GetGradient() << std::endl;
 
   // Test streaming enumeration for GradientDescentOptimizerEnums::StopConditionGradientDescentOptimizer elements
   const std::set<itk::GradientDescentOptimizerEnums::StopConditionGradientDescentOptimizer>

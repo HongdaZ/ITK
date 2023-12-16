@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@
 
 #include "itkObject.h"
 #include "itkObjectFactory.h"
+#include <functional>
 
 namespace itk
 {
@@ -44,7 +45,7 @@ namespace itk
 class ITKCommon_EXPORT Command : public Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(Command);
+  ITK_DISALLOW_COPY_AND_MOVE(Command);
 
   /** Standard class type aliases. */
   using Self = Command;
@@ -85,7 +86,7 @@ template <typename T>
 class ITK_TEMPLATE_EXPORT MemberCommand : public Command
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(MemberCommand);
+  ITK_DISALLOW_COPY_AND_MOVE(MemberCommand);
 
   /** pointer to a member function that takes a Object* and the event */
   using TMemberFunctionPointer = void (T::*)(Object *, const EventObject &);
@@ -123,7 +124,7 @@ public:
   {
     if (m_MemberFunction)
     {
-      ((*m_This).*(m_MemberFunction))(caller, event);
+      (m_This->*(m_MemberFunction))(caller, event);
     }
   }
 
@@ -133,7 +134,7 @@ public:
   {
     if (m_ConstMemberFunction)
     {
-      ((*m_This).*(m_ConstMemberFunction))(caller, event);
+      (m_This->*(m_ConstMemberFunction))(caller, event);
     }
   }
 
@@ -164,7 +165,7 @@ template <typename T>
 class ITK_TEMPLATE_EXPORT ReceptorMemberCommand : public Command
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ReceptorMemberCommand);
+  ITK_DISALLOW_COPY_AND_MOVE(ReceptorMemberCommand);
 
   /** pointer to a member function that takes a Object* and the event */
   using TMemberFunctionPointer = void (T::*)(const EventObject &);
@@ -194,7 +195,7 @@ public:
   {
     if (m_MemberFunction)
     {
-      ((*m_This).*(m_MemberFunction))(event);
+      (m_This->*(m_MemberFunction))(event);
     }
   }
 
@@ -204,7 +205,7 @@ public:
   {
     if (m_MemberFunction)
     {
-      ((*m_This).*(m_MemberFunction))(event);
+      (m_This->*(m_MemberFunction))(event);
     }
   }
 
@@ -233,7 +234,7 @@ template <typename T>
 class ITK_TEMPLATE_EXPORT SimpleMemberCommand : public Command
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SimpleMemberCommand);
+  ITK_DISALLOW_COPY_AND_MOVE(SimpleMemberCommand);
 
   /** A method callback. */
   using TMemberFunctionPointer = void (T::*)();
@@ -262,7 +263,7 @@ public:
   {
     if (m_MemberFunction)
     {
-      ((*m_This).*(m_MemberFunction))();
+      (m_This->*(m_MemberFunction))();
     }
   }
 
@@ -271,7 +272,7 @@ public:
   {
     if (m_MemberFunction)
     {
-      ((*m_This).*(m_MemberFunction))();
+      (m_This->*(m_MemberFunction))();
     }
   }
 
@@ -300,7 +301,7 @@ template <typename T>
 class ITK_TEMPLATE_EXPORT SimpleConstMemberCommand : public Command
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(SimpleConstMemberCommand);
+  ITK_DISALLOW_COPY_AND_MOVE(SimpleConstMemberCommand);
 
   /** A const member method callback. */
   using TMemberFunctionPointer = void (T::*)() const;
@@ -329,7 +330,7 @@ public:
   {
     if (m_MemberFunction)
     {
-      ((*m_This).*(m_MemberFunction))();
+      (m_This->*(m_MemberFunction))();
     }
   }
 
@@ -338,7 +339,7 @@ public:
   {
     if (m_MemberFunction)
     {
-      ((*m_This).*(m_MemberFunction))();
+      (m_This->*(m_MemberFunction))();
     }
   }
 
@@ -416,6 +417,52 @@ protected:
   ConstFunctionPointer      m_ConstCallback{ nullptr };
   DeleteDataFunctionPointer m_ClientDataDeleteCallback{ nullptr };
 };
+
+
+/** \class FunctionCommand
+ *  \brief A Command subclass that calls a std::function object.
+ *
+ * This function object is suitable to accept C++ lambda functions.
+ *
+ * \ingroup ITKSystemObjects
+ * \ingroup ITKCommon
+ */
+
+class ITKCommon_EXPORT FunctionCommand : public Command
+{
+public:
+  /** Standard class type aliases. */
+  using Self = FunctionCommand;
+  using Pointer = SmartPointer<Self>;
+
+  using FunctionObjectType = std::function<void(const EventObject &)>;
+
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(FunctionCommand, Command);
+
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
+
+  /** Set the C callback function pointer to be called at Execute time. */
+  void
+  SetCallback(FunctionObjectType f);
+
+  /** Execute the callback function. */
+  void
+  Execute(Object *, const EventObject & event) override;
+
+  /** Execute the callback function with a const Object */
+  void
+  Execute(const Object *, const EventObject & event) override;
+
+protected:
+  FunctionCommand();
+  ~FunctionCommand() override;
+
+
+  FunctionObjectType m_FunctionObject;
+};
+
 } // end namespace itk
 
 #endif

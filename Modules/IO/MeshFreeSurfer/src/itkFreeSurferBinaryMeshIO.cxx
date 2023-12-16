@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,21 +18,22 @@
 
 #include "itkFreeSurferBinaryMeshIO.h"
 
-#include <itksys/SystemTools.hxx>
+#include "itksys/SystemTools.hxx"
+#include "itkMakeUniqueForOverwrite.h"
 
 namespace itk
 {
-FreeSurferBinaryMeshIO ::FreeSurferBinaryMeshIO()
+FreeSurferBinaryMeshIO::FreeSurferBinaryMeshIO()
 
 {
   this->AddSupportedWriteExtension(".fsb");
   this->AddSupportedWriteExtension(".fcv");
 }
 
-FreeSurferBinaryMeshIO ::~FreeSurferBinaryMeshIO() = default;
+FreeSurferBinaryMeshIO::~FreeSurferBinaryMeshIO() = default;
 
 bool
-FreeSurferBinaryMeshIO ::CanReadFile(const char * fileName)
+FreeSurferBinaryMeshIO::CanReadFile(const char * fileName)
 {
   if (!itksys::SystemTools::FileExists(fileName, true))
   {
@@ -49,7 +50,7 @@ FreeSurferBinaryMeshIO ::CanReadFile(const char * fileName)
 }
 
 bool
-FreeSurferBinaryMeshIO ::CanWriteFile(const char * fileName)
+FreeSurferBinaryMeshIO::CanWriteFile(const char * fileName)
 {
   if (itksys::SystemTools::GetFilenameLastExtension(fileName) != ".fsb" &&
       itksys::SystemTools::GetFilenameLastExtension(fileName) != ".fcv")
@@ -61,7 +62,7 @@ FreeSurferBinaryMeshIO ::CanWriteFile(const char * fileName)
 }
 
 void
-FreeSurferBinaryMeshIO ::OpenFile()
+FreeSurferBinaryMeshIO::OpenFile()
 {
   if (this->m_FileName.empty())
   {
@@ -82,7 +83,7 @@ FreeSurferBinaryMeshIO ::OpenFile()
 }
 
 void
-FreeSurferBinaryMeshIO ::CloseFile()
+FreeSurferBinaryMeshIO::CloseFile()
 {
   if (m_InputFile.is_open())
   {
@@ -91,7 +92,7 @@ FreeSurferBinaryMeshIO ::CloseFile()
 }
 
 void
-FreeSurferBinaryMeshIO ::ReadMeshInformation()
+FreeSurferBinaryMeshIO::ReadMeshInformation()
 {
   // Define input file stream and attach it to input file
   OpenFile();
@@ -227,7 +228,7 @@ FreeSurferBinaryMeshIO ::ReadMeshInformation()
 }
 
 void
-FreeSurferBinaryMeshIO ::ReadPoints(void * buffer)
+FreeSurferBinaryMeshIO::ReadPoints(void * buffer)
 {
   OpenFile();
   m_InputFile.seekg(m_FilePosition, std::ios::beg);
@@ -240,23 +241,24 @@ FreeSurferBinaryMeshIO ::ReadPoints(void * buffer)
 }
 
 void
-FreeSurferBinaryMeshIO ::ReadCells(void * buffer)
+FreeSurferBinaryMeshIO::ReadCells(void * buffer)
 {
   constexpr unsigned int numberOfCellPoints = 3;
-  auto *                 data = new itk::uint32_t[this->m_NumberOfCells * numberOfCellPoints];
+  const auto             data = make_unique_for_overwrite<itk::uint32_t[]>(this->m_NumberOfCells * numberOfCellPoints);
 
-  m_InputFile.read(reinterpret_cast<char *>(data), this->m_NumberOfCells * numberOfCellPoints * sizeof(itk::uint32_t));
-  itk::ByteSwapper<itk::uint32_t>::SwapRangeFromSystemToBigEndian(data, this->m_NumberOfCells * numberOfCellPoints);
+  m_InputFile.read(reinterpret_cast<char *>(data.get()),
+                   this->m_NumberOfCells * numberOfCellPoints * sizeof(itk::uint32_t));
+  itk::ByteSwapper<itk::uint32_t>::SwapRangeFromSystemToBigEndian(data.get(),
+                                                                  this->m_NumberOfCells * numberOfCellPoints);
 
   this->WriteCellsBuffer(
-    data, static_cast<unsigned int *>(buffer), CellGeometryEnum::TRIANGLE_CELL, 3, this->m_NumberOfCells);
-  delete[] data;
+    data.get(), static_cast<unsigned int *>(buffer), CellGeometryEnum::TRIANGLE_CELL, 3, this->m_NumberOfCells);
 
   CloseFile();
 }
 
 void
-FreeSurferBinaryMeshIO ::ReadPointData(void * buffer)
+FreeSurferBinaryMeshIO::ReadPointData(void * buffer)
 {
   OpenFile();
   m_InputFile.seekg(m_FilePosition, std::ios::beg);
@@ -270,11 +272,11 @@ FreeSurferBinaryMeshIO ::ReadPointData(void * buffer)
 }
 
 void
-FreeSurferBinaryMeshIO ::ReadCellData(void * itkNotUsed(buffer))
+FreeSurferBinaryMeshIO::ReadCellData(void * itkNotUsed(buffer))
 {}
 
 void
-FreeSurferBinaryMeshIO ::WriteMeshInformation()
+FreeSurferBinaryMeshIO::WriteMeshInformation()
 {
   // Check file name
   if (this->m_FileName.empty())
@@ -325,7 +327,7 @@ FreeSurferBinaryMeshIO ::WriteMeshInformation()
 }
 
 void
-FreeSurferBinaryMeshIO ::WritePoints(void * buffer)
+FreeSurferBinaryMeshIO::WritePoints(void * buffer)
 {
   // check file name
   if (this->m_FileName.empty())
@@ -433,7 +435,7 @@ FreeSurferBinaryMeshIO ::WritePoints(void * buffer)
 }
 
 void
-FreeSurferBinaryMeshIO ::WriteCells(void * buffer)
+FreeSurferBinaryMeshIO::WriteCells(void * buffer)
 {
   // Check file name
   if (this->m_FileName.empty())
@@ -529,7 +531,7 @@ FreeSurferBinaryMeshIO ::WriteCells(void * buffer)
 }
 
 void
-FreeSurferBinaryMeshIO ::WritePointData(void * buffer)
+FreeSurferBinaryMeshIO::WritePointData(void * buffer)
 {
   // check file name
   if (this->m_FileName.empty())
@@ -637,15 +639,15 @@ FreeSurferBinaryMeshIO ::WritePointData(void * buffer)
 }
 
 void
-FreeSurferBinaryMeshIO ::WriteCellData(void * itkNotUsed(buffer))
+FreeSurferBinaryMeshIO::WriteCellData(void * itkNotUsed(buffer))
 {}
 
 void
-FreeSurferBinaryMeshIO ::Write()
+FreeSurferBinaryMeshIO::Write()
 {}
 
 void
-FreeSurferBinaryMeshIO ::PrintSelf(std::ostream & os, Indent indent) const
+FreeSurferBinaryMeshIO::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }

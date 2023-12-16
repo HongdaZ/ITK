@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,8 +42,8 @@ itkRayCastInterpolateImageFunctionTest(int itkNotUsed(argc), char * itkNotUsed(a
   using RegionType = ImageType::RegionType;
 
   /* Allocate a simple test image */
-  ImageType::Pointer image = ImageType::New();
-  IndexType          start;
+  auto      image = ImageType::New();
+  IndexType start;
   start.Fill(0);
   SizeType size;
   size[0] = 30;
@@ -68,13 +68,13 @@ itkRayCastInterpolateImageFunctionTest(int itkNotUsed(argc), char * itkNotUsed(a
 
   /* Initialize the image contents */
   IndexType index;
-  for (unsigned int slice = 0; slice < size[2]; slice++)
+  for (unsigned int slice = 0; slice < size[2]; ++slice)
   {
     index[2] = slice;
-    for (unsigned int row = 0; row < size[1]; row++)
+    for (unsigned int row = 0; row < size[1]; ++row)
     {
       index[1] = row;
-      for (unsigned int col = 0; col < size[0]; col++)
+      for (unsigned int col = 0; col < size[0]; ++col)
       {
         index[0] = col;
         auto value = (PixelType)(slice + row + col);
@@ -86,9 +86,15 @@ itkRayCastInterpolateImageFunctionTest(int itkNotUsed(argc), char * itkNotUsed(a
   using RayCastInterpolatorType = itk::RayCastInterpolateImageFunction<ImageType, double>;
 
   /* Create and initialize the interpolator */
-  RayCastInterpolatorType::Pointer interp = RayCastInterpolatorType::New();
+  auto interp = RayCastInterpolatorType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(interp, RayCastInterpolateImageFunction, InterpolateImageFunction);
+
+
+  // Test exceptions
+  ITK_TRY_EXPECT_EXCEPTION(interp->GetRadius());
+
   interp->SetInputImage(image);
-  interp->Print(std::cout);
 
   PointType focus;
   focus[0] = 15.0;
@@ -96,26 +102,42 @@ itkRayCastInterpolateImageFunctionTest(int itkNotUsed(argc), char * itkNotUsed(a
   focus[2] = 100.0;
 
   interp->SetFocalPoint(focus);
+  ITK_TEST_SET_GET_VALUE(focus, interp->GetFocalPoint());
 
 
   /* Create the transform */
   using TransformType = itk::TranslationTransform<double, ImageDimension>;
 
-  TransformType::Pointer transform = TransformType::New();
+  auto transform = TransformType::New();
+
   interp->SetTransform(transform);
+  ITK_TEST_SET_GET_VALUE(transform, interp->GetTransform());
 
   /* Create the auxiliary interpolator */
   using InterpolatorType = itk::LinearInterpolateImageFunction<ImageType, double>;
 
-  InterpolatorType::Pointer auxInterpolator = InterpolatorType::New();
+  auto auxInterpolator = InterpolatorType::New();
 
   interp->SetInterpolator(auxInterpolator);
+  ITK_TEST_SET_GET_VALUE(auxInterpolator, interp->GetInterpolator());
 
   /* Exercise the SetThreshold() method */
-  interp->SetThreshold(1.0);
+  double threshold = 1.0;
+  interp->SetThreshold(threshold);
+  ITK_TEST_SET_GET_VALUE(threshold, interp->GetThreshold());
 
   /* Evaluate the function */
-  double    integral;
+  double integral;
+
+
+  // Evaluate the ray casting function at the same point as the focal point:
+  //   - Allows to increase coverage.
+  //   - Makes the ray be invalid.
+  //   - Sets the traversal direction to TraversalDirectionEnum::UNDEFINED_DIRECTION
+  //   - The integral should equal to 0.
+  integral = interp->Evaluate(focus);
+  ITK_TEST_EXPECT_TRUE(itk::Math::FloatAlmostEqual(integral, 0.0));
+
   PointType query;
   query[0] = 15.;
   query[1] = 15.;
@@ -132,5 +154,7 @@ itkRayCastInterpolateImageFunctionTest(int itkNotUsed(argc), char * itkNotUsed(a
 
   ITK_TEST_EXPECT_TRUE(itk::Math::FloatAlmostEqual(integral, 1276.));
 
+
+  std::cout << "Test finished" << std::endl;
   return EXIT_SUCCESS;
 }

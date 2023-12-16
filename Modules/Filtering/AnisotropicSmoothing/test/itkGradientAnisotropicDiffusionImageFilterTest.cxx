@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,8 @@
 #include "itkNullImageToImageFilterDriver.hxx"
 
 /**
- * This program tests the FilterImageAnisotropicDiffusion object by driving it
- * with a null input and output.  Returns 0 on success and 1 on failure.
+ * Test the class instance by driving it with a null input and output.
+ * Returns 0 on success and 1 on failure.
  */
 int
 itkGradientAnisotropicDiffusionImageFilterTest(int itkNotUsed(argc), char * itkNotUsed(argv)[])
@@ -56,7 +56,7 @@ itkGradientAnisotropicDiffusionImageFilterTest(int itkNotUsed(argc), char * itkN
   }
   catch (const itk::ExceptionObject & err)
   {
-    (&err)->Print(std::cerr);
+    err.Print(std::cerr);
     return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;

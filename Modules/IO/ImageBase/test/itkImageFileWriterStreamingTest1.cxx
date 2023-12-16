@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,13 +20,16 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 #include "itkPipelineMonitorImageFilter.h"
+#include "itkTestingMacros.h"
 
 int
 itkImageFileWriterStreamingTest1(int argc, char * argv[])
 {
   if (argc < 3)
   {
-    std::cerr << "Usage: " << argv[0] << " input output [existingFile [ no-streaming 1|0] ]" << std::endl;
+    std::cerr << "Missing parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv);
+    std::cerr << " input output [existingFile [ no-streaming 1|0] ]" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -59,12 +62,12 @@ itkImageFileWriterStreamingTest1(int argc, char * argv[])
   using ReaderType = itk::ImageFileReader<ImageType>;
   using WriterType = itk::ImageFileWriter<ImageType>;
 
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(argv[1]);
   reader->SetUseStreaming(true);
 
   using MonitorFilter = itk::PipelineMonitorImageFilter<ImageType>;
-  MonitorFilter::Pointer monitor = MonitorFilter::New();
+  auto monitor = MonitorFilter::New();
   monitor->SetInput(reader->GetOutput());
 
   if (forceNoStreamingInput)
@@ -74,22 +77,12 @@ itkImageFileWriterStreamingTest1(int argc, char * argv[])
   }
 
   // Setup the writer
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(argv[2]);
   writer->SetInput(monitor->GetOutput());
   writer->SetNumberOfStreamDivisions(numberOfDataPieces);
 
-
-  try
-  {
-    writer->Update();
-  }
-  catch (const itk::ExceptionObject & err)
-  {
-    std::cerr << "ExceptionObject caught !" << std::endl;
-    std::cerr << err << std::endl;
-    return EXIT_FAILURE;
-  }
+  ITK_TRY_EXPECT_NO_EXCEPTION(writer->Update());
 
 
   bool passed = true;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@
 #include "itkProcessObject.h"
 #include "itkImageIOBase.h"
 #include "itkMacro.h"
+#include "itkMetaProgrammingLibrary.h"
 
 namespace itk
 {
@@ -86,7 +87,7 @@ template <typename TInputImage>
 class ITK_TEMPLATE_EXPORT ImageFileWriter : public ProcessObject
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ImageFileWriter);
+  ITK_DISALLOW_COPY_AND_MOVE(ImageFileWriter);
 
   /** Standard class type aliases. */
   using Self = ImageFileWriter;
@@ -235,13 +236,36 @@ private:
   int  m_CompressionLevel{ -1 };
   bool m_UseInputMetaDataDictionary{ true };
 };
+
+
+/** Convenience function for writing an image.
+ *
+ * The image parameter may be a either SmartPointer or a raw pointer and const or non-const.
+ * */
+template <typename TImagePointer>
+ITK_TEMPLATE_EXPORT void
+WriteImage(TImagePointer && image, const std::string & filename, bool compress = false)
+{
+  using NonReferenceImagePointer = std::remove_reference_t<TImagePointer>;
+  static_assert(std::is_pointer<NonReferenceImagePointer>::value ||
+                  mpl::IsSmartPointer<NonReferenceImagePointer>::Value,
+                "WriteImage requires a raw pointer or SmartPointer.");
+
+  using ImageType = std::remove_const_t<std::remove_reference_t<decltype(*image)>>;
+  auto writer = ImageFileWriter<ImageType>::New();
+  writer->SetInput(image);
+  writer->SetFileName(filename);
+  writer->SetUseCompression(compress);
+  writer->Update();
+}
+
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkImageFileWriter.hxx"
 #endif
 
-#ifdef ITK_IO_FACTORY_REGISTER_MANAGER
+#if defined ITK_IMAGEIO_FACTORY_REGISTER_MANAGER || defined ITK_IO_FACTORY_REGISTER_MANAGER
 #  include "itkImageIOFactoryRegisterManager.h"
 #endif
 

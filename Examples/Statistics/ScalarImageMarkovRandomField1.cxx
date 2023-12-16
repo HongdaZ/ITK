@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -108,19 +108,19 @@ main(int argc, char * argv[])
   // to classify. With this image type we can also declare the
   // \doxygen{ImageFileReader} needed for reading the input image, create one
   // and set its input filename. In this particular case we choose to use
-  // \code{signed short} as pixel type, which is typical for MicroMRI and CT
+  // \code{short} as pixel type, which is typical for MicroMRI and CT
   // data sets.
   //
   // Software Guide : EndLatex
 
   // Software Guide : BeginCodeSnippet
-  using PixelType = signed short;
+  using PixelType = short;
   constexpr unsigned int Dimension = 2;
 
   using ImageType = itk::Image<PixelType, Dimension>;
 
   using ReaderType = itk::ImageFileReader<ImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(inputImageFileName);
   // Software Guide : EndCodeSnippet
 
@@ -140,7 +140,7 @@ main(int argc, char * argv[])
   using LabelImageType = itk::Image<LabelPixelType, Dimension>;
 
   using LabelReaderType = itk::ImageFileReader<LabelImageType>;
-  LabelReaderType::Pointer labelReader = LabelReaderType::New();
+  auto labelReader = LabelReaderType::New();
   labelReader->SetFileName(inputLabelImageFileName);
   // Software Guide : EndCodeSnippet
 
@@ -165,8 +165,7 @@ main(int argc, char * argv[])
   using ScalarToArrayFilterType =
     itk::ComposeImageFilter<ImageType, ArrayImageType>;
 
-  ScalarToArrayFilterType::Pointer scalarToArrayFilter =
-    ScalarToArrayFilterType::New();
+  auto scalarToArrayFilter = ScalarToArrayFilterType::New();
   scalarToArrayFilter->SetInput(reader->GetOutput());
   // Software Guide : EndCodeSnippet
 
@@ -183,7 +182,7 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   using MRFFilterType = itk::MRFImageFilter<ArrayImageType, LabelImageType>;
 
-  MRFFilterType::Pointer mrfFilter = MRFFilterType::New();
+  auto mrfFilter = MRFFilterType::New();
 
   mrfFilter->SetInput(scalarToArrayFilter->GetOutput());
   // Software Guide : EndCodeSnippet
@@ -236,8 +235,7 @@ main(int argc, char * argv[])
   using SupervisedClassifierType =
     itk::ImageClassifierBase<ArrayImageType, LabelImageType>;
 
-  SupervisedClassifierType::Pointer classifier =
-    SupervisedClassifierType::New();
+  auto classifier = SupervisedClassifierType::New();
   // Software Guide : EndCodeSnippet
 
 
@@ -255,7 +253,7 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   using DecisionRuleType = itk::Statistics::MinimumDecisionRule;
 
-  DecisionRuleType::Pointer classifierDecisionRule = DecisionRuleType::New();
+  auto classifierDecisionRule = DecisionRuleType::New();
 
   classifier->SetDecisionRule(classifierDecisionRule);
   // Software Guide : EndCodeSnippet
@@ -279,7 +277,7 @@ main(int argc, char * argv[])
 
   double                               meanDistance = 0;
   MembershipFunctionType::CentroidType centroid(1);
-  for (unsigned int i = 0; i < numberOfClasses; i++)
+  for (unsigned int i = 0; i < numberOfClasses; ++i)
   {
     MembershipFunctionPointer membershipFunction =
       MembershipFunctionType::New();
@@ -323,7 +321,7 @@ main(int argc, char * argv[])
   // classification of any given pixel. Note that despite the fact that we
   // call this a radius, it is actually the half size of an hypercube. That
   // is, the actual region of influence will not be circular but rather an
-  // N-Dimensional box. For example, a neighborhood radius of 2 in a 3D image
+  // n-dimensional box. For example, a neighborhood radius of 2 in a 3D image
   // will result in a clique of size 5x5x5 pixels, and a radius of 1 will
   // result in a clique of size 3x3x3 pixels.
   //
@@ -421,7 +419,7 @@ main(int argc, char * argv[])
     itk::RescaleIntensityImageFilter<OutputImageType,
                                      RescaledOutputImageType>;
 
-  RescalerType::Pointer intensityRescaler = RescalerType::New();
+  auto intensityRescaler = RescalerType::New();
   intensityRescaler->SetOutputMinimum(0);
   intensityRescaler->SetOutputMaximum(255);
   intensityRescaler->SetInput(mrfFilter->GetOutput());
@@ -429,7 +427,7 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   using WriterType = itk::ImageFileWriter<OutputImageType>;
 
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
 
   writer->SetInput(intensityRescaler->GetOutput());
 

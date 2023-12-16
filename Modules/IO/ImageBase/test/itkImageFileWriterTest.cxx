@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,21 +17,23 @@
  *=========================================================================*/
 
 #include "itkImageFileWriter.h"
+#include "itkTestingMacros.h"
+
 
 int
-itkImageFileWriterTest(int ac, char * av[])
+itkImageFileWriterTest(int argc, char * argv[])
 {
 
-  if (ac < 2)
+  if (argc < 2)
   {
-    std::cout << "usage: itkIOTests itkImageFileWriterTest outputFileName" << std::endl;
+    std::cout << "Usage: " << itkNameOfTestExecutableMacro(argv) << " outputFileName " << std::endl;
     return EXIT_FAILURE;
   }
 
   using ImageNDType = itk::Image<short, 2>;
   using WriterType = itk::ImageFileWriter<ImageNDType>;
 
-  ImageNDType::Pointer    image = ImageNDType::New();
+  auto                    image = ImageNDType::New();
   ImageNDType::RegionType region;
   ImageNDType::IndexType  index;
   ImageNDType::SizeType   size;
@@ -49,7 +51,7 @@ itkImageFileWriterTest(int ac, char * av[])
   int status = 1;
   try
   {
-    WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
     writer->Update();
   }
   catch (const itk::ExceptionObject & ex)
@@ -68,7 +70,7 @@ itkImageFileWriterTest(int ac, char * av[])
   status = 1;
   try
   {
-    WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
     writer->SetInput(image);
     writer->Update();
   }
@@ -88,7 +90,7 @@ itkImageFileWriterTest(int ac, char * av[])
   status = 1;
   try
   {
-    WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
     writer->SetInput(image);
     writer->SetFileName("this_is_a_bad_filename");
     writer->Update();
@@ -109,9 +111,9 @@ itkImageFileWriterTest(int ac, char * av[])
   status = 1;
   try
   {
-    WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
     writer->SetInput(image);
-    writer->SetFileName(av[1]);
+    writer->SetFileName(argv[1]);
     writer->Update();
   }
   catch (const itk::ExceptionObject & ex)
@@ -130,9 +132,9 @@ itkImageFileWriterTest(int ac, char * av[])
   status = 1;
   try
   {
-    WriterType::Pointer writer = WriterType::New();
+    auto writer = WriterType::New();
     writer->SetInput(image);
-    writer->SetFileName(av[1]);
+    writer->SetFileName(argv[1]);
     writer->UpdateLargestPossibleRegion();
   }
   catch (const itk::ExceptionObject & ex)

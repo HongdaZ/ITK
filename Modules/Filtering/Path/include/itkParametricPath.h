@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class ParametricPath
+ * \class ParametricPath
  * \brief  Represent a parametric path through ND Space
  *
  * This virtual class is intended to represent a parametric path through an
@@ -63,11 +63,11 @@ class ITK_TEMPLATE_EXPORT ParametricPath
   : public Path<double, ContinuousIndex<SpacePrecisionType, VDimension>, VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(ParametricPath);
+  ITK_DISALLOW_COPY_AND_MOVE(ParametricPath);
 
   /** Standard class type aliases. */
   using Self = ParametricPath;
-  /** All paths must be mapable to index space */
+  /** All paths must be mappable to index space */
   using ContinuousIndexType = ContinuousIndex<SpacePrecisionType, VDimension>;
   using Superclass = Path<double, ContinuousIndexType, VDimension>;
 
@@ -78,10 +78,10 @@ public:
   itkTypeMacro(ParametricPath, Path);
 
   /** Input type */
-  using InputType = typename Superclass::InputType;
+  using typename Superclass::InputType;
 
   /** Output type */
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::OutputType;
 
   using IndexType = Index<VDimension>;
   using OffsetType = Offset<VDimension>;
@@ -119,9 +119,11 @@ public:
   virtual VectorType
   EvaluateDerivative(const InputType & input) const;
 
-  itkSetMacro(DefaultInputStepSize, InputType) itkGetConstReferenceMacro(DefaultInputStepSize, InputType)
+  itkSetMacro(DefaultInputStepSize, InputType);
+  itkGetConstReferenceMacro(DefaultInputStepSize, InputType);
 
-    protected : ParametricPath();
+protected:
+  ParametricPath();
   ~ParametricPath() override = default;
   void
   PrintSelf(std::ostream & os, Indent indent) const override;

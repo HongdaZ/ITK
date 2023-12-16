@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ class VectorImage;
 
 
 /**
- *\class GradientImageFilter
+ * \class GradientImageFilter
  * \brief Computes the gradient of an image using directional derivatives.
  *
  * Computes the gradient of an image using directional derivatives.
@@ -66,7 +66,7 @@ template <typename TInputImage,
 class ITK_TEMPLATE_EXPORT GradientImageFilter : public ImageToImageFilter<TInputImage, TOutputImageType>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GradientImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(GradientImageFilter);
 
   /** Extract dimension from input image. */
   static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
@@ -107,8 +107,19 @@ public:
   void
   GenerateInputRequestedRegion() override;
 
+  /** Set/Get whether or not the filter will use the spacing of the input
+   * image in its calculations. Use On to take the image spacing information
+   * into account and to compute the derivatives in physical space; use Off to
+   * ignore the image spacing and to compute the derivatives in isotropic
+   * voxel space. Default is On. */
+  itkSetMacro(UseImageSpacing, bool);
+  itkGetConstMacro(UseImageSpacing, bool);
+  itkBooleanMacro(UseImageSpacing);
+
+#if !defined(ITK_FUTURE_LEGACY_REMOVE)
   /** Use the image spacing information in calculations. Use this option if you
-   *  want derivatives in physical space. Default is UseImageSpacingOn. */
+      want derivatives in physical space. Default is UseImageSpacingOn.
+     \deprecated Use GradientImageFilter::UseImageSpacingOn instead. */
   void
   SetUseImageSpacingOn()
   {
@@ -116,18 +127,15 @@ public:
   }
 
   /** Ignore the image spacing. Use this option if you want derivatives in
-      isotropic pixel space.  Default is UseImageSpacingOn. */
+      isotropic pixel space.  Default is UseImageSpacingOn.
+      \deprecated Use GradientImageFilter::UseImageSpacingOff instead. */
   void
   SetUseImageSpacingOff()
   {
     this->SetUseImageSpacing(false);
   }
+#endif
 
-  /** Set/Get whether or not the filter will use the spacing of the input
-      image in its calculations */
-  itkSetMacro(UseImageSpacing, bool);
-  itkGetConstMacro(UseImageSpacing, bool);
-  itkBooleanMacro(UseImageSpacing);
   /** Allows to change the default boundary condition */
   void
   OverrideBoundaryCondition(ImageBoundaryCondition<TInputImage> * boundaryCondition);

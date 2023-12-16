@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -98,9 +98,9 @@ main(int argc, char * argv[])
   using ReaderType = itk::ImageFileReader<ClassImageType>;
   using WriterType = itk::ImageFileWriter<ClassImageType>;
 
-  ReaderType::Pointer inputimagereader = ReaderType::New();
-  ReaderType::Pointer trainingimagereader = ReaderType::New();
-  WriterType::Pointer writer = WriterType::New();
+  auto inputimagereader = ReaderType::New();
+  auto trainingimagereader = ReaderType::New();
+  auto writer = WriterType::New();
 
   inputimagereader->SetFileName(argv[1]);
   trainingimagereader->SetFileName(argv[2]);
@@ -109,7 +109,7 @@ main(int argc, char * argv[])
 
   // We convert the input into vector images
   //
-  VecImageType::Pointer vecImage = VecImageType::New();
+  auto vecImage = VecImageType::New();
   using VecImagePixelType = VecImageType::PixelType;
   VecImageType::SizeType vecImgSize = { { 181, 217, 1 } };
 
@@ -178,8 +178,7 @@ main(int argc, char * argv[])
                                      MembershipFunctionType,
                                      ClassImageType>;
 
-  ImageGaussianModelEstimatorType::Pointer applyEstimateModel =
-    ImageGaussianModelEstimatorType::New();
+  auto applyEstimateModel = ImageGaussianModelEstimatorType::New();
 
   applyEstimateModel->SetNumberOfModels(NUM_CLASSES);
   applyEstimateModel->SetInputImage(vecImage);
@@ -204,12 +203,12 @@ main(int argc, char * argv[])
   using DecisionRuleBasePointer = itk::Statistics::DecisionRule::Pointer;
 
   using DecisionRuleType = itk::Statistics::MinimumDecisionRule;
-  DecisionRuleType::Pointer myDecisionRule = DecisionRuleType::New();
+  auto myDecisionRule = DecisionRuleType::New();
 
   std::cout << " site 3 " << std::endl;
 
   //----------------------------------------------------------------------
-  // Set the classifier to be used and assigne the parameters for the
+  // Set the classifier to be used and assigned the parameters for the
   // supervised classifier algorithm except the input image which is
   // grabbed from the Gibbs application pipeline.
   //----------------------------------------------------------------------
@@ -232,7 +231,7 @@ main(int argc, char * argv[])
   // Set the Classifier parameters
   myClassifier->SetNumberOfClasses(NUM_CLASSES);
 
-  // Set the decison rule
+  // Set the decision rule
   myClassifier->SetDecisionRule((DecisionRuleBasePointer)myDecisionRule);
 
   // Add the membership functions
@@ -251,8 +250,7 @@ main(int argc, char * argv[])
   // Software Guide : BeginCodeSnippet
   using GibbsPriorFilterType =
     itk::RGBGibbsPriorFilter<VecImageType, ClassImageType>;
-  GibbsPriorFilterType::Pointer applyGibbsImageFilter =
-    GibbsPriorFilterType::New();
+  auto applyGibbsImageFilter = GibbsPriorFilterType::New();
   // Software Guide : EndCodeSnippet
 
   // Set the MRF labeller parameters

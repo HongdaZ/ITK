@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkInverseDisplacementFieldImageFilter_hxx
 #define itkInverseDisplacementFieldImageFilter_hxx
 
-#include "itkInverseDisplacementFieldImageFilter.h"
 #include "itkObjectFactory.h"
 #include "itkProgressReporter.h"
 #include "itkThinPlateSplineKernelTransform.h"
@@ -35,7 +34,7 @@ InverseDisplacementFieldImageFilter<TInputImage, TOutputImage>::InverseDisplacem
 {
   m_OutputSpacing.Fill(1.0);
   m_OutputOrigin.Fill(0.0);
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     m_Size[i] = 0;
   }
@@ -112,7 +111,7 @@ InverseDisplacementFieldImageFilter<TInputImage, TOutputImage>::PrepareKernelBas
 
   using ResamplerType = itk::ResampleImageFilter<InputImageType, InputImageType>;
 
-  typename ResamplerType::Pointer resampler = ResamplerType::New();
+  auto resampler = ResamplerType::New();
 
   const InputImageType * inputImage = this->GetInput();
 
@@ -130,15 +129,13 @@ InverseDisplacementFieldImageFilter<TInputImage, TOutputImage>::PrepareKernelBas
 
   InputSizeType size = region.GetSize();
 
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     size[i] = static_cast<SizeValueType>(size[i] / m_SubsamplingFactor);
     spacing[i] *= m_SubsamplingFactor;
   }
 
-  InputRegionType subsampledRegion;
-  subsampledRegion.SetSize(size);
-  subsampledRegion.SetIndex(region.GetIndex());
+  const InputRegionType subsampledRegion(region.GetIndex(), size);
 
   resampler->SetSize(size);
   resampler->SetOutputStartIndex(subsampledRegion.GetIndex());
@@ -175,7 +172,7 @@ InverseDisplacementFieldImageFilter<TInputImage, TOutputImage>::PrepareKernelBas
 
     target->InsertElement(landmarkId, targetPoint);
 
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       sourcePoint[i] = targetPoint[i] + value[i];
     }
@@ -250,7 +247,7 @@ InverseDisplacementFieldImageFilter<TInputImage, TOutputImage>::GenerateData()
 
     OutputPixelType inverseDisplacement;
 
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       inverseDisplacement[i] = interpolation[i] - outputPoint[i];
     }
@@ -284,8 +281,7 @@ InverseDisplacementFieldImageFilter<TInputImage, TOutputImage>::GenerateInputReq
   InputImagePointer inputPtr = const_cast<InputImageType *>(this->GetInput());
 
   // Request the entire input image
-  InputImageRegionType inputRegion;
-  inputRegion = inputPtr->GetLargestPossibleRegion();
+  const InputImageRegionType inputRegion = inputPtr->GetLargestPossibleRegion();
   inputPtr->SetRequestedRegion(inputRegion);
 }
 

@@ -6,7 +6,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0.txt
+ * https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,6 @@
 #ifndef itkFEMElement3DMembrane1DOF_hxx
 #define itkFEMElement3DMembrane1DOF_hxx
 
-#include "itkFEMElement3DMembrane1DOF.h"
 
 namespace itk
 {
@@ -69,7 +68,7 @@ Element3DMembrane1DOF<TBaseClass>::GetMaterialMatrix(MatrixType & D) const
   // This is the main difference from the linear elasticity problem.
   /* Material properties matrix.  Simpler than linear elasticity. */
   Float disot = m_Mat->GetYoungsModulus();
-  for (unsigned int i = 0; i < d; i++)
+  for (unsigned int i = 0; i < d; ++i)
   {
     D[i][i] = disot;
   }

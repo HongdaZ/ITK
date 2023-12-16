@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -101,7 +101,7 @@ itkPointGeometryTest(int, char *[])
   auto vnlVector = pa.GetVnlVector();
   std::cout << "vnl_vector = ";
   {
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
       std::cout << vnlVector[i] << ", ";
     }
@@ -133,10 +133,10 @@ itkPointGeometryTest(int, char *[])
     fp.CastFrom(dp); // Here is the call !
 
     // Verification...
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
       auto val = static_cast<FloatPointType::ValueType>(dp[i]);
-      if (std::fabs(val - fp[i]) > tolerance)
+      if (itk::Math::abs(val - fp[i]) > tolerance)
       {
         std::cout << "Failed at component " << i << std::endl;
         return EXIT_FAILURE;
@@ -159,7 +159,7 @@ itkPointGeometryTest(int, char *[])
     std::cout << "PA = " << A << std::endl;
     std::cout << "PB = " << B << std::endl;
     std::cout << "MidPoint = " << midpoint << std::endl;
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
       if (itk::Math::NotAlmostEquals(midpoint[i], (A[i] + B[i]) / 2.0))
       {
@@ -186,10 +186,10 @@ itkPointGeometryTest(int, char *[])
     std::cout << "PB = " << B << std::endl;
     std::cout << "Alpha = " << alpha << std::endl;
     std::cout << "Combination = " << combination << std::endl;
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
       const double value = (alpha * A[i] + (1.0 - alpha) * B[i]);
-      if (std::fabs(combination[i] - value) > tolerance)
+      if (itk::Math::abs(combination[i] - value) > tolerance)
       {
         std::cerr << "Failure to compute Barycentric combination" << std::endl;
         return EXIT_FAILURE;
@@ -218,10 +218,10 @@ itkPointGeometryTest(int, char *[])
     std::cout << "Alpha = " << alpha << std::endl;
     std::cout << "Beta  = " << beta << std::endl;
     std::cout << "Combination = " << combination << std::endl;
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
       const double value = alpha * A[i] + beta * B[i] + (1.0 - alpha - beta) * C[i];
-      if (std::fabs(combination[i] - value) > tolerance)
+      if (itk::Math::abs(combination[i] - value) > tolerance)
       {
         std::cerr << "Failure to compute Barycentric combination" << std::endl;
         return EXIT_FAILURE;
@@ -248,9 +248,9 @@ itkPointGeometryTest(int, char *[])
     w[1] = 1 / 3.0;
     combination.SetToBarycentricCombination(A, w, N);
     std::cout << "Test for Barycentric combination of an array of Points" << std::endl;
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
-      if (std::fabs(combination[i] - (K / 3.0)) > tolerance)
+      if (itk::Math::abs(combination[i] - (K / 3.0)) > tolerance)
       {
         std::cerr << "Failure to compute Barycentric combination" << std::endl;
         return EXIT_FAILURE;
@@ -266,7 +266,7 @@ itkPointGeometryTest(int, char *[])
     PointType              combination;
     constexpr unsigned int NP = 3;
     using VectorOfPoints = itk::VectorContainer<unsigned long, PointType>;
-    VectorOfPoints::Pointer points = VectorOfPoints::New();
+    auto points = VectorOfPoints::New();
     points->Reserve(NP);
     constexpr double K = 12.0;
 
@@ -287,9 +287,9 @@ itkPointGeometryTest(int, char *[])
     using BarycentricCalculatorType = itk::BarycentricCombination<VectorOfPoints, double *>;
     combination = BarycentricCalculatorType::Evaluate(points, w);
     std::cout << "Test for Barycentric combination of a VectorContainer of Points" << std::endl;
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
-      if (std::fabs(combination[i] - (K / 3.0)) > tolerance)
+      if (itk::Math::abs(combination[i] - (K / 3.0)) > tolerance)
       {
         std::cerr << "Failure to compute Barycentric combination" << std::endl;
         return EXIT_FAILURE;

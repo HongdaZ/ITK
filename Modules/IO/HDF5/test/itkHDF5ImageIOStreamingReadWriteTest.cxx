@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@
 namespace itk
 {
 /**
- *\class DemoImageSource
+ * \class DemoImageSource
  *
  * \brief Streamable process that will generate image regions from the write requests
  *
@@ -43,7 +43,7 @@ template <class TOutputImage>
 class DemoImageSource : public GenerateImageSource<TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DemoImageSource);
+  ITK_DISALLOW_COPY_AND_MOVE(DemoImageSource);
 
   /** Standard class type aliases. */
   using Self = DemoImageSource;
@@ -73,8 +73,9 @@ protected:
     itk::ImageRegionIteratorWithIndex<TOutputImage> it(out, out->GetRequestedRegion());
     for (it.GoToBegin(); !it.IsAtEnd(); ++it)
     {
-      typename TOutputImage::IndexType idx = it.GetIndex();
-      it.Set(idx[2] * 100 + idx[1] * 10 + idx[0]);
+      typename TOutputImage::IndexType       idx = it.GetIndex();
+      const typename TOutputImage::PixelType pixel(idx[2] * 100 + idx[1] * 10 + idx[0]);
+      it.Set(pixel);
     }
   };
 
@@ -102,9 +103,9 @@ HDF5ReadWriteTest2(const char * fileName)
 
   // Write image with streaming.
   using WriterType = typename itk::ImageFileWriter<ImageType>;
-  typename WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   using MonitorFilterType = typename itk::PipelineMonitorImageFilter<ImageType>;
-  typename MonitorFilterType::Pointer writerMonitor = MonitorFilterType::New();
+  auto writerMonitor = MonitorFilterType::New();
   writerMonitor->SetInput(imageSource->GetOutput());
   writer->SetFileName(fileName);
   writer->SetInput(writerMonitor->GetOutput());
@@ -130,7 +131,7 @@ HDF5ReadWriteTest2(const char * fileName)
   expectedRegion.SetSize(2, 1);
   typename MonitorFilterType::RegionVectorType   writerRegionVector = writerMonitor->GetUpdatedBufferedRegions();
   typename ImageType::RegionType::IndexValueType iRegion;
-  for (iRegion = 0; iRegion < 5; iRegion++)
+  for (iRegion = 0; iRegion < 5; ++iRegion)
   {
     expectedRegion.SetIndex(2, iRegion);
     if (writerRegionVector[iRegion] != expectedRegion)
@@ -146,13 +147,13 @@ HDF5ReadWriteTest2(const char * fileName)
 
   // Read image with streaming.
   using ReaderType = typename itk::ImageFileReader<ImageType>;
-  typename ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(fileName);
   reader->SetUseStreaming(true);
-  typename MonitorFilterType::Pointer readerMonitor = MonitorFilterType::New();
+  auto readerMonitor = MonitorFilterType::New();
   readerMonitor->SetInput(reader->GetOutput());
   using StreamingFilter = typename itk::StreamingImageFilter<ImageType, ImageType>;
-  typename StreamingFilter::Pointer streamer = StreamingFilter::New();
+  auto streamer = StreamingFilter::New();
   streamer->SetInput(readerMonitor->GetOutput());
   streamer->SetNumberOfStreamDivisions(5);
   typename ImageType::Pointer image;
@@ -188,14 +189,13 @@ HDF5ReadWriteTest2(const char * fileName)
   // Check image pixel values.
   itk::ImageRegionIterator<ImageType> it(image, image->GetLargestPossibleRegion());
   typename ImageType::IndexType       idx;
-  TPixel                              origValue;
   for (it.GoToBegin(); !it.IsAtEnd(); ++it)
   {
     idx = it.GetIndex();
-    origValue = idx[2] * 100 + idx[1] * 10 + idx[0];
+    const TPixel origValue(idx[2] * 100 + idx[1] * 10 + idx[0]);
     if (itk::Math::NotAlmostEquals(it.Get(), origValue))
     {
-      std::cout << "Original Pixel (" << origValue << ") doesn't match read-in Pixel (" << it.Get() << std::endl;
+      std::cout << "Original Pixel (" << origValue << ") doesn't match read-in Pixel (" << it.Get() << ")" << std::endl;
       return EXIT_FAILURE;
     }
   }
@@ -211,7 +211,7 @@ HDF5ReadWriteTest2(const char * fileName)
   expectedRegion.SetSize(0, 5);
   expectedRegion.SetSize(1, 5);
   expectedRegion.SetSize(2, 1);
-  for (iRegion = 0; iRegion < 5; iRegion++)
+  for (iRegion = 0; iRegion < 5; ++iRegion)
   {
     expectedRegion.SetIndex(2, iRegion);
     if (readerRegionVector[iRegion] != expectedRegion)
@@ -229,13 +229,13 @@ HDF5ReadWriteTest2(const char * fileName)
 }
 
 int
-itkHDF5ImageIOStreamingReadWriteTest(int ac, char * av[])
+itkHDF5ImageIOStreamingReadWriteTest(int argc, char * argv[])
 {
   std::string prefix("");
-  if (ac > 1)
+  if (argc > 1)
   {
-    prefix = *++av;
-    --ac;
+    prefix = *++argv;
+    --argc;
     itksys::SystemTools::ChangeDirectory(prefix.c_str());
   }
   itk::ObjectFactoryBase::RegisterFactory(itk::HDF5ImageIOFactory::New());

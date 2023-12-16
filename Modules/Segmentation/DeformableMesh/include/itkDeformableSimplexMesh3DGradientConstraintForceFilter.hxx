@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,7 @@
 #ifndef itkDeformableSimplexMesh3DGradientConstraintForceFilter_hxx
 #define itkDeformableSimplexMesh3DGradientConstraintForceFilter_hxx
 
-#include "itkDeformableSimplexMesh3DGradientConstraintForceFilter.h"
 #include "itkNumericTraits.h"
-#include "itkMath.h"
 #include "itkMath.h"
 
 #include <set>
@@ -60,12 +58,12 @@ DeformableSimplexMesh3DGradientConstraintForceFilter<TInputMesh, TOutputMesh>::C
   delete m_StartVoxel;
   m_StartVoxel = nullptr;
   std::vector<ImageVoxel *>::iterator it;
-  for (it = m_Positive.begin(); it != m_Positive.end(); it++)
+  for (it = m_Positive.begin(); it != m_Positive.end(); ++it)
   {
     delete *it;
   }
   m_Positive.erase(m_Positive.begin(), m_Positive.end());
-  for (it = m_Negative.begin(); it != m_Negative.end(); it++)
+  for (it = m_Negative.begin(); it != m_Negative.end(); ++it)
   {
     delete *it;
   }
@@ -272,8 +270,8 @@ DeformableSimplexMesh3DGradientConstraintForceFilter<TInputMesh, TOutputMesh>::C
     pos[1] = data->pos[1];
     pos[2] = data->pos[2];
 
-    m_StartVoxel = new ImageVoxel(vpos, pos, (double)m_Image->GetPixel(index), 0.0, 0);
-    current = new ImageVoxel(vpos, pos, (double)m_Image->GetPixel(index), 0.0, 0);
+    m_StartVoxel = new ImageVoxel(vpos, pos, static_cast<double>(m_Image->GetPixel(index)), 0.0, 0);
+    current = new ImageVoxel(vpos, pos, static_cast<double>(m_Image->GetPixel(index)), 0.0, 0);
     m_Positive.push_back(current);
 
     // scan normal side
@@ -304,7 +302,7 @@ DeformableSimplexMesh3DGradientConstraintForceFilter<TInputMesh, TOutputMesh>::C
           index[1] = ic[1];
           index[2] = ic[2];
 
-          current = new ImageVoxel(vpos, pos, (double)m_Image->GetPixel(index), dist, ++i);
+          current = new ImageVoxel(vpos, pos, static_cast<double>(m_Image->GetPixel(index)), dist, ++i);
           m_Positive.push_back(current);
           if (current->GetDistance() > m_Range)
           {
@@ -361,7 +359,7 @@ DeformableSimplexMesh3DGradientConstraintForceFilter<TInputMesh, TOutputMesh>::C
           index[1] = ic[1];
           index[2] = ic[2];
 
-          current = new ImageVoxel(vpos, pos, (double)m_Image->GetPixel(index), dist, --ii);
+          current = new ImageVoxel(vpos, pos, static_cast<double>(m_Image->GetPixel(index)), dist, --ii);
           m_Negative.push_back(current);
           if (current->GetDistance() > m_Range)
           {
@@ -385,7 +383,7 @@ DeformableSimplexMesh3DGradientConstraintForceFilter<TInputMesh, TOutputMesh>::C
   double                              mag, max = 0;
   GradientIndexType                   coord3, coord2;
   coord2.Fill(0);
-  for (it = m_Positive.begin(); it != m_Positive.end(); it++)
+  for (it = m_Positive.begin(); it != m_Positive.end(); ++it)
   {
     coord3[0] = static_cast<GradientIndexValueType>((*it)->GetX());
     coord3[1] = static_cast<GradientIndexValueType>((*it)->GetY());

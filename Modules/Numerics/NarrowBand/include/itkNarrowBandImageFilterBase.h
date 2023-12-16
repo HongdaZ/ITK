@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@
 #ifndef itkNarrowBandImageFilterBase_h
 #define itkNarrowBandImageFilterBase_h
 
+#include "itkBooleanStdVector.h"
 #include "itkFiniteDifferenceImageFilter.h"
 #include "itkMultiThreaderBase.h"
 #include "itkNarrowBand.h"
@@ -69,7 +70,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT NarrowBandImageFilterBase : public FiniteDifferenceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(NarrowBandImageFilterBase);
+  ITK_DISALLOW_COPY_AND_MOVE(NarrowBandImageFilterBase);
 
   /** Standard class type aliases */
   using Self = NarrowBandImageFilterBase;
@@ -81,9 +82,9 @@ public:
   itkTypeMacro(NarrowBandImageFilterBase, ImageToImageFilter);
 
   /**Typedefs from the superclass */
-  using InputImageType = typename Superclass::InputImageType;
-  using OutputImageType = typename Superclass::OutputImageType;
-  using FiniteDifferenceFunctionType = typename Superclass::FiniteDifferenceFunctionType;
+  using typename Superclass::InputImageType;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::FiniteDifferenceFunctionType;
 
   /** Dimensionality of input and output data is assumed to be the same.
    * It is inherited from the superclass. */
@@ -91,10 +92,10 @@ public:
 
   /** The pixel type of the output image will be used in computations.
    * Inherited from the superclass. */
-  using PixelType = typename Superclass::PixelType;
+  using typename Superclass::PixelType;
 
   /** The value type of a time step.  Inherited from the superclass. */
-  using TimeStepType = typename Superclass::TimeStepType;
+  using typename Superclass::TimeStepType;
 
   /** The index type for the output image. */
   using IndexType = typename OutputImageType::IndexType;
@@ -141,7 +142,7 @@ public:
   }
 
   void
-  InsertNarrowBandNode(const IndexType & index, const PixelType & value, const signed char & nodestate)
+  InsertNarrowBandNode(const IndexType & index, const PixelType & value, const signed char nodestate)
   {
     BandNodeType tmpnode;
 
@@ -157,7 +158,7 @@ public:
    * twice this value (positive and negative distance to the zero level
    * set). The default value is 3. */
   void
-  SetNarrowBandTotalRadius(const float & val)
+  SetNarrowBandTotalRadius(const float val)
   {
     if (m_NarrowBand->GetTotalRadius() != val)
     {
@@ -176,7 +177,7 @@ public:
   /** Set the narrow band inner radius. The inner radius is the safe
    * are where the level set can be computed. The default value is 1. */
   void
-  SetNarrowBandInnerRadius(const float & val)
+  SetNarrowBandInnerRadius(const float val)
   {
     if (m_NarrowBand->GetInnerRadius() != val)
     {
@@ -292,7 +293,7 @@ protected:
 
   bool m_Touched;
 
-  std::vector<bool> m_TouchedForThread;
+  BooleanStdVectorType m_TouchedForThread;
 
   ValueType m_IsoSurfaceValue;
 

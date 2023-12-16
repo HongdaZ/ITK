@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -67,10 +67,10 @@ namespace itk
  * itk::Image<TRealType, N>.
  *
  * \par Filter Parameters
- * The method SetUseImageSpacingOn will cause derivatives in the image to be
+ * The method UseImageSpacingOn will cause derivatives in the image to be
  * scaled (inversely) with the pixel size of the input image, effectively
  * taking derivatives in world coordinates (versus isotropic image
- * space). SetUseImageSpacingOff turns this functionality off.  Default is
+ * space). UseImageSpacingOff turns this functionality off.  Default is
  * UseImageSpacingOn.  The parameter UseImageSpacing can
  * be set directly with the method SetUseImageSpacing(bool).
  *
@@ -115,7 +115,7 @@ class ITK_TEMPLATE_EXPORT DisplacementFieldJacobianDeterminantFilter
   : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(DisplacementFieldJacobianDeterminantFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(DisplacementFieldJacobianDeterminantFilter);
 
   /** Standard class type aliases. */
   using Self = DisplacementFieldJacobianDeterminantFilter;
@@ -157,7 +157,7 @@ public:
   using RadiusType = typename ConstNeighborhoodIteratorType::RadiusType;
 
   /** Superclass type alias. */
-  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using typename Superclass::OutputImageRegionType;
 
   /** DisplacementFieldJacobianDeterminantFilter needs a larger input requested
    * region than the output requested region (larger by the kernel
@@ -170,10 +170,23 @@ public:
   void
   GenerateInputRequestedRegion() override;
 
+  /** Set/Get whether or not the filter will use the spacing of the input
+   * image (1/spacing) in the calculation of the Jacobian determinant. Use On
+   * to compute the Jacobian determinant in the space in which the data was
+   * acquired; use Off to reset the derivative weights, ignore the image
+   * spacing, and to compute the Jacobian determinant in the image space.
+   * Default is On. */
+  void
+  SetUseImageSpacing(bool);
+  itkGetConstMacro(UseImageSpacing, bool);
+  itkBooleanMacro(UseImageSpacing);
+
+#if !defined(ITK_FUTURE_LEGACY_REMOVE)
   /** Set the derivative weights according to the spacing of the input image
       (1/spacing). Use this option if you want to calculate the Jacobian
       determinant in the space in which the data was acquired. Default
-      is ImageSpacingOn. */
+      is ImageSpacingOn.
+      \deprecated Use DisplacementFieldJacobianDeterminantFilter::UseImageSpacingOn instead. */
   void
   SetUseImageSpacingOn()
   {
@@ -182,19 +195,14 @@ public:
 
   /** Reset the derivative weights to ignore image spacing.  Use this option if
       you want to calculate the Jacobian determinant in the image space.
-      Default is ImageSpacingOn. */
+      Default is ImageSpacingOn.
+      \deprecated Use DisplacementFieldJacobianDeterminantFilter::UseImageSpacingOff instead. */
   void
   SetUseImageSpacingOff()
   {
     this->SetUseImageSpacing(false);
   }
-
-  /** Set/Get whether or not the filter will use the spacing of the input
-      image in its calculations */
-  void
-  SetUseImageSpacing(bool);
-
-  itkGetConstMacro(UseImageSpacing, bool);
+#endif
 
   using WeightsType = FixedArray<TRealType, ImageDimension>;
 
@@ -254,7 +262,7 @@ protected:
 private:
   bool m_UseImageSpacing;
 
-  ThreadIdType m_RequestedNumberOfThreads;
+  ThreadIdType m_RequestedNumberOfWorkUnits;
 
   typename ImageBaseType::ConstPointer m_RealValuedInputImage;
 

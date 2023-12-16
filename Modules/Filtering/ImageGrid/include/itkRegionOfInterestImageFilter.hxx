@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkRegionOfInterestImageFilter_hxx
 #define itkRegionOfInterestImageFilter_hxx
 
-#include "itkRegionOfInterestImageFilter.h"
 #include "itkImageAlgorithm.h"
 #include "itkObjectFactory.h"
 #include "itkTotalProgressReporter.h"
@@ -79,12 +78,7 @@ RegionOfInterestImageFilter<TInputImage, TOutputImage>::GenerateOutputInformatio
   }
 
   // Set the output image size to the same value as the region of interest.
-  RegionType region;
-  IndexType  start;
-  start.Fill(0);
-
-  region.SetSize(m_RegionOfInterest.GetSize());
-  region.SetIndex(start);
+  const RegionType region(m_RegionOfInterest.GetSize());
 
   // Copy Information without modification.
   outputPtr->CopyInformation(inputPtr);

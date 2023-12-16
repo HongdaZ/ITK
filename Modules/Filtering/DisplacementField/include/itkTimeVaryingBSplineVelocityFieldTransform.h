@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -64,16 +64,16 @@ namespace itk
  * \ingroup Transforms
  * \ingroup ITKDisplacementField
  */
-template <typename TParametersValueType, unsigned int NDimensions>
+template <typename TParametersValueType, unsigned int VDimension>
 class ITK_TEMPLATE_EXPORT TimeVaryingBSplineVelocityFieldTransform
-  : public VelocityFieldTransform<TParametersValueType, NDimensions>
+  : public VelocityFieldTransform<TParametersValueType, VDimension>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(TimeVaryingBSplineVelocityFieldTransform);
+  ITK_DISALLOW_COPY_AND_MOVE(TimeVaryingBSplineVelocityFieldTransform);
 
   /** Standard class type aliases. */
   using Self = TimeVaryingBSplineVelocityFieldTransform;
-  using Superclass = VelocityFieldTransform<TParametersValueType, NDimensions>;
+  using Superclass = VelocityFieldTransform<TParametersValueType, VDimension>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
 
@@ -84,34 +84,34 @@ public:
   itkNewMacro(Self);
 
   /** InverseTransform type. */
-  using InverseTransformBasePointer = typename Superclass::InverseTransformBasePointer;
+  using typename Superclass::InverseTransformBasePointer;
 
   /** Interpolator types.*/
-  using InterpolatorType = typename Superclass::InterpolatorType;
+  using typename Superclass::InterpolatorType;
   using VelocityFieldIntegratorType = typename Superclass::VelocityFieldInterpolatorType;
 
   /** Field types. */
-  using DisplacementFieldType = typename Superclass::DisplacementFieldType;
-  using VelocityFieldType = typename Superclass::VelocityFieldType;
+  using typename Superclass::DisplacementFieldType;
+  using typename Superclass::VelocityFieldType;
 
   /** Scalar type. */
-  using ScalarType = typename Superclass::ScalarType;
+  using typename Superclass::ScalarType;
 
   /** Type of the input parameters. */
-  using ParametersType = typename Superclass::ParametersType;
+  using typename Superclass::ParametersType;
   using ParametersValueType = typename ParametersType::ValueType;
-  using FixedParametersType = typename Superclass::FixedParametersType;
+  using typename Superclass::FixedParametersType;
   using FixedParametersValueType = typename FixedParametersType::ValueType;
-  using NumberOfParametersType = typename Superclass::NumberOfParametersType;
+  using typename Superclass::NumberOfParametersType;
 
   /** Derivative type */
-  using DerivativeType = typename Superclass::DerivativeType;
+  using typename Superclass::DerivativeType;
 
   /** Dimension of the domain spaces. */
-  static constexpr unsigned int Dimension = NDimensions;
+  static constexpr unsigned int Dimension = VDimension;
 
   /** Dimension of the time varying velocity field. */
-  static constexpr unsigned int VelocityFieldDimension = NDimensions + 1;
+  static constexpr unsigned int VelocityFieldDimension = VDimension + 1;
 
   using VelocityFieldPointType = typename VelocityFieldType::PointType;
   using VelocityFieldSizeType = typename VelocityFieldType::SizeType;

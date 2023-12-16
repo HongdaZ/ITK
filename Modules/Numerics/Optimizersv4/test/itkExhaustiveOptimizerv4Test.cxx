@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@
 #include "itkExhaustiveOptimizerv4.h"
 
 #include "itkMath.h"
+#include "itkTestingMacros.h"
 
 /**
  *  The objectif function is the quadratic form:
@@ -98,7 +99,7 @@ public:
   }
 
   void
-  Initialize() throw(itk::ExceptionObject) override
+  Initialize() override
   {
     m_Parameters.SetSize(SpaceDimension);
   }
@@ -200,16 +201,18 @@ itkExhaustiveOptimizerv4Test(int, char *[])
   using ScalesType = OptimizerType::ScalesType;
 
 
-  // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  // Declaration of an itkOptimizer
+  auto itkOptimizer = OptimizerType::New();
+
+  ITK_EXERCISE_BASIC_OBJECT_METHODS(itkOptimizer, ExhaustiveOptimizerv4, ObjectToObjectOptimizerBaseTemplate);
 
 
   // Index observer (enables us to check if all positions were indeed visisted):
-  IndexObserver::Pointer idxObserver = IndexObserver::New();
+  auto idxObserver = IndexObserver::New();
   itkOptimizer->AddObserver(itk::IterationEvent(), idxObserver);
 
   // Declaration of the CostFunction
-  ExhaustiveOptv4Metric::Pointer metric = ExhaustiveOptv4Metric::New();
+  auto metric = ExhaustiveOptv4Metric::New();
   itkOptimizer->SetMetric(metric);
 
 
@@ -236,7 +239,9 @@ itkExhaustiveOptimizerv4Test(int, char *[])
   itkOptimizer->SetScales(parametersScale);
 
 
-  itkOptimizer->SetStepLength(1.0);
+  auto stepLength = 1.0;
+  itkOptimizer->SetStepLength(stepLength);
+  ITK_TEST_SET_GET_VALUE(stepLength, itkOptimizer->GetStepLength());
 
 
   using StepsType = OptimizerType::StepsType;
@@ -245,6 +250,7 @@ itkExhaustiveOptimizerv4Test(int, char *[])
   steps[1] = 10;
 
   itkOptimizer->SetNumberOfSteps(steps);
+  ITK_TEST_SET_GET_VALUE(steps, itkOptimizer->GetNumberOfSteps());
 
 
   try
@@ -275,6 +281,8 @@ itkExhaustiveOptimizerv4Test(int, char *[])
   std::cout << finalPosition[0] << ",";
   std::cout << finalPosition[1] << ")" << std::endl;
 
+  std::cout << "CurrentValue: " << itkOptimizer->GetCurrentValue() << std::endl;
+
   bool                       visitedIndicesPass = true;
   std::vector<unsigned long> visitedIndices = idxObserver->m_VisitedIndices;
 
@@ -301,7 +309,7 @@ itkExhaustiveOptimizerv4Test(int, char *[])
   //
   bool   trueParamsPass = true;
   double trueParameters[2] = { 2, -2 };
-  for (unsigned int j = 0; j < 2; j++)
+  for (unsigned int j = 0; j < 2; ++j)
   {
     if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > 0.01)
     {
@@ -319,9 +327,6 @@ itkExhaustiveOptimizerv4Test(int, char *[])
     return EXIT_FAILURE;
   }
 
-
-  std::cout << "Testing PrintSelf " << std::endl;
-  itkOptimizer->Print(std::cout);
 
   std::cout << "Test passed." << std::endl;
   return EXIT_SUCCESS;

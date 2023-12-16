@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -115,7 +115,7 @@ itkVectorGeometryTest(int, char *[])
   vnl_vector_ref<ValueType> vnlVector = va.GetVnlVector();
   {
     std::cout << "vnl_vector_ref = va ";
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
       std::cout << vnlVector[i] << ", ";
     }
@@ -132,7 +132,7 @@ itkVectorGeometryTest(int, char *[])
   vnl_vector<ValueType> vnlVector2 = vf.GetVnlVector();
   {
     std::cout << "vnl_vector = va ";
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
       std::cout << vnlVector2[i] << ", ";
     }
@@ -213,7 +213,7 @@ itkVectorGeometryTest(int, char *[])
     fp.CastFrom(dp);
 
 
-    for (unsigned int i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; ++i)
     {
       auto val = static_cast<FloatVectorType::ValueType>(dp[i]);
       if (itk::Math::abs(val - fp[i]) > tolerance)

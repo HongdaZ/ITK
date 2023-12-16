@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ namespace itk
 class GiplImageIOInternals;
 
 /**
- *\class GiplImageIO
+ * \class GiplImageIO
  *
  *  \brief Read GiplImage file format.
  *
@@ -40,7 +40,7 @@ class GiplImageIOInternals;
 class ITKIOGIPL_EXPORT GiplImageIO : public ImageIOBase
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GiplImageIO);
+  ITK_DISALLOW_COPY_AND_MOVE(GiplImageIO);
 
   /** Standard class type aliases. */
   using Self = GiplImageIO;
@@ -60,7 +60,7 @@ public:
   bool
   CanReadFile(const char *) override;
 
-  /** Set the spacing and dimension information for the set filename. */
+  /** Read information about the Gipl file and put the cursor of the stream just before the first data pixel. */
   void
   ReadImageInformation() override;
 

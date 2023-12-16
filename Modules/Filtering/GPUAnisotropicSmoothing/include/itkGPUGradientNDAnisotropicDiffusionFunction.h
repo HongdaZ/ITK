@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@
 namespace itk
 {
 /**
- *\class GPUGradientNDAnisotropicDiffusionFunction
+ * \class GPUGradientNDAnisotropicDiffusionFunction
  *
  * This class implements an N-dimensional version of the classic Perona-Malik
  * anisotropic diffusion equation for scalar-valued images on the GPU.  See
@@ -61,7 +61,7 @@ class ITK_TEMPLATE_EXPORT GPUGradientNDAnisotropicDiffusionFunction
   : public GPUScalarAnisotropicDiffusionFunction<TImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GPUGradientNDAnisotropicDiffusionFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(GPUGradientNDAnisotropicDiffusionFunction);
 
   /** Standard class type aliases. */
   using Self = GPUGradientNDAnisotropicDiffusionFunction;
@@ -76,13 +76,13 @@ public:
   itkTypeMacro(GPUGradientNDAnisotropicDiffusionFunction, GPUScalarAnisotropicDiffusionFunction);
 
   /** Inherit some parameters from the superclass type. */
-  using ImageType = typename Superclass::ImageType;
-  using PixelType = typename Superclass::PixelType;
-  using PixelRealType = typename Superclass::PixelRealType;
-  using TimeStepType = typename Superclass::TimeStepType;
-  using RadiusType = typename Superclass::RadiusType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
-  using FloatOffsetType = typename Superclass::FloatOffsetType;
+  using typename Superclass::ImageType;
+  using typename Superclass::PixelType;
+  using typename Superclass::PixelRealType;
+  using typename Superclass::TimeStepType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::NeighborhoodType;
+  using typename Superclass::FloatOffsetType;
 
   using NeighborhoodSizeValueType = SizeValueType;
 

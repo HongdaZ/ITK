@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 namespace itk
 {
 /**
- *\class LBFGSOptimizerv4
+ * \class LBFGSOptimizerv4
  * \brief Wrap of the vnl_lbfgs algorithm for use in ITKv4 registration framework.
  * The vnl_lbfgs is a wrapper for the NETLIB fortran code by Nocedal [1].
  *
@@ -86,7 +86,7 @@ namespace itk
 class ITKOptimizersv4_EXPORT LBFGSOptimizerv4 : public LBFGSOptimizerBasev4<vnl_lbfgs>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LBFGSOptimizerv4);
+  ITK_DISALLOW_COPY_AND_MOVE(LBFGSOptimizerv4);
 
   /** Standard "Self" type alias. */
   using Self = LBFGSOptimizerv4;
@@ -102,7 +102,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(LBFGSOptimizerv4, Superclass);
+  itkTypeMacro(LBFGSOptimizerv4, LBFGSOptimizerBasev4);
 
   /** Start optimization with an initial value. */
   void
@@ -124,7 +124,7 @@ public:
    * the value to a small value (say 0.1).
    */
   void
-  SetLineSearchAccuracy(double tol);
+  SetLineSearchAccuracy(double f);
 
   itkGetConstMacro(LineSearchAccuracy, double);
 
@@ -133,7 +133,7 @@ public:
    * search.
    */
   void
-  SetDefaultStepLength(double stp);
+  SetDefaultStepLength(double f);
 
   itkGetConstMacro(DefaultStepLength, double);
 

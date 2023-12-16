@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -110,7 +110,7 @@ testBinaryMinMaxCurvatureFlow(itk::Size<VImageDimension> & size, // ND image siz
   using IteratorType = itk::ImageRegionIterator<ImageType>;
   using DenoiserType = itk::BinaryMinMaxCurvatureFlowImageFilter<ImageType, ImageType>;
 
-  typename DenoiserType::Pointer denoiser = DenoiserType::New();
+  auto denoiser = DenoiserType::New();
 
   int j;
 
@@ -124,7 +124,7 @@ testBinaryMinMaxCurvatureFlow(itk::Size<VImageDimension> & size, // ND image siz
   PixelType background = 255.0;                 // intensity value of the background
 
   std::cout << "Create an image of circle/sphere with noise" << std::endl;
-  typename ImageType::Pointer circleImage = ImageType::New();
+  auto circleImage = ImageType::New();
 
 
   typename ImageType::RegionType region;
@@ -140,9 +140,9 @@ testBinaryMinMaxCurvatureFlow(itk::Size<VImageDimension> & size, // ND image siz
     float                         value;
 
     double lhs = 0.0;
-    for (j = 0; j < ImageDimension; j++)
+    for (j = 0; j < ImageDimension; ++j)
     {
-      lhs += itk::Math::sqr((double)index[j] - (double)size[j] * 0.5);
+      lhs += itk::Math::sqr(static_cast<double>(index[j]) - static_cast<double>(size[j]) * 0.5);
     }
     if (lhs < sqrRadius)
     {
@@ -181,7 +181,7 @@ testBinaryMinMaxCurvatureFlow(itk::Size<VImageDimension> & size, // ND image siz
 
   typename ImageType::Pointer swapPointer = circleImage;
 
-  for (j = 0; j < numberOfRuns; j++)
+  for (j = 0; j < numberOfRuns; ++j)
   {
 
     denoiser->SetInput(swapPointer);
@@ -221,9 +221,9 @@ testBinaryMinMaxCurvatureFlow(itk::Size<VImageDimension> & size, // ND image siz
     PixelType                     value = outIter.Get();
 
     double lhs = 0.0;
-    for (j = 0; j < ImageDimension; j++)
+    for (j = 0; j < ImageDimension; ++j)
     {
-      lhs += itk::Math::sqr((double)index[j] - (double)size[j] * 0.5);
+      lhs += itk::Math::sqr(static_cast<double>(index[j]) - static_cast<double>(size[j]) * 0.5);
     }
     if (lhs < sqrRadius)
     {
@@ -238,7 +238,7 @@ testBinaryMinMaxCurvatureFlow(itk::Size<VImageDimension> & size, // ND image siz
     }
   }
 
-  const double fractionWrong = (double)numPixelsWrong / (double)region.GetNumberOfPixels();
+  const double fractionWrong = static_cast<double>(numPixelsWrong) / static_cast<double>(region.GetNumberOfPixels());
 
   std::cout << "Noise reduced from " << fractionNoise << " to ";
   std::cout << fractionWrong << std::endl;
@@ -260,7 +260,7 @@ testBinaryMinMaxCurvatureFlow(itk::Size<VImageDimension> & size, // ND image siz
    * Exercise error handling
    */
   using WrongFunctionType = itk::CurvatureFlowFunction<ImageType>;
-  typename WrongFunctionType::Pointer wrongFunction = WrongFunctionType::New();
+  auto wrongFunction = WrongFunctionType::New();
 
   passed = false;
   try

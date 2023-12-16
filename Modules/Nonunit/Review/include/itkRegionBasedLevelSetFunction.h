@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,19 +42,19 @@ namespace itk
  *  This code was taken from the Insight Journal paper:
  *
  *      "Cell Tracking using Coupled Active Surfaces for Nuclei and Membranes"
- *      http://www.insight-journal.org/browse/publication/642
+ *      https://www.insight-journal.org/browse/publication/642
  *      https://hdl.handle.net/10380/3055
  *
  *  That is based on the papers:
  *
  *      "Level Set Segmentation: Active Contours without edge"
- *      http://www.insight-journal.org/browse/publication/322
+ *      https://www.insight-journal.org/browse/publication/322
  *      https://hdl.handle.net/1926/1532
  *
  *      and
  *
  *      "Level set segmentation using coupled active surfaces"
- *      http://www.insight-journal.org/browse/publication/323
+ *      https://www.insight-journal.org/browse/publication/323
  *      https://hdl.handle.net/1926/1533
  *
  * NOTE: The convention followed is
@@ -67,7 +67,7 @@ template <typename TInput,   // LevelSetImageType
 class ITK_TEMPLATE_EXPORT RegionBasedLevelSetFunction : public FiniteDifferenceFunction<TInput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RegionBasedLevelSetFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(RegionBasedLevelSetFunction);
 
   /** Standard class type aliases. */
   using Self = RegionBasedLevelSetFunction;
@@ -84,13 +84,13 @@ public:
 
   /** Extract some parameters from the superclass. */
   using TimeStepType = double;
-  using ImageType = typename Superclass::ImageType;
-  using PixelType = typename Superclass::PixelType;
+  using typename Superclass::ImageType;
+  using typename Superclass::PixelType;
   using ScalarValueType = PixelType;
-  using RadiusType = typename Superclass::RadiusType;
-  using NeighborhoodType = typename Superclass::NeighborhoodType;
-  using NeighborhoodScalesType = typename Superclass::NeighborhoodScalesType;
-  using FloatOffsetType = typename Superclass::FloatOffsetType;
+  using typename Superclass::RadiusType;
+  using typename Superclass::NeighborhoodType;
+  using typename Superclass::NeighborhoodScalesType;
+  using typename Superclass::FloatOffsetType;
   using VectorType = FixedArray<ScalarValueType, Self::ImageDimension>;
 
   /* This structure is derived from LevelSetFunction and stores intermediate
@@ -166,7 +166,7 @@ public:
     m_Center = it.Size() / 2;
 
     // Get the stride length for each axis.
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       m_xStride[i] = it.GetStride(i);
     }
@@ -215,7 +215,7 @@ public:
     m_FeatureImage = f;
 
     FeatureSpacingType spacing = m_FeatureImage->GetSpacing();
-    for (unsigned int i = 0; i < ImageDimension; i++)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       this->m_InvSpacing[i] = 1 / spacing[i];
     }
@@ -337,7 +337,7 @@ public:
 
   /** Set function id.  */
   void
-  SetFunctionId(const unsigned int & iFid)
+  SetFunctionId(const unsigned int iFid)
   {
     this->m_FunctionId = iFid;
   }

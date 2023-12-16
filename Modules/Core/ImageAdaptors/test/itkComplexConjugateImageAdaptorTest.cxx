@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ int
 itkComplexConjugateImageAdaptorTest(int, char *[])
 {
   // Create a test image.
-  ImageType::Pointer  image = ImageType::New();
+  auto                image = ImageType::New();
   ImageType::SizeType size = { { 10, 10 } };
   image->SetRegions(size);
   image->Allocate();
@@ -47,7 +47,7 @@ itkComplexConjugateImageAdaptorTest(int, char *[])
   image->FillBuffer(PixelType(2.0, -3.7));
 
   // Create adaptor.
-  AdaptorType::Pointer adaptor = AdaptorType::New();
+  auto adaptor = AdaptorType::New();
   adaptor->SetImage(image);
 
   // Iterate over the pixels and check the functioning of the adaptor.

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,10 +25,10 @@ namespace itk
 namespace fem
 {
 void
-Element2DC0QuadraticTriangular ::GetIntegrationPointAndWeight(unsigned int i,
-                                                              VectorType & pt,
-                                                              Float &      w,
-                                                              unsigned int order) const
+Element2DC0QuadraticTriangular::GetIntegrationPointAndWeight(unsigned int i,
+                                                             VectorType & pt,
+                                                             Float &      w,
+                                                             unsigned int order) const
 {
   // default integration order
   if (order == 0 || order > 5)
@@ -59,7 +59,7 @@ Element2DC0QuadraticTriangular ::GetIntegrationPointAndWeight(unsigned int i,
 }
 
 unsigned int
-Element2DC0QuadraticTriangular ::GetNumberOfIntegrationPoints(unsigned int order) const
+Element2DC0QuadraticTriangular::GetNumberOfIntegrationPoints(unsigned int order) const
 {
   // default integration order
   if (order == 0 || order > 5)
@@ -71,7 +71,7 @@ Element2DC0QuadraticTriangular ::GetNumberOfIntegrationPoints(unsigned int order
 }
 
 Element2DC0QuadraticTriangular::VectorType
-Element2DC0QuadraticTriangular ::ShapeFunctions(const VectorType & pt) const
+Element2DC0QuadraticTriangular::ShapeFunctions(const VectorType & pt) const
 {
   // Quadratic triangular element has 6 shape functions
   VectorType shapeF(6);
@@ -90,7 +90,7 @@ Element2DC0QuadraticTriangular ::ShapeFunctions(const VectorType & pt) const
 }
 
 void
-Element2DC0QuadraticTriangular ::ShapeFunctionDerivatives(const VectorType & pt, MatrixType & shapeD) const
+Element2DC0QuadraticTriangular::ShapeFunctionDerivatives(const VectorType & pt, MatrixType & shapeD) const
 {
   VectorType::element_type p2 = 1.0 - pt[0] - pt[1];
 
@@ -111,7 +111,7 @@ Element2DC0QuadraticTriangular ::ShapeFunctionDerivatives(const VectorType & pt,
 }
 
 Element2DC0QuadraticTriangular::Float
-Element2DC0QuadraticTriangular ::JacobianDeterminant(const VectorType & pt, const MatrixType * pJ) const
+Element2DC0QuadraticTriangular::JacobianDeterminant(const VectorType & pt, const MatrixType * pJ) const
 {
   //  return Superclass::JacobianDeterminant( pt, pJ );
 
@@ -135,7 +135,7 @@ Element2DC0QuadraticTriangular ::JacobianDeterminant(const VectorType & pt, cons
 }
 
 void
-Element2DC0QuadraticTriangular ::JacobianInverse(const VectorType & pt, MatrixType & invJ, const MatrixType * pJ) const
+Element2DC0QuadraticTriangular::JacobianInverse(const VectorType & pt, MatrixType & invJ, const MatrixType * pJ) const
 {
   MatrixType * pJlocal = nullptr;
 
@@ -179,7 +179,7 @@ Element2DC0QuadraticTriangular::GetLocalFromGlobalCoordinates(const VectorType &
 
   e1 = itk::fem::Element2DC0LinearTriangularMembrane::New();
   // four linear triangles are used
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < 4; ++i)
   {
     e1->SetNode(0, this->GetNode(LinearTris[i][0]));
     e1->SetNode(1, this->GetNode(LinearTris[i][1]));

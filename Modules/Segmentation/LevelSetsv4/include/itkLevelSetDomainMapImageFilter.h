@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT LevelSetDomainMapImageFilter : public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(LevelSetDomainMapImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(LevelSetDomainMapImageFilter);
 
   using Self = LevelSetDomainMapImageFilter;
   using Superclass = ImageToImageFilter<TInputImage, TOutputImage>;
@@ -77,7 +77,7 @@ public:
   using OutputIteratorType = ImageRegionIterator<OutputImageType>;
 
   /**
-   *\class LevelSetDomain
+   * \class LevelSetDomain
    * \brief Specifies an image region where an unique std::list of level sets Id's are defined.
    * \ingroup ITKLevelSetsv4 */
   class LevelSetDomain
@@ -123,7 +123,7 @@ protected:
   /** Computes a consistent region for the same set of overlapping
    * level set support. */
   InputImageRegionType
-  ComputeConsistentRegion(const InputImageRegionType & subRegion) const;
+  ComputeConsistentRegion(const InputImageRegionType & inputRegion) const;
 
   /** Identify image partitions where each partition has the same overlapping
    *  level set support */

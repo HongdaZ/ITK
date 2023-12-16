@@ -1,4 +1,4 @@
-#==========================================================================
+# ==========================================================================
 #
 #   Copyright NumFOCUS
 #
@@ -6,7 +6,7 @@
 #   you may not use this file except in compliance with the License.
 #   You may obtain a copy of the License at
 #
-#          http://www.apache.org/licenses/LICENSE-2.0.txt
+#          https://www.apache.org/licenses/LICENSE-2.0.txt
 #
 #   Unless required by applicable law or agreed to in writing, software
 #   distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-#==========================================================================*/
+# ==========================================================================*/
 
 # Tests:
 # - Reading dicom files from a directory
@@ -59,8 +59,8 @@ name1 = metad["0010|0010"]
 # reference. Here we pass an empty string, and the
 # actual value is returned as the second variable.
 found, name2 = dicomIO.GetValueFromTag("0010|0010", "")
-assert(name1 == name2)
+assert name1 == name2
 
 # Check also if we returned the right tag
 found, name3 = dicomIO.GetLabelFromTag("0010|0010", "")
-assert(name3 == "Patient's Name")
+assert name3 == "Patient's Name"

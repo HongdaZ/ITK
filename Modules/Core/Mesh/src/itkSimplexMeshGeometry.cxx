@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
 
 namespace itk
 {
-SimplexMeshGeometry ::SimplexMeshGeometry()
+SimplexMeshGeometry::SimplexMeshGeometry()
 {
   double    c = 1.0 / 3.0;
   PointType p;
@@ -54,14 +54,14 @@ SimplexMeshGeometry ::SimplexMeshGeometry()
   closestAttractorIndex = 0;
 }
 
-SimplexMeshGeometry ::~SimplexMeshGeometry()
+SimplexMeshGeometry::~SimplexMeshGeometry()
 {
   delete this->neighborSet;
   this->neighborSet = nullptr;
 }
 
 void
-SimplexMeshGeometry ::ComputeGeometry()
+SimplexMeshGeometry::ComputeGeometry()
 {
   VectorType b, c, cXb, tmp;
 
@@ -113,7 +113,7 @@ SimplexMeshGeometry ::ComputeGeometry()
 void
 SimplexMeshGeometry::CopyFrom(const SimplexMeshGeometry & input)
 {
-  for (unsigned int i = 0; i < 3; i++)
+  for (unsigned int i = 0; i < 3; ++i)
   {
     this->neighborIndices[i] = input.neighborIndices[i];
     this->neighbors[i] = input.neighbors[i];
@@ -140,7 +140,7 @@ SimplexMeshGeometry::CopyFrom(const SimplexMeshGeometry & input)
 }
 
 void
-SimplexMeshGeometry ::CopyNeigborSet(const NeighborSetType * nset)
+SimplexMeshGeometry::CopyNeigborSet(const NeighborSetType * nset)
 {
   delete this->neighborSet;
   if (nset)

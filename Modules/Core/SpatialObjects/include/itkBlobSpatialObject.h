@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,7 +48,7 @@ template <unsigned int TDimension = 3>
 class ITK_TEMPLATE_EXPORT BlobSpatialObject : public PointBasedSpatialObject<TDimension, SpatialObjectPoint<TDimension>>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(BlobSpatialObject);
+  ITK_DISALLOW_COPY_AND_MOVE(BlobSpatialObject);
 
   using Self = BlobSpatialObject;
   using Superclass = PointBasedSpatialObject<TDimension, SpatialObjectPoint<TDimension>>;
@@ -60,10 +60,10 @@ public:
   using BlobPointType = SpatialObjectPoint<TDimension>;
   using BlobPointListType = std::vector<BlobPointType>;
 
-  using PointType = typename Superclass::PointType;
-  using SpatialObjectPointType = typename Superclass::SpatialObjectPointType;
-  using TransformType = typename Superclass::TransformType;
-  using BoundingBoxType = typename Superclass::BoundingBoxType;
+  using typename Superclass::PointType;
+  using typename Superclass::SpatialObjectPointType;
+  using typename Superclass::TransformType;
+  using typename Superclass::BoundingBoxType;
   using PointContainerType = VectorContainer<IdentifierType, PointType>;
   using PointContainerPointer = SmartPointer<PointContainerType>;
 

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@
 namespace itk
 {
 /**
- *\class FastMarchingExtensionImageFilterBase
+ * \class FastMarchingExtensionImageFilterBase
  * \brief Extend auxiliary variables smoothly using Fast Marching.
  *
  * Fast marching can be used to extend auxiliary variables smoothly
@@ -58,14 +58,14 @@ template <typename TInput, typename TOutput, typename TAuxValue, unsigned int VA
 class ITK_TEMPLATE_EXPORT FastMarchingExtensionImageFilterBase : public FastMarchingImageFilterBase<TInput, TOutput>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FastMarchingExtensionImageFilterBase);
+  ITK_DISALLOW_COPY_AND_MOVE(FastMarchingExtensionImageFilterBase);
 
   /** Standard class typdedefs. */
   using Self = FastMarchingExtensionImageFilterBase;
   using Superclass = FastMarchingImageFilterBase<TInput, TOutput>;
   using Pointer = SmartPointer<Self>;
   using ConstPointer = SmartPointer<const Self>;
-  using Traits = typename Superclass::Traits;
+  using typename Superclass::Traits;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -92,24 +92,24 @@ public:
 
 
   /** Index type alias support */
-  using NodeType = typename Superclass::NodeType;
-  using NodePairType = typename Superclass::NodePairType;
+  using typename Superclass::NodeType;
+  using typename Superclass::NodePairType;
 
-  //  using NodeContainerType = typename Superclass::NodeContainerType;
-  //  using NodeContainerPointer = typename Superclass::NodeContainerPointer;
-  //  using NodeContainerConstIterator = typename Superclass::NodeContainerConstIterator;
+  //  using typename Superclass::NodeContainerType;
+  //  using typename Superclass::NodeContainerPointer;
+  //  using typename Superclass::NodeContainerConstIterator;
 
-  using NodePairContainerType = typename Superclass::NodePairContainerType;
-  using NodePairContainerPointer = typename Superclass::NodePairContainerPointer;
-  using NodePairContainerConstIterator = typename Superclass::NodePairContainerConstIterator;
+  using typename Superclass::NodePairContainerType;
+  using typename Superclass::NodePairContainerPointer;
+  using typename Superclass::NodePairContainerConstIterator;
 
-  using OutputImageType = typename Superclass::OutputImageType;
-  using OutputPixelType = typename Superclass::OutputPixelType;
-  using InternalNodeStructure = typename Superclass::InternalNodeStructure;
+  using typename Superclass::OutputImageType;
+  using typename Superclass::OutputPixelType;
+  using typename Superclass::InternalNodeStructure;
 
   /** Get one of the extended auxiliary variable image. */
   AuxImageType *
-  GetAuxiliaryImage(const unsigned int & idx);
+  GetAuxiliaryImage(const unsigned int idx);
 
   /** Set the container auxiliary values at the initial alive points. */
   itkSetObjectMacro(AuxiliaryAliveValues, AuxValueContainerType);
@@ -135,7 +135,7 @@ protected:
   InitializeOutput(OutputImageType *) override;
 
   void
-  UpdateValue(OutputImageType * oImage, const NodeType & iValue) override;
+  UpdateValue(OutputImageType * oImage, const NodeType & iNode) override;
 
   /** Generate the output image meta information */
   void

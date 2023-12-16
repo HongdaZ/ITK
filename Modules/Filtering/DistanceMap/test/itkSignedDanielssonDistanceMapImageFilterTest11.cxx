@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,10 +41,8 @@ itkSignedDanielssonDistanceMapImageFilterTest11(int, char *[])
   region2D.SetSize(size2D);
   region2D.SetIndex(index2D);
 
-  myImageType2D1::Pointer inputImage2D = myImageType2D1::New();
-  inputImage2D->SetLargestPossibleRegion(region2D);
-  inputImage2D->SetBufferedRegion(region2D);
-  inputImage2D->SetRequestedRegion(region2D);
+  auto inputImage2D = myImageType2D1::New();
+  inputImage2D->SetRegions(region2D);
   inputImage2D->Allocate(true);
 
   /* Set pixel (4,4) with the value 1
@@ -59,7 +57,7 @@ itkSignedDanielssonDistanceMapImageFilterTest11(int, char *[])
   /* Create SignedDanielssonDistance Map filter */
   using myFilterType2D = itk::SignedDanielssonDistanceMapImageFilter<myImageType2D1, myImageType2D2>;
 
-  myFilterType2D::Pointer filter2D = myFilterType2D::New();
+  auto filter2D = myFilterType2D::New();
 
   filter2D->SetInput(inputImage2D);
 
@@ -92,7 +90,7 @@ itkSignedDanielssonDistanceMapImageFilterTest11(int, char *[])
   const double distance2 = outputDistance2D->GetPixel(index);
   std::cout << "distance2: " << distance2 << std::endl;
   const myImageType2D2::PixelType epsilon = 1e-5;
-  if (std::fabs(distance2 - distance1 * distance1) > epsilon)
+  if (itk::Math::abs(distance2 - distance1 * distance1) > epsilon)
   {
     std::cerr << "Error in use of the SetSquaredDistance() method" << std::endl;
     return EXIT_FAILURE;

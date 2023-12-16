@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ class ITK_TEMPLATE_EXPORT QuadEdgeMeshEulerOperatorCreateCenterVertexFunction
   : public QuadEdgeMeshFunctionBase<TMesh, TQEType *>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(QuadEdgeMeshEulerOperatorCreateCenterVertexFunction);
+  ITK_DISALLOW_COPY_AND_MOVE(QuadEdgeMeshEulerOperatorCreateCenterVertexFunction);
 
   /** Standard class type aliases. */
   using Self = QuadEdgeMeshEulerOperatorCreateCenterVertexFunction;
@@ -49,8 +49,8 @@ public:
   /** Type of QuadEdge with which to apply slicing. */
   using QEType = TQEType;
 
-  using MeshType = typename Superclass::MeshType;
-  using OutputType = typename Superclass::OutputType;
+  using typename Superclass::MeshType;
+  using typename Superclass::OutputType;
 
   using PointIdentifier = typename MeshType::PointIdentifier;
   using PointType = typename MeshType::PointType;

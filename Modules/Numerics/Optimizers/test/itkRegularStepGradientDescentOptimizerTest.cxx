@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -112,12 +112,12 @@ itkRegularStepGradientDescentOptimizerTest(int, char *[])
   using ScalesType = OptimizerType::ScalesType;
 
 
-  // Declaration of a itkOptimizer
-  OptimizerType::Pointer itkOptimizer = OptimizerType::New();
+  // Declaration of an itkOptimizer
+  auto itkOptimizer = OptimizerType::New();
 
 
   // Declaration of the CostFunction
-  RSGCostFunction::Pointer costFunction = RSGCostFunction::New();
+  auto costFunction = RSGCostFunction::New();
 
 
   itkOptimizer->SetCostFunction(costFunction);
@@ -170,7 +170,7 @@ itkRegularStepGradientDescentOptimizerTest(int, char *[])
   //
   bool   pass = true;
   double trueParameters[2] = { 2, -2 };
-  for (unsigned int j = 0; j < 2; j++)
+  for (unsigned int j = 0; j < 2; ++j)
   {
     if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > 0.01)
     {
@@ -213,7 +213,7 @@ itkRegularStepGradientDescentOptimizerTest(int, char *[])
     // check results to see if it is within range
     //
     pass = true;
-    for (unsigned int j = 0; j < 2; j++)
+    for (unsigned int j = 0; j < 2; ++j)
     {
       if (itk::Math::abs(finalPosition[j] - trueParameters[j]) > 0.01)
       {

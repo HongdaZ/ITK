@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -291,20 +291,14 @@ public:
   /** Comparison operator. Two iterators are the same if they "point to" the
    * same memory location */
   bool
-  operator!=(const Self & it) const
-  {
-    // two iterators are the same if they "point to" the same memory location
-    return (m_Buffer + m_Offset) != (it.m_Buffer + it.m_Offset);
-  }
-
-  /** Comparison operator. Two iterators are the same if they "point to" the
-   * same memory location */
-  bool
   operator==(const Self & it) const
   {
     // two iterators are the same if they "point to" the same memory location
     return (m_Buffer + m_Offset) == (it.m_Buffer + it.m_Offset);
   }
+
+  ITK_UNEQUAL_OPERATOR_MEMBER_FUNCTION(Self);
+
 
   /** Get the index. This provides a read only reference to the index.
    * This causes the index to be calculated from pointer arithmetic and is

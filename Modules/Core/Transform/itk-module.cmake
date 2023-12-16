@@ -2,7 +2,7 @@ set(DOCUMENTATION "Transforms are essential components of image registration
 framework in ITK. They are typically used for representing the mapping between
 the physical coordinate system of one image and the physical coordinate system
 of another image. They are also commonly used in the process of resampling
-images, particulaly when mapping them between coordinate systems. Transforms
+images, particularly when mapping them between coordinate systems. Transforms
 are a large family in ITK and form a prolific group of classes in the
 toolkit.")
 
@@ -15,6 +15,7 @@ itk_module(ITKTransform
     ITKImageFilterBase
   TEST_DEPENDS
     ITKTestKernel
+    ITKGoogleTest
     ITKDisplacementField
   DESCRIPTION
     "${DOCUMENTATION}"

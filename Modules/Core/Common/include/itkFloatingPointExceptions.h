@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,14 +23,14 @@
 
 namespace itk
 {
-/**\class FloatingPointExceptionsEnums
+/** \class FloatingPointExceptionsEnums
  * \brief Contains all enum classes used by FloatingPointExceptions class.
  * \ingroup ITKCommon
  */
 class FloatingPointExceptionsEnums
 {
 public:
-  /**\class ExceptionAction
+  /** \class ExceptionAction
    * \ingroup ITKCommon
    * defines what should happen when exceptions occur */
   enum class ExceptionAction : uint8_t
@@ -55,7 +55,7 @@ struct ExceptionGlobals;
 class ITKCommon_EXPORT FloatingPointExceptions
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(FloatingPointExceptions);
+  ITK_DISALLOW_COPY_AND_MOVE(FloatingPointExceptions);
   // default constructor required for wrapping to succeed
   FloatingPointExceptions() = default;
   virtual ~FloatingPointExceptions() = default;

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@
 #ifndef itkDiscreteGaussianDerivativeImageFilter_hxx
 #define itkDiscreteGaussianDerivativeImageFilter_hxx
 
-#include "itkDiscreteGaussianDerivativeImageFilter.h"
 #include "itkNeighborhoodOperatorImageFilter.h"
 #include "itkGaussianDerivativeOperator.h"
 #include "itkImageRegionIterator.h"
@@ -47,7 +46,7 @@ DiscreteGaussianDerivativeImageFilter<TInputImage, TOutputImage>::GenerateInputR
   GaussianDerivativeOperator<OutputPixelType, ImageDimension> oper;
   typename TInputImage::SizeType                              radius;
 
-  for (unsigned int i = 0; i < TInputImage::ImageDimension; i++)
+  for (unsigned int i = 0; i < TInputImage::ImageDimension; ++i)
   {
     // Determine the size of the operator in this dimension.  Note that the
     // Gaussian is built as a 1D operator in each of the specified directions.
@@ -107,10 +106,10 @@ DiscreteGaussianDerivativeImageFilter<TInputImage, TOutputImage>::GenerateData()
   output->SetBufferedRegion(output->GetRequestedRegion());
   output->Allocate();
 
-  // Create an internal image to protect the input image's metdata
+  // Create an internal image to protect the input image's metadata
   // (e.g. RequestedRegion). The StreamingImageFilter changes the
   // requested region as poart of its normal provessing.
-  typename TInputImage::Pointer localInput = TInputImage::New();
+  auto localInput = TInputImage::New();
   localInput->Graft(this->GetInput());
 
   // Type of the pixel to use for intermediate results
@@ -142,7 +141,7 @@ DiscreteGaussianDerivativeImageFilter<TInputImage, TOutputImage>::GenerateData()
   oper.resize(ImageDimension);
 
   // Create a process accumulator for tracking the progress of minipipeline
-  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  auto progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
 
   // Set up the operators

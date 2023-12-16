@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,17 @@
 #include "itkTestingMacros.h"
 
 int
-itkVoronoiSegmentationImageFilterTest(int, char *[])
+itkVoronoiSegmentationImageFilterTest(int argc, char * argv[])
 {
+  if (argc != 9)
+  {
+    std::cerr << "Missing Parameters." << std::endl;
+    std::cerr << "Usage: " << itkNameOfTestExecutableMacro(argv)
+              << " mean std meanTolerance stdTolerance numberOfSeeds steps meanPercentError stdPercentError"
+              << std::endl;
+    return EXIT_FAILURE;
+  }
+
   constexpr int width = 256;
   constexpr int height = 256;
 
@@ -30,12 +39,12 @@ itkVoronoiSegmentationImageFilterTest(int, char *[])
   using PriorImage = itk::Image<unsigned char, 2>;
   using VoronoiSegmentationImageFilterType = itk::VoronoiSegmentationImageFilter<UShortImage, UShortImage, PriorImage>;
 
-  VoronoiSegmentationImageFilterType::Pointer voronoiSegmenter = VoronoiSegmentationImageFilterType::New();
+  auto voronoiSegmenter = VoronoiSegmentationImageFilterType::New();
 
   ITK_EXERCISE_BASIC_OBJECT_METHODS(
     voronoiSegmenter, VoronoiSegmentationImageFilter, VoronoiSegmentationImageFilterBase);
 
-  UShortImage::Pointer   inputImage = UShortImage::New();
+  auto                   inputImage = UShortImage::New();
   UShortImage::SizeType  size = { { width, height } };
   UShortImage::IndexType index;
   index.Fill(0);
@@ -46,9 +55,7 @@ itkVoronoiSegmentationImageFilterTest(int, char *[])
   region.SetIndex(index);
 
   std::cout << "Allocating image" << std::endl;
-  inputImage->SetLargestPossibleRegion(region);
-  inputImage->SetBufferedRegion(region);
-  inputImage->SetRequestedRegion(region);
+  inputImage->SetRegions(region);
   inputImage->Allocate();
 
 
@@ -58,7 +65,7 @@ itkVoronoiSegmentationImageFilterTest(int, char *[])
   std::cout << "Setting background random pattern image" << std::endl;
   while (!it.IsAtEnd())
   {
-    it.Set((unsigned short)(vnl_sample_uniform(450, 550)));
+    it.Set(static_cast<unsigned short>(vnl_sample_uniform(450, 550)));
     ++it;
   }
 
@@ -66,23 +73,23 @@ itkVoronoiSegmentationImageFilterTest(int, char *[])
   std::cout << "Defining object #2" << std::endl;
   unsigned int i;
   unsigned int j;
-  for (i = 30; i < 94; i++)
+  for (i = 30; i < 94; ++i)
   {
     index[0] = i;
-    for (j = 30; j < 94; j++)
+    for (j = 30; j < 94; ++j)
     {
       index[1] = j;
-      inputImage->SetPixel(index, (unsigned short)(vnl_sample_uniform(500, 540)));
+      inputImage->SetPixel(index, static_cast<unsigned short>(vnl_sample_uniform(500, 540)));
     }
   }
 
-  for (i = 150; i < 214; i++)
+  for (i = 150; i < 214; ++i)
   {
     index[0] = i;
-    for (j = 150; j < 214; j++)
+    for (j = 150; j < 214; ++j)
     {
       index[1] = j;
-      inputImage->SetPixel(index, (unsigned short)(vnl_sample_uniform(500, 540)));
+      inputImage->SetPixel(index, static_cast<unsigned short>(vnl_sample_uniform(500, 540)));
     }
   }
 
@@ -91,26 +98,37 @@ itkVoronoiSegmentationImageFilterTest(int, char *[])
 
   voronoiSegmenter->SetInput(inputImage);
 
-  double mean = 520;
-  double std = 20;
-  double meanTolerance = 10;
-  double stdTolerance = 20;
-  int    numberOfSeeds = 400;
-  int    steps = 5;
-
+  auto mean = std::stod(argv[1]);
   voronoiSegmenter->SetMean(mean);
-  voronoiSegmenter->SetSTD(std);
-  voronoiSegmenter->SetMeanTolerance(meanTolerance);
-  voronoiSegmenter->SetSTDTolerance(stdTolerance);
-  voronoiSegmenter->SetNumberOfSeeds(numberOfSeeds);
-  voronoiSegmenter->SetSteps(steps);
-
   ITK_TEST_SET_GET_VALUE(mean, voronoiSegmenter->GetMean());
+
+  auto std = std::stod(argv[2]);
+  voronoiSegmenter->SetSTD(std);
   ITK_TEST_SET_GET_VALUE(std, voronoiSegmenter->GetSTD());
+
+  auto meanTolerance = std::stod(argv[3]);
+  voronoiSegmenter->SetMeanTolerance(meanTolerance);
   ITK_TEST_SET_GET_VALUE(meanTolerance, voronoiSegmenter->GetMeanTolerance());
+
+  auto stdTolerance = std::stod(argv[4]);
+  voronoiSegmenter->SetSTDTolerance(stdTolerance);
   ITK_TEST_SET_GET_VALUE(stdTolerance, voronoiSegmenter->GetSTDTolerance());
+
+  auto numberOfSeeds = std::stoi(argv[5]);
+  voronoiSegmenter->SetNumberOfSeeds(numberOfSeeds);
   ITK_TEST_SET_GET_VALUE(numberOfSeeds, voronoiSegmenter->GetNumberOfSeeds());
+
+  auto steps = std::stoi(argv[6]);
+  voronoiSegmenter->SetSteps(steps);
   ITK_TEST_SET_GET_VALUE(steps, voronoiSegmenter->GetSteps());
+
+  auto meanPercentError = std::stod(argv[7]);
+  voronoiSegmenter->SetMeanPercentError(meanPercentError);
+  ITK_TEST_SET_GET_VALUE(meanPercentError, voronoiSegmenter->GetMeanPercentError());
+
+  auto stdPercentError = std::stod(argv[8]);
+  voronoiSegmenter->SetSTDPercentError(stdPercentError);
+  ITK_TEST_SET_GET_VALUE(stdPercentError, voronoiSegmenter->GetSTDPercentError());
 
   std::cout << "Running algorithm" << std::endl;
   voronoiSegmenter->Update();

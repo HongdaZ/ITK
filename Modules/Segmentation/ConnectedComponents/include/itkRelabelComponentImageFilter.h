@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -82,7 +82,7 @@ template <typename TInputImage, typename TOutputImage>
 class ITK_TEMPLATE_EXPORT RelabelComponentImageFilter : public InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(RelabelComponentImageFilter);
+  ITK_DISALLOW_COPY_AND_MOVE(RelabelComponentImageFilter);
 
   /**
    * Standard "Self" & Superclass typedef.
@@ -93,7 +93,7 @@ public:
   /**
    * Types from the Superclass
    */
-  using InputImagePointer = typename Superclass::InputImagePointer;
+  using typename Superclass::InputImagePointer;
 
   /**
    * Extract some information from the image types.  Dimensionality
@@ -124,7 +124,7 @@ public:
   /**
    * Run-time type information (and related methods)
    */
-  itkTypeMacro(RelabelComponentImageFilter, ImageToImageFilter);
+  itkTypeMacro(RelabelComponentImageFilter, InPlaceImageFilter);
 
   /**
    * Method for creation through the object factory.
@@ -256,7 +256,7 @@ protected:
   GenerateData() override;
 
   void
-  ParallelComputeLabels(const RegionType & inputRegion);
+  ParallelComputeLabels(const RegionType & inputRegionForThread);
 
   /** RelabelComponentImageFilter needs the entire input. Therefore
    * it must provide an implementation GenerateInputRequestedRegion().

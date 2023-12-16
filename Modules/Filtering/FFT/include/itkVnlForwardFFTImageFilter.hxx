@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,6 @@
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkProgressReporter.h"
 #include "itkVnlFFTCommon.h"
-#include "itkVnlForwardFFTImageFilter.h"
 
 namespace itk
 {
@@ -49,21 +48,20 @@ VnlForwardFFTImageFilter<TInputImage, TOutputImage>::GenerateData()
   outputPtr->Allocate();
 
   unsigned int vectorSize = 1;
-  for (unsigned int i = 0; i < ImageDimension; i++)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     if (!VnlFFTCommon::IsDimensionSizeLegal(inputSize[i]))
     {
       itkExceptionMacro(<< "Cannot compute FFT of image with size " << inputSize
-                        << ". VnlForwardFFTImageFilter operates "
-                        << "only on images whose size in each dimension has"
-                        << "only a combination of 2,3, and 5 as prime factors.");
+                        << ". VnlForwardFFTImageFilter operates only on images whose size in each dimension has only a "
+                           "combination of 2,3, and 5 as prime factors.");
     }
     vectorSize *= inputSize[i];
   }
 
   const InputPixelType * in = inputPtr->GetBufferPointer();
   SignalVectorType       signal(vectorSize);
-  for (unsigned int i = 0; i < vectorSize; i++)
+  for (unsigned int i = 0; i < vectorSize; ++i)
   {
     signal[i] = in[i];
   }
